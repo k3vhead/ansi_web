@@ -134,7 +134,7 @@ public class AddressTableServlet extends AbstractServlet {
 			rs0.close();
 			
 		    int totalAfterFilter = total;
-			term = term.toLowerCase();
+			term = term.replaceAll("'","''").toLowerCase();
 			List<AddressReturnItem> resultList = new ArrayList<AddressReturnItem>();
 			/*
 			sql = "select a.address_id, a.name, a.address_status, a.address1, a.address2, a.city, a.county, a.state, a.zip, a.country_code, (a3.jobCount + a3.billCount) as count, "

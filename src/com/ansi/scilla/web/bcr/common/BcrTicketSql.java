@@ -291,8 +291,8 @@ public class BcrTicketSql extends ApplicationObject {
 	}
 	
 	public static String makeBaseWhereClause(String workWeeks, Boolean monthlyFilter) {
-//		String baseWhereClause = monthlyFilter ? BcrTicketSql.baseWhereClause1 + ")" : BcrTicketSql.baseWhereClause1 + BcrTicketSql.baseWhereClause2;		
-		String baseWhereClause = monthlyFilter ? BcrTicketSql.baseWhereClause1 + BcrTicketSql.baseWhereClause3 : BcrTicketSql.baseWhereClause1 + BcrTicketSql.baseWhereClause2;		
+		String baseWhereClause = monthlyFilter ? BcrTicketSql.baseWhereClause1 + ")" : BcrTicketSql.baseWhereClause1 + BcrTicketSql.baseWhereClause2;		
+//		String baseWhereClause = monthlyFilter ? BcrTicketSql.baseWhereClause1 + BcrTicketSql.baseWhereClause3 : BcrTicketSql.baseWhereClause1 + BcrTicketSql.baseWhereClause2;		
 //gag-this would be the current month filter		String baseWhereClause = monthlyFilter ? BcrTicketSql.baseWhereClause1 + BcrTicketSql.baseWhereClause2 + BcrTicketSql.baseWhereClause3 : BcrTicketSql.baseWhereClause1 + BcrTicketSql.baseWhereClause2;		
 		String whereClause = " " + baseWhereClause.replaceAll("\\$CLAIMWEEKFILTER\\$", workWeeks);
 		return whereClause;

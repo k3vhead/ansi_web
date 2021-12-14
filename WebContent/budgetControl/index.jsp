@@ -578,7 +578,7 @@
         			var $ticketId = $("#bcr_edit_modal").attr("ticketId");
         			var $serviceTagId = $("#bcr_edit_modal").attr("serviceTagId");
         			var $claimWeek = $("#bcr_edit_modal input[name='claimWeek']").val();
-        			var $volume = $("#bcr_edit_modal input[name='expenseVolume']").val();
+        			var $volume = $("#bcr_edit_modal input[name='expenseVolume']").val().replace(/,/g,'');
         			var $expenseType = $("#bcr_edit_modal select[name='expenseType']").val();
         			var $notes = $("#bcr_edit_modal input[name='notes']").val();
         			
@@ -1023,8 +1023,8 @@
         			var $serviceTagId = $("#bcr_edit_modal").attr("serviceTagId");
         			var $claimWeek = $("#bcr_edit_modal input[name='claimWeek']").val();
         			
-        			var $dlAmt = $("#bcr_edit_modal input[name='dlAmt']").val();
-        			var $volumeClaimed = $("#bcr_edit_modal input[name='volumeClaimed']").val();
+        			var $dlAmt = $("#bcr_edit_modal input[name='dlAmt']").val().replace(/,/g,'');
+        			var $volumeClaimed = $("#bcr_edit_modal input[name='volumeClaimed']").val().replace(/,/g,'');
         			var $employee = $("#bcr_edit_modal input[name='employee']").val();
         			var $notes = $("#bcr_edit_modal input[name='laborNotes']").val();        			
         			
@@ -1269,8 +1269,8 @@
 		    				});
     						$(".save-expense").click(function($event) {
     							var $claimId = $(this).attr("data-claimid");
-    							console.log("Saving expense" + $claimId);
-    							var $volume = $("#"+$claimId + " input[name='expenseVolume']").val();
+    							console.log("Saving expense " + $claimId);
+    							var $volume = $("#"+$claimId + " input[name='expenseVolume']").val().replace(/,/g,'');
     							var $expenseType = $("#"+$claimId + " select[name='expenseType']").val();
     							var $notes = $("#"+$claimId + " input[name='notes']").val();
     							
@@ -1556,8 +1556,8 @@
 		    				$(".save-labor").click(function($event) {
 		    					var $claimId = $(this).attr("data-claimid");
     							console.log("Saving d/l " + $claimId);
-    							var $dlAmt = $("#"+$claimId + " input[name='dlAmt']").val();
-    							var $volumeClaimed = $("#"+$claimId + " input[name='volumeClaimed']").val();
+    							var $dlAmt = $("#"+$claimId + " input[name='dlAmt']").val().replace(/,/g,'');
+    							var $volumeClaimed = $("#"+$claimId + " input[name='volumeClaimed']").val().replace(/,/g,'');
     							var $employee = $("#" + $claimId + " input[name='employee']").val();
     							var $notes = $("#"+$claimId + " input[name='laborNotes']").val();
     							
@@ -1921,9 +1921,9 @@
         				"ticketId":$("#bcr_new_claim_modal input[name='ticketId']").val(),
         				"serviceTypeId":$("#bcr_new_claim_modal input[name='serviceTypeId']").val(),
         				"claimWeek":$("#bcr_new_claim_modal select[name='claimWeek']").val(),
-        				"dlAmt":$("#bcr_new_claim_modal input[name='dlAmt']").val(),
-        				"expenseVolume":$("#bcr_new_claim_modal input[name='expenseVolume']").val(),
-        				"volumeClaimed":$("#bcr_new_claim_modal input[name='volumeClaimed']").val(),
+        				"dlAmt":$("#bcr_new_claim_modal input[name='dlAmt']").val().replace(/,/g,''),
+        				"expenseVolume":$("#bcr_new_claim_modal input[name='expenseVolume']").val().replace(/,/g,''),
+        				"volumeClaimed":$("#bcr_new_claim_modal input[name='volumeClaimed']").val().replace(/,/g,''),
         				"expenseType":$("#bcr_new_claim_modal select[name='expenseType']").val(),
         				"employee":$("#bcr_new_claim_modal input[name='employee']").val(),
         				"laborNotes":$("#bcr_new_claim_modal input[name='laborNotes']").val(),
@@ -2295,8 +2295,8 @@
         			if ( $claimType == "labor") {        			
             			var $claimWeek = $("#bcr_new_claim_modal .directLaborDetails select[name='claimWeek']").val();
             			
-            			var $dlAmt = $("#bcr_new_claim_modal .directLaborDetails input[name='dlAmt']").val();
-            			var $volumeClaimed = $("#bcr_new_claim_modal .directLaborDetails input[name='volumeClaimed']").val();
+            			var $dlAmt = $("#bcr_new_claim_modal .directLaborDetails input[name='dlAmt']").val().replace(/,/g,'');
+            			var $volumeClaimed = $("#bcr_new_claim_modal .directLaborDetails input[name='volumeClaimed']").val().replace(/,/g,'');
             			var $employee = $("#bcr_new_claim_modal .directLaborDetails input[name='employee']").val();
             			var $notes = $("#bcr_new_claim_modal .directLaborDetails input[name='notes']").val();
             			
@@ -2321,7 +2321,7 @@
             			ANSI_UTILS.doServerCall("POST", "bcr/ticketClaim", JSON.stringify($outbound), BUDGETCONTROL.saveNewClaimSuccess, BUDGETCONTROL.saveNewClaimFail);
         			} else if ( $claimType == "expense" ) {
 						var $claimWeek = $("#bcr_new_claim_modal .expenseDetails select[name='claimWeek']").val();            			
-            			var $volume = $("#bcr_new_claim_modal .expenseDetails input[name='volume']").val();
+            			var $volume = $("#bcr_new_claim_modal .expenseDetails input[name='volume']").val().replace(/,/g,'');
             			var $expenseType = $("#bcr_new_claim_modal .expenseDetails select[name='expenseType']").val();
             			var $notes = $("#bcr_new_claim_modal .expenseDetails input[name='notes']").val();
             			
