@@ -66,6 +66,8 @@
         		display:none;
         		width:100%;
         		border:solid 1px #000000;
+        		text-align: center;
+        		font-size: 100px;
         	}
         	.action-link {
         		text-decoration:none;
@@ -283,18 +285,21 @@
              			            },
              			            drawCallback : function() {
              			            	$(".edit-link").off("click");
+             			            	
              			            	$(".edit-link").click(function($event) {
              			              		var $id = $(this).attr("data-id");
              			              		EMPLOYEE_IMPORT.displayEditModal($id);
              			              		//alert("it worked! " + $id);
              			          		});
+             			            	
+             			            
             			            }    
             			    } );
                 		},
                 		
                 		
                 		displayEditModal : function($row) {
-                			$("#employee-modal input[name='name']").val("Kris L");
+                			$("#employee-modal input[name='employeeCode']").val('$employeeCode');
                 			$("#employee-modal").dialog("open");
                 		},
                 		
@@ -442,7 +447,7 @@
    				<td><span class="form-label">Paycom Import File:</span></td>
    				<td><span class="employeeFile"></span></td>
    				<td rowspan="2"><input type="button" value="Cancel" name="cancelButton" class="action-button" /></td>
-   				<td><span data-id="doedit" class="editme">Edit</span></td>
+   				
     		</tr>
     	</table>
     	
@@ -455,9 +460,70 @@
 		<div id="employee-modal">
 			<table>
 				<tr>
-					<td><span class="formLabel">Name</span></td>
-					<td><input name="name" /></td>
+					<td><span class="formLabel">Employee Code</span></td>
+					<td><input name="employeeCode" /></td>
 					<td><span class="err nameErr"></span></td>
+				</tr>
+					<tr>
+					<td><span class="formLabel">Company Code</span></td>
+					<td><input name="companyCode" /></td>
+					<td><span class="err nameErr"></span></td>
+				</tr>
+				<tr>
+					<td><span class="form-label">Division: </span></td>
+					<td>
+						<select name="divisionId" class="update-field">
+							<option value=""></option>
+							<ansi:selectOrganization active="true" type="DIVISION" />
+						</select>
+					</td>
+					<td><span class="divisionIdErr err"></span></td>
+				</tr>
+					<tr>
+					<td><span class="formLabel">First Name</span></td>
+					<td><input name="firstName" /></td>
+					<td><span class="err firstNameErr"></span></td>
+				</tr>
+			
+				<tr>
+					<td><span class="formLabel">Last Name</span></td>
+					<td><input name="lastName" /></td>
+					<td><span class="err lastNameErr"></span></td>
+				</tr>
+					<tr>
+					<td><span class="formLabel">Department Description</span></td>
+					<td><input name="departmentDescription" /></td>
+					<td><span class="err departmentDescriptionErr"></span></td>
+				</tr>		
+				<tr>
+					<td><span class="formLabel">Status</span></td>
+					<td><input name="status" /></td>
+					<td><span class="err statusErr"></span></td>
+				</tr>
+				<tr>
+					<td><span class="formLabel">Termination</span></td>
+					<td><input type="date" name="termination" /></td>
+					<td><span class="err terminationErr"></span></td>
+				</tr>
+					<tr>
+					<td><span class="formLabel">Union</span></td>
+					<td><input name="unionName" /></td>
+					<td><span class="err unionErr"></span></td>
+				</tr>
+				<tr>
+					<td><span class="formLabel">Union Code</span></td>
+					<td><input name="unionCode" /></td>
+					<td><span class="err unionCodeErr"></span></td>
+				</tr>
+				<tr>
+					<td><span class="formLabel">Union Rate</span></td>
+					<td><input name="unionRate" /></td>
+					<td><span class="err unionRateErr"></span></td>
+				</tr>
+				<tr>
+					<td><span class="formLabel">Notes</span></td>
+					<td><input name="notes" /></td>
+					<td><span class="err notesErr"></span></td>
 				</tr>
 			</table>
 		</div>
