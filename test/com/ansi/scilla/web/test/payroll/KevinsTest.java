@@ -22,7 +22,7 @@ public class KevinsTest{
 		InputStream inputStream;
 		//FileItem fileItem;
 		
-		//	private final String filePath = "/home/dclewis/Documents/webthing_v2/projects/ANSI/data/20210711_bcr_spreadsheet_examples/indy/work/content.xml";
+			final String filePath = "/home/dclewis/Documents/webthing_v2/projects/ANSI/data/20210711_bcr_spreadsheet_examples/indy/work/content.xml";
 		//  private final String filePath = "test/com/ansi/scilla/web/test/bcr/content.xml";
 		//private final String filePath1 = "test/com/ansi/scilla/web/test/payroll/data/1/extracted/Payroll 77 09.24.2021/content.xml";
 
@@ -36,7 +36,7 @@ public class KevinsTest{
 
 			//test using InputStream
 			inputStream = new FileInputStream(filePath);
-			TimesheetImportResponse timesheetImportResponse = new TimesheetImportResponse(conn, inputStream);
+//			TimesheetImportResponse timesheetImportResponse = new TimesheetImportResponse(conn, inputStream);
 
 			//test using FileItem
 				// ...commented this out because I couldn't get it to work... 
@@ -48,7 +48,7 @@ public class KevinsTest{
 
 //			inputStream = new FileInputStream(odsFilePath1);
 //			timesheetImportResponse  = new TimesheetImportResponse(conn, inputStream);
-			System.out.println(timesheetImportResponse);
+//			System.out.println(timesheetImportResponse);
 		} 
 		finally {
 			if ( conn != null ) {

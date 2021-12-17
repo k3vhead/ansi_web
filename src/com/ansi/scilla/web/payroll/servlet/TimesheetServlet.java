@@ -239,7 +239,7 @@ public class TimesheetServlet extends AbstractServlet {
 			BigDecimal setterValue =  getterValue == null ? null : new BigDecimal(getterValue).round(MathContext.DECIMAL32);
 			setter.invoke(timesheet, new Object[] {setterValue} );
 		}
-		timesheet.setProductivity(new BigDecimal(timesheetRequest.getProductivity()).round(MathContext.DECIMAL32));
+		timesheet.setProductivity(timesheetRequest.getProductivity());
 	}
 	
 

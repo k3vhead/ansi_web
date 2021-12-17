@@ -40,16 +40,16 @@ public class TestEmployeeFileParse {
 			conn = AppUtils.getDevConn();
 			File file = new File(davesFile);
 			PreparedStatement ps = conn.prepareStatement("select * from payroll_employee where employee_code=? or (lower(employee_first_name)=? and lower(employee_last_name)=?)");
-			EmployeeImportResponse data = new EmployeeImportResponse(conn, new FileInputStream(file));
-			CollectionUtils.transform(data.getEmployeeRecords(), new EmployeeRecordTransformer(ps));
-			for ( EmployeeRecord record : data.getEmployeeRecords() ) {
-				if ( record.getRecordStatus().equalsIgnoreCase("MODIFIED")) {
-					System.out.println(record.getEmployeeCode() + "\t" + record.getRecordStatus());
-					for ( String q : record.getFieldList() ) {
-						System.out.println("\t" + q);
-					}
-				}
-			}
+//			EmployeeImportResponse data = new EmployeeImportResponse(conn, file);
+//			CollectionUtils.transform(data.getEmployeeRecords(), new EmployeeRecordTransformer(ps));
+//			for ( EmployeeRecord record : data.getEmployeeRecords() ) {
+//				if ( record.getRecordStatus().equalsIgnoreCase("MODIFIED")) {
+//					System.out.println(record.getEmployeeCode() + "\t" + record.getRecordStatus());
+//					for ( String q : record.getFieldList() ) {
+//						System.out.println("\t" + q);
+//					}
+//				}
+//			}
 		} finally {
 			conn.close();
 		}
