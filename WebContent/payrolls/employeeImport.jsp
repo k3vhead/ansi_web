@@ -298,8 +298,10 @@
                 		},
                 		
                 		
-                		displayEditModal : function($row) {
-                			$("#employee-modal input[name='employeeCode']").val('$employeeCode');
+                		displayEditModal : function($rowId) {
+                			var $row = EMPLOYEE_IMPORT.employeeDict[$rowId];
+                			console.log($row);
+                			$("#employee-modal input[name='employeeCode']").val($row['employeeCode']);
                 			$("#employee-modal").dialog("open");
                 		},
                 		
@@ -339,6 +341,10 @@
                    			$("#employee-display").show();
                    			$("#display-div .employeeFile").html($data.data.fileName);
                    			EMPLOYEE_IMPORT.makeEmployeeTable($data.data);
+                   			
+                   			$.each($data.data.employeeRecords, function($index, $value) {
+                   				EMPLOYEE_IMPORT.employeeDict[$value.rowId] = $value;
+                   			});
                    			
                 			 $("#organization-edit .org-status-change").on("click", function($event) {
                 				console.log("changing status");
@@ -497,7 +503,12 @@
 				</tr>		
 				<tr>
 					<td><span class="formLabel">Status</span></td>
-					<td><input name="status" /></td>
+					<td>
+						<select name="status">
+							<option value=""></option>
+							<webthing:employeeStatus />
+						</select>
+					</td>
 					<td><span class="err statusErr"></span></td>
 				</tr>
 				<tr>
