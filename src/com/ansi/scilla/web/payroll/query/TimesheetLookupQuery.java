@@ -86,27 +86,38 @@ public class TimesheetLookupQuery extends LookupQuery {
 	protected String makeWhereClause(String queryTerm) {
 		String whereClause = sqlWhereClause;
 		
-		/**
-		 * Name matches:
-		 * first last
-		 * first mi last
-		 * first mi. last
-		 * last, first
-		 * last, first mi
+		/*
+			"	payroll_worksheet.division_id,\n" +
+			"	payroll_worksheet.regular_hours,\n" + 
+			"	payroll_worksheet.regular_pay,\n" + 
+			"	payroll_worksheet.expenses,\n" + 
+			"	payroll_worksheet.ot_hours,\n" + 
+			"	payroll_worksheet.ot_pay,\n" + 
+			"	payroll_worksheet.vacation_hours,\n" + 
+			"	payroll_worksheet.vacation_pay,\n" + 
+			"	payroll_worksheet.holiday_hours,\n" + 
+			"	payroll_worksheet.holiday_pay,\n" + 
+			"	payroll_worksheet.gross_pay,\n" + 
+			"	payroll_worksheet.expenses_submitted,\n" + 
+			"	payroll_worksheet.expenses_allowed,\n" + 
+			"	payroll_worksheet.volume,\n" + 
+			"	payroll_worksheet.direct_labor,\n" + 
+			"	payroll_worksheet.productivity\n";		
+			 
+			"	,\n" + 
+			 
+			"	payroll_worksheet.week_ending,\n" + 
+
+			
 		 */
+		
 		String[] searchableFields = new String[] {
-				"payroll_employee.employee_code",
-				"payroll_employee.company_code",
-				"payroll_employee.division",
-				"payroll_employee.dept_description",
-				"payroll_employee.employee_status",
-				"payroll_employee.employee_termination_date",
-				"payroll_employee.notes",
-				"concat(payroll_employee.employee_first_name, ' ', payroll_employee.employee_last_name)",
-				"concat(payroll_employee.employee_first_name, ' ', payroll_employee.employee_mi, ' ', payroll_employee.employee_last_name)",
-				"concat(payroll_employee.employee_first_name, ' ', payroll_employee.employee_mi, '. ', payroll_employee.employee_last_name)",
-				"concat(payroll_employee.employee_last_name, ', ', payroll_employee.employee_last_name)",
-				"concat(payroll_employee.employee_last_name, ', ', payroll_employee.employee_last_name, ' ', payroll_employee.employee_mi)",
+				"concat(division.division_nbr, '-', division.division_code)",
+				"payroll_worksheet.state", 
+				"payroll_worksheet.city",
+				"payroll_worksheet.employee_code", 
+				"payroll_worksheet.employee_name",
+				"payroll_worksheet.week_ending",
 		};
 
 		
