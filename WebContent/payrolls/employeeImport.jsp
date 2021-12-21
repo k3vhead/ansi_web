@@ -293,13 +293,11 @@
                 			var $row = EMPLOYEE_IMPORT.employeeDict[$rowId];
                 			console.log($row);
                 			
-                			a = $row['terminationDate'];
-                			
-                			if (a !== ""){
-                				const b = new Date(a);
-                				var c = b.toISOString().substring(0,10);
-                			}
-                			else {c = a}
+                			var terminationDisplay = $row['terminationDate'];
+                			if (terminationDisplay !== ""){
+                				const b = new Date(terminationDisplay);
+                				terminationDisplay = b.toISOString().substring(0,10);
+                			} 
                 	
                 			$("#employee-modal input[name='employeeCode']").val($row['employeeCode']);
                 			$("#employee-modal input[name='companyCode']").val($row['companyCode']);
@@ -314,7 +312,7 @@
                 			$("#employee-modal input[name='notes']").val($row['notes']);
                 			
                 			
-                			$("#employee-modal input[name='terminationDate']").val(c);
+                			$("#employee-modal input[name='terminationDate']").val(terminationDisplay);
                 			$("#employee-modal").dialog("open");
                 		},
                 		
