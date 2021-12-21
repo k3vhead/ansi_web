@@ -137,7 +137,7 @@
                    			$( "#employee-modal" ).dialog({
                 				title:'View Employee Alias',
                 				autoOpen: false,
-                				height: 500,
+                				height: 700,
                 				width: 600,
                 				modal: true,
                 				closeOnEscape:true,
@@ -146,34 +146,25 @@
                 				//},
                 				buttons: [
                 					{
-                						id:  "alias_display_cancel",
+                						id:  "confirm-cancel",
                 						click: function($event) {
-               								$( "#employee-modal" ).dialog("close");
+               								console.log('cancel worked')
+                						}
+                					},{
+                						id:  "confirm-save",
+                						click: function($event) {
+               								console.log('save event worked')
                 						}
                 					}
                 				]
                 			});	
-                			$("#alias_display_cancel").button('option', 'label', 'Done');  
+                			$("#confirm-cancel").button('option', 'label', 'Cancel');  
+                			$("#confirm-save").button('option', 'label', 'Confirm');
                    		},
+            			
+            			
                    		
-                   		
-                   		makeEmployeeTableXXX : function($data) {
-                   			console.log($data);
-                   			$("#employeeImport").DataTable( {
-                   				data: $data.employeeRecords,
-                   				columns: [
-                   					{ title: "Employee Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employeeCode' },
-                   					{ title: "Company Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'companyCode' },
-                   					{ title: "Division", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'divisionId' },
-            			        	{ title: "First Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'firstName' },
-            			        	{ title: "Last Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'lastName' },
-            			        	{ title: "MI", width:"5%", searchable:true, "defaultContent": "", data:'middleInitial' },
-            			        	{ title: "Dept. Description", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'departmentDescription' },
-            			        	{ title: "Status", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'status' },
-            			        	{ title: "Termination", width:"10%", searchable:true, "defaultContent": "", data:'terminationDate' },
-           			        	]
-                   			});
-                   		},
+             
                    		
                    		
                    		makeEmployeeTable : function($data) {
@@ -301,7 +292,29 @@
                 		displayEditModal : function($rowId) {
                 			var $row = EMPLOYEE_IMPORT.employeeDict[$rowId];
                 			console.log($row);
+                			
+                			a = $row['terminationDate'];
+                			
+                			if (a !== ""){
+                				const b = new Date(a);
+                				var c = b.toISOString().substring(0,10);
+                			}
+                			else {c = a}
+                	
                 			$("#employee-modal input[name='employeeCode']").val($row['employeeCode']);
+                			$("#employee-modal input[name='companyCode']").val($row['companyCode']);
+                			$("#employee-modal select[name='divisionId']").val($row['divisionId']);
+                			$("#employee-modal input[name='firstName']").val($row['firstName']);
+                			$("#employee-modal input[name='lastName']").val($row['lastName']);
+                			$("#employee-modal input[name='departmentDescription']").val($row['departmentDescription']);
+                			$("#employee-modal select[name='status']").val($row['status']);
+                			$("#employee-modal select[name='unionMember']").val($row['unionMember']);
+                			$("#employee-modal input[name='unionCode']").val($row['unionCode']);
+                			$("#employee-modal input[name='unionRate']").val($row['unionRate']);
+                			$("#employee-modal input[name='notes']").val($row['notes']);
+                			
+                			
+                			$("#employee-modal input[name='terminationDate']").val(c);
                 			$("#employee-modal").dialog("open");
                 		},
                 		
@@ -438,7 +451,7 @@
     		</tr>
     		<tr>
     			
-    				<td colspan="2" style="text-align:center;"><input type="button" value="Save" id="save-button" /></td>
+    				<td colspan="2" style="text-align:center;"><input type="button" value="Open" id="save-button" /></td>
     			
     		</tr>
     	</table>
@@ -476,10 +489,11 @@
 					<td><span class="err nameErr"></span></td>
 				</tr>
 				<tr>
-					<td><span class="form-label">Division: </span></td>
+					<td class="form-label">Division</td>
 					<td>
-						<select name="divisionId" class="update-field">
+						<select name="divisionId">
 							<option value=""></option>
+							<option value="15">15</option>
 							<ansi:selectOrganization active="true" type="DIVISION" />
 						</select>
 					</td>
@@ -513,12 +527,17 @@
 				</tr>
 				<tr>
 					<td><span class="formLabel">Termination</span></td>
-					<td><input type="date" name="termination" /></td>
+					<td><input type="date" name="terminationDate" /></td>
 					<td><span class="err terminationErr"></span></td>
 				</tr>
 					<tr>
 					<td><span class="formLabel">Union</span></td>
-					<td><input name="unionName" /></td>
+					
+					<td><select name="unionMember">
+						
+						<option value="Yes">Yes</option>
+						<option value="">No</option>
+						</select></td>
 					<td><span class="err unionErr"></span></td>
 				</tr>
 				<tr>
