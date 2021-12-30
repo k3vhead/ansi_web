@@ -137,7 +137,7 @@
                    			$( "#employee-modal" ).dialog({
                 				title:'View Employee Alias',
                 				autoOpen: false,
-                				height: 700,
+                				height: 450,
                 				width: 600,
                 				modal: true,
                 				closeOnEscape:true,
@@ -148,12 +148,13 @@
                 					{
                 						id:  "confirm-cancel",
                 						click: function($event) {
-               								console.log('cancel worked')
+                							$( "#employee-modal" ).dialog("close");
+               								
                 						}
                 					},{
                 						id:  "confirm-save",
                 						click: function($event) {
-               								console.log('save event worked')
+                							EMPLOYEE_IMPORT.saveEmployee();
                 						}
                 					}
                 				]
@@ -163,7 +164,37 @@
                    		},
             			
             			
-                   		
+                   		saveEmployee : function() {
+                			console.log("saveEmployee");
+                			$("#employee-modal .err").html("");
+                			var $selectedEmployeeCode = $("#employee-modal input[name='selectedEmployeeCode']").val();
+                			var $unionMember = 0;
+                			if ( $("#employee-modal input[name='unionMember']").prop("checked") == true ) {
+                				$unionMember = 1; 
+                			} 
+                			var $outbound = {
+               					'selectedEmployeeCode' : $("#employee-modal input[name='selectedEmployeeCode']").val(),
+                				'employeeCode' : $("#employee-modal input[name='employeeCode']").val(),
+        	        			'companyCode' : $("#employee-modal select[name='companyCode']").val(),
+        	        			'divisionId' : $("#employee-modal select[name='divisionId']").val(),
+        	        			'firstName' : $("#employee-modal input[name='firstName']").val(),
+        	        			'lastName' : $("#employee-modal input[name='lastName']").val(),
+        	        			'middleInitial' : $("#employee-modal input[name='middleInitial']").val(),
+        	        			'departmentDescription' : $("#employee-modal input[name='departmentDescription']").val(),
+        	        			'status' : $("#employee-modal select[name='status']").val(),
+        	        			'terminationDate' : $("#employee-modal input[name='terminationDate']").val(),	        			
+        	        			'unionMember' : $unionMember,
+        	        			'unionCode' : $("#employee-modal input[name='unionCode']").val(),
+        	        			'unionRate' : $("#employee-modal input[name='unionRate']").val(),
+        	        			'processDate' : $("#employee-modal input[name='processDate']").val(),
+        	        			'notes' : $("#employee-modal input[name='notes']").val(),
+                			}
+                			var $url = "payroll/employee"
+                			if ( $selectedEmployeeCode != null && $selectedEmployeeCode != "") {
+                				$url = $url + "/" + $selectedEmployeeCode
+                			}
+                			ANSI_UTILS.makeServerCall("post", $url, JSON.stringify($outbound), {200:EMPLOYEE_IMPORT.saveEmployeeSuccess}, {});
+                		},
              
                    		
                    		
@@ -479,19 +510,19 @@
 				<tr>
 					<td><span class="formLabel">Employee Code</span></td>
 					<td><input name="employeeCode" /></td>
-					<td><span class="err nameErr"></span></td>
+					<td><span class="err employeeCodeErr"></span></td>
 				</tr>
 					<tr>
 					<td><span class="formLabel">Company Code</span></td>
 					<td><input name="companyCode" /></td>
-					<td><span class="err nameErr"></span></td>
+					<td><span class="err companyCodeErr"></span></td>
 				</tr>
 				<tr>
 					<td class="form-label">Division</td>
 					<td>
 						<select name="divisionId">
 							<option value=""></option>
-							<option value="15">15</option>
+							
 							<ansi:selectOrganization active="true" type="DIVISION" />
 						</select>
 					</td>
@@ -534,7 +565,7 @@
 					<td><select name="unionMember">
 						
 						<option value="Yes">Yes</option>
-						<option value="">No</option>
+						<option value=""></option>
 						</select></td>
 					<td><span class="err unionErr"></span></td>
 				</tr>
