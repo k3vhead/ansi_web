@@ -156,17 +156,45 @@
     			        	},
     			        columns: [
         			        	{ title: "Employee Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_code' }, 
-        			        	{ title: "Company Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'company_code' }, 
+        			        	{ title: "Company Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'company_name' }, 
         			        	{ title: "Division", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'division_id' },
-        			        	{ title: "First Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_first_name' },
-        			        	{ title: "Last Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_last_name' },
-        			        	{ title: "Description", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'description' },
+        			        	{ title: "Employee Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_name' },
         			        	{ title: "Status", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_status' },
-        			        	{ title: "Termination Date", width:"10%", searchable:true, "defaultContent": "", data:'formatted_termination_date' },
-        			        	{ title: "Union Member", width:"10%", searchable:true, "defaultContent": "", data:'union_member' },
+        			        	{ title: "Union Member", width:"10%", searchable:true, "defaultContent":$unknown,
+	        			        	data:function(row, type, set) {
+	    			        			var $value = $unknown;
+	    			        			if ( row.union_member != null ) {
+	    			        				if ( row.union_member == 1 ) {
+	    			        					$value = $yes;
+	    			        				}
+	    			        				if ( row.union_member == 0 ) {
+	    			        					$value = $no;
+	    			        				}
+	    			        			}
+	    			        			return $value;
+	    			        		}
+	    			        	},
         			        	{ title: "Union Code", width:"10%", searchable:true, "defaultContent": "", data:'union_code' },
-        			        	{ title: "Union Rate", width:"10%", searchable:true, "defaultContent": "", data:'union_rate' },
-        			        	{ title: "Process Date", width:"10%", searchable:true, "defaultContent": "", data:'formatted_process_date' },
+        			        	{ title: "Union Rate", width:"10%", searchable:true, "defaultContent": "",
+        			        	data:function(row, type, set) {
+    			        			var $value = "";
+    			        			if ( row.union_member == 1 ) {
+    			        				$value = $unknown;
+    			        				if ( row.union_rate != null ) {
+    			        					$value = "$" + row.union_rate.toFixed(2);
+    			        				}
+    			        			}
+    			        			return $value;
+    			        		}
+    			        	},
+    			        		{ title: "< Union Min", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'under_union_min_pay' },
+    			        		{ title: "< Gov Min", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'under_govt_min_pay' },
+    			        	   	{ title: "Excess Expense %", width:"10%", searchable:true, "defaultContent": "", data:'excess_expense_pct' },
+        			        	{ title: "Expenses Submitted", width:"10%", searchable:true, "defaultContent": "", data:'expenses_submitted' },
+        			        	{ title: "Volume", width:"10%", searchable:true, "defaultContent": "", data:'volume' },
+        			        	{ title: "Direct Labor", width:"10%", searchable:true, "defaultContent": "", data:'direct_labor' },
+        			        	{ title: "Foreign Company", width:"10%", searchable:true, "defaultContent": "", data:'foreign_company' },
+        			        	{ title: "Foreign Division", width:"10%", searchable:true, "defaultContent": "", data:'foreign_division' },
         			        	{ title: "Action",  width:"5%", searchable:false,  
         			            	data: function ( row, type, set ) { 
         			            		var $viewLink = '<span class="action-link view-link" data-id="'+row.employee_code+'"><webthing:view>Exception_Report_Record</webthing:view></span>';
