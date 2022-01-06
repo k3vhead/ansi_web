@@ -114,6 +114,8 @@
         		makeExceptionTable : function($companyCode) {
         			var $yes = '<webthing:checkmark>Yes</webthing:checkmark>';
         			var $no = '<webthing:ban>No</webthing:ban>';
+        			var $okay = '<webthing:okay>Okay</webthing:okay>';
+        			var $exception = '<webthing:exception>Exception</webthing:exception>';
         			var $unknown = '<webthing:questionmark>Invalid</webthing:questionmark>';
         			
         			$("#exceptionReportTable").DataTable( {
@@ -136,12 +138,62 @@
             	        ],
             	        buttons: [
             	        	//	'pageLength',
-            	        		'copy', 
-            	        		'csv', 
-            	        		'excel', 
-            	        		{extend: 'pdfHtml5', orientation: 'landscape'}, 
-            	        		'print',{extend: 'colvis',	label: function () {doFunctionBinding();$('#exceptionReportTable').draw();}},
-            	        	],
+            	        	//	'copy', 
+            	        	//	'csv', 
+            	        	//	'excel', 
+            	        	//	{extend: 'pdfHtml5', orientation: 'landscape'}, 
+            	        	//	'print',{extend: 'colvis',	label: function () {doFunctionBinding();$('#exceptionReportTable').draw();}},
+            	        	
+            	                    {
+            	                        extend: 'colvisGroup',
+            	                        text: 'Union Information',
+            	                        show: [ 0,1,2,3,4,5,6,7,8],
+            	                        hide: [ 9,10,11,12,13,14,15,16 ]
+            	                    },
+            	                    {
+            	                        extend: 'colvisGroup',
+            	                        text: '< Union Min',
+            	                        show: [ 0,1,2,3,4,8],
+            	                        hide: [ 5,6,7,9,10,11,12,13,14,15,16]
+            	                    },
+            	                    {
+            	                        extend: 'colvisGroup',
+            	                        text: '< Gov Min',
+            	                        show: [ 0,1,2,3,4,9 ],
+            	                        hide: [ 5,6,7,8,10,11,12,13,14,15,16]
+            	                    },
+            	                    {
+            	                        extend: 'colvisGroup',
+            	                        text: 'Expenses',
+            	                        show: [ 0,1,2,3,4,10,11],
+            	                        hide: [ 5,6,7,8,9,12,13,14,15,16]
+            	                    },
+            	                    {
+            	                        extend: 'colvisGroup',
+            	                        text: 'Labor',
+            	                        show: [ 0,1,2,3,4,12,13],
+            	                        hide: [ 5,6,7,8,9,10,11,14,15,16 ]
+            	                    },
+            	                    {
+            	                        extend: 'colvisGroup',
+            	                        text: 'Foreign Company',
+            	                        show: [ 0,1,2,3,4,12],
+            	                        hide: [ 5,6,7,8,10,11,13,14,15,16 ]
+            	                    },
+            	                    {
+            	                        extend: 'colvisGroup',
+            	                        text: 'Foreign Division',
+            	                        show: [ 0,1,2,3,4,13],
+            	                        hide: [ 5,6,7,8,9,10,11,12,14,15,16]
+            	                    },
+            	                    {
+            	                        extend: 'colvisGroup',
+            	                        text: 'Show all',
+            	                        show: ':hidden'
+            	                    }
+            	                
+            	        		
+            	        		],
             	        "columnDefs": [
              	            { "orderable": true, "targets": -1 },
              	            { className: "dt-head-center", "targets":[]},
@@ -187,14 +239,79 @@
     			        			return $value;
     			        		}
     			        	},
-    			        		{ title: "< Union Min", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'under_union_min_pay' },
-    			        		{ title: "< Gov Min", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'under_govt_min_pay' },
-    			        	   	{ title: "Excess Expense %", width:"10%", searchable:true, "defaultContent": "", data:'excess_expense_pct' },
-        			        	{ title: "Expenses Submitted", width:"10%", searchable:true, "defaultContent": "", data:'expenses_submitted' },
+    			        		{ title: "< Union Min", width:"10%", searchable:true, "defaultContent": "",
+    			        		data:function(row, type, set) {
+    			        			var $value = $unknown;
+    			        			if ( row.under_union_min_pay != null ) {
+    			        				if ( row.under_union_min_pay == 1 ) {
+    			        					$value = $exception;
+    			        				}
+    			        				if ( row.under_union_min_pay == 0 ) {
+    			        					$value = $okay;
+    			        				}
+    			        			}
+    			        			return $value;
+    			        			}
+    			        		},
+    			        		{ title: "< Gov Min", width:"10%", searchable:true, "defaultContent": "",
+    			        		data:function(row, type, set) {
+    			        			var $value = $unknown;
+    			        			if ( row.under_govt_min_pay != null ) {
+    			        				if ( row.under_govt_min_pay == 1 ) {
+    			        					$value = $exception;
+    			        				}
+    			        				if ( row.under_govt_min_pay == 0 ) {
+    			        					$value = $okay;
+    			        				}
+    			        			}
+    			        			return $value;
+    			        			}
+    			        		},
+    			        		{ title: "Excess Expense %", width:"10%", searchable:true, "defaultContent": "",
+    			        		data:function(row, type, set) {
+    			        			var $value = $unknown;
+    			        			if ( row.excess_expense_pct != null ) {
+    			        				if ( row.excess_expense_pct == 1 ) {
+    			        					$value = $exception;
+    			        				}
+    			        				if ( row.excess_expense_pct == 0 ) {
+    			        					$value = $okay;
+    			        				}
+    			        			}
+    			        			return $value;
+    			        			}
+    			        		},
+    			        		{ title: "Expenses Submitted", width:"10%", searchable:true, "defaultContent": "", data:'expenses_submitted' },
         			        	{ title: "Volume", width:"10%", searchable:true, "defaultContent": "", data:'volume' },
         			        	{ title: "Direct Labor", width:"10%", searchable:true, "defaultContent": "", data:'direct_labor' },
-        			        	{ title: "Foreign Company", width:"10%", searchable:true, "defaultContent": "", data:'foreign_company' },
-        			        	{ title: "Foreign Division", width:"10%", searchable:true, "defaultContent": "", data:'foreign_division' },
+        			        	{ title: "Foreign Company", width:"10%", searchable:true, "defaultContent": "", 
+        			        	data:function(row, type, set) {
+    			        			var $value = $unknown;
+    			        			if ( row.foreign_company != null ) {
+    			        				if ( row.foreign_company == 1 ) {
+    			        					$value = $exception;
+    			        				}
+    			        				if ( row.foreign_company == 0 ) {
+    			        					$value = $okay;
+    			        				}
+    			        			}
+    			        			return $value;
+    			        			}
+    			        		},
+        			        	{ title: "Foreign Division", width:"10%", searchable:true, "defaultContent": "",
+        			        	data:function(row, type, set) {
+    			        			var $value = $unknown;
+    			        			if ( row.foreign_division != null ) {
+    			        				if ( row.foreign_division == 1 ) {
+    			        					$value = $exception;
+    			        				}
+    			        				if ( row.foreign_division == 0 ) {
+    			        					$value = $okay;
+    			        				}
+    			        			}
+    			        			return $value;
+    			        			}
+    			        		},
         			        	{ title: "Action",  width:"5%", searchable:false,  
         			            	data: function ( row, type, set ) { 
         			            		var $viewLink = '<span class="action-link view-link" data-id="'+row.employee_code+'"><webthing:view>Exception_Report_Record</webthing:view></span>';
