@@ -47,6 +47,9 @@ public class ExceptionReportServlet extends AbstractLookupServlet {
 	public static final String UNION_CODE = "union_code";
 	public static final String UNION_RATE = "union_rate";
 	public static final String EXCESS_EXPENSE_PCT = "excess_expense_pct";
+	public static final String EXCESS_EXPENSE_CLAIM = "excess_expense_claim";
+	public static final String YTD_EXCESS_EXPENSE_PCT = "ytd_excess_expense_pct";
+	public static final String YTD_EXCESS_EXPENSE_CLAIM = "ytd_excess_expense_claim";
 	public static final String MINIMUM_HOURLY_PAY = DivisionLookupQuery.MINIMUM_HOURLY_PAY;
 	public static final String FORMATTED_TERMINATION_DATE = "formatted_termination_date";
 	public static final String FORMATTED_PROCESS_DATE = "formatted_process_date";
@@ -81,6 +84,9 @@ public class ExceptionReportServlet extends AbstractLookupServlet {
 				UNION_CODE,
 				UNION_RATE,
 				EXCESS_EXPENSE_PCT,
+				EXCESS_EXPENSE_CLAIM,
+				YTD_EXCESS_EXPENSE_PCT,
+				YTD_EXCESS_EXPENSE_CLAIM,
 				MINIMUM_HOURLY_PAY,
 				EXPENSES_SUBMITTED,
 				VOLUME,

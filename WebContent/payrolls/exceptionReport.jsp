@@ -10,6 +10,7 @@
 <%@ taglib uri="/WEB-INF/struts-bean.tld"  prefix="bean"  %>
 <%@ taglib uri="/WEB-INF/struts-tiles.tld" prefix="tiles" %>
 <%@ taglib tagdir="/WEB-INF/tags/webthing" prefix="webthing" %>
+<%@ taglib tagdir="/WEB-INF/tags/payroll" prefix="payroll" %>
 <%@ taglib uri="/WEB-INF/theTagThing.tld" prefix="ansi" %>
 
 
@@ -114,8 +115,8 @@
         		makeExceptionTable : function($companyCode) {
         			var $yes = '<webthing:checkmark>Yes</webthing:checkmark>';
         			var $no = '<webthing:ban>No</webthing:ban>';
-        			var $okay = '<webthing:okay>Okay</webthing:okay>';
-        			var $exception = '<webthing:exception>Exception</webthing:exception>';
+        			var $okay = '<payroll:okay>Okay</payroll:okay>';
+        			var $exception = '<payroll:exception>Error</payroll:exception>';
         			var $unknown = '<webthing:questionmark>Invalid</webthing:questionmark>';
         			
         			$("#exceptionReportTable").DataTable( {
@@ -137,54 +138,35 @@
             	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ]
             	        ],
             	        buttons: [
-            	        	//	'pageLength',
-            	        	//	'copy', 
-            	        	//	'csv', 
-            	        	//	'excel', 
-            	        	//	{extend: 'pdfHtml5', orientation: 'landscape'}, 
-            	        	//	'print',{extend: 'colvis',	label: function () {doFunctionBinding();$('#exceptionReportTable').draw();}},
+            	        		'pageLength',
+            	        		'copy', 
+            	        		'csv', 
+            	        		'excel', 
+            	        		{extend: 'pdfHtml5', orientation: 'landscape'}, 
+            	        		'print',{extend: 'colvis',	label: function () {doFunctionBinding();$('#exceptionReportTable').draw();}},
             	        	
             	                    {
             	                        extend: 'colvisGroup',
-            	                        text: 'Union Information',
+            	                        text: 'Union',
             	                        show: [ 0,1,2,3,4,5,6,7,8],
-            	                        hide: [ 9,10,11,12,13,14,15,16 ]
+            	                        hide: [ 9,10,11,12,13,14,15,16,17,18,19 ]
             	                    },
             	                    {
             	                        extend: 'colvisGroup',
-            	                        text: '< Union Min',
-            	                        show: [ 0,1,2,3,4,8],
-            	                        hide: [ 5,6,7,9,10,11,12,13,14,15,16]
-            	                    },
-            	                    {
-            	                        extend: 'colvisGroup',
-            	                        text: '< Gov Min',
-            	                        show: [ 0,1,2,3,4,9 ],
-            	                        hide: [ 5,6,7,8,10,11,12,13,14,15,16]
+            	                        text: 'Min Pay',
+            	                        show: [ 0,1,2,3,4,8,9],
+            	                        hide: [ 5,6,7,10,11,12,13,14,15,16,17,18,19]
             	                    },
             	                    {
             	                        extend: 'colvisGroup',
             	                        text: 'Expenses',
-            	                        show: [ 0,1,2,3,4,10,11],
-            	                        hide: [ 5,6,7,8,9,12,13,14,15,16]
-            	                    },
-            	                    {
+            	                        show: [ 0,1,2,3,4,10,11,12,13,14,15,16],
+            	                        hide: [ 5,6,7,8,9,17,18,19]
+            	                    },            	                    {
             	                        extend: 'colvisGroup',
-            	                        text: 'Labor',
-            	                        show: [ 0,1,2,3,4,12,13],
-            	                        hide: [ 5,6,7,8,9,10,11,14,15,16 ]
-            	                    },
-            	                    {
-            	                        extend: 'colvisGroup',
-            	                        text: 'Foreign Company',
-            	                        show: [ 0,1,2,3,4,12],
-            	                        hide: [ 5,6,7,8,10,11,13,14,15,16 ]
-            	                    },
-            	                    {
-            	                        extend: 'colvisGroup',
-            	                        text: 'Foreign Division',
-            	                        show: [ 0,1,2,3,4,13],
-            	                        hide: [ 5,6,7,8,9,10,11,12,14,15,16]
+            	                        text: 'Out of Area',
+            	                        show: [ 0,1,2,3,4,17,18],
+            	                        hide: [ 5,6,7,8,10,11,12,13,14,15,16,19 ]
             	                    },
             	                    {
             	                        extend: 'colvisGroup',
@@ -198,7 +180,7 @@
              	            { "orderable": true, "targets": -1 },
              	            { className: "dt-head-center", "targets":[]},
             	            { className: "dt-left", "targets": [0,1,2,3,4,5,6,7,8,9,10,11] },
-            	            { className: "dt-center", "targets": [12] },
+            	            { className: "dt-center", "targets": [12,13,14,15,16,17,18,19] },
             	         ],
             	       // "paging": true,
     			        "ajax": {
@@ -212,7 +194,7 @@
         			        	{ title: "Division", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'division_id' },
         			        	{ title: "Employee Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_name' },
         			        	{ title: "Status", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_status' },
-        			        	{ title: "Union Member", width:"10%", searchable:true, "defaultContent":$unknown,
+        			        	{ title: "Union", width:"10%", searchable:true, "defaultContent":$unknown,
 	        			        	data:function(row, type, set) {
 	    			        			var $value = $unknown;
 	    			        			if ( row.union_member != null ) {
@@ -281,6 +263,48 @@
     			        			return $value;
     			        			}
     			        		},
+    			        		{ title: "Excess Expense Claim", width:"10%", searchable:true, "defaultContent": "",
+    			        		data:function(row, type, set) {
+    			        			var $value = $unknown;
+    			        			if ( row.excess_expense_claim != null ) {
+    			        				if ( row.excess_expense_claim == 1 ) {
+    			        					$value = $exception;
+    			        				}
+    			        				if ( row.excess_expense_claim == 0 ) {
+    			        					$value = $okay;
+    			        				}
+    			        			}
+    			        			return $value;
+    			        			}
+    			        		},
+    			        		{ title: "YTD Excess Expense %", width:"10%", searchable:true, "defaultContent": "",
+        			        		data:function(row, type, set) {
+        			        			var $value = $unknown;
+        			        			if ( row.ytd_excess_expense_pct != null ) {
+        			        				if ( row.ytd_excess_expense_pct == 1 ) {
+        			        					$value = $exception;
+        			        				}
+        			        				if ( row.ytd_excess_expense_pct == 0 ) {
+        			        					$value = $okay;
+        			        				}
+        			        			}
+        			        			return $value;
+       			        			}
+       			        		},
+       			        		{ title: "YTD Excess Expense Claim", width:"10%", searchable:true, "defaultContent": "",
+           			        		data:function(row, type, set) {
+           			        			var $value = $unknown;
+           			        			if ( row.ytd_excess_expense_pct_claim != null ) {
+           			        				if ( row.ytd_excess_expense_claim == 1 ) {
+           			        					$value = $exception;
+           			        				}
+           			        				if ( row.ytd_excess_expense_claim == 0 ) {
+           			        					$value = $okay;
+           			        				}
+           			        			}
+           			        			return $value;
+           			        			}
+          			        	},
     			        		{ title: "Expenses Submitted", width:"10%", searchable:true, "defaultContent": "", data:'expenses_submitted' },
         			        	{ title: "Volume", width:"10%", searchable:true, "defaultContent": "", data:'volume' },
         			        	{ title: "Direct Labor", width:"10%", searchable:true, "defaultContent": "", data:'direct_labor' },
