@@ -676,7 +676,7 @@
 				</tr>
 				<tr>
 					<td class="form-label">Union Member:</td>
-					<td><input name="unionMember" type="checkbox" value="1" /></td>
+					<td><input name="unionMember" class="unionInput" type="checkbox" value="1" /></td>
 					<td><span class="err unionMemberErr"></span></td>
 				</tr>
 				<tr>

@@ -135,7 +135,7 @@
                    		
                    		makeModals : function() {
                    			$( "#employee-modal" ).dialog({
-                				title:'View Employee Alias',
+                				title:'Edit Employee',
                 				autoOpen: false,
                 				height: 450,
                 				width: 600,
@@ -329,15 +329,49 @@
                 				const b = new Date(terminationDisplay);
                 				terminationDisplay = b.toISOString().substring(0,10);
                 			} 
+                		
+                		
                 	
+                			
+                			var divisionDisplay = $row['divisionId'];
+                			if (divisionDisplay == "00"){divisionDisplay ="100"}
+                			if (divisionDisplay == "12"){divisionDisplay ="101"}
+                			if (divisionDisplay == "15"){divisionDisplay ="102"}
+                			if (divisionDisplay == "18"){divisionDisplay ="103"}
+                			if (divisionDisplay == "19"){divisionDisplay ="104"}
+                			if (divisionDisplay == "23"){divisionDisplay ="105"}
+                			if (divisionDisplay == "31"){divisionDisplay ="106"}
+                			if (divisionDisplay == "32"){divisionDisplay ="107"}
+                			if (divisionDisplay == "33"){divisionDisplay ="108"}
+                			if (divisionDisplay == "44"){divisionDisplay ="109"}
+                			if (divisionDisplay == "65"){divisionDisplay ="110"}
+                			if (divisionDisplay == "66"){divisionDisplay ="111"}
+                			if (divisionDisplay == "67"){divisionDisplay ="112"}
+                			if (divisionDisplay == "71"){divisionDisplay ="113"}
+                			if (divisionDisplay == "72"){divisionDisplay ="114"}
+                			if (divisionDisplay == "77"){divisionDisplay ="115"}
+                			if (divisionDisplay == "78"){divisionDisplay ="116"}
+                			if (divisionDisplay == "89"){divisionDisplay ="117"}
+                			if (divisionDisplay == "81"){divisionDisplay ="118"}
+                			
+                			console.log(divisionDisplay);
+                			
                 			$("#employee-modal input[name='employeeCode']").val($row['employeeCode']);
                 			$("#employee-modal input[name='companyCode']").val($row['companyCode']);
-                			$("#employee-modal select[name='divisionId']").val($row['divisionId']);
+                			$("#employee-modal select[name='divisionId']").val(divisionDisplay);
                 			$("#employee-modal input[name='firstName']").val($row['firstName']);
                 			$("#employee-modal input[name='lastName']").val($row['lastName']);
                 			$("#employee-modal input[name='departmentDescription']").val($row['departmentDescription']);
-                			$("#employee-modal select[name='status']").val($row['status']);
-                			$("#employee-modal select[name='unionMember']").val($row['unionMember']);
+                			$("#employee-modal select[name='status']").val($row['status']); 
+                			
+                			if ( $row.unionMember == "Yes" ) {
+        						$("#employee-modal input[name='unionMember']").prop("checked", true);
+        						$("#employee-modal .unionInput").prop('disabled',false);
+        					} else {
+        						$("#employee-modal input[name='unionMember']").prop("checked", false);
+        						$("#employee-modal .unionInput").prop('disabled',true);
+        					}
+        					       					
                 			$("#employee-modal input[name='unionCode']").val($row['unionCode']);
                 			$("#employee-modal input[name='unionRate']").val($row['unionRate']);
                 			$("#employee-modal input[name='notes']").val($row['notes']);
@@ -548,7 +582,7 @@
 					<td><span class="formLabel">Status</span></td>
 					<td>
 						<select name="status">
-							<option value=""></option>
+							
 							<webthing:employeeStatus />
 						</select>
 					</td>
@@ -560,23 +594,27 @@
 					<td><span class="err terminationErr"></span></td>
 				</tr>
 					<tr>
-					<td><span class="formLabel">Union</span></td>
+					
+					<td class="form-label">Union Member:</td>
+					<td><input name="unionMember" class="unionInput" type="checkbox" value="1" /></td>
+					<td><span class="err unionMemberErr"></span></td>
+				<!--  	<td><span class="formLabel">Union</span></td>
 					
 					<td><select name="unionMember">
 						
 						<option value="Yes">Yes</option>
 						<option value=""></option>
 						</select></td>
-					<td><span class="err unionErr"></span></td>
+					<td><span class="err unionErr"></span></td> -->
 				</tr>
 				<tr>
 					<td><span class="formLabel">Union Code</span></td>
-					<td><input name="unionCode" /></td>
+					<td><input name="unionCode" class="unionInput" type="text" /></td>
 					<td><span class="err unionCodeErr"></span></td>
 				</tr>
 				<tr>
 					<td><span class="formLabel">Union Rate</span></td>
-					<td><input name="unionRate" /></td>
+					<td><input name="unionRate" class="unionInput" type="text"/></td>
 					<td><span class="err unionRateErr"></span></td>
 				</tr>
 				<tr>
