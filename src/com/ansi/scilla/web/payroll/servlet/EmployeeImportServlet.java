@@ -5,6 +5,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -12,8 +14,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Transformer;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
+import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.payroll.EmployeeImportRecord;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
@@ -62,9 +66,14 @@ public class EmployeeImportServlet extends AbstractServlet {
 //					EmployeeRecord rec = new EmployeeRecord(recordList.get(i));
 //					logger.log(Level.DEBUG,rec);					
 //				}
+				List<Division> divisionList = Division.cast( new Division().selectAll(conn) );
+				HashMap<Integer, Integer> divMap = new HashMap<Integer, Integer>();
+				for ( Division d : divisionList ) {
+					divMap.put(d.getDivisionNbr(), d.getDivisionId());
+				}
 				PreparedStatement ps = conn.prepareStatement("select * from payroll_employee where employee_code=? or (lower(employee_first_name)=? and lower(employee_last_name)=?)");
 				data = new EmployeeImportResponse(conn, uploadRequest);
-				CollectionUtils.transform(data.getEmployeeRecords(), new EmployeeRecordTransformer(ps));
+				CollectionUtils.transform(data.getEmployeeRecords(), new EmployeeRecordTransformer(ps, divMap));
 				responseCode = ResponseCode.SUCCESS;
 			} else {
 				responseCode = ResponseCode.EDIT_FAILURE;
@@ -127,11 +136,12 @@ public class EmployeeImportServlet extends AbstractServlet {
 	public class EmployeeRecordTransformer implements Transformer<EmployeeImportRecord, EmployeeImportRecord> {
 
 		private PreparedStatement statement;		
-		
+		private HashMap<Integer, Integer> divMap;
 
-		public EmployeeRecordTransformer(PreparedStatement statement) {
+		public EmployeeRecordTransformer(PreparedStatement statement, HashMap<Integer, Integer> divMap) {
 			super();
 			this.statement = statement;
+			this.divMap = divMap;
 		}
 
 
@@ -152,6 +162,12 @@ public class EmployeeImportServlet extends AbstractServlet {
 				} else {
 					arg0.setRecordStatus(EmployeeRecordStatus.NEW.toString());
 				}
+//				if ( StringUtils.isNumeric(arg0.getDivisionNbr())) {
+//					if ( divMap.containsKey(Integer.valueOf(arg0.getDivisionNbr()))) {
+//						arg0.setDivisionId(divMap.get(Integer.valueOf(arg0.getDivisionNbr())));
+//					}
+//				}
+				
 			} catch ( Exception e) {
 				throw new RuntimeException(e);
 			}
