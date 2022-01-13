@@ -110,13 +110,12 @@
         		},
         		
         		
-
         		
         		makeExceptionTable : function($companyCode) {
         			var $yes = '<webthing:checkmark>Yes</webthing:checkmark>';
         			var $no = '<webthing:ban>No</webthing:ban>';
         			var $noErrorFound = '<payroll:noErrorFound>No Error Found</payroll:noErrorFound>';
-        			var $errorFound = '<payroll:errorFound>Error Found</payroll:erorFound';
+        			var $errorFound = '<payroll:errorFound>Error</payroll:errorFound>';
         			var $unknown = '<webthing:questionmark>Invalid</webthing:questionmark>';
         			
         			$("#exceptionReportTable").DataTable( {
@@ -162,7 +161,8 @@
             	                        text: 'Expenses',
             	                        show: [ 0,1,2,3,9,10,11,12,13,14,15],
             	                        hide: [ 4,5,6,7,8,16,17,18]
-            	                    },            	                    {
+            	                    },            	                    
+            	                    {
             	                        extend: 'colvisGroup',
             	                        text: 'Out of Area',
             	                        show: [ 0,1,2,3,16,17],
