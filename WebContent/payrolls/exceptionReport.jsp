@@ -115,8 +115,8 @@
         		makeExceptionTable : function($companyCode) {
         			var $yes = '<webthing:checkmark>Yes</webthing:checkmark>';
         			var $no = '<webthing:ban>No</webthing:ban>';
-        			var $okay = '<payroll:okay>Okay</payroll:okay>';
-        			var $exception = '<payroll:exception>Error</payroll:exception>';
+        			var $noErrorFound = '<payroll:noErrorFound>No Error Found</payroll:noErrorFound>';
+        			var $errorFound = '<payroll:errorFound>Error Found</payroll:erorFound';
         			var $unknown = '<webthing:questionmark>Invalid</webthing:questionmark>';
         			
         			$("#exceptionReportTable").DataTable( {
@@ -148,25 +148,25 @@
             	                    {
             	                        extend: 'colvisGroup',
             	                        text: 'Union',
-            	                        show: [ 0,1,2,3,4,5,6,7,8],
-            	                        hide: [ 9,10,11,12,13,14,15,16,17,18,19 ]
+            	                        show: [ 0,1,2,3,4,5,6,7],
+            	                        hide: [ 8,9,10,11,12,13,14,15,16,17,18 ]
             	                    },
             	                    {
             	                        extend: 'colvisGroup',
             	                        text: 'Min Pay',
-            	                        show: [ 0,1,2,3,4,8,9],
-            	                        hide: [ 5,6,7,10,11,12,13,14,15,16,17,18,19]
+            	                        show: [ 0,1,2,3,4,7,8],
+            	                        hide: [ 4,5,6,9,10,11,12,13,14,15,16,17,18]
             	                    },
             	                    {
             	                        extend: 'colvisGroup',
             	                        text: 'Expenses',
-            	                        show: [ 0,1,2,3,4,10,11,12,13,14,15,16],
-            	                        hide: [ 5,6,7,8,9,17,18,19]
+            	                        show: [ 0,1,2,3,9,10,11,12,13,14,15],
+            	                        hide: [ 4,5,6,7,8,16,17,18]
             	                    },            	                    {
             	                        extend: 'colvisGroup',
             	                        text: 'Out of Area',
-            	                        show: [ 0,1,2,3,4,17,18],
-            	                        hide: [ 5,6,7,8,10,11,12,13,14,15,16,19 ]
+            	                        show: [ 0,1,2,3,16,17],
+            	                        hide: [ 4,5,6,7,8,10,11,12,13,14,15,18 ]
             	                    },
             	                    {
             	                        extend: 'colvisGroup',
@@ -180,7 +180,7 @@
              	            { "orderable": true, "targets": -1 },
              	            { className: "dt-head-center", "targets":[]},
             	            { className: "dt-left", "targets": [0,1,2,3,4,5,6,7,8,9,10,11] },
-            	            { className: "dt-center", "targets": [12,13,14,15,16,17,18,19] },
+            	            { className: "dt-center", "targets": [12,13,14,15,16,17,18] },
             	         ],
             	       // "paging": true,
     			        "ajax": {
@@ -190,7 +190,6 @@
     			        	},
     			        columns: [
         			        	{ title: "Employee Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_code' }, 
-        			        	{ title: "Company Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'company_name' }, 
         			        	{ title: "Division", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'division_id' },
         			        	{ title: "Employee Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_name' },
         			        	{ title: "Status", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_status' },
@@ -226,10 +225,10 @@
     			        			var $value = $unknown;
     			        			if ( row.under_union_min_pay != null ) {
     			        				if ( row.under_union_min_pay == 1 ) {
-    			        					$value = $exception;
+    			        					$value = $errorFound;
     			        				}
     			        				if ( row.under_union_min_pay == 0 ) {
-    			        					$value = $okay;
+    			        					$value = $noErrorFound;
     			        				}
     			        			}
     			        			return $value;
@@ -240,10 +239,10 @@
     			        			var $value = $unknown;
     			        			if ( row.under_govt_min_pay != null ) {
     			        				if ( row.under_govt_min_pay == 1 ) {
-    			        					$value = $exception;
+    			        					$value = $errorFound;
     			        				}
     			        				if ( row.under_govt_min_pay == 0 ) {
-    			        					$value = $okay;
+    			        					$value = $noErrorFound;
     			        				}
     			        			}
     			        			return $value;
@@ -254,10 +253,10 @@
     			        			var $value = $unknown;
     			        			if ( row.excess_expense_pct != null ) {
     			        				if ( row.excess_expense_pct == 1 ) {
-    			        					$value = $exception;
+    			        					$value = $errorFound;
     			        				}
     			        				if ( row.excess_expense_pct == 0 ) {
-    			        					$value = $okay;
+    			        					$value = $noErrorFound;
     			        				}
     			        			}
     			        			return $value;
@@ -268,10 +267,10 @@
     			        			var $value = $unknown;
     			        			if ( row.excess_expense_claim != null ) {
     			        				if ( row.excess_expense_claim == 1 ) {
-    			        					$value = $exception;
+    			        					$value = $errorFound;
     			        				}
     			        				if ( row.excess_expense_claim == 0 ) {
-    			        					$value = $okay;
+    			        					$value = $noErrorFound;
     			        				}
     			        			}
     			        			return $value;
@@ -282,10 +281,10 @@
         			        			var $value = $unknown;
         			        			if ( row.ytd_excess_expense_pct != null ) {
         			        				if ( row.ytd_excess_expense_pct == 1 ) {
-        			        					$value = $exception;
+        			        					$value = $errorFound;
         			        				}
         			        				if ( row.ytd_excess_expense_pct == 0 ) {
-        			        					$value = $okay;
+        			        					$value = $noErrorFound;
         			        				}
         			        			}
         			        			return $value;
@@ -296,27 +295,33 @@
            			        			var $value = $unknown;
            			        			if ( row.ytd_excess_expense_pct_claim != null ) {
            			        				if ( row.ytd_excess_expense_claim == 1 ) {
-           			        					$value = $exception;
+           			        					$value = $errorFound;
            			        				}
            			        				if ( row.ytd_excess_expense_claim == 0 ) {
-           			        					$value = $okay;
+           			        					$value = $noErrorFound;
            			        				}
            			        			}
            			        			return $value;
            			        			}
           			        	},
-    			        		{ title: "Expenses Submitted", width:"10%", searchable:true, "defaultContent": "", data:'expenses_submitted' },
-        			        	{ title: "Volume", width:"10%", searchable:true, "defaultContent": "", data:'volume' },
-        			        	{ title: "Direct Labor", width:"10%", searchable:true, "defaultContent": "", data:'direct_labor' },
+    			        		{ title: "Expenses Submitted", width:"10%", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
+    			        			if(row.expenses_submitted != null){return (parseFloat(row.expenses_submitted).toFixed(2));}
+		            			} },
+    			        		{ title: "Volume", width:"10%", searchable:true, "defaultContent": "",  searchFormat: "#.##", data: function ( row, type, set ) {
+    			        			if(row.expenses_submitted != null){return (parseFloat(row.expenses_submitted).toFixed(2));}
+		            			} },
+        			        	{ title: "Direct Labor", width:"10%", searchable:true,  searchFormat: "#.##", data: function ( row, type, set ) {
+    			        			if(row.expenses_submitted != null){return (parseFloat(row.expenses_submitted).toFixed(2));}
+		            			} },
         			        	{ title: "Foreign Company", width:"10%", searchable:true, "defaultContent": "", 
         			        	data:function(row, type, set) {
     			        			var $value = $unknown;
     			        			if ( row.foreign_company != null ) {
     			        				if ( row.foreign_company == 1 ) {
-    			        					$value = $exception;
+    			        					$value = $errorFound;
     			        				}
     			        				if ( row.foreign_company == 0 ) {
-    			        					$value = $okay;
+    			        					$value = $noErrorFound;
     			        				}
     			        			}
     			        			return $value;
@@ -327,10 +332,10 @@
     			        			var $value = $unknown;
     			        			if ( row.foreign_division != null ) {
     			        				if ( row.foreign_division == 1 ) {
-    			        					$value = $exception;
+    			        					$value = $errorFound;
     			        				}
     			        				if ( row.foreign_division == 0 ) {
-    			        					$value = $okay;
+    			        					$value = $noErrorFound;
     			        				}
     			        			}
     			        			return $value;
@@ -374,6 +379,7 @@
         			//	$("#prompt-div .companyCodeErr").html($data.data.webMessages['companyCode'][0]);
         			//}
         		}
+
         		
         	};
         	
