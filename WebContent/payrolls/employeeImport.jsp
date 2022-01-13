@@ -331,34 +331,10 @@
                 			} 
                 		
                 		
-                	
-                			
-                			var divisionDisplay = $row['divisionId'];
-                			if (divisionDisplay == "00"){divisionDisplay ="100"}
-                			if (divisionDisplay == "12"){divisionDisplay ="101"}
-                			if (divisionDisplay == "15"){divisionDisplay ="102"}
-                			if (divisionDisplay == "18"){divisionDisplay ="103"}
-                			if (divisionDisplay == "19"){divisionDisplay ="104"}
-                			if (divisionDisplay == "23"){divisionDisplay ="105"}
-                			if (divisionDisplay == "31"){divisionDisplay ="106"}
-                			if (divisionDisplay == "32"){divisionDisplay ="107"}
-                			if (divisionDisplay == "33"){divisionDisplay ="108"}
-                			if (divisionDisplay == "44"){divisionDisplay ="109"}
-                			if (divisionDisplay == "65"){divisionDisplay ="110"}
-                			if (divisionDisplay == "66"){divisionDisplay ="111"}
-                			if (divisionDisplay == "67"){divisionDisplay ="112"}
-                			if (divisionDisplay == "71"){divisionDisplay ="113"}
-                			if (divisionDisplay == "72"){divisionDisplay ="114"}
-                			if (divisionDisplay == "77"){divisionDisplay ="115"}
-                			if (divisionDisplay == "78"){divisionDisplay ="116"}
-                			if (divisionDisplay == "89"){divisionDisplay ="117"}
-                			if (divisionDisplay == "81"){divisionDisplay ="118"}
-                			
-                			console.log(divisionDisplay);
                 			
                 			$("#employee-modal input[name='employeeCode']").val($row['employeeCode']);
                 			$("#employee-modal input[name='companyCode']").val($row['companyCode']);
-                			$("#employee-modal select[name='divisionId']").val(divisionDisplay);
+                			$("#employee-modal select[name='divisionId']").val($row['divisionId']);
                 			$("#employee-modal input[name='firstName']").val($row['firstName']);
                 			$("#employee-modal input[name='lastName']").val($row['lastName']);
                 			$("#employee-modal input[name='departmentDescription']").val($row['departmentDescription']);

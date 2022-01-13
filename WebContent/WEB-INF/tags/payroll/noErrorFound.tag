@@ -7,4 +7,4 @@
 	String idString = idName == null ? "" : "id=\"" + idName + "\"";
 	String styleString = styleName == null ? "" : "style=\"" + styleName + "\"";
 	String tabString = tabIndex == null ? "" : "tabindex=\"" + tabIndex + "\"";
-%><span class="red fas fa-ban tooltip <%= classString %>" <%= idString %> <%= styleString %> <%=tabString %> ari-hidden="true"><span class="tooltiptext"><jsp:doBody /></span></span>
+%><span class="green fas fa-check tooltip <%= classString %>" <%= idString %> <%= styleString %> <%=tabString %> ari-hidden="true"><span class="tooltiptext"><jsp:doBody /></span></span>
