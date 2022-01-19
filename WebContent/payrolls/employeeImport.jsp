@@ -124,6 +124,8 @@
                    				}
                    			});
                    			
+                   			
+                   			
                    			$("#display-div input[name='cancelButton']").click(function($event) {
                    				$("#display-div").hide();
                    				$("#prompt-div").show();
@@ -355,7 +357,16 @@
                 			
                 			$("#employee-modal input[name='terminationDate']").val(terminationDisplay);
                 			$("#employee-modal").dialog("open");
+                			
+                			$("#employee-modal input[name='unionMember']").click(function($clickEvent) {
+                				if ( $("#employee-modal input[name='unionMember']").prop('checked') ) {
+                					$("#employee-modal .unionInput").prop('disabled',false);
+                				} else {
+                					$("#employee-modal .unionInput").prop('disabled',true);
+                				}
+                			});
                 		},
+                		
                 		
                 		
                 		 doConfirm : function() {
