@@ -13,7 +13,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.collections4.Transformer;
 
-import com.ansi.scilla.common.payroll.EmployeeStatus;
+import com.ansi.scilla.common.payroll.common.EmployeeStatus;
 import com.ansi.scilla.web.common.query.LookupQuery;
 import com.ansi.scilla.web.common.servlet.AbstractLookupServlet;
 import com.ansi.scilla.web.common.struts.SessionData;

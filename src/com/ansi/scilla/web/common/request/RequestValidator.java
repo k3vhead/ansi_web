@@ -40,7 +40,7 @@ import com.ansi.scilla.common.jobticket.JobTagStatus;
 import com.ansi.scilla.common.jobticket.JobTagType;
 import com.ansi.scilla.common.organization.OrganizationType;
 import com.ansi.scilla.common.payment.PaymentMethod;
-import com.ansi.scilla.common.payroll.EmployeeStatus;
+import com.ansi.scilla.common.payroll.common.EmployeeStatus;
 import com.ansi.scilla.common.utils.QMarkTransformer;
 import com.ansi.scilla.web.claims.request.ClaimEntryRequestType;
 import com.ansi.scilla.web.common.response.WebMessages;

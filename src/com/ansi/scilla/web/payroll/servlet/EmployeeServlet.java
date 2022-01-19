@@ -20,7 +20,7 @@ import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.EmployeeAlias;
 import com.ansi.scilla.common.db.PayrollEmployee;
-import com.ansi.scilla.common.payroll.EmployeeStatus;
+import com.ansi.scilla.common.payroll.common.EmployeeStatus;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;

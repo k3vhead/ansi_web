@@ -9,8 +9,8 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.ansi.scilla.common.payroll.EmployeeImportParser;
-import com.ansi.scilla.common.payroll.EmployeeImportRecord;
+import com.ansi.scilla.common.payroll.parser.EmployeeImportParser;
+import com.ansi.scilla.common.payroll.parser.EmployeeImportRecord;
 import com.ansi.scilla.web.common.response.MessageResponse;
 import com.ansi.scilla.web.payroll.request.EmployeeImportRequest;
 import com.ansi.scilla.web.payroll.request.EmployeeRequest;

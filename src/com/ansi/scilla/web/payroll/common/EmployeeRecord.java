@@ -18,7 +18,7 @@ import org.apache.commons.lang3.time.DateUtils;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.PayrollEmployee;
-import com.ansi.scilla.common.payroll.EmployeeStatus;
+import com.ansi.scilla.common.payroll.common.EmployeeStatus;
 
 public class EmployeeRecord extends ApplicationObject {
 

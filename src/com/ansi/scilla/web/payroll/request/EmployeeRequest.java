@@ -6,7 +6,7 @@ import java.util.Calendar;
 import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.db.Division;
-import com.ansi.scilla.common.payroll.EmployeeStatus;
+import com.ansi.scilla.common.payroll.common.EmployeeStatus;
 import com.ansi.scilla.web.common.request.AbstractRequest;
 import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.WebMessages;

@@ -14,7 +14,7 @@ import org.apache.commons.collections4.Transformer;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
-import com.ansi.scilla.common.payroll.EmployeeStatus;
+import com.ansi.scilla.common.payroll.common.EmployeeStatus;
 import com.ansi.scilla.web.common.query.LookupQuery;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
@@ -30,7 +30,6 @@ import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.payroll.query.ExceptionReportQuery;
 import com.ansi.scilla.web.payroll.response.ExceptionReportResponse;
-import com.ansi.scilla.web.payroll.servlet.EmployeeLookupServlet.ItemTransformer;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class ExceptionReportServlet extends AbstractLookupServlet {
