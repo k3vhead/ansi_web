@@ -19,8 +19,8 @@ import org.apache.commons.lang3.StringUtils;
 import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.PayrollWorksheet;
-import com.ansi.scilla.common.payroll.PayrollWorksheetEmployee;
-import com.ansi.scilla.common.payroll.PayrollWorksheetParser;
+import com.ansi.scilla.common.payroll.parser.PayrollWorksheetEmployee;
+import com.ansi.scilla.common.payroll.parser.PayrollWorksheetParser;
 import com.ansi.scilla.common.utils.AppUtils;
 
 public class LoadPayrollWorksheets extends Loader {

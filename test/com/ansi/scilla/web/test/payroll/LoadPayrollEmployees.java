@@ -12,9 +12,9 @@ import org.apache.commons.lang3.StringUtils;
 import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.PayrollEmployee;
-import com.ansi.scilla.common.payroll.EmployeeImportParser;
-import com.ansi.scilla.common.payroll.EmployeeImportRecord;
-import com.ansi.scilla.common.payroll.EmployeeStatus;
+import com.ansi.scilla.common.payroll.common.EmployeeStatus;
+import com.ansi.scilla.common.payroll.parser.EmployeeImportParser;
+import com.ansi.scilla.common.payroll.parser.EmployeeImportRecord;
 import com.ansi.scilla.common.utils.AppUtils;
 
 public class LoadPayrollEmployees extends Loader {
