@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Transformer;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.db.Division;
@@ -66,9 +67,9 @@ public class EmployeeImportServlet extends AbstractServlet {
 //					logger.log(Level.DEBUG,rec);					
 //				}
 				List<Division> divisionList = Division.cast( new Division().selectAll(conn) );
-				HashMap<Integer, Integer> divMap = new HashMap<Integer, Integer>();
+				HashMap<Integer, Division> divMap = new HashMap<Integer, Division>();
 				for ( Division d : divisionList ) {
-					divMap.put(d.getDivisionNbr(), d.getDivisionId());
+					divMap.put(d.getDivisionNbr(), d );
 				}
 				PreparedStatement ps = conn.prepareStatement("select * from payroll_employee where employee_code=? or (lower(employee_first_name)=? and lower(employee_last_name)=?)");
 				data = new EmployeeImportResponse(conn, uploadRequest);
@@ -135,9 +136,9 @@ public class EmployeeImportServlet extends AbstractServlet {
 	public class EmployeeRecordTransformer implements Transformer<EmployeeImportRecord, EmployeeImportRecord> {
 
 		private PreparedStatement statement;		
-		private HashMap<Integer, Integer> divMap;
+		private HashMap<Integer, Division> divMap;
 
-		public EmployeeRecordTransformer(PreparedStatement statement, HashMap<Integer, Integer> divMap) {
+		public EmployeeRecordTransformer(PreparedStatement statement, HashMap<Integer, Division> divMap) {
 			super();
 			this.statement = statement;
 			this.divMap = divMap;
@@ -161,11 +162,15 @@ public class EmployeeImportServlet extends AbstractServlet {
 				} else {
 					arg0.setRecordStatus(EmployeeRecordStatus.NEW.toString());
 				}
-//				if ( StringUtils.isNumeric(arg0.getDivisionNbr())) {
-//					if ( divMap.containsKey(Integer.valueOf(arg0.getDivisionNbr()))) {
-//						arg0.setDivisionId(divMap.get(Integer.valueOf(arg0.getDivisionNbr())));
-//					}
-//				}
+				if ( StringUtils.isNumeric(arg0.getDivisionNbr())) {
+					if ( divMap.containsKey(Integer.valueOf(arg0.getDivisionNbr()))) {
+						Division division= divMap.get(Integer.valueOf(arg0.getDivisionNbr()));
+						arg0.setDivisionId(division.getDivisionId());
+						arg0.setDiv(division.getDivisionNbr() + "-" + division.getDivisionCode());
+						
+					}
+					
+				}
 				
 			} catch ( Exception e) {
 				throw new RuntimeException(e);

@@ -33,7 +33,7 @@ public class EmployeeImportRequest extends AbstractRequest implements UploadPars
 
 	private static final long serialVersionUID = 1L;
 	
-	public static final String DIVISION_ID = "divisionId";
+//	public static final String DIVISION_NBR = "divisionNbr";
 //	public static final String PAYROLL_DATE = "payrollDate";
 	
 	public static final String EMPLOYEE_FILE = "employeeFile";
