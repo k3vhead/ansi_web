@@ -3,7 +3,6 @@ package com.ansi.scilla.web.payroll.request;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
@@ -19,9 +18,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.web.common.request.AbstractRequest;
-import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.request.UploadParser;
 import com.ansi.scilla.web.common.response.WebMessages;
 
