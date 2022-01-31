@@ -33,52 +33,6 @@ public class TimesheetServlet extends AbstractServlet {
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public void doDelete(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		Connection conn = null;
-		WebMessages webMessages = new WebMessages();
-		TimesheetResponse data = new TimesheetResponse();
-		ResponseCode responseCode = null;
-		try {
-			try {
-				AppUtils.validateSession(request, Permission.CLAIMS_WRITE);
-	
-				conn = AppUtils.getDBCPConn();
-				conn.setAutoCommit(false);
-				TimesheetRequest timesheetRequest = new TimesheetRequest();
-				String jsonString = super.makeJsonString(request);
-				AppUtils.json2object(jsonString, timesheetRequest);
-				
-				webMessages = timesheetRequest.validateDelete(conn);
-				processDelete(conn, timesheetRequest);
-				conn.commit();
-				data.setWebMessages(webMessages);
-				super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
-			} catch ( RecordNotFoundException e) {
-				super.sendNotFound(response);
-			} catch (com.ansi.scilla.web.common.exception.InvalidFormatException e) {
-				String fieldName = super.findBadField(e.getMessage());
-				webMessages.addMessage(fieldName, "Invalid Format");
-				data.setWebMessages(webMessages);
-				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
-			} catch (com.fasterxml.jackson.databind.exc.InvalidFormatException e) {
-				String fieldName = super.findBadField(e.getMessage());
-				webMessages.addMessage(fieldName, "Invalid Format");
-				data.setWebMessages(webMessages);
-				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
-			} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
-				super.sendForbidden(response);
-			} finally {
-				AppUtils.closeQuiet(conn);
-			}
-		} catch ( Exception e) {
-			throw new ServletException(e);
-		} 
-	}
-
-	
-	
-	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		Connection conn = null;
@@ -181,6 +135,52 @@ public class TimesheetServlet extends AbstractServlet {
 		
 	}
 
+	@Override
+	public void doDelete(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		Connection conn = null;
+		WebMessages webMessages = new WebMessages();
+		TimesheetResponse data = new TimesheetResponse();
+		ResponseCode responseCode = null;
+		try {
+			try {
+				AppUtils.validateSession(request, Permission.CLAIMS_WRITE);
+	
+				conn = AppUtils.getDBCPConn();
+				conn.setAutoCommit(false);
+				TimesheetRequest timesheetRequest = new TimesheetRequest();
+				String jsonString = super.makeJsonString(request);
+				AppUtils.json2object(jsonString, timesheetRequest);
+				
+				webMessages = timesheetRequest.validateDelete(conn);
+				processDelete(conn, timesheetRequest);
+				conn.commit();
+				data.setWebMessages(webMessages);
+				super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
+			} catch ( RecordNotFoundException e) {
+				super.sendNotFound(response);
+			} catch (com.ansi.scilla.web.common.exception.InvalidFormatException e) {
+				String fieldName = super.findBadField(e.getMessage());
+				webMessages.addMessage(fieldName, "Invalid Format");
+				data.setWebMessages(webMessages);
+				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
+			} catch (com.fasterxml.jackson.databind.exc.InvalidFormatException e) {
+				String fieldName = super.findBadField(e.getMessage());
+				webMessages.addMessage(fieldName, "Invalid Format");
+				data.setWebMessages(webMessages);
+				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
+			} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
+				super.sendForbidden(response);
+			} finally {
+				AppUtils.closeQuiet(conn);
+			}
+		} catch ( Exception e) {
+			throw new ServletException(e);
+		} 
+	}
+
+
+
 	private void processAdd(Connection conn, TimesheetRequest timesheetRequest, SessionData sessionData) throws Exception {
 		Calendar today = AppUtils.getToday();
 		PayrollWorksheet timesheet = new PayrollWorksheet();		
@@ -239,7 +239,7 @@ public class TimesheetServlet extends AbstractServlet {
 			BigDecimal setterValue =  getterValue == null ? null : new BigDecimal(getterValue).round(MathContext.DECIMAL32);
 			setter.invoke(timesheet, new Object[] {setterValue} );
 		}
-		timesheet.setProductivity(timesheetRequest.getProductivity());
+		timesheet.setProductivity(new BigDecimal(timesheetRequest.getProductivity()));
 	}
 	
 
