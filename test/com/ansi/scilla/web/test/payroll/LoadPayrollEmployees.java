@@ -17,6 +17,13 @@ import com.ansi.scilla.common.payroll.parser.EmployeeImportParser;
 import com.ansi.scilla.common.payroll.parser.EmployeeImportRecord;
 import com.ansi.scilla.common.utils.AppUtils;
 
+@Deprecated
+/**
+ * This is a first effort -- probably doesn't work properly because of prod code changes that haven't propagated to 
+ * this module. Update if needed.
+ * @author dclewis
+ *
+ */
 public class LoadPayrollEmployees extends Loader {
 
 	
@@ -45,7 +52,7 @@ public class LoadPayrollEmployees extends Loader {
 					emp.setAddedDate(now);				
 					emp.setCompanyCode(rec.getCompanyCode());
 					emp.setDeptDescription(rec.getDepartmentDescription());
-					emp.setDivision(rec.getDivisionId());
+//					emp.setDivision(rec.getDivisionId());
 					emp.setDivisionId(div.getDivisionId());
 					emp.setEmployeeCode(Integer.valueOf(rec.getEmployeeCode()));
 					emp.setEmployeeFirstName(rec.getFirstName());

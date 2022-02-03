@@ -1,6 +1,7 @@
 package com.ansi.scilla.web.test.payroll;
 
 import java.io.FileNotFoundException;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -189,13 +190,13 @@ public class LoadPayrollWorksheets extends Loader {
 
 
 
-	private Double makeProductivity(String value) throws ParseException {
+	private BigDecimal makeProductivity(String value) throws ParseException {
 		Double productivity = null;
 		if ( ! StringUtils.isBlank(value)) {
 			Number number = productivityFormat.parse(value);
 			productivity = number.doubleValue();
 		}
-		return productivity;
+		return new BigDecimal(productivity);
 	}
 
 
