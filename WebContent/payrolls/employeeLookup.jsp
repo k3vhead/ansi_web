@@ -350,9 +350,9 @@
     			        	{ title: "Last Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_last_name' },
     			        	{ title: "MI", width:"5%", searchable:true, "defaultContent": "", data:'employee_mi' },
     			        	{ title: "Dept. Description", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'dept_description' },
-    			        	{ title: "Status", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_status' },
-    			        	{ title: "Termination", width:"10%", searchable:true, "defaultContent": "", data:'formatted_termination_date' },
-    			        	{ title: "Union", width:"5%", searchable:true, "defaultContent":$unknown,
+    			        	{ title: "Status", width:"10%", searchable:true, searchFormat: "Active|Terminated|Deceased|On Leave", "defaultContent": "<i>N/A</i>", data:'employee_status' },
+    			        	{ title: "Termination", width:"10%", searchable:true, searchFormat: "YYYY-MM-dd", "defaultContent": "", data:'formatted_termination_date' },
+    			        	{ title: "Union", width:"5%", searchable:true, searchFormat: "1|0", "defaultContent":$unknown,
     			        		data:function(row, type, set) {
     			        			var $value = $unknown;
     			        			if ( row.union_member != null ) {
@@ -380,7 +380,7 @@
     			        		}
     			        	},
     			        	{ title: "Notes", width:"10%", searchable:true, "defaultContent": "", data:'notes' },    			        	
-    			            { title: "Action",  width:"5%", searchable:false,  
+    			            { title: "Action",  width:"5%", searchable:false, "orderable": false, 
     			            	data: function ( row, type, set ) { 
     			            		var $viewLink = '<span class="action-link view-link" data-id="'+row.employee_code+'"><webthing:view>Alias</webthing:view></span>';
     			            		var $editLink = '<ansi:hasPermission permissionRequired="PAYROLL_WRITE"><span class="action-link edit-link" data-id="'+row.employee_code+'"><webthing:edit>Edit</webthing:edit></span></ansi:hasPermission>';

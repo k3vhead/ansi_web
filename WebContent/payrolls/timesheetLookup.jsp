@@ -255,7 +255,34 @@
            		
            		
            		
+           		toggleColumns : function($columnDisplay, $columnList) {
+           			console.log("toggleColumns: " + $columnDisplay + " " + $columnList);
+           			var $myTable = $('#timesheetLookup').DataTable();
+					$.each($columnList, function(index, columnNumber) {
+						$myTable.columns(columnNumber).visible($columnDisplay);
+					});
+           		},
            		
+           		resetColumns : function($columnList) {
+           			console.log("resetColumns: " + $columnList);
+           			var $myTable = $('#timesheetLookup').DataTable();
+           			$myTable.columns().every( function(colIdx) {
+           				var $column = this;
+           				$column.visible(false);
+           			});
+           			$.each($columnList, function(index, columnNumber) {
+						$myTable.columns(columnNumber).visible(true);
+					});
+           		},
+           		
+           		showAllColumns : function() {
+           			console.log("showAllColumns: ");
+           			var $myTable = $('#timesheetLookup').DataTable();
+           			$myTable.columns().every( function(colIdx) {
+           				var $column = this;
+           				$column.visible(true);
+           			});
+           		},
            		
            		makeTimesheetLookup : function() {
            			var $delete = '<webthing:delete>Delete</webthing:delete>';
@@ -283,6 +310,30 @@
 		            var $colDirectLabor = 19;
 		            var $colProductivity = 20;
 		            var $colAction = 21;
+		            
+		            var $defaultDisplay = [
+				            	$colDivision,
+				            	$colWeekEnding,
+				            	$colState,
+				            	$colCity,
+				            	$colEmployeeCode,
+				            	$colEmployeeName,
+				            	$colRegularHours,
+				            	$colRegularPay,
+				            	$colExpenses,
+				            	$colOTHours,
+				            	$colVacationHours,
+				            	$colGrossPay,
+				            	$colVolume,
+				            	$colDirectLabor,
+				            	$colAction];
+		            var $expensesDisplay = false;
+		            var $expensesCols = [$colExpenses,$colExpensesSubmitted,$colExpensesAllowed];
+		            var $otDisplay = false;
+		            var $otCols = [$colOTHours,$colOTPay];
+		            var $vacationDisplay = false;
+		            var $vacationCols = [$colVacationHours,$colVacationPay,$colHolidayHours,$colHolidayPay];
+		            
 		            	
 		            	
            			$("#timesheetLookup").DataTable( {
@@ -310,6 +361,45 @@
                	        		'excel', 
                	        		{extend: 'pdfHtml5', orientation: 'landscape'}, 
                	        		'print',{extend: 'colvis',	label: function () {doFunctionBinding();$('#timesheetLookup').draw();}},
+               	        		{
+    	        	        		text:'Expenses',
+    	        	        		action: function(e, dt, node, config) {
+    	        	        			$expensesDisplay = ! $expensesDisplay;
+    	        	        			TIMESHEETLOOKUP.toggleColumns($expensesDisplay, $expensesCols);	        	        			
+    	        	        		}
+    	        	        	},
+    	        	        	{
+    	        	        		text:'OT',
+    	        	        		action: function(e, dt, node, config) {
+    	        	        			$otDisplay = ! $otDisplay;
+    	        	        			TIMESHEETLOOKUP.toggleColumns($otDisplay, $otCols);	        	        			
+    	        	        		}
+    	        	        	},
+    	        	        	{
+    	        	        		text:'Vacation/Holidays',
+    	        	        		action: function(e, dt, node, config) {
+    	        	        			$vacationDisplay = ! $vacationDisplay;
+    	        	        			TIMESHEETLOOKUP.toggleColumns($vacationDisplay, $vacationCols);	        	        			
+    	        	        		}
+    	        	        	},
+        	                    {
+    	        	        		text:'Show All',
+    	        	        		action: function(e, dt, node, config) {
+    	        	        			$expenseDisplay = true;
+    	        	        			$vacationDisplay = true;
+    	        	        			$otDisplay = true;
+    	        	        			TIMESHEETLOOKUP.showAllColumns();	        	        			
+    	        	        		}
+        	                    },
+    	        	        	{
+    	        	        		text:'Reset',
+    	        	        		action: function(e, dt, node, config) {
+    	        	        			$expenseDisplay = false;
+    	        	        			$vacationDisplay = false;
+    	        	        			$otDisplay = false;
+    	        	        			TIMESHEETLOOKUP.resetColumns($defaultDisplay);	        	        			
+    	        	        		}
+    	        	        	}
                	        	],
                	        "columnDefs": [
                 	            { "orderable": true, "targets": -1 },
@@ -346,27 +436,27 @@
        			        	},
        			        columns: [
        			        	{ title: "Division", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'div' },
-       			        	{ title: "Week Ending", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'week_ending' },
+       			        	{ title: "Week Ending", width:"10%", searchable:true, searchFormat:"yyyy-mm-dd", "defaultContent": "<i>N/A</i>", data:'week_ending' },
        			        	{ title: "State", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'state' },
        			        	{ title: "City", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'city' },
        			        	{ title: "Employee Code", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_code' },
-       			        	{ title: "Employee Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_name' },
+       			        	{ title: "Employee Name", width:"10%", searchable:true, searchFormat:"Last, First", "defaultContent": "<i>N/A</i>", data:'employee_name' },
        			            { title: "Regular Hours",  width:"10%", searchable:false, "defaultContent": "", data: function ( row, type, set ) { return row.regular_hours == null ? "" : row.regular_hours.toFixed(2); } },
-       			            { title: "Regular Pay",  width:"10%", searchable:false, "defaultContent": "", data: function ( row, type, set ) { return row.regular_pay == null ? "" : row.regular_pay.toFixed(2); } },
+       			            { title: "Regular Pay", width:"10%", searchable:false, "defaultContent": "", data: function ( row, type, set ) { return row.regular_pay == null ? "" : row.regular_pay.toFixed(2); } },
        			            { title: "Expenses",  width:"10%", searchable:false, "defaultContent": "", data: function ( row, type, set ) { return row.expenses == null ? "" : row.expenses.toFixed(2); } },
        			            { title: "OT Hours",  width:"10%", searchable:false, "defaultContent": "", data: function ( row, type, set ) { return row.ot_hours == null ? "" : row.ot_hours.toFixed(2); } },
-       			            { title: "OT Pay",  width:"10%", searchable:false, "defaultContent": "", data: function ( row, type, set ) { return row.ot_pay == null ? "" : row.ot_pay.toFixed(2); } },
+       			            { title: "OT Pay",  visible:false, width:"10%", searchable:false, "defaultContent": "", data: function ( row, type, set ) { return row.ot_pay == null ? "" : row.ot_pay.toFixed(2); } },
        			            { title: "Vacation Hours",  width:"10%", searchable:false, "defaultContent": "", data: function ( row, type, set ) { return row.vacation_hours == null ? "" : row.vacation_hours.toFixed(2); } },
-       			            { title: "Vacation Pay",  width:"10%", searchable:false, "defaultContent": "", data: function ( row, type, set ) { return row.vacation_pay == null ? "" : row.vacation_pay.toFixed(2); } },
-       			            { title: "Holiday Hours",  width:"10%", searchable:false, "defaultContent": "", data: function ( row, type, set ) { return row.holiday_hours == null ? "" : row.holiday_hours.toFixed(2); } },
-       			            { title: "Holiday Pay",  width:"10%", searchable:false, "defaultContent": "", data: function ( row, type, set ) { return row.holiday_pay == null ? "" : row.holiday_pay.toFixed(2); } },
+       			            { title: "Vacation Pay", visible:false, width:"10%", searchable:false, "defaultContent": "", data: function ( row, type, set ) { return row.vacation_pay == null ? "" : row.vacation_pay.toFixed(2); } },
+       			            { title: "Holiday Hours",  visible:false, width:"10%", searchable:false, "defaultContent": "", data: function ( row, type, set ) { return row.holiday_hours == null ? "" : row.holiday_hours.toFixed(2); } },
+       			            { title: "Holiday Pay", visible:false, width:"10%", searchable:false, "defaultContent": "", data: function ( row, type, set ) { return row.holiday_pay == null ? "" : row.holiday_pay.toFixed(2); } },
        			            { title: "Gross Pay",  width:"10%", searchable:false, "defaultContent": "", data: function ( row, type, set ) { return row.gross_pay == null ? "" : row.gross_pay.toFixed(2); } },
-       			            { title: "Expenses Submitted",  width:"10%", searchable:false, "defaultContent": "", data: function ( row, type, set ) { return row.expenses_submitted == null ? "" : row.expenses_submitted.toFixed(2); } },
-       			            { title: "Expenses Allowed",  width:"10%", searchable:false, "defaultContent": "", data: function ( row, type, set ) { return row.expenses_allowed == null ? "" : row.expenses_allowed.toFixed(2); } },
+       			            { title: "Expenses Submitted",  visible:false, width:"10%", searchable:false, "defaultContent": "", data: function ( row, type, set ) { return row.expenses_submitted == null ? "" : row.expenses_submitted.toFixed(2); } },
+       			            { title: "Expenses Allowed",  visible:false, width:"10%", searchable:false, "defaultContent": "", data: function ( row, type, set ) { return row.expenses_allowed == null ? "" : row.expenses_allowed.toFixed(2); } },
        			            { title: "Volume",  width:"10%", searchable:false, "defaultContent": "", data: function ( row, type, set ) { return row.volume == null ? "" : row.volume.toFixed(2); } },
        			            { title: "Direct Labor",  width:"10%", searchable:false, "defaultContent": "", data: function ( row, type, set ) { return row.direct_labor == null ? "" : row.direct_labor.toFixed(2); } },
-       			            { title: "Productivity",  width:"10%", searchable:false, "defaultContent": "", data: function ( row, type, set ) { return row.productivity == null ? "" : row.productivity.toFixed(2); } },
-       			            { title: "Action", searchable:false, defaultContent:"", data: function(row, type, set) {
+       			            { title: "Productivity",  visible:false, width:"10%", searchable:false, "defaultContent": "", data: function ( row, type, set ) { return row.productivity == null ? "" : row.productivity.toFixed(2); } },
+       			            { title: "Action", searchable:false, "orderable": false, defaultContent:"", data: function(row, type, set) {
        			            	var $parms = 'data-div="'+row.division_id+'" data-date="'+row.week_ending+'" data-state="'+row.state+'" data-employee="'+row.employee_code+'" data-city="'+row.city+'"';
        			            	var $deleteLink = '<span class="action-link delete-action" ' + $parms + '>' + $delete + '</span>';
        			            	var $editLink = '<span class="action-link edit-action"  ' + $parms + '>' + $edit + '</span>';
