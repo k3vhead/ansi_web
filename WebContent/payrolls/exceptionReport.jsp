@@ -36,6 +36,9 @@
         	#display-div {
         		display:none;
         	}
+        	#exception-display {
+        		display:none;
+        	}
         	#display-div .exception-report {
         		padding-top:12px;
         		width:100%;
@@ -179,8 +182,8 @@
             	        "columnDefs": [
              	            { "orderable": true, "targets": -1 },
              	            { className: "dt-head-center", "targets":[]},
-            	            { className: "dt-left", "targets": [0,1,2,3,4,5,6,7,8,9,10,11] },
-            	            { className: "dt-center", "targets": [12,13,14,15,16,17,18] },
+            	            { className: "dt-left", "targets": [2] },
+            	            { className: "dt-center", "targets": [0,1,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22] },
             	         ],
             	       // "paging": true,
     			        "ajax": {
@@ -189,11 +192,11 @@
     			        	"data": {},
     			        	},
     			        columns: [
-        			        	{ title: "Employee Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_code' }, 
-        			        	{ title: "Division", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'division_id' },
-        			        	{ title: "Employee Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_name' },
+        			        	{ title: "Emp Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_code' }, 
+        			        	{ title: "Div", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'division_id' },
+        			        	{ title: "Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_name' },
         			        	{ title: "Status", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_status' },
-        			        	{ title: "Union", width:"10%", searchable:true, "defaultContent":$unknown,
+        			        	{ title: "Union", width:"5%", searchable:true, "defaultContent":$unknown,
 	        			        	data:function(row, type, set) {
 	    			        			var $value = $unknown;
 	    			        			if ( row.union_member != null ) {
@@ -219,13 +222,17 @@
     			        			}
     			        			return $value;
     			        		}
-    			        	},
-    			        		{ title: "< Union Min", width:"10%", searchable:true, "defaultContent": "",
+    			        		},
+    			        		{ title: "< Union Min", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'under_union_min_pay' },
+        			        	{ title: "< Union Min", width:"5%", searchable:true, "defaultContent": "",
     			        		data:function(row, type, set) {
     			        			var $value = $unknown;
     			        			if ( row.under_union_min_pay != null ) {
     			        				if ( row.under_union_min_pay == 1 ) {
     			        					$value = $errorFound;
+    			        					//row.under_union_min_pay.style.backgroundColor = "yellow";
+    			        					//$(this).css('background-color','yellow');
+        			        				//	$(this).find('td').css('background-color', 'red');
     			        				}
     			        				if ( row.under_union_min_pay == 0 ) {
     			        					$value = $noErrorFound;
@@ -234,12 +241,16 @@
     			        			return $value;
     			        			}
     			        		},
-    			        		{ title: "< Gov Min", width:"10%", searchable:true, "defaultContent": "",
+    			        		{ title: "< Gov Min", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'under_govt_min_pay' },
+        			        	{ title: "< Gov Min", width:"5%", searchable:true, "defaultContent": "",
     			        		data:function(row, type, set) {
     			        			var $value = $unknown;
     			        			if ( row.under_govt_min_pay != null ) {
     			        				if ( row.under_govt_min_pay == 1 ) {
     			        					$value = $errorFound;
+    			        					//row.under_govt_min_pay.style.backgroundColor = "yellow";
+    			        					//$(this).css('background-color','yellow');
+        			        				//	$(this).find('td').css('background-color', 'red');
     			        				}
     			        				if ( row.under_govt_min_pay == 0 ) {
     			        					$value = $noErrorFound;
@@ -248,26 +259,36 @@
     			        			return $value;
     			        			}
     			        		},
-    			        		{ title: "Excess Expense %", width:"10%", searchable:true, "defaultContent": "",
+    			        		{ title: "Expenses Pct", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'excess_expense_pct' },
+        			        	
+    			        		{ title: "Expenses Pct", width:"5%", searchable:true, "defaultContent": "",
     			        		data:function(row, type, set) {
     			        			var $value = $unknown;
     			        			if ( row.excess_expense_pct != null ) {
     			        				if ( row.excess_expense_pct == 1 ) {
     			        					$value = $errorFound;
+    			        					//row.excess_expense_pct.style.backgroundColor = "yellow";
+    			        					//$("excess_expense_pct").style.backgroundColor = "#90ee90";
+        			        				//	$(this).find('td').css('background-color', 'red');
     			        				}
     			        				if ( row.excess_expense_pct == 0 ) {
     			        					$value = $noErrorFound;
+    			        					//$("excess_expense_pct").hide();
+    			        	
     			        				}
     			        			}
     			        			return $value;
     			        			}
     			        		},
-    			        		{ title: "Excess Expense Claim", width:"10%", searchable:true, "defaultContent": "",
+    			        		{ title: "Expenses Claim", width:"5%", searchable:true, "defaultContent": "",
     			        		data:function(row, type, set) {
     			        			var $value = $unknown;
     			        			if ( row.excess_expense_claim != null ) {
     			        				if ( row.excess_expense_claim == 1 ) {
     			        					$value = $errorFound;
+    			        					//row.excess_expense_claim.style.backgroundColor = "yellow";
+    			        					//$("excess_expense_claim").style.backgroundColor = "#90ee90";
+        			        				//	$(this).find('td').css('background-color', 'red');
     			        				}
     			        				if ( row.excess_expense_claim == 0 ) {
     			        					$value = $noErrorFound;
@@ -276,12 +297,17 @@
     			        			return $value;
     			        			}
     			        		},
-    			        		{ title: "YTD Excess Expense %", width:"10%", searchable:true, "defaultContent": "",
+    			        		{ title: "YTD Expenses Pct", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'under_govt_min_pay' },
+        			        	
+    			        		{ title: "YTD Expenses Pct", width:"5%", searchable:true, "defaultContent": "",
         			        		data:function(row, type, set) {
         			        			var $value = $unknown;
         			        			if ( row.ytd_excess_expense_pct != null ) {
         			        				if ( row.ytd_excess_expense_pct == 1 ) {
         			        					$value = $errorFound;
+        			        					//row.ytd_excess_expense_pct.style.backgroundColor = "yellow";
+    			        						//$(this).css('background-color','yellow');
+            			        				//	$(this).find('td').css('background-color', 'red');
         			        				}
         			        				if ( row.ytd_excess_expense_pct == 0 ) {
         			        					$value = $noErrorFound;
@@ -290,12 +316,268 @@
         			        			return $value;
        			        			}
        			        		},
-       			        		{ title: "YTD Excess Expense Claim", width:"10%", searchable:true, "defaultContent": "",
+       			        		{ title: "YTD Expenses Claim", width:"5%", searchable:true, "defaultContent": "",
            			        		data:function(row, type, set) {
            			        			var $value = $unknown;
-           			        			if ( row.ytd_excess_expense_pct_claim != null ) {
+           			        			if ( row.ytd_excess_expense_claim != null ) {
            			        				if ( row.ytd_excess_expense_claim == 1 ) {
            			        					$value = $errorFound;
+        			        					//row.ytd_excess_expense_claim.style.backgroundColor = "yellow";
+        			        					//$(this).css('background-color','yellow');
+            			        				//	$(this).find('td').css('background-color', 'red');
+           			        				}
+           			        				if ( row.ytd_excess_expense_claim == 0 ) {
+           			        					$value = $noErrorFound;
+           			        				}
+           			        			}
+           			        			return $value;
+           			        			}
+          			        	},
+    			        		{ title: "Expenses Submitted", width:"5%", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
+    			        			if(row.expenses_submitted != null){return (parseFloat(row.expenses_submitted).toFixed(2));}
+		            			} },
+    			        		{ title: "Volume", width:"5%", searchable:true, "defaultContent": "",  searchFormat: "#.##", data: function ( row, type, set ) {
+    			        			if(row.expenses_submitted != null){return (parseFloat(row.expenses_submitted).toFixed(2));}
+		            			} },
+        			        	{ title: "Direct Labor", width:"5%", searchable:true,  searchFormat: "#.##", data: function ( row, type, set ) {
+    			        			if(row.expenses_submitted != null){return (parseFloat(row.expenses_submitted).toFixed(2));}
+		            			} },
+        			        	{ title: "Foreign Company", width:"5%", searchable:true, "defaultContent": "", 
+        			        	data:function(row, type, set) {
+    			        			var $value = $unknown;
+    			        			if ( row.foreign_company != null ) {
+    			        				if ( row.foreign_company == 1 ) {
+    			        					$value = $errorFound;
+    			        					//row.foreign_company.style.backgroundColor = "yellow";
+    			        					//$(this).css('background-color','yellow');
+    			        				//	$(this).find('td').css('background-color', 'red');
+    			        				}
+    			        				if ( row.foreign_company == 0 ) {
+    			        					$value = $noErrorFound;
+    			        				}
+    			        			}
+    			        			return $value;
+    			        			}
+    			        		},
+        			        	{ title: "Foreign Division", width:"5%", searchable:true, "defaultContent": "",
+        			        	data:function(row, type, set) {
+    			        			var $value = $unknown;
+    			        			if ( row.foreign_division != null ) {
+    			        				if ( row.foreign_division == 1 ) {
+    			        					$value = $errorFound;
+    			        					//row.foreign_division.style.backgroundColor = "yellow";
+    			        					//$(this).css('background-color','yellow');
+        			        				//	$(this).find('td').css('background-color', 'red');
+    			        				}
+    			        				if ( row.foreign_division == 0 ) {
+    			        					$value = $noErrorFound;
+    			        				}
+    			        			}
+    			        			return $value;
+    			        			}
+    			        		},
+        			        	{ title: "Action",  width:"5%", searchable:false,  
+        			            	data: function ( row, type, set ) { 
+        			            		var $viewLink = '<span class="action-link view-link" data-id="'+row.employeeCode+'"><webthing:view>Exception_Report_Record</webthing:view></span>';
+        			            		var $actionLink = $viewLink;
+        			            		return $actionLink;
+        			            	}
+        			            }],
+        			            "initComplete": function(settings, json) {
+        			            	var myTable = this;
+        			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#exceptionReportTable", EXCEPTION_REPORT.makeExceptionTable);
+        			               
+        			            	//EXCEPTION_REPORT.doFunctionBinding();
+        			            	},
+        			            "drawCallback": function( settings ) {
+        			            	//CALL_NOTE.lookupLink();
+    			            		$(".view-link").off("click");
+        			            	$(".view-link").click(function($clickevent) {
+        			            		var $companyCode = $(this).attr("data-id");
+        			            		console.log("company code: " + $companyCode);
+        			            		EXCEPTION_REPORT.makeExceptionView($companyCode);
+        			            	});
+        			            }
+        			    } );
+                	},
+                	
+                	makeExceptionView : function($companyCode) {
+            			console.log("makeExceptionView: " + $companyCode);
+            			$("#exception-display").dialog("open");
+            			$("#exception-lookup").DataTable( {
+                			"aaSorting":		[[0,'asc']],
+                			"processing": 		true,
+                	        "serverSide": 		true,
+                	        "autoWidth": 		false,
+                	        "deferRender": 		true,
+                	        "scrollCollapse": 	true,
+                	        "scrollX": 			true,
+                	        "pageLength":		50,
+                	        rowId: 				'dt_RowId',
+                	        destroy : 			true,		// this lets us reinitialize the table
+                	        dom: 				'Bfrtip',
+                	        "searching": 		true,
+                	        "searchDelay":		800,
+                	        lengthMenu: [
+                	        	[ 10, 50, 100, 500, 1000 ],
+                	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ]
+                	        ],
+                	        buttons: [
+                	        		'pageLength',
+                	        		'copy', 
+                	        		'csv', 
+                	        		'excel', 
+                	        		{extend: 'pdfHtml5', orientation: 'landscape'}, 
+                	        		'print',{extend: 'colvis',	label: function () {doFunctionBinding();$('#displayTable').draw();}},
+                	        	],
+                	        "columnDefs": [
+                 	            { "orderable": true, "targets": -1 },
+                 	            { className: "dt-head-center", "targets":[]},
+                	            { className: "dt-left", "targets": [0,1] },
+                	            { className: "dt-center", "targets": [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18] },
+                	            { className: "dt-right", "targets": []}
+                	         ],
+                	        "paging": true,
+        			        "ajax": {
+        			        	"url": "payroll/exceptionReport/" + $companyCode,
+        			        	"type": "GET",
+        			        	"data": {},
+        			        	//"data": {"companyCode":$companyCode},
+        			        	},
+        			        columns: [
+        			        	{ title: "Emp Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_code' }, 
+        			        	{ title: "Div", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'division_id' },
+        			        	{ title: "Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_name' },
+        			        	{ title: "Status", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_status' },
+        			        	{ title: "Union", width:"5%", searchable:true, "defaultContent":"",
+	        			        	data:function(row, type, set) {
+	    			        			var $value = $unknown;
+	    			        			if ( row.union_member != null ) {
+	    			        				if ( row.union_member == 1 ) {
+	    			        					$value = $yes;
+	    			        				}
+	    			        				if ( row.union_member == 0 ) {
+	    			        					$value = $no;
+	    			        				}
+	    			        			}
+	    			        			return $value;
+	    			        		}
+	    			        	},
+        			        	{ title: "Union Code", width:"10%", searchable:true, "defaultContent": "", data:'union_code' },
+        			        	{ title: "Union Rate", width:"10%", searchable:true, "defaultContent": "",
+        			        	data:function(row, type, set) {
+    			        			var $value = "";
+    			        			if ( row.union_member == 1 ) {
+    			        				$value = $unknown;
+    			        				if ( row.union_rate != null ) {
+    			        					$value = "$" + row.union_rate.toFixed(2);
+    			        				}
+    			        			}
+    			        			return $value;
+    			        		}
+    			        		},
+    			        		{ title: "< Union Min", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'under_union_min_pay' },
+        			        	{ title: "< Union Min", width:"5%", searchable:true, "defaultContent": "",
+    			        		data:function(row, type, set) {
+    			        			var $value = $unknown;
+    			        			if ( row.under_union_min_pay != null ) {
+    			        				if ( row.under_union_min_pay == 1 ) {
+    			        					$value = $errorFound;
+    			        					//row.under_union_min_pay.style.backgroundColor = "yellow";
+    			        					//$(this).css('background-color','yellow');
+        			        				//	$(this).find('td').css('background-color', 'red');
+    			        				}
+    			        				if ( row.under_union_min_pay == 0 ) {
+    			        					$value = $noErrorFound;
+    			        				}
+    			        			}
+    			        			return $value;
+    			        			}
+    			        		},
+    			        		{ title: "< Gov Min", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'under_govt_min_pay' },
+        			        	{ title: "< Gov Min", width:"5%", searchable:true, "defaultContent": "",
+    			        		data:function(row, type, set) {
+    			        			var $value = $unknown;
+    			        			if ( row.under_govt_min_pay != null ) {
+    			        				if ( row.under_govt_min_pay == 1 ) {
+    			        					$value = $errorFound;
+    			        					//row.under_govt_min_pay.style.backgroundColor = "yellow";
+    			        					//$(this).css('background-color','yellow');
+        			        				//	$(this).find('td').css('background-color', 'red');
+    			        				}
+    			        				if ( row.under_govt_min_pay == 0 ) {
+    			        					$value = $noErrorFound;
+    			        				}
+    			        			}
+    			        			return $value;
+    			        			}
+    			        		},
+    			        		{ title: "Expenses Pct", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'excess_expense_pct' },
+        			        	
+    			        		{ title: "Expenses Pct", width:"5%", searchable:true, "defaultContent": "",
+    			        		data:function(row, type, set) {
+    			        			var $value = $unknown;
+    			        			if ( row.excess_expense_pct != null ) {
+    			        				if ( row.excess_expense_pct == 1 ) {
+    			        					$value = $errorFound;
+    			        					//row.excess_expense_pct.style.backgroundColor = "yellow";
+    			        					//$("excess_expense_pct").style.backgroundColor = "#90ee90";
+        			        				//	$(this).find('td').css('background-color', 'red');
+    			        				}
+    			        				if ( row.excess_expense_pct == 0 ) {
+    			        					$value = $noErrorFound;
+    			        					//$("excess_expense_pct").hide();
+    			        	
+    			        				}
+    			        			}
+    			        			return $value;
+    			        			}
+    			        		},
+    			        		{ title: "Expenses Claim", width:"5%", searchable:true, "defaultContent": "",
+    			        		data:function(row, type, set) {
+    			        			var $value = $unknown;
+    			        			if ( row.excess_expense_claim != null ) {
+    			        				if ( row.excess_expense_claim == 1 ) {
+    			        					$value = $errorFound;
+    			        					//row.excess_expense_claim.style.backgroundColor = "yellow";
+    			        					//$("excess_expense_claim").style.backgroundColor = "#90ee90";
+        			        				//	$(this).find('td').css('background-color', 'red');
+    			        				}
+    			        				if ( row.excess_expense_claim == 0 ) {
+    			        					$value = $noErrorFound;
+    			        				}
+    			        			}
+    			        			return $value;
+    			        			}
+    			        		},
+    			        		{ title: "YTD Expenses Pct", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'under_govt_min_pay' },
+        			        	
+    			        		{ title: "YTD Expenses Pct", width:"5%", searchable:true, "defaultContent": "",
+        			        		data:function(row, type, set) {
+        			        			var $value = $unknown;
+        			        			if ( row.ytd_excess_expense_pct != null ) {
+        			        				if ( row.ytd_excess_expense_pct == 1 ) {
+        			        					$value = $errorFound;
+        			        					//row.ytd_excess_expense_pct.style.backgroundColor = "yellow";
+    			        						//$(this).css('background-color','yellow');
+            			        				//	$(this).find('td').css('background-color', 'red');
+        			        				}
+        			        				if ( row.ytd_excess_expense_pct == 0 ) {
+        			        					$value = $noErrorFound;
+        			        				}
+        			        			}
+        			        			return $value;
+       			        			}
+       			        		},
+       			        		{ title: "YTD Expenses Claim", width:"5%", searchable:true, "defaultContent": "",
+           			        		data:function(row, type, set) {
+           			        			var $value = $unknown;
+           			        			if ( row.ytd_excess_expense_claim != null ) {
+           			        				if ( row.ytd_excess_expense_claim == 1 ) {
+           			        					$value = $errorFound;
+        			        					//row.ytd_excess_expense_claim.style.backgroundColor = "yellow";
+        			        					//$(this).css('background-color','yellow');
+            			        				//	$(this).find('td').css('background-color', 'red');
            			        				}
            			        				if ( row.ytd_excess_expense_claim == 0 ) {
            			        					$value = $noErrorFound;
@@ -313,12 +595,15 @@
         			        	{ title: "Direct Labor", width:"10%", searchable:true,  searchFormat: "#.##", data: function ( row, type, set ) {
     			        			if(row.expenses_submitted != null){return (parseFloat(row.expenses_submitted).toFixed(2));}
 		            			} },
-        			        	{ title: "Foreign Company", width:"10%", searchable:true, "defaultContent": "", 
+        			        	{ title: "Foreign Company", width:"5%", searchable:true, "defaultContent": "", 
         			        	data:function(row, type, set) {
     			        			var $value = $unknown;
     			        			if ( row.foreign_company != null ) {
     			        				if ( row.foreign_company == 1 ) {
     			        					$value = $errorFound;
+    			        					//row.foreign_company.style.backgroundColor = "yellow";
+    			        					//$(this).css('background-color','yellow');
+    			        				//	$(this).find('td').css('background-color', 'red');
     			        				}
     			        				if ( row.foreign_company == 0 ) {
     			        					$value = $noErrorFound;
@@ -327,12 +612,15 @@
     			        			return $value;
     			        			}
     			        		},
-        			        	{ title: "Foreign Division", width:"10%", searchable:true, "defaultContent": "",
+        			        	{ title: "Foreign Division", width:"5%", searchable:true, "defaultContent": "",
         			        	data:function(row, type, set) {
     			        			var $value = $unknown;
     			        			if ( row.foreign_division != null ) {
     			        				if ( row.foreign_division == 1 ) {
     			        					$value = $errorFound;
+    			        					//row.foreign_division.style.backgroundColor = "yellow";
+    			        					//$(this).css('background-color','yellow');
+        			        				//	$(this).find('td').css('background-color', 'red');
     			        				}
     			        				if ( row.foreign_division == 0 ) {
     			        					$value = $noErrorFound;
@@ -341,25 +629,43 @@
     			        			return $value;
     			        			}
     			        		},
-        			        	{ title: "Action",  width:"5%", searchable:false,  
-        			            	data: function ( row, type, set ) { 
-        			            		var $viewLink = '<span class="action-link view-link" data-id="'+row.employee_code+'"><webthing:view>Exception_Report_Record</webthing:view></span>';
-        			            		var $actionLink = $viewLink;
-        			            		return $actionLink;
-        			            	}
-        			            }],
+        			            ],
         			            "initComplete": function(settings, json) {
         			            	var myTable = this;
-        			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#exceptionReportTable", EXCEPTION_REPORT.makeExceptionTable);
-        			               
-        			            	//EXCEPTION_REPORT.doFunctionBinding();
-        			            	},
+        			            	//LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#ticketTable", CALL_NOTE_LOOKUP.makeTable);
+        			            },
         			            "drawCallback": function( settings ) {
-        			            	//CALL_NOTE.lookupLink();
-        			            }
+        			            	console.log("exception drawCallback");
+        			            },
         			    } );
-                	},
-        		
+            		},
+            		
+            		
+            		
+            		
+            		makeModals : function() {
+            			console.log("makeModals");
+            			$( "#exception-display" ).dialog({
+            				title:'View Exception Record',
+            				autoOpen: false,
+            				height: 500,
+            				width: 600,
+            				modal: true,
+            				closeOnEscape:true,
+            				//open: function(event, ui) {
+            				//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+            				//},
+            				buttons: [
+            					{
+            						id:  "exception_display_cancel",
+            						click: function($event) {
+           								$( "#exception-display" ).dialog("close");
+            						}
+            					}
+            				]
+            			});	
+            			$("#exception_display_cancel").button('option', 'label', 'Done');    
+            		},
         		
         		
         		getReport : function($companyCode) {
@@ -406,6 +712,19 @@
 			<table id="exceptionReportTable">
 			</table>
 			</select>
+		</div>
+		<div id="exception-display">
+			<div class="exception-message err"></div>
+			<table id="alias-lookup">
+				<thead></thead>
+				<tbody></tbody>
+				<tfoot>
+					<tr>
+						<td></td>
+						<td></td>
+					</tr>
+				</tfoot>
+			</table>			
 		</div>
     </tiles:put>
 		
