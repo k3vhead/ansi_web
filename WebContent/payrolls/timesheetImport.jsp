@@ -187,71 +187,165 @@
 	           			$("#display-div .city").html($data.data.city);
 	           			$("#display-div .timesheetFile").html($data.data.fileName);
 	
-	           			// create and populate dicttionary object for use in model
-	           			var dictionary = $data.data.employeeRecordList;
-	   
-	           			// populate the visible table on-screen
-	           			var $table = $("#timesheet").DataTable({
-	           				aaSorting : [[0,'asc']],
-	            			processing : true,
-	           				data : $data.data.employeeRecordList,
-	           				searching : true,
-	            	        searchDelay : 800,
-	            	        paging: false,
-	            	        destroy: true,
-	           				columnDefs : [
-	             	            { orderable : true, "targets": -1 },
-	             	            //{ className : "dt-head-center", "targets":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]},
-	            	            { className : "dt-left", "targets": [1] },
-	            	            { className : "dt-center", "targets": [2,3,5,7] },
-	            	            //{ className : "dt-right", "targets": [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]}
-	            	            { className : "dt-right", "targets": [0,4,6,8]}
-	            	         ],
-	           				columns : [
-	           					{ title : "Row", "defaultContent": "", data:'row' },
-	           					{ title : "Employee Name", "defaultContent": "", data:'employeeName' },
-	           					{ title : "Status", "defaultContent":"", 
-	           						data : function(row, type, set) {
-										var $tag = TIMESHEET_IMPORT.statusIsGood;          							
-	           							if ( row.errorsFound == true ) { $tag = TIMESHEET_IMPORT.statusIsBad; }
-	           							return $tag;
-	           						}
-	           					},
-	           					{ title : "Regular Hours", "defaultContent": "", data:'regularHours' },
-	           					{ title : "Regular Pay", "defaultContent": "", data:'regularPay' },
-	           					{ title : "OT Hours", "defaultContent": "", data:'otHours' },
-	           					{ title : "OT Pay", "defaultContent": "", data:'otPay' },
-	           					{ title : "Vacation Hours", "defaultContent": "", data:'vacationHours' },
-	           					{ title : "Vacation Pay", "defaultContent": "", data:'vacationPay' },
-	
-	
-	           					{ title : "Action", 
-	    			            	data: function ( row, type, set ) { 
-	    			            		//var $editLink = '<span class="action-link edit-link" data-id="'+row.employee_code+'" data-name="'+row.employee_name+'"><webthing:edit>Edit</webthing:edit></span>';
-	    			            		//var $deleteLink = '<span class="action-link delete-link" data-id="'+row.employee_code+'" data-name="'+row.employee_name+'"><webthing:delete>Delete</webthing:delete></span>';
-	    			            		return TIMESHEET_IMPORT.edit + TIMESHEET_IMPORT.view + TIMESHEET_IMPORT.saveButton;
-	    			            	} },
-	           				],
-	           				drawCallback : function( settings ) {
-	           					$(".details-control").off("click");
-	           					$(".details-control").on("click", function() {
-	           						console.log("Expand stuff");
-	           						var tr = $(this).closest('tr');
-	           						var row = $table.row(tr);
-	           						if ( row.child.isShown() ) {
-	           							console.log("isShown if");
-	           							row.child.hide();
-	           							tr.removeClass("shown");
-	           						} else {
-	           							console.log("isShown else");
-	           							row.child( TIMESHEET_IMPORT.formatDetail(row.data()) ).show();
-	           							tr.addClass('shown');
-	           						}
-	           					});
-	           				}
-	           			});
+	           			// create and populate dicttionary object for use in modal
+	           			
+	           			//kjw 2022-01-31
+	   					var useDataTable = false;
+	           			
+	           			if(useDataTable) {						
+		           			// populate the visible table on-screen using bound DataTable
+		           			var $table = $("#timesheet").DataTable({
+		           				aaSorting : [[0,'asc']],
+		            			processing : true,
+		           				data : $data.data.employeeRecordList,
+		           				searching : true,
+		            	        searchDelay : 800,
+		            	        paging: false,
+		            	        destroy: true,
+		           				columnDefs : [
+		             	        	{ orderable : true, "targets": -1 },
+		             	        	//{ className : "dt-head-center", "targets":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]},
+		            	        	{ className : "dt-left", "targets": [1] },
+		            	        	{ className : "dt-center", "targets": [2,3,5,7] },
+		            	        	//{ className : "dt-right", "targets": [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]}
+		            	         	{ className : "dt-right", "targets": [0,4,6,8]}
+		            	         ],
+		           				columns : [
+		           					{ title : "Row", "defaultContent": "", data:'row' },
+		           					{ title : "Employee Name", "defaultContent": "", data:'employeeName' },
+		           					{ title : "Status", "defaultContent":"", 
+		           						data : function(row, type, set) {
+											var $tag = TIMESHEET_IMPORT.statusIsGood;          							
+		           							if ( row.errorsFound == true ) { $tag = TIMESHEET_IMPORT.statusIsBad; }
+		           							return $tag;
+		           						}
+		           					},
+		           					{ title : "Regular Hours", "defaultContent": "", data:'regularHours' },
+		           					{ title : "Regular Pay", "defaultContent": "", data:'regularPay' },
+		           					{ title : "OT Hours", "defaultContent": "", data:'otHours' },
+		           					{ title : "OT Pay", "defaultContent": "", data:'otPay' },
+		           					{ title : "Vacation Hours", "defaultContent": "", data:'vacationHours' },
+		           					{ title : "Vacation Pay", "defaultContent": "", data:'vacationPay' },
+		           					{ title : "Action", 
+		    			            	data: function ( row, type, set ) { 
+		    			            		//var $editLink = '<span class="action-link edit-link" data-id="'+row.employee_code+'" data-name="'+row.employee_name+'"><webthing:edit>Edit</webthing:edit></span>';
+		    			            		//var $deleteLink = '<span class="action-link delete-link" data-id="'+row.employee_code+'" data-name="'+row.employee_name+'"><webthing:delete>Delete</webthing:delete></span>';
+		    			            		return TIMESHEET_IMPORT.edit + TIMESHEET_IMPORT.view + TIMESHEET_IMPORT.saveButton;
+		    			            	} 
+		           					},
+	           					],
+		           				drawCallback : function( settings ) {
+		           					$(".details-control").off("click");
+		           					$(".details-control").on("click", function() {
+		           						console.log("Expand stuff");
+		           						var tr = $(this).closest('tr');
+		           						var row = $table.row(tr);
+		           						if ( row.child.isShown() ) {
+		           							console.log("isShown if");
+		           							row.child.hide();
+		           							tr.removeClass("shown");
+		           						} else {
+		           							console.log("isShown else");
+		           							row.child( TIMESHEET_IMPORT.formatDetail(row.data()) ).show();
+		           							tr.addClass('shown');
+		           						}
+		           					});
+		           				}
+		           			}); // ')' is close of DataTable
+	           			}
+	           			else {
+	           				// create table manually - don't use DataTable Class.. 
+		           			//var timesheetRows = {};
+	           				employees = $data.data.employeeRecordList;
+		           					
+	           				console.log("This should be my employees data..");
+	           				console.log(employees);
+	           				
+		           			//for (let i = 0; i <= $data.data.employeeRecordList.length; i++)
+		           			//for (let i = 0; i <= employees.length-1; i++)
+		           			//{
+		           			//	//wpr_rows[i] = $data.data.employeeRecordList[i];
+	           				//	console.log("assigned row id = " + i);
+	           				//	console.log(employees[i])
+		           			//	timesheetRows[i] = {employees[i].row, employees[i].employeeName};
+		           			//}
+		           			
+	           				console.log("Created using Object Assign");
+		           			
+		           			let timesheetRows = Object.assign({},employees);
+	           				console.log(timesheetRows);
+		           						           					           			
+		           			var $table = $("#timesheet").DataTable({
+		           				aaSorting : [[0,'asc']],
+		            			processing : true,
+		           				data : timesheetRows,
+		           				searching : true,
+		            	        searchDelay : 800,
+		            	        paging: false,
+		            	        destroy: true,
+		           				columnDefs : [
+		             	        	{ orderable : true, 				"targets": 	-1 },
+		             	        	//{ className : "dt-head-center", 	"targets":	[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]},
+		            	        	{ className : "dt-left", 			"targets": 	[1] },
+		            	        	{ className : "dt-center", 			"targets": 	[2,3,5,7] },
+		            	        	//{ className : "dt-right", 		"targets": 	[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]}
+		            	         	{ className : "dt-right", 			"targets": 	[0,4,6,8]}
+		            	         ],
+		           				columns : [
+		           					{ title : "Id", 			"defaultContent": "", 
+		           						data : function(row, type, set) {
+											var $row_id = -1;           							
+		           							$row_id = row().index();
+		           							return $row_id;
+	           							}
+		           					},
+		           					{ title : "Row", 			"defaultContent": "", 	data: 	'row' },
+		           					{ title : "Employee Name", 	"defaultContent": "", 	data:	'employeeName' },
+		           					{ title : "Status", 		"defaultContent": "", 
+		           						data : function(row, type, set) {
+											var $tag = TIMESHEET_IMPORT.statusIsGood;          							
+		           							if ( row.errorsFound == true ) { $tag = TIMESHEET_IMPORT.statusIsBad; }
+		           							return $tag;
+		           						}
+		           					},
+		           					{ title : "Regular Hours", 	"defaultContent": "", 	data:'regularHours' },
+		           					{ title : "Regular Pay", 	"defaultContent": "", 	data:'regularPay' },
+		           					{ title : "OT Hours", 		"defaultContent": "", 	data:'otHours' },
+		           					{ title : "OT Pay", 		"defaultContent": "", 	data:'otPay' },
+		           					{ title : "Vacation Hours", "defaultContent": "", 	data:'vacationHours' },
+		           					{ title : "Vacation Pay", 	"defaultContent": "", 	data:'vacationPay' },
+		           					{ title : "Action", 
+		    			            	data: function ( row, type, set ) { 
+		    			            		//var $editLink = '<span class="action-link edit-link" data-id="'+row.employee_code+'" data-name="'+row.employee_name+'"><webthing:edit>Edit</webthing:edit></span>';
+		    			            		//var $deleteLink = '<span class="action-link delete-link" data-id="'+row.employee_code+'" data-name="'+row.employee_name+'"><webthing:delete>Delete</webthing:delete></span>';
+		    			            		return TIMESHEET_IMPORT.edit + TIMESHEET_IMPORT.view + TIMESHEET_IMPORT.saveButton;
+		    			            	} 
+		           					},				
+	           					],
+		           				drawCallback : function( settings ) {
+		           					$(".details-control").off("click");
+		           					$(".details-control").on("click", function() {
+		           						console.log("Expand stuff");
+		           						var tr = $(this).closest('tr');
+		           						var row = $table.row(tr);
+		           						if ( row.child.isShown() ) {
+		           							console.log("isShown if");
+		           							row.child.hide();
+		           							tr.removeClass("shown");
+		           						} else {
+		           							console.log("isShown else");
+		           							row.child( TIMESHEET_IMPORT.formatDetail(row.data()) ).show();
+		           							tr.addClass('shown');
+		           						}
+		           					});
+		           				}
+		           			}); // ')' is close of DataTable
+
+	           			}
 	           		},
-	        
+					buildReviewTableRow : function($row){
+						
+					},        
 	           		saveFile : function($event) {
 	           			var results = $event.target.result;
 	           			var fileName = document.getElementById('timesheet-file').files[0].name;
