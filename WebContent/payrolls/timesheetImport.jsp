@@ -57,6 +57,7 @@
         	}
         	.action-link {
         		text-decoration:none;
+        		cursor:pointer;
         	}
 			.dataTables_wrapper {
 				padding-top:10px;
@@ -83,6 +84,7 @@
 	           		saveButton : '<webthing:save>Save</webthing:save>',
 	           		edit : '<webthing:edit>Edit</webthing:edit>',
 	           		view : '<webthing:view styleClass="details-control">Details</webthing:view>',
+	           		employeeMap : {},
 	           			           			
 	           		init : function() {
 	           			TIMESHEET_IMPORT.makeClickers();            			
@@ -227,26 +229,33 @@
 	
 	           					{ title : "Action", 
 	    			            	data: function ( row, type, set ) { 
-	    			            		//var $editLink = '<span class="action-link edit-link" data-id="'+row.employee_code+'" data-name="'+row.employee_name+'"><webthing:edit>Edit</webthing:edit></span>';
+	    			            		var $editLink = '<span class="action-link edit-link" data-id="'+row.row+'">' + TIMESHEET_IMPORT.edit + '</span>';
+	    			            		var $viewLink = '<span class="action-link view-link" data-id="'+row.row+'">' + TIMESHEET_IMPORT.view + '</span>';
 	    			            		//var $deleteLink = '<span class="action-link delete-link" data-id="'+row.employee_code+'" data-name="'+row.employee_name+'"><webthing:delete>Delete</webthing:delete></span>';
-	    			            		return TIMESHEET_IMPORT.edit + TIMESHEET_IMPORT.view + TIMESHEET_IMPORT.saveButton;
+	    			            		return  $editLink + $viewLink + TIMESHEET_IMPORT.saveButton;
 	    			            	} },
 	           				],
+	           				"initComplete": function(settings, json) {
+       			            	var myTable = this;
+       			            	// You're going to need this to add the field-level filters:
+       			            	//LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#timesheetLookup", TIMESHEETLOOKUP.makeTimesheetLookup);
+
+       			            	$.each($data.data.employeeRecordList, function($index, $value) {
+       			            		console.log($value.row + ":" + $value.employeeName);
+       			            		TIMESHEET_IMPORT.employeeMap[$value.row] = $value;
+       			            	});
+       			            },
 	           				drawCallback : function( settings ) {
-	           					$(".details-control").off("click");
-	           					$(".details-control").on("click", function() {
-	           						console.log("Expand stuff");
-	           						var tr = $(this).closest('tr');
-	           						var row = $table.row(tr);
-	           						if ( row.child.isShown() ) {
-	           							console.log("isShown if");
-	           							row.child.hide();
-	           							tr.removeClass("shown");
-	           						} else {
-	           							console.log("isShown else");
-	           							row.child( TIMESHEET_IMPORT.formatDetail(row.data()) ).show();
-	           							tr.addClass('shown');
-	           						}
+	           					$(".edit-link").off("click");
+	           					$(".edit-link").on("click", function() {
+	           						var $rowNumber = $(this).attr('data-id');
+	           						TIMESHEET_IMPORT.showEmployeeModal($rowNumber, "edit");
+	           					});
+	           					
+	           					$(".view-link").off("click");
+	           					$(".view-link").on("click", function() {
+	           						var $rowNumber = $(this).attr('data-id');
+	           						TIMESHEET_IMPORT.showEmployeeModal($rowNumber, "view");
 	           					});
 	           				}
 	           			});
@@ -283,7 +292,21 @@
 	           			};
 	           			
 	           			xhr.send(formData);
+	           		},
+	           		
+	           		
+	           		
+	           		
+	           		showEmployeeModal : function($rowNumber, $action) {
+	           			console.log("showEmployeeModal: " + $rowNumber + " " + $action);
+	           			$edit = $action == 'edit';
+	           			var $message = "";
+	           			$.each( TIMESHEET_IMPORT.employeeMap[$rowNumber], function($index, $value) {
+	           				$message = $message + "\n" + $index + "|" + $value;
+	           			});
+	           			alert($message);
 	           		}
+	           		
 	           	};
 	           	
 	           	TIMESHEET_IMPORT.init();
