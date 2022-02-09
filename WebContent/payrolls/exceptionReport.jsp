@@ -100,6 +100,61 @@
         				}
        				});
         		},
+        		
+        		
+        		displayExceptionModal : function($employee_code) {
+        			console.log("displayEmployeeModal");
+        			$("#exception-display input").val("");
+        			$("#exception-display select").val("");
+        			$("#exception-display .err").html("");
+        			$("#exception-display input[name='employee_code']").val($data.data.employee_code);
+        			$("#exception-display input[name='division_id']").val($data.data.division_id);
+        			$("#exception-display select[name='employee_name']").val($data.data.employee_name);
+        			$("#exception-display select[name='employee_status']").val($data.data.employee_status);
+        			$("#exception-display input[name='union_member']").val($data.data.union_member);
+        			$("#exception-display input[name='union_code']").val($data.data.union_code);
+        			$("#exception-display input[name='under_union_min']").val($data.data.under_union_min);
+        			$("#exception-display input[name='under_government_min']").val($data.data.under_government_min);
+        			$("#exception-display select[name='under_government_min']").val($data.data.under_government_min);
+        			$("#exception-display input[name='expenses_pct']").val($data.data.expenses_pct);
+        			$("#exception-display input[name='expenses_pct']").val($data.data.expenses_pct);
+        			$("#exception-display select[name='expenses_claim']").val($data.data.expenses_claim);
+        			$("#exception-display select[name='ytd_expenses_pct']").val($data.data.ytd_expenses_pct);
+        			$("#exception-display input[name='ytd_expenses_pct']").val($data.data.ytd_expenses_pct);
+        			$("#exception-display input[name='ytd_expenses_claim']").val($data.ytd_expenses_claim);
+        			$("#exception-display select[name='expenses_submitted']").val($data.expenses_submitted);
+        			$("#exception-display select[name='volume']").val($data.volume);
+        			$("#exception-display select[name='direct_labor']").val($data.direct_labor);
+        			$("#exception-display input[name='foreign_company']").val($data.foreign_company);
+        			$("#exception-display input[name='foreign_division']").val($data.foreign_division);
+        			
+        			$("#exception-display").dialog("open");
+        		},
+        		
+        		makeModals : function() {
+        			console.log("makeModals");
+        			$( "#exception-display" ).dialog({
+        				title:'View Exception Record',
+        				autoOpen: false,
+        				height: 500,
+        				width: 600,
+        				modal: true,
+        				closeOnEscape:true,
+        				//open: function(event, ui) {
+        				//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+        				//},
+        				buttons: [
+        					{
+        						id:  "exception_display_cancel",
+        						click: function($event) {
+       								$( "#exception-display" ).dialog("close");
+        						}
+        					}
+        				]
+        			});	
+        			$("#exception_display_cancel").button('option', 'label', 'Done');    
+        		},
+    		
 
         		
         		
@@ -122,7 +177,7 @@
         			var $unknown = '<webthing:questionmark>Invalid</webthing:questionmark>';
         			
         			$("#exceptionReportTable").DataTable( {
-            			"aaSorting":		[[4,'asc'],[3,'asc']],
+            			"aaSorting":		[[0,'asc']],
             			"processing": 		true,
             	        "serverSide": 		true,
             	        "autoWidth": 		false,
@@ -146,17 +201,28 @@
             	        		'excel', 
             	        		{extend: 'pdfHtml5', orientation: 'landscape'}, 
             	        		'print',{extend: 'colvis',	label: function () {doFunctionBinding();$('#exceptionReportTable').draw();}},
-            	        	
+          	                    
+	        	                    {
+	        	                        extend: 'colvisGroup',
+	        	                        text: 'Reset List',
+	        	                        show: [ 0,1,2,3,7,9,11,12,14,15,16,17,19,20,21],
+	        	                        hide: [ 4,5,6,8,10,13,18]
+	        	                    },
+	        	                    {
+	        	                        extend: 'colvisGroup',
+	        	                        text: 'Show all',
+	        	                        show: ':hidden'
+	        	                    },
             	                    {
             	                        extend: 'colvisGroup',
             	                        text: 'Union',
-            	                        show: [ 0,1,2,3,4,5,6,7],
+            	                        show: [ 0,1,2,3,4,5,6,7,21,
             	                        hide: [ 8,9,10,11,12,13,14,15,16,17,18 ]
             	                    },
             	                    {
             	                        extend: 'colvisGroup',
             	                        text: 'Min Pay',
-            	                        show: [ 0,1,2,3,4,7,8],
+            	                        show: [ 0,1,2,3,4,7,8,21],
             	                        hide: [ 4,5,6,9,10,11,12,13,14,15,16,17,18]
             	                    },
             	                    {
@@ -168,14 +234,9 @@
             	                    {
             	                        extend: 'colvisGroup',
             	                        text: 'Out of Area',
-            	                        show: [ 0,1,2,3,16,17],
+            	                        show: [ 0,1,2,3,16,17,21],
             	                        hide: [ 4,5,6,7,8,10,11,12,13,14,15,18 ]
-            	                    },
-            	                    {
-            	                        extend: 'colvisGroup',
-            	                        text: 'Show all',
-            	                        show: ':hidden'
-            	                    }
+            	                    }     
             	                
             	        		
             	        		],
@@ -183,9 +244,10 @@
              	            { "orderable": true, "targets": -1 },
              	            { className: "dt-head-center", "targets":[]},
             	            { className: "dt-left", "targets": [2] },
-            	            { className: "dt-center", "targets": [0,1,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22] },
-            	         ],
-            	       // "paging": true,
+            	            { className: "dt-center", "targets": [0,1,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21] },
+            	         	{ "visible": false, "targets": [4,5,6,8,10,13,18]},
+            	       		],
+            	         	// "paging": true,
     			        "ajax": {
     			        	"url": "payroll/exceptionReport/" + $companyCode,
     			        	"type": "GET",
@@ -211,7 +273,7 @@
 	    			        		}
 	    			        	},
         			        	{ title: "Union Code", width:"10%", searchable:true, "defaultContent": "", data:'union_code' },
-        			        	{ title: "Union Rate", width:"10%", searchable:true, "defaultContent": "",
+        			        	{ title: "Union Rate", width:"10%", searchFormat: "#.##", "defaultContent": "",
         			        	data:function(row, type, set) {
     			        			var $value = "";
     			        			if ( row.union_member == 1 ) {
@@ -223,7 +285,7 @@
     			        			return $value;
     			        		}
     			        		},
-    			        		{ title: "< Union Min", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'under_union_min_pay' },
+    			        		//{ title: "< Union Min", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'under_union_min_pay' },
         			        	{ title: "< Union Min", width:"5%", searchable:true, "defaultContent": "",
     			        		data:function(row, type, set) {
     			        			var $value = $unknown;
@@ -241,8 +303,10 @@
     			        			return $value;
     			        			}
     			        		},
-    			        		{ title: "< Gov Min", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'under_govt_min_pay' },
-        			        	{ title: "< Gov Min", width:"5%", searchable:true, "defaultContent": "",
+    			        		{ title: "< Gov Min", width:"5%", searchFormat: "#.##", data: function ( row, type, set ) {
+       			        			if(row.under_govt_min_pay != null){return (parseFloat(row.under_govt_min_pay).toFixed(2));}
+   		            			} },
+    			        		{ title: "< Gov Min", width:"5%", searchable:true, "defaultContent": "",
     			        		data:function(row, type, set) {
     			        			var $value = $unknown;
     			        			if ( row.under_govt_min_pay != null ) {
@@ -259,8 +323,9 @@
     			        			return $value;
     			        			}
     			        		},
-    			        		{ title: "Expenses Pct", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'excess_expense_pct' },
-        			        	
+    			        		{ title: "Expenses Pct", width:"5%", searchFormat: "#.##", data: function ( row, type, set ) {
+       			        			if(row.excess_expense_pct != null){return (parseFloat(row.excess_expense_pct).toFixed(2));}
+   		            			} },
     			        		{ title: "Expenses Pct", width:"5%", searchable:true, "defaultContent": "",
     			        		data:function(row, type, set) {
     			        			var $value = $unknown;
@@ -297,8 +362,9 @@
     			        			return $value;
     			        			}
     			        		},
-    			        		{ title: "YTD Expenses Pct", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'under_govt_min_pay' },
-        			        	
+    			        		{ title: "YTD Expenses Pct", width:"5%", searchFormat: "#.##", data: function ( row, type, set ) {
+      			        			if(row.ytd_excess_expense_pct != null){return (parseFloat(row.ytd_excess_expense_pct).toFixed(2));}
+  		            			} },
     			        		{ title: "YTD Expenses Pct", width:"5%", searchable:true, "defaultContent": "",
         			        		data:function(row, type, set) {
         			        			var $value = $unknown;
@@ -393,280 +459,14 @@
         			            	//CALL_NOTE.lookupLink();
     			            		$(".view-link").off("click");
         			            	$(".view-link").click(function($clickevent) {
-        			            		var $companyCode = $(this).attr("data-id");
-        			            		console.log("company code: " + $companyCode);
-        			            		EXCEPTION_REPORT.makeExceptionView($companyCode);
+        			            		var $employee_code = $(this).attr("data-id");
+        			            		console.log("company code: " + $employee_code);
+        			            		
+        			            		EXCEPTION_REPORT.displayExceptionModal($employee_code);
         			            	});
         			            }
         			    } );
                 	},
-                	
-                	makeExceptionView : function($companyCode) {
-            			console.log("makeExceptionView: " + $companyCode);
-            			$("#exception-display").dialog("open");
-            			$("#exception-lookup").DataTable( {
-                			"aaSorting":		[[0,'asc']],
-                			"processing": 		true,
-                	        "serverSide": 		true,
-                	        "autoWidth": 		false,
-                	        "deferRender": 		true,
-                	        "scrollCollapse": 	true,
-                	        "scrollX": 			true,
-                	        "pageLength":		50,
-                	        rowId: 				'dt_RowId',
-                	        destroy : 			true,		// this lets us reinitialize the table
-                	        dom: 				'Bfrtip',
-                	        "searching": 		true,
-                	        "searchDelay":		800,
-                	        lengthMenu: [
-                	        	[ 10, 50, 100, 500, 1000 ],
-                	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ]
-                	        ],
-                	        buttons: [
-                	        		'pageLength',
-                	        		'copy', 
-                	        		'csv', 
-                	        		'excel', 
-                	        		{extend: 'pdfHtml5', orientation: 'landscape'}, 
-                	        		'print',{extend: 'colvis',	label: function () {doFunctionBinding();$('#displayTable').draw();}},
-                	        	],
-                	        "columnDefs": [
-                 	            { "orderable": true, "targets": -1 },
-                 	            { className: "dt-head-center", "targets":[]},
-                	            { className: "dt-left", "targets": [0,1] },
-                	            { className: "dt-center", "targets": [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18] },
-                	            { className: "dt-right", "targets": []}
-                	         ],
-                	        "paging": true,
-        			        "ajax": {
-        			        	"url": "payroll/exceptionReport/" + $companyCode,
-        			        	"type": "GET",
-        			        	"data": {},
-        			        	//"data": {"companyCode":$companyCode},
-        			        	},
-        			        columns: [
-        			        	{ title: "Emp Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_code' }, 
-        			        	{ title: "Div", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'division_id' },
-        			        	{ title: "Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_name' },
-        			        	{ title: "Status", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_status' },
-        			        	{ title: "Union", width:"5%", searchable:true, "defaultContent":"",
-	        			        	data:function(row, type, set) {
-	    			        			var $value = $unknown;
-	    			        			if ( row.union_member != null ) {
-	    			        				if ( row.union_member == 1 ) {
-	    			        					$value = $yes;
-	    			        				}
-	    			        				if ( row.union_member == 0 ) {
-	    			        					$value = $no;
-	    			        				}
-	    			        			}
-	    			        			return $value;
-	    			        		}
-	    			        	},
-        			        	{ title: "Union Code", width:"10%", searchable:true, "defaultContent": "", data:'union_code' },
-        			        	{ title: "Union Rate", width:"10%", searchable:true, "defaultContent": "",
-        			        	data:function(row, type, set) {
-    			        			var $value = "";
-    			        			if ( row.union_member == 1 ) {
-    			        				$value = $unknown;
-    			        				if ( row.union_rate != null ) {
-    			        					$value = "$" + row.union_rate.toFixed(2);
-    			        				}
-    			        			}
-    			        			return $value;
-    			        		}
-    			        		},
-    			        		{ title: "< Union Min", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'under_union_min_pay' },
-        			        	{ title: "< Union Min", width:"5%", searchable:true, "defaultContent": "",
-    			        		data:function(row, type, set) {
-    			        			var $value = $unknown;
-    			        			if ( row.under_union_min_pay != null ) {
-    			        				if ( row.under_union_min_pay == 1 ) {
-    			        					$value = $errorFound;
-    			        					//row.under_union_min_pay.style.backgroundColor = "yellow";
-    			        					//$(this).css('background-color','yellow');
-        			        				//	$(this).find('td').css('background-color', 'red');
-    			        				}
-    			        				if ( row.under_union_min_pay == 0 ) {
-    			        					$value = $noErrorFound;
-    			        				}
-    			        			}
-    			        			return $value;
-    			        			}
-    			        		},
-    			        		{ title: "< Gov Min", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'under_govt_min_pay' },
-        			        	{ title: "< Gov Min", width:"5%", searchable:true, "defaultContent": "",
-    			        		data:function(row, type, set) {
-    			        			var $value = $unknown;
-    			        			if ( row.under_govt_min_pay != null ) {
-    			        				if ( row.under_govt_min_pay == 1 ) {
-    			        					$value = $errorFound;
-    			        					//row.under_govt_min_pay.style.backgroundColor = "yellow";
-    			        					//$(this).css('background-color','yellow');
-        			        				//	$(this).find('td').css('background-color', 'red');
-    			        				}
-    			        				if ( row.under_govt_min_pay == 0 ) {
-    			        					$value = $noErrorFound;
-    			        				}
-    			        			}
-    			        			return $value;
-    			        			}
-    			        		},
-    			        		{ title: "Expenses Pct", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'excess_expense_pct' },
-        			        	
-    			        		{ title: "Expenses Pct", width:"5%", searchable:true, "defaultContent": "",
-    			        		data:function(row, type, set) {
-    			        			var $value = $unknown;
-    			        			if ( row.excess_expense_pct != null ) {
-    			        				if ( row.excess_expense_pct == 1 ) {
-    			        					$value = $errorFound;
-    			        					//row.excess_expense_pct.style.backgroundColor = "yellow";
-    			        					//$("excess_expense_pct").style.backgroundColor = "#90ee90";
-        			        				//	$(this).find('td').css('background-color', 'red');
-    			        				}
-    			        				if ( row.excess_expense_pct == 0 ) {
-    			        					$value = $noErrorFound;
-    			        					//$("excess_expense_pct").hide();
-    			        	
-    			        				}
-    			        			}
-    			        			return $value;
-    			        			}
-    			        		},
-    			        		{ title: "Expenses Claim", width:"5%", searchable:true, "defaultContent": "",
-    			        		data:function(row, type, set) {
-    			        			var $value = $unknown;
-    			        			if ( row.excess_expense_claim != null ) {
-    			        				if ( row.excess_expense_claim == 1 ) {
-    			        					$value = $errorFound;
-    			        					//row.excess_expense_claim.style.backgroundColor = "yellow";
-    			        					//$("excess_expense_claim").style.backgroundColor = "#90ee90";
-        			        				//	$(this).find('td').css('background-color', 'red');
-    			        				}
-    			        				if ( row.excess_expense_claim == 0 ) {
-    			        					$value = $noErrorFound;
-    			        				}
-    			        			}
-    			        			return $value;
-    			        			}
-    			        		},
-    			        		{ title: "YTD Expenses Pct", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'under_govt_min_pay' },
-        			        	
-    			        		{ title: "YTD Expenses Pct", width:"5%", searchable:true, "defaultContent": "",
-        			        		data:function(row, type, set) {
-        			        			var $value = $unknown;
-        			        			if ( row.ytd_excess_expense_pct != null ) {
-        			        				if ( row.ytd_excess_expense_pct == 1 ) {
-        			        					$value = $errorFound;
-        			        					//row.ytd_excess_expense_pct.style.backgroundColor = "yellow";
-    			        						//$(this).css('background-color','yellow');
-            			        				//	$(this).find('td').css('background-color', 'red');
-        			        				}
-        			        				if ( row.ytd_excess_expense_pct == 0 ) {
-        			        					$value = $noErrorFound;
-        			        				}
-        			        			}
-        			        			return $value;
-       			        			}
-       			        		},
-       			        		{ title: "YTD Expenses Claim", width:"5%", searchable:true, "defaultContent": "",
-           			        		data:function(row, type, set) {
-           			        			var $value = $unknown;
-           			        			if ( row.ytd_excess_expense_claim != null ) {
-           			        				if ( row.ytd_excess_expense_claim == 1 ) {
-           			        					$value = $errorFound;
-        			        					//row.ytd_excess_expense_claim.style.backgroundColor = "yellow";
-        			        					//$(this).css('background-color','yellow');
-            			        				//	$(this).find('td').css('background-color', 'red');
-           			        				}
-           			        				if ( row.ytd_excess_expense_claim == 0 ) {
-           			        					$value = $noErrorFound;
-           			        				}
-           			        			}
-           			        			return $value;
-           			        			}
-          			        	},
-    			        		{ title: "Expenses Submitted", width:"10%", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
-    			        			if(row.expenses_submitted != null){return (parseFloat(row.expenses_submitted).toFixed(2));}
-		            			} },
-    			        		{ title: "Volume", width:"10%", searchable:true, "defaultContent": "",  searchFormat: "#.##", data: function ( row, type, set ) {
-    			        			if(row.expenses_submitted != null){return (parseFloat(row.expenses_submitted).toFixed(2));}
-		            			} },
-        			        	{ title: "Direct Labor", width:"10%", searchable:true,  searchFormat: "#.##", data: function ( row, type, set ) {
-    			        			if(row.expenses_submitted != null){return (parseFloat(row.expenses_submitted).toFixed(2));}
-		            			} },
-        			        	{ title: "Foreign Company", width:"5%", searchable:true, "defaultContent": "", 
-        			        	data:function(row, type, set) {
-    			        			var $value = $unknown;
-    			        			if ( row.foreign_company != null ) {
-    			        				if ( row.foreign_company == 1 ) {
-    			        					$value = $errorFound;
-    			        					//row.foreign_company.style.backgroundColor = "yellow";
-    			        					//$(this).css('background-color','yellow');
-    			        				//	$(this).find('td').css('background-color', 'red');
-    			        				}
-    			        				if ( row.foreign_company == 0 ) {
-    			        					$value = $noErrorFound;
-    			        				}
-    			        			}
-    			        			return $value;
-    			        			}
-    			        		},
-        			        	{ title: "Foreign Division", width:"5%", searchable:true, "defaultContent": "",
-        			        	data:function(row, type, set) {
-    			        			var $value = $unknown;
-    			        			if ( row.foreign_division != null ) {
-    			        				if ( row.foreign_division == 1 ) {
-    			        					$value = $errorFound;
-    			        					//row.foreign_division.style.backgroundColor = "yellow";
-    			        					//$(this).css('background-color','yellow');
-        			        				//	$(this).find('td').css('background-color', 'red');
-    			        				}
-    			        				if ( row.foreign_division == 0 ) {
-    			        					$value = $noErrorFound;
-    			        				}
-    			        			}
-    			        			return $value;
-    			        			}
-    			        		},
-        			            ],
-        			            "initComplete": function(settings, json) {
-        			            	var myTable = this;
-        			            	//LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#ticketTable", CALL_NOTE_LOOKUP.makeTable);
-        			            },
-        			            "drawCallback": function( settings ) {
-        			            	console.log("exception drawCallback");
-        			            },
-        			    } );
-            		},
-            		
-            		
-            		
-            		
-            		makeModals : function() {
-            			console.log("makeModals");
-            			$( "#exception-display" ).dialog({
-            				title:'View Exception Record',
-            				autoOpen: false,
-            				height: 500,
-            				width: 600,
-            				modal: true,
-            				closeOnEscape:true,
-            				//open: function(event, ui) {
-            				//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
-            				//},
-            				buttons: [
-            					{
-            						id:  "exception_display_cancel",
-            						click: function($event) {
-           								$( "#exception-display" ).dialog("close");
-            						}
-            					}
-            				]
-            			});	
-            			$("#exception_display_cancel").button('option', 'label', 'Done');    
-            		},
-        		
         		
         		getReport : function($companyCode) {
         			var $url = "payroll/exceptionReport/" + $companyCode;
@@ -713,19 +513,95 @@
 			</table>
 			</select>
 		</div>
-		<div id="exception-display">
-			<div class="exception-message err"></div>
-			<table id="alias-lookup">
-				<thead></thead>
-				<tbody></tbody>
-				<tfoot>
-					<tr>
-						<td></td>
-						<td></td>
-					</tr>
-				</tfoot>
-			</table>			
+		<div id="exception-display" class="modal-window">
+		<table>
+				<tr>
+					<td class="form-label">Employee Code:</td>
+					<td>
+						<input type="text" name="employeeCode" />
+						<input type="hidden" name="selectedEmployeeCode" />
+					</td>
+					<td><span class="err employeeCodeErr"></span></td>
+				</tr>
+				<tr>
+					<td class="form-label">Company:</td>
+					<td>
+						<select name="companyCode">
+							<option value=""></option>
+							<ansi:selectPayrollCompany active="true" />
+						</select>
+					</td>
+					<td><span class="err companyCodeErr"></span></td>
+				</tr>
+				<tr>
+					<td class="form-label">Division:</td>
+					<td>
+						<select name="divisionId">
+							<option value=""></option>
+							<ansi:selectOrganization active="true" type="DIVISION" />
+						</select>
+					</td>
+					<td><span class="err divisionIdErr"></span></td>
+				</tr>
+				<tr>
+					<td class="form-label">Name:</td>
+					<td>
+						<input name="firstName" type="text" placeholder="First" />
+						<input name="middleInitial" type="text" placeholder="MI" style="width:15px;" />
+						<input name="lastName" type="text" placeholder="Last" />
+					</td>
+					<td><span class="err nameErr"></span></td>
+				</tr>				
+				<tr>
+					<td class="form-label">Department:</td>
+					<td><input name="departmentDescription" type="text" /></td>
+					<td><span class="err departmentErr"></span></td>
+				</tr>
+				<tr>
+					<td class="form-label">Status</td>
+					<td>
+						<select name="status">
+							<option value=""></option>
+							<option value="ACTIVE">Active</option>
+							<option value="TERMINATED">Terminated</option>
+						</select>
+					</td>
+					<td><span class="err statusErr"></span></td>
+				</tr>
+				<tr>
+					<td class="form-label">Termination Date:</td>
+					<td><input name="terminationDate" type="date" /></td>
+					<td><span class="err terminationDateErr"></span></td>
+				</tr>
+				<tr>
+					<td class="form-label">Union Member:</td>
+					<td><input name="unionMember"  type="checkbox" value="1" /></td>
+					<td><span class="err unionMemberErr"></span></td>
+				</tr>
+				<tr>
+					<td class="form-label">Union Code:</td>
+					<td><input name="unionCode" class="unionInput" type="text" /></td>
+					<td><span class="err unionCodeErr"></span></td>
+				</tr>
+				<tr>
+					<td class="form-label">Union Rate:</td>
+					<td><input name="unionRate" style="height:12px;" class="unionInput" type="text"  placeholder="0.00"  /></td>
+					<td><span class="err unionRateErr"></span></td>
+				</tr>
+				<tr>
+					<td class="form-label">Process Date:</td>
+					<td><input name="processDate" type="date" /></td>
+					<td><span class="err processDateErr"></span></td>
+				</tr>
+				<tr>
+					<td class="form-label">Notes:</td>
+					<td><input name="notes" type="text" /></td>
+					<td><span class="err notesErr"></span></td>
+				</tr>
+			</table>
 		</div>
+		
+		
     </tiles:put>
 		
 </tiles:insert>

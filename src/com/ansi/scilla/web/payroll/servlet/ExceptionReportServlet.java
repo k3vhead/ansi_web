@@ -33,14 +33,14 @@ import com.ansi.scilla.web.payroll.response.ExceptionReportResponse;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class ExceptionReportServlet extends AbstractLookupServlet {
-		
-	public static final String COMPANY_NAME = "company_code";
-	public static final String EMPLOYEE_CODE = "employee_code";
-	public static final String DIVISION_ID = "division_id";
+
+//	public static final String COMPANY_CODE = "company_code";
+	public static final String EMPLOYEE_CODE = "payroll_worksheet.employee_code";
+	public static final String DIVISION_ID = "division.division_id";
 	public static final String EMPLOYEE_FIRST_NAME = "employee_name";
 	public static final String EMPLOYEE_LAST_NAME = "employee_last_name";
 	public static final String EMPLOYEE_STATUS = "payroll_employee.employee_status";
-	public static final String DESCRIPTION = "description";
+//	public static final String DESCRIPTION = "description";
 	public static final String TERMINATION_DATE = "employee_termination_date";
 	public static final String UNION_MEMBER = "union_member";
 	public static final String UNION_CODE = "union_code";
@@ -59,6 +59,7 @@ public class ExceptionReportServlet extends AbstractLookupServlet {
 	public static final String FOREIGN_DIVISION = "foreign_division";
 	public static final String PRODUCTIVITY = "productivity";
 	public static final String PROCESS_DATE = "process_date";
+	public static final String COMPANY_CODE = "company_code";
 	
 	
 	
@@ -71,12 +72,13 @@ public class ExceptionReportServlet extends AbstractLookupServlet {
 		cols = new String[] { 
 
 				
-				COMPANY_NAME,
+
+		//		COMPANY_CODE,
 				EMPLOYEE_CODE,
 				DIVISION_ID,
 				EMPLOYEE_FIRST_NAME,
 				EMPLOYEE_LAST_NAME,
-				DESCRIPTION,
+		//		DESCRIPTION,
 				EMPLOYEE_STATUS,
 				TERMINATION_DATE,
 				UNION_MEMBER,
@@ -94,6 +96,7 @@ public class ExceptionReportServlet extends AbstractLookupServlet {
 				FOREIGN_DIVISION,
 				PRODUCTIVITY,
 				PROCESS_DATE,
+				COMPANY_CODE,
 				
 				
 								
