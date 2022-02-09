@@ -230,7 +230,7 @@
 	           					{ title : "Action", 
 	    			            	data: function ( row, type, set ) { 
 	    			            		var $editLink = '<span class="action-link edit-link" data-id="'+row.row+'">' + TIMESHEET_IMPORT.edit + '</span>';
-	    			            		var $viewLink = '<span class="action-link edit-link" data-id="'+row.row+'">' + TIMESHEET_IMPORT.view + '</span>';
+	    			            		var $viewLink = '<span class="action-link view-link" data-id="'+row.row+'">' + TIMESHEET_IMPORT.view + '</span>';
 	    			            		//var $deleteLink = '<span class="action-link delete-link" data-id="'+row.employee_code+'" data-name="'+row.employee_name+'"><webthing:delete>Delete</webthing:delete></span>';
 	    			            		return  $editLink + $viewLink + TIMESHEET_IMPORT.saveButton;
 	    			            	} },
