@@ -253,7 +253,7 @@
             			        columns: [
             			        	{ title: "Employee Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employeeCode' }, 
             			        	{ title: "Company Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'companyCode' }, 
-            			        	{ title: "Division", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'divisionId' },
+            			        	{ title: "Division", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'div' },
             			        	{ title: "First Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'firstName' },
             			        	{ title: "Last Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'lastName' },
             			        	{ title: "MI", width:"5%", searchable:true, "defaultContent": "", data:'middleInitial' },
