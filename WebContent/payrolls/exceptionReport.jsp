@@ -454,6 +454,9 @@
         			            	var myTable = this;
         			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#exceptionReportTable", EXCEPTION_REPORT.makeExceptionTable);
         			               
+        			            	$.each( $("#exceptionReportTable").DataTable().rows(), function($index, $myRow) {
+        			            		console.log($myRow.employee_code);
+        			            	});
         			            	//EXCEPTION_REPORT.doFunctionBinding();
         			            	},
         			            "drawCallback": function( settings ) {
