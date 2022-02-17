@@ -18,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.db.Division;
+import com.ansi.scilla.common.payroll.common.EmployeeStatus;
 import com.ansi.scilla.common.payroll.parser.EmployeeImportRecord;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
@@ -71,9 +72,16 @@ public class EmployeeImportServlet extends AbstractServlet {
 				for ( Division d : divisionList ) {
 					divMap.put(d.getDivisionNbr(), d );
 				}
+				
+				EmployeeStatus[] employeeStatusList = EmployeeStatus.values();
+				HashMap<String, EmployeeStatus> employeeStatusMap = new HashMap<String, EmployeeStatus>();
+				for ( EmployeeStatus s : employeeStatusList ) {
+					employeeStatusMap.put(s.display(), s );
+				}
+//				
 				PreparedStatement ps = conn.prepareStatement("select * from payroll_employee where employee_code=? or (lower(employee_first_name)=? and lower(employee_last_name)=?)");
 				data = new EmployeeImportResponse(conn, uploadRequest);
-				CollectionUtils.transform(data.getEmployeeRecords(), new EmployeeRecordTransformer(ps, divMap));
+				CollectionUtils.transform(data.getEmployeeRecords(), new EmployeeRecordTransformer(ps, divMap, employeeStatusMap));
 				responseCode = ResponseCode.SUCCESS;
 			} else {
 				responseCode = ResponseCode.EDIT_FAILURE;
@@ -137,13 +145,17 @@ public class EmployeeImportServlet extends AbstractServlet {
 
 		private PreparedStatement statement;		
 		private HashMap<Integer, Division> divMap;
+		private HashMap<String, EmployeeStatus> employeeStatusMap;
 
-		public EmployeeRecordTransformer(PreparedStatement statement, HashMap<Integer, Division> divMap) {
+		public EmployeeRecordTransformer(PreparedStatement statement, HashMap<Integer, Division> divMap, HashMap<String, EmployeeStatus> employeeStatusMap) {
 			super();
 			this.statement = statement;
 			this.divMap = divMap;
+			this.employeeStatusMap = employeeStatusMap;
 		}
+		
 
+		
 
 		@Override
 		public EmployeeImportRecord transform(EmployeeImportRecord arg0) {
@@ -169,6 +181,12 @@ public class EmployeeImportServlet extends AbstractServlet {
 						arg0.setDiv(division.getDivisionNbr() + "-" + division.getDivisionCode());
 						
 					}
+					
+				}
+				
+				if ( employeeStatusMap.containsKey(arg0.getStatus())) {
+					EmployeeStatus employeeStatus= employeeStatusMap.get(arg0.getStatus());
+					arg0.setStatus(employeeStatus.name());
 					
 				}
 				
