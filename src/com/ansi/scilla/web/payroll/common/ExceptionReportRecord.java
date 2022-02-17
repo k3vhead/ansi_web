@@ -27,7 +27,7 @@ public class ExceptionReportRecord extends ApplicationObject {
 	 private String employeeLastName;
 	// private String empolyeeStatus; 
 	// private Calendar employeeTermination;
-	// private Calendar weekEnding;
+	 private Calendar weekEnding;
 	 private String state;
 	 private String city;
 	 private String employeeName;

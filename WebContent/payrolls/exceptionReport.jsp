@@ -204,8 +204,8 @@
           	                    
 	        	                    {
 	        	                        extend: 'colvisGroup',
-	        	                        text: 'Reset List',
-	        	                        show: [ 0,1,2,3,7,9,11,12,14,15,16,17,19,20,21],
+	        	                        text: 'Default',
+	        	                        show: [ 0,1,2,3,7,9,11,12,14,15,16,17,19],
 	        	                        hide: [ 4,5,6,8,10,13,18]
 	        	                    },
 	        	                    {
@@ -216,13 +216,13 @@
             	                    {
             	                        extend: 'colvisGroup',
             	                        text: 'Union',
-            	                        show: [ 0,1,2,3,4,5,6,7,21,
+            	                        show: [ 0,1,2,3,4,5,6],
             	                        hide: [ 8,9,10,11,12,13,14,15,16,17,18 ]
             	                    },
             	                    {
             	                        extend: 'colvisGroup',
             	                        text: 'Min Pay',
-            	                        show: [ 0,1,2,3,4,7,8,21],
+            	                        show: [ 0,1,2,3,4,7,8],
             	                        hide: [ 4,5,6,9,10,11,12,13,14,15,16,17,18]
             	                    },
             	                    {
@@ -234,7 +234,7 @@
             	                    {
             	                        extend: 'colvisGroup',
             	                        text: 'Out of Area',
-            	                        show: [ 0,1,2,3,16,17,21],
+            	                        show: [ 0,1,2,3,16,17],
             	                        hide: [ 4,5,6,7,8,10,11,12,13,14,15,18 ]
             	                    }     
             	                
@@ -244,7 +244,7 @@
              	            { "orderable": true, "targets": -1 },
              	            { className: "dt-head-center", "targets":[]},
             	            { className: "dt-left", "targets": [2] },
-            	            { className: "dt-center", "targets": [0,1,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21] },
+            	            { className: "dt-center", "targets": [0,1,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19] },
             	         	{ "visible": false, "targets": [4,5,6,8,10,13,18]},
             	       		],
             	         	// "paging": true,
@@ -255,7 +255,8 @@
     			        	},
     			        columns: [
         			        	{ title: "Emp Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_code' }, 
-        			        	{ title: "Div", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'division_id' },
+        			        	{ title: "Div", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'div' },
+        			        	{ title: "Week Ending", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'week_ending' },
         			        	{ title: "Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_name' },
         			        	{ title: "Status", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_status' },
         			        	{ title: "Union", width:"5%", searchable:true, "defaultContent":$unknown,
@@ -303,9 +304,9 @@
     			        			return $value;
     			        			}
     			        		},
-    			        		{ title: "< Gov Min", width:"5%", searchFormat: "#.##", data: function ( row, type, set ) {
-       			        			if(row.under_govt_min_pay != null){return (parseFloat(row.under_govt_min_pay).toFixed(2));}
-   		            			} },
+    			        		//{ title: "< Gov Min", width:"5%", searchFormat: "#.##", data: function ( row, type, set ) {
+       			        		//	if(row.under_govt_min_pay != null){return (parseFloat(row.under_govt_min_pay).toFixed(2));}
+   		            			//} },
     			        		{ title: "< Gov Min", width:"5%", searchable:true, "defaultContent": "",
     			        		data:function(row, type, set) {
     			        			var $value = $unknown;
@@ -323,9 +324,9 @@
     			        			return $value;
     			        			}
     			        		},
-    			        		{ title: "Expenses Pct", width:"5%", searchFormat: "#.##", data: function ( row, type, set ) {
-       			        			if(row.excess_expense_pct != null){return (parseFloat(row.excess_expense_pct).toFixed(2));}
-   		            			} },
+    			        	//	{ title: "Expenses Pct", width:"5%", searchFormat: "#.##", data: function ( row, type, set ) {
+       			        	//		if(row.excess_expense_pct != null){return (parseFloat(row.excess_expense_pct).toFixed(2));}
+   		            		//	} },
     			        		{ title: "Expenses Pct", width:"5%", searchable:true, "defaultContent": "",
     			        		data:function(row, type, set) {
     			        			var $value = $unknown;
@@ -362,9 +363,9 @@
     			        			return $value;
     			        			}
     			        		},
-    			        		{ title: "YTD Expenses Pct", width:"5%", searchFormat: "#.##", data: function ( row, type, set ) {
-      			        			if(row.ytd_excess_expense_pct != null){return (parseFloat(row.ytd_excess_expense_pct).toFixed(2));}
-  		            			} },
+    			        		//{ title: "YTD Expenses Pct", width:"5%", searchFormat: "#.##", data: function ( row, type, set ) {
+      			        		//	if(row.ytd_excess_expense_pct != null){return (parseFloat(row.ytd_excess_expense_pct).toFixed(2));}
+  		            			//} },
     			        		{ title: "YTD Expenses Pct", width:"5%", searchable:true, "defaultContent": "",
         			        		data:function(row, type, set) {
         			        			var $value = $unknown;
@@ -403,10 +404,10 @@
     			        			if(row.expenses_submitted != null){return (parseFloat(row.expenses_submitted).toFixed(2));}
 		            			} },
     			        		{ title: "Volume", width:"5%", searchable:true, "defaultContent": "",  searchFormat: "#.##", data: function ( row, type, set ) {
-    			        			if(row.expenses_submitted != null){return (parseFloat(row.expenses_submitted).toFixed(2));}
+    			        			if(row.volume != null){return (parseFloat(row.volume).toFixed(2));}
 		            			} },
         			        	{ title: "Direct Labor", width:"5%", searchable:true,  searchFormat: "#.##", data: function ( row, type, set ) {
-    			        			if(row.expenses_submitted != null){return (parseFloat(row.expenses_submitted).toFixed(2));}
+    			        			if(row.direct_labor != null){return (parseFloat(row.direct_labor).toFixed(2));}
 		            			} },
         			        	{ title: "Foreign Company", width:"5%", searchable:true, "defaultContent": "", 
         			        	data:function(row, type, set) {

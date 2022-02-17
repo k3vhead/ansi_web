@@ -40,18 +40,17 @@ public class ExceptionReportServlet extends AbstractLookupServlet {
 	public static final String EMPLOYEE_FIRST_NAME = "employee_name";
 	public static final String EMPLOYEE_LAST_NAME = "employee_last_name";
 	public static final String EMPLOYEE_STATUS = "payroll_employee.employee_status";
-//	public static final String DESCRIPTION = "description";
-	public static final String TERMINATION_DATE = "employee_termination_date";
+
+	public static final String WEEK_ENDING = "week_ending";
+	//	public static final String DESCRIPTION = "description";
 	public static final String UNION_MEMBER = "union_member";
 	public static final String UNION_CODE = "union_code";
 	public static final String UNION_RATE = "union_rate";
+	public static final String MINIMUM_HOURLY_PAY = DivisionLookupQuery.MINIMUM_HOURLY_PAY;
 	public static final String EXCESS_EXPENSE_PCT = "excess_expense_pct";
 	public static final String EXCESS_EXPENSE_CLAIM = "excess_expense_claim";
 	public static final String YTD_EXCESS_EXPENSE_PCT = "ytd_excess_expense_pct";
 	public static final String YTD_EXCESS_EXPENSE_CLAIM = "ytd_excess_expense_claim";
-	public static final String MINIMUM_HOURLY_PAY = DivisionLookupQuery.MINIMUM_HOURLY_PAY;
-	public static final String FORMATTED_TERMINATION_DATE = "formatted_termination_date";
-	public static final String FORMATTED_PROCESS_DATE = "formatted_process_date";
 	public static final String EXPENSES_SUBMITTED = "expenses_submitted";
 	public static final String VOLUME = "volume";
 	public static final String DIRECT_LABOR = "direct_labor";
@@ -60,6 +59,9 @@ public class ExceptionReportServlet extends AbstractLookupServlet {
 	public static final String PRODUCTIVITY = "productivity";
 	public static final String PROCESS_DATE = "process_date";
 	public static final String COMPANY_CODE = "company_code";
+	public static final String TERMINATION_DATE = "employee_termination_date";public static final String FORMATTED_TERMINATION_DATE = "formatted_termination_date";
+	public static final String FORMATTED_PROCESS_DATE = "formatted_process_date";
+	
 	
 	
 	
@@ -76,19 +78,19 @@ public class ExceptionReportServlet extends AbstractLookupServlet {
 		//		COMPANY_CODE,
 				EMPLOYEE_CODE,
 				DIVISION_ID,
+				WEEK_ENDING,
 				EMPLOYEE_FIRST_NAME,
 				EMPLOYEE_LAST_NAME,
 		//		DESCRIPTION,
 				EMPLOYEE_STATUS,
-				TERMINATION_DATE,
 				UNION_MEMBER,
 				UNION_CODE,
 				UNION_RATE,
+				MINIMUM_HOURLY_PAY,
 				EXCESS_EXPENSE_PCT,
 				EXCESS_EXPENSE_CLAIM,
 				YTD_EXCESS_EXPENSE_PCT,
 				YTD_EXCESS_EXPENSE_CLAIM,
-				MINIMUM_HOURLY_PAY,
 				EXPENSES_SUBMITTED,
 				VOLUME,
 				DIRECT_LABOR,
@@ -97,6 +99,7 @@ public class ExceptionReportServlet extends AbstractLookupServlet {
 				PRODUCTIVITY,
 				PROCESS_DATE,
 				COMPANY_CODE,
+				TERMINATION_DATE,
 				
 				
 								
