@@ -104,6 +104,53 @@ $( document ).ready(function() {
 		},
 		
 		
+		// creates a modal, if it doesn't already exist
+		// displays messages in that modal (the values in the webmessage key/value pairs)
+		showWarnings : function($warningModal, $webMessages) {
+			console.log("showWarnings");
+			if ( $("#" + $warningModal).length == 0 ) {
+				// if the div does not exist, create it
+				console.log("Creating warning modal");
+				var $modal = $("<div>");
+				$modal.attr("id",$warningModal);
+				$modal.attr("style", "display:none;");				
+				$modal.appendTo('body');
+				
+				$( "#" + $warningModal ).dialog({
+    				title:'Success -- Warnings',
+    				autoOpen: false,
+    				height: 200,
+    				width: 350,
+    				modal: true,
+    				closeOnEscape:true,
+    				//open: function(event, ui) {
+    				//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+    				//},
+    				buttons: [
+    					{
+    						id:  $warningModal + "-close",
+    						click: function($event) {
+   								$( "#" + $warningModal ).dialog("close");
+    						}
+    					}
+    				]
+    			});	
+    			$("#" + $warningModal + "-close").button('option', 'label', 'OK');  
+			} else {
+				$modal = $("#" + $warningModal);
+			}
+			var $warningList = $("<li>");
+			$.each($webMessages, function($fldIndex, $field) {
+				console.log($fldIndex);
+				$.each($field, function($msgIndex, $message) {
+					console.log("*" + $message);
+					$warningList.append( $("<li>").append($message)   );	
+				});
+				
+			});
+			$modal.append($warningList);
+			$("#"+$warningModal).dialog("open");
+		},
 			
 		// loops through all inputs & selects in a form and creates a map (suitable for a server call) with
 		// name/value pairs. If a fieldname exists as a key in the $nameMapping map, the field will be renamed

@@ -148,8 +148,8 @@
         					}
         				]
         			});	
-        			$("#confirm-cancel").button('option', 'label', 'Cancel');  
-        			$("#confirm-save").button('option', 'label', 'Save');
+        			$("#confirm-cancel").button('option', 'label', 'No');  
+        			$("#confirm-save").button('option', 'label', 'Yes');
            		},
            		
            		
@@ -237,19 +237,7 @@
            		makeClickers : function() {
            			$("input[name='new-timesheet']").click(function($event) {
            				console.log("new timesheet");
-           				if ( ! $("#edit-modal").hasClass("ui-dialog-content")) {
-               				TIMESHEETLOOKUP.initEditModal();
-               			}
-           				$("#edit-modal .err").html("").show();           				
-               			$.each( $("#edit-modal input"), function($index, $value) {
-               				$($value).val("");
-               			});
-               			$.each( $("#edit-modal select"), function($index, $value) {
-               				$($value).val("");
-               			});
-           				$("#edit-modal input[name='action']").val("ADD");
-           				$("#edit-modal .update-field").prop("disabled", false);
-               			$("#edit-modal").dialog("open");
+           				TIMESHEETLOOKUP.showNewTimeSheet();
            			});
            		},
            		
@@ -282,6 +270,23 @@
            				var $column = this;
            				$column.visible(true);
            			});
+           		},
+           		
+           		
+           		showNewTimeSheet : function() {
+           			if ( ! $("#edit-modal").hasClass("ui-dialog-content")) {
+           				TIMESHEETLOOKUP.initEditModal();
+           			}
+       				$("#edit-modal .err").html("").show();           				
+           			$.each( $("#edit-modal input"), function($index, $value) {
+           				$($value).val("");
+           			});
+           			$.each( $("#edit-modal select"), function($index, $value) {
+           				$($value).val("");
+           			});
+       				$("#edit-modal input[name='action']").val("ADD");
+       				$("#edit-modal .update-field").prop("disabled", false);
+           			$("#edit-modal").dialog("open");
            		},
            		
            		makeTimesheetLookup : function() {
@@ -367,22 +372,19 @@
     	        	        			$expensesDisplay = ! $expensesDisplay;
     	        	        			TIMESHEETLOOKUP.toggleColumns($expensesDisplay, $expensesCols);	        	        			
     	        	        		}
-    	        	        	},
-    	        	        	{
+    	        	        	},{
     	        	        		text:'OT',
     	        	        		action: function(e, dt, node, config) {
     	        	        			$otDisplay = ! $otDisplay;
     	        	        			TIMESHEETLOOKUP.toggleColumns($otDisplay, $otCols);	        	        			
     	        	        		}
-    	        	        	},
-    	        	        	{
+    	        	        	},{
     	        	        		text:'Vacation/Holidays',
     	        	        		action: function(e, dt, node, config) {
     	        	        			$vacationDisplay = ! $vacationDisplay;
     	        	        			TIMESHEETLOOKUP.toggleColumns($vacationDisplay, $vacationCols);	        	        			
     	        	        		}
-    	        	        	},
-        	                    {
+    	        	        	},{
     	        	        		text:'Show All',
     	        	        		action: function(e, dt, node, config) {
     	        	        			$expenseDisplay = true;
@@ -390,14 +392,18 @@
     	        	        			$otDisplay = true;
     	        	        			TIMESHEETLOOKUP.showAllColumns();	        	        			
     	        	        		}
-        	                    },
-    	        	        	{
+        	                    },{
     	        	        		text:'Reset',
     	        	        		action: function(e, dt, node, config) {
     	        	        			$expenseDisplay = false;
     	        	        			$vacationDisplay = false;
     	        	        			$otDisplay = false;
     	        	        			TIMESHEETLOOKUP.resetColumns($defaultDisplay);	        	        			
+    	        	        		}
+    	        	        	},{
+    	        	        		text:'New',
+    	        	        		action: function(e, dt, node, config) {
+    	        	        			TIMESHEETLOOKUP.showNewTimeSheet()
     	        	        		}
     	        	        	}
                	        	],
@@ -555,8 +561,7 @@
            					var $selector = "#edit-modal ." + $index + "Err";
            					$($selector).html($value[0]);
            				});
-           			} else if ( $data.responseHeader.responseCode == 'SUCCESS' ) {
-               			$("#globalMsg").html("Success").show().fadeOut(3000);
+           			} else if ( $data.responseHeader.responseCode == 'SUCCESS' || $data.responseHeader.responseCode == 'EDIT_WARNING') {
                			$("#timesheetLookup").DataTable().ajax.reload();
                			// close both modals because we don't know which one called this method, but only after they've been init'd
                			if ( $("#edit-modal").hasClass("ui-dialog-content")) {
@@ -565,6 +570,13 @@
                			if ( $("#confirmation-modal").hasClass("ui-dialog-content")) {
                				$("#confirmation-modal").dialog("close");
                			}
+               			if ($data.responseHeader.responseCode == 'SUCCESS') {
+               				$("#globalMsg").html("Success").show().fadeOut(3000);
+               			} else {
+               				ANSI_UTILS.showWarnings("timesheet_warnings", $data.data.webMessages);
+               			}
+               			
+               			
            			} else {
            				$("#edit-modal .timesheet-err").html("Unexpected response code: " + $data.responseHeader.responseCode + ". Contact Support").show();
            			}

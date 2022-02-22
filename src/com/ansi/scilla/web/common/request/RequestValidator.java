@@ -29,6 +29,7 @@ import com.ansi.scilla.common.db.Document;
 import com.ansi.scilla.common.db.EmployeeExpense;
 import com.ansi.scilla.common.db.JobTag;
 import com.ansi.scilla.common.db.MSTable;
+import com.ansi.scilla.common.db.PayrollEmployee;
 import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.common.document.DocumentType;
@@ -452,32 +453,89 @@ public class RequestValidator {
 	}
 
 	
-	public static void validateEmployeeCode(Connection conn, WebMessages webMessages, String fieldName,
-			Integer value, boolean required, String label) throws SQLException {
+	public static PayrollEmployee validateEmployeeCode(Connection conn, WebMessages webMessages, String fieldName,
+			Integer value, boolean required, String label) throws Exception {
+		PayrollEmployee employee = null;
 		if ( value == null ) {
 			if ( required == true ) {
 				String message = StringUtils.isBlank(label) ? "Required Value" : label + " is Required";
 				webMessages.addMessage(fieldName, message);
 			}
 		} else {
-			PreparedStatement ps = conn.prepareStatement("select count(*) as record_count from payroll_employee pe where pe.employee_code = ?");
-			ps.setInt(1, value);
-			ResultSet rs = ps.executeQuery();
-			if ( rs.next() ) {
-				if ( rs.getInt("record_count") == 0 ) {
-					String message = StringUtils.isBlank(label) ? "Invalid Value" : label + " is Invalid";
-					webMessages.addMessage(fieldName, message);
-				}
-			} else {
+			employee = new PayrollEmployee();
+			employee.setEmployeeCode(value);
+			try {
+				employee.selectOne(conn);
+			} catch ( RecordNotFoundException e) {
 				String message = StringUtils.isBlank(label) ? "Invalid Value" : label + " is Invalid";
 				webMessages.addMessage(fieldName, message);
 			}
-			rs.close();
+			
+			
+//			PreparedStatement ps = conn.prepareStatement("select count(*) as record_count from payroll_employee pe where pe.employee_code = ?");
+//			ps.setInt(1, value);
+//			ResultSet rs = ps.executeQuery();
+//			if ( rs.next() ) {
+//				if ( rs.getInt("record_count") == 0 ) {
+//					String message = StringUtils.isBlank(label) ? "Invalid Value" : label + " is Invalid";
+//					webMessages.addMessage(fieldName, message);
+//				}
+//			} else {
+//				String message = StringUtils.isBlank(label) ? "Invalid Value" : label + " is Invalid";
+//				webMessages.addMessage(fieldName, message);
+//			}
+//			rs.close();
 		}
-	
+		return employee;
 		
 	}
+	
+	
+	
+	/**
+	 * Ensure that employee name can be parsed into some recognizable format:
+	 * Handles: Franklin Roosevelt
+	 *			Franklin D Roosevelt
+	 *			Franklin D. Roosevelt
+	 *			Roosevelt, Franklin
+	 *			Roosevelt, Franklin D
+	 *			Roosevelt, Franklin D.
+	 * @param conn
+	 * @param webMessages
+	 * @param fieldName
+	 * @param employeeCode
+	 * @param employeeName
+	 * @throws SQLException
+	 */
+	public static void validateEmployeeName(Connection conn, WebMessages webMessages, String fieldName, Integer employeeCode, String employeeName) throws SQLException {
+		String sql = "select count(*) as record_count from payroll_employee pe where pe.employee_code = ? \n" + 
+				"	and (\n" + 
+				"		lower(concat(pe.employee_first_name,' ',pe.employee_last_name)) = ?\n" + 
+				"		or lower(concat(pe.employee_first_name,' ',pe.employee_mi,' ',pe.employee_last_name)) = ?\n" + 
+				"		or lower(concat(pe.employee_first_name,' ',pe.employee_mi,'. ',pe.employee_last_name)) = ?\n" + 
+				"		or lower(concat(pe.employee_last_name,', ',pe.employee_first_name)) = ?\n" + 
+				"		or lower(concat(pe.employee_last_name,', ',pe.employee_first_name,' ',pe.employee_mi)) = ?\n" + 
+				"		or lower(concat(pe.employee_last_name,', ',pe.employee_first_name,' ',pe.employee_mi,'.')) = ?\n" + 
+				"	)";
+		PreparedStatement ps = conn.prepareStatement(sql);
+		ps.setInt(1, employeeCode);
+		for ( int n = 2; n < 8; n++ ) {
+			ps.setString(n, employeeName.toLowerCase());
+		}
+		ResultSet rs = ps.executeQuery();
+		if ( rs.next() ) {
+			if ( rs.getInt("record_count") == 0 ) {
+				webMessages.addMessage(fieldName, "Invalid EmployeeCode/Employee Name combination");
+			}
+		} else {
+			webMessages.addMessage(fieldName, "Error while validating");
+		}
+		rs.close();
+	}
 
+	
+	
+	
 	public static void validateEmployeeStatus(WebMessages webMessages, String fieldName, String value, boolean required) {
 		if (StringUtils.isBlank(value)) {
 			if (required) {

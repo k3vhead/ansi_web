@@ -7,6 +7,8 @@ import java.sql.ResultSet;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -16,11 +18,22 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.ansi.scilla.common.db.ApplicationProperties;
 import com.ansi.scilla.common.db.Division;
+import com.ansi.scilla.common.exceptions.InvalidValueException;
+import com.ansi.scilla.common.exceptions.PayrollException;
+import com.ansi.scilla.common.payroll.parser.PayrollWorksheetEmployee.WprCols;
+import com.ansi.scilla.common.payroll.validator.EmployeeValidation;
+import com.ansi.scilla.common.payroll.validator.PayrollMessage;
+import com.ansi.scilla.common.payroll.validator.YtdValues;
+import com.ansi.scilla.common.utils.ApplicationProperty;
+import com.ansi.scilla.common.utils.ErrorLevel;
 import com.ansi.scilla.web.common.exception.InvalidFormatException;
 import com.ansi.scilla.web.common.request.AbstractRequest;
 import com.ansi.scilla.web.common.request.RequestValidator;
+import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
+import com.ansi.scilla.web.payroll.common.PayrollValidationResponse;
 import com.ansi.scilla.web.payroll.common.TimesheetValidator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -31,7 +44,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
  * @author dclewis
  *
  */
-public class TimesheetRequest extends AbstractRequest {
+public class TimesheetRequest extends AbstractRequest implements EmployeeValidation {
 
 
 	private static final long serialVersionUID = 1L;
@@ -48,22 +61,10 @@ public class TimesheetRequest extends AbstractRequest {
 	public static final String EMPLOYEE_CODE = "employeeCode";
 	public static final String CITY = "city";
 	
-	public static final String DIRECT_LABOR = "directLabor";
 	public static final String EMPLOYEE_NAME = "employeeName";
-	public static final String EXPENSES = "expenses";
-	public static final String EXPENSES_ALLOWED = "expensesAllowed";
-	public static final String EXPENSES_SUBMITTED = "expensesSubmitted";
-	public static final String GROSS_PAY = "grossPay";
-	public static final String HOLIDAY_HOURS = "holidayHours";
-	public static final String HOLIDAY_PAY = "holidayPay";
-	public static final String OT_HOURS = "otHours";
-	public static final String OT_PAY = "otPay";
 	public static final String PRODUCTIVITY = "productivity";
-	public static final String REGULAR_HOURS = "regularHours";
-	public static final String REGULAR_PAY = "regularPay";
-	public static final String VACATION_HOURS = "vacationHours";
-	public static final String VACATION_PAY = "vacationPay";
-	public static final String VOLUME = "volume";
+	
+
 
 	
 	
@@ -98,31 +99,25 @@ public class TimesheetRequest extends AbstractRequest {
 	private Double vacationPay;
 	private Double volume;
 
+	// indicate whether values or OK / Error (stop processing) / Warning (throw a tantrum, but keep going)
+	private ErrorLevel errorLevel;
 	
-	// This list is used to for validation (here) and to populate
-	// the payroll_worksheet DB record (in TimesheetServlet)
-	// Make note that productivity is not listed here
-	public static final String[] PAYROLL_FIELDNAMES = new String[] {
-		DIRECT_LABOR,
-		EXPENSES,
-		EXPENSES_ALLOWED,
-		EXPENSES_SUBMITTED,
-		GROSS_PAY,
-		HOLIDAY_HOURS,
-		HOLIDAY_PAY,
-		OT_HOURS,
-		OT_PAY,
-		REGULAR_HOURS,
-		REGULAR_PAY,
-		VACATION_HOURS,
-		VACATION_PAY,
-		VOLUME,
-	};
+	// Stuff used for validation	
+	private HashMap<String, List<PayrollMessage>> messageList;    // message map: Field Name -> list of messages for that field
+	private Double unionRate;
+	private Integer standardDivisionId;
+	private Integer standardCompanyId;
+	private String employeeFirstName;
+	private String employeeLastName;
+	private HashMap<String, Double> values;
+	
+	private Logger logger;
 	
 	
 	
 	public TimesheetRequest() {
 		super();
+		this.logger = LogManager.getLogger(TimesheetRequest.class);
 	}
 
 	public TimesheetRequest(HttpServletRequest request) throws InvalidFormatException {
@@ -335,8 +330,144 @@ public class TimesheetRequest extends AbstractRequest {
 	}
 	
 	
+	/**
+	 * There are 2 steps to the validation when adding a new worksheet record:
+	 * 1. Are all the required fields in place, and valid (eg Is division id populated and in the division table?)
+	 * 2. Add this record to the system and do a "what if" to see if we are creating an error / warning situation
+	 * Then we try to take that info and present it to the user in a useful way.
+	 * 
+	 * @param conn
+	 * @param webMessages 
+	 * @return
+	 * @throws PayrollException
+	 */
+	public PayrollValidationResponse validateAdd(Connection conn) throws PayrollException, Exception {
+		ResponseCode responseCode = null;
+		WebMessages webMessages = new WebMessages();
+		
+		// step 1 : the "normal" validation of values
+		validateNumbers(webMessages);
+		RequestValidator.validateId(conn, webMessages, Division.TABLE, Division.DIVISION_ID, DIVISION_ID, this.divisionId, true);
+		RequestValidator.validateState(webMessages, STATE, this.state, true, null);
+		RequestValidator.validateString(webMessages, CITY, this.city, 255, false, null);
+		RequestValidator.validateDate(webMessages, WEEK_ENDING, this.weekEnding, true, null, null);
+		RequestValidator.validateEmployeeCode(conn, webMessages, EMPLOYEE_CODE, this.employeeCode, true, null);
+		if ( webMessages.isEmpty() ) {
+			RequestValidator.validateEmployeeName(conn, webMessages, EMPLOYEE_CODE, employeeCode, employeeName);
+			makeValues();
+		} else {
+			responseCode = ResponseCode.EDIT_FAILURE;
+		}
+		
+		
+		
+		// step 2 : the payroll validation (steal code from ansi_common/payroll/PayrollEmployeeValidator.validate() as needed)
+		//          yes, we have 2 identical if statements. It's less efficient, but it makes the code easier to understand so get over it
+		if ( webMessages.isEmpty() ) {
+			// division id has already been validated, so if this query fails we have bigger problems than a 500 return code
+			Division division = new Division();
+			division.setDivisionId(divisionId);
+			division.selectOne(conn);
 	
-	public WebMessages validate(Connection conn) throws Exception {
+			ApplicationProperties maxExpenseProperty = ApplicationProperty.get(conn, ApplicationProperty.EXPENSE_MAX);
+			Double maxExpenseRate = maxExpenseProperty.getValueFloat().doubleValue();
+	
+			for ( String key : getValues().keySet() ) {
+				logger.log(Level.DEBUG, "values: " + key + "\t" + getValues().get(key));
+			}
+			addMessage(WprCols.EMPLOYEE_NAME, validateEmployeeName(conn));
+			addMessage(WprCols.GROSS_PAY, validateMinimumGovtPay(division)); 
+			addMessage(WprCols.EXPENSES_SUBMITTED, validateExcessExpense(maxExpenseRate));
+			if ( this.employeeCode != null ) {
+				makeEmployeeDefaults(conn, this.employeeCode);
+				YtdValues ytdValues = makeYtdValues(conn, this.employeeCode);
+				if ( ytdValues.isTrue(YtdValues.FieldName.union_member)) {
+					addMessage(WprCols.GROSS_PAY, validateMinimumUnionPay(this.unionRate));
+					addMessage(WprCols.GROSS_PAY, validateYtdMinimumUnionPay(ytdValues));
+				}
+				addMessage(WprCols.GROSS_PAY, validateYtdMinimumGovtPay(ytdValues));
+				addMessage(WprCols.DIVISION, validateHomeDivision(this.standardDivisionId));
+				addMessage(WprCols.DIVISION, validateHomeCompany(division.getGroupId(), this.standardCompanyId));
+				addMessage(WprCols.EXPENSES_SUBMITTED, validateYtdExcessExpense(ytdValues));
+				addMessage(WprCols.WEEK_ENDING, validateLatePay(ytdValues));
+			}
+			
+			
+			//
+			// Now we have potential for errors & warnings in getMessages()
+			// Set the message response level, then convert PayrollMessage to web messages
+			// Then figure out what to do in the JSP
+			
+			switch ( getErrorLevel() ) {
+			case ERROR:
+				responseCode = ResponseCode.EDIT_FAILURE;
+				webMessages = makeWebMessages(getMessageList());
+				break;
+			case OK:
+				responseCode = ResponseCode.SUCCESS;
+				break;
+			case WARNING:
+				responseCode = ResponseCode.EDIT_WARNING;
+				webMessages = makeWebMessages(getMessageList());
+				break;
+			default:
+				throw new InvalidValueException(getErrorLevel() + " is not a valid response");
+			}
+			
+
+		}
+		
+		logger.log(Level.DEBUG, "WebMessages size: " + webMessages.size() );
+		
+		
+		return new PayrollValidationResponse(responseCode, webMessages);
+	}
+	
+
+	
+	
+	
+	
+	/**
+	 * Convert payroll messages to something the JSP will understand
+	 * @param messageList
+	 * @return
+	 */
+	private WebMessages makeWebMessages(HashMap<String, List<PayrollMessage>> messageList) {
+		WebMessages webMessages = new WebMessages();
+		
+		for ( String messageKey : messageList.keySet() ) {
+			logger.log(Level.DEBUG, "MessageKey: " + messageKey);
+			String fieldName = messageKey;
+			try {
+				WprCols wpr = WprCols.valueOf(messageKey);
+				logger.log(Level.DEBUG, "WPR: " + wpr.name());
+				fieldName = wpr == null || StringUtils.isBlank(wpr.fieldName()) ? messageKey : PayrollField.lookup(wpr).fieldName();
+				logger.log(Level.DEBUG, "New fieldname: " + fieldName);
+			} catch ( IllegalArgumentException e ) {
+				// we don't care. If the fieldname is not a wprcols value, we've already defaulted to the fieldname
+			}
+			
+			for ( PayrollMessage message : messageList.get(messageKey) ) {
+				if ( message.getErrorMessage().getErrorLevel() != ErrorLevel.OK ) {
+					webMessages.addMessage(fieldName, message.getErrorMessage().getMessage());
+				}
+			}
+		}
+		
+		return webMessages;
+	}
+
+	
+	
+	/**
+	 * THis is just here so we can steal code -- erase it before we go prod
+	 * @param conn
+	 * @return
+	 * @throws Exception
+	 */
+	@Deprecated
+	public WebMessages validateMe(Connection conn) throws Exception {
 		Logger logger = LogManager.getLogger(this.getClass());
 		WebMessages webMessages = new WebMessages();		
 		validateNumbers(webMessages);
@@ -345,7 +476,7 @@ public class TimesheetRequest extends AbstractRequest {
 		RequestValidator.validateString(webMessages, CITY, this.city, 255, false, null);
 		RequestValidator.validateDate(webMessages, WEEK_ENDING, this.weekEnding, true, null, null);
 		RequestValidator.validateEmployeeCode(conn, webMessages, EMPLOYEE_CODE, this.employeeCode, true, null);
-
+	
 		for ( String x : webMessages.keySet() ) {
 			logger.log(Level.DEBUG, x + "=>" + webMessages.get(x));
 		}
@@ -384,19 +515,64 @@ public class TimesheetRequest extends AbstractRequest {
 		
 		if ( webMessages.isEmpty() ) {
 			TimesheetValidator.validateEmployeeName(conn, webMessages, EMPLOYEE_NAME, this.employeeName, "Employee Name");
-			TimesheetValidator.validateExpenses(conn, webMessages, EXPENSES_SUBMITTED, expensesAllowed, expensesSubmitted, grossPay);
-			TimesheetValidator.validateExpensesYTD(conn, webMessages, EXPENSES_SUBMITTED, employeeCode, weekEnding);
+			TimesheetValidator.validateExpenses(conn, webMessages, PayrollField.EXPENSES_SUBMITTED.fieldName(), expensesAllowed, expensesSubmitted, grossPay);
+			TimesheetValidator.validateExpensesYTD(conn, webMessages, PayrollField.EXPENSES_SUBMITTED.fieldName(), employeeCode, weekEnding);
 		}
 		return webMessages;
 	}
 
-	private void validateNumbers(WebMessages webMessages) throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
-		for (String fieldName : PAYROLL_FIELDNAMES ) {
-			Field field = this.getClass().getDeclaredField(fieldName);
-			Double value = (Double)field.get(this);
-			RequestValidator.validateDouble(webMessages, fieldName, value, 0.0D, (Double)null, false, null);			
+	public WebMessages validateUpdate(Connection conn) throws Exception {
+		Logger logger = LogManager.getLogger(this.getClass());
+		WebMessages webMessages = new WebMessages();		
+		validateNumbers(webMessages);
+		RequestValidator.validateId(conn, webMessages, Division.TABLE, Division.DIVISION_ID, DIVISION_ID, this.divisionId, true);
+		RequestValidator.validateState(webMessages, STATE, this.state, true, null);
+		RequestValidator.validateString(webMessages, CITY, this.city, 255, false, null);
+		RequestValidator.validateDate(webMessages, WEEK_ENDING, this.weekEnding, true, null, null);
+		RequestValidator.validateEmployeeCode(conn, webMessages, EMPLOYEE_CODE, this.employeeCode, true, null);
+	
+		for ( String x : webMessages.keySet() ) {
+			logger.log(Level.DEBUG, x + "=>" + webMessages.get(x));
 		}
-		RequestValidator.validateDouble(webMessages, PRODUCTIVITY, this.productivity, 0.0D, 1.0D, false, null);
+		// Validate code/name combo
+		// Handles: Franklin Roosevelt
+		//			Franklin D Roosevelt
+		//			Franklin D. Roosevelt
+		//			Roosevelt, Franklin
+		//			Roosevelt, Franklin D
+		//			Roosevelt, Franklin D.
+		if ( ! webMessages.containsKey(EMPLOYEE_CODE) ) {
+			String sql = "select count(*) as record_count from payroll_employee pe where pe.employee_code = ? \n" + 
+					"	and (\n" + 
+					"		lower(concat(pe.employee_first_name,' ',pe.employee_last_name)) = ?\n" + 
+					"		or lower(concat(pe.employee_first_name,' ',pe.employee_mi,' ',pe.employee_last_name)) = ?\n" + 
+					"		or lower(concat(pe.employee_first_name,' ',pe.employee_mi,'. ',pe.employee_last_name)) = ?\n" + 
+					"		or lower(concat(pe.employee_last_name,', ',pe.employee_first_name)) = ?\n" + 
+					"		or lower(concat(pe.employee_last_name,', ',pe.employee_first_name,' ',pe.employee_mi)) = ?\n" + 
+					"		or lower(concat(pe.employee_last_name,', ',pe.employee_first_name,' ',pe.employee_mi,'.')) = ?\n" + 
+					"	)";
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setInt(1, employeeCode);
+			for ( int n = 2; n < 8; n++ ) {
+				ps.setString(n, this.employeeName.toLowerCase());
+			}
+			ResultSet rs = ps.executeQuery();
+			if ( rs.next() ) {
+				if ( rs.getInt("record_count") == 0 ) {
+					webMessages.addMessage(EMPLOYEE_CODE, "Invalid EmployeeCode/Employee Name combination");
+				}
+			} else {
+				webMessages.addMessage(EMPLOYEE_CODE, "Error while validating");
+			}
+			rs.close();
+		}
+		
+		if ( webMessages.isEmpty() ) {
+			TimesheetValidator.validateEmployeeName(conn, webMessages, EMPLOYEE_NAME, this.employeeName, "Employee Name");
+			TimesheetValidator.validateExpenses(conn, webMessages, PayrollField.EXPENSES_SUBMITTED.fieldName(), expensesAllowed, expensesSubmitted, grossPay);
+			TimesheetValidator.validateExpensesYTD(conn, webMessages, PayrollField.EXPENSES_SUBMITTED.fieldName(), employeeCode, weekEnding);
+		}
+		return webMessages;
 	}
 
 	public WebMessages validateDelete(Connection conn) throws Exception {
@@ -408,4 +584,139 @@ public class TimesheetRequest extends AbstractRequest {
 		RequestValidator.validateEmployeeCode(conn, webMessages, EMPLOYEE_CODE, this.employeeCode, true, null);
 		return webMessages;
 	}
+
+	private void validateNumbers(WebMessages webMessages) throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+		for (PayrollField payrollField : PayrollField.values() ) {
+			Field field = this.getClass().getDeclaredField(payrollField.fieldName());
+			logger.log(Level.DEBUG, payrollField);
+			Double value = (Double)field.get(this);
+			RequestValidator.validateDouble(webMessages, payrollField.fieldName(), value, 0.0D, (Double)null, false, null);			
+		}
+		RequestValidator.validateDouble(webMessages, PRODUCTIVITY, this.productivity, 0.0D, 1.0D, false, null);
+	}
+
+	
+	
+	private void makeValues() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		if ( this.values == null ) {
+			this.values = new HashMap<String, Double>();
+		}
+		for (PayrollField payrollField : PayrollField.values() ) {
+			String keyValue = payrollField.wpr().fieldName();
+			Field field = this.getClass().getDeclaredField(payrollField.fieldName());
+			Double value = (Double)field.get(this);
+			this.values.put(keyValue, value == null ? 0.0D : value);			
+		}
+	}
+	
+	
+	
+	@Override
+	public ErrorLevel getErrorLevel() {
+		return this.errorLevel;
+	}
+
+	@Override
+	public void setErrorLevel(ErrorLevel errorLevel) {
+		this.errorLevel = errorLevel;		
+	}
+
+	@Override
+	public HashMap<String, List<PayrollMessage>> getMessageList() {
+		return this.messageList;
+	}
+
+	@Override
+	public void setMessageList(HashMap<String, List<PayrollMessage>> messageList) {
+		this.messageList = messageList;		
+	}
+
+	
+
+	@Override
+	public HashMap<String, Double> getValues() {		
+		return this.values;
+	}
+
+	@Override
+	public void setEmployeeFirstName(String emplyeeFirstName) {
+		this.employeeFirstName = emplyeeFirstName;
+	}
+
+	@Override
+	public void setEmployeeLastName(String employeeLastName) {
+		this.employeeLastName = employeeLastName;
+	}
+
+	@Override
+	public void setRow(Integer row) {
+		throw new RuntimeException("We don't use row here");
+		
+	}
+
+	@Override
+	public void setStandardCompanyId(Integer companyId) {
+		this.standardCompanyId = companyId;		
+	}
+
+	@Override
+	public void setStandardDivisionId(Integer divisionId) {
+		this.standardDivisionId = divisionId;
+		
+	}
+
+	@Override
+	public void setUnionRate(Double unionRate) {
+		this.unionRate = unionRate;
+		
+	}
+	
+	
+	
+	/**
+	 * This list is used to for validation (here) and to populate the payroll_worksheet DB record (in TimesheetServlet)
+	 * The mapping is from local field names to WprCols values for the validation utility to work
+	 * 
+	 * Make note that productivity is not listed here
+	 * 
+	 */
+	public enum PayrollField {
+			DIRECT_LABOR("directLabor", WprCols.DIRECT_LABOR),
+			EXPENSES("expenses", WprCols.EXPENSES),
+			EXPENSES_ALLOWED("expensesAllowed", WprCols.EXPENSES_ALLOWED),
+			EXPENSES_SUBMITTED("expensesSubmitted", WprCols.EXPENSES_SUBMITTED),
+			GROSS_PAY("grossPay", WprCols.GROSS_PAY),
+			HOLIDAY_HOURS("holidayHours", WprCols.HOLIDAY_HOURS),
+			HOLIDAY_PAY("holidayPay", WprCols.HOLIDAY_PAY),
+			OT_HOURS("otHours", WprCols.OT_HOURS),
+			OT_PAY("otPay", WprCols.OT_PAY),
+			REGULAR_HOURS("regularHours", WprCols.REGULAR_HOURS),
+			REGULAR_PAY("regularPay", WprCols.REGULAR_PAY),
+			VACATION_HOURS("vacationHours", WprCols.VACATION_HOURS),
+			VACATION_PAY("vacationPay", WprCols.VACATION_PAY),
+			VOLUME("volume", WprCols.VOLUME),
+			;
+		
+		
+		private String fieldName;
+		private WprCols wprCols;
+		
+		private static HashMap<WprCols, PayrollField> lookup;
+		
+		static {
+			lookup = new HashMap<WprCols, PayrollField>();
+			for ( PayrollField payrollField : PayrollField.values() ) {
+				lookup.put(payrollField.wpr(), payrollField);
+			}
+		}
+		
+		private PayrollField(String fieldName, WprCols wprCols) {
+			this.fieldName = fieldName;
+			this.wprCols = wprCols;
+		}
+		
+		public String fieldName() { return this.fieldName; }
+		public WprCols wpr() { return this.wprCols; }
+		public static PayrollField lookup(WprCols wpr) { return lookup.get(wpr); }
+	};
 }
