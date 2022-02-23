@@ -21,6 +21,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.db.Division;
+import com.ansi.scilla.common.payroll.parser.NotAnEmployeeFileException;
 import com.ansi.scilla.web.common.request.AbstractRequest;
 import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.request.UploadParser;
@@ -131,19 +132,26 @@ public class EmployeeImportRequest extends AbstractRequest implements UploadPars
 //		return payrollDateFormat;
 //	}
 	
+	
+	
 	public WebMessages validate(Connection conn) throws Exception {
 //		RequestValidator.validateId(conn, webMessages, Division.TABLE, Division.DIVISION_ID, DIVISION_ID, this.divisionId, true);
 //		if ( ! webMessages.containsKey(PAYROLL_DATE)) {
 //			RequestValidator.validateDay(webMessages, PAYROLL_DATE, this.payrollDate, true, null, null, Calendar.FRIDAY);
 //		}
 		
+		
 		if ( this.employeeFile == null ) {
 			webMessages.addMessage(EMPLOYEE_FILE, "Required Value");
 		} else {
+			
+			
+			
 			String fileName = this.employeeFile.getName();
 			String extension = StringUtils.substringAfterLast(fileName, ".");
 			if ( ! extension.equalsIgnoreCase("csv")) {
 				webMessages.addMessage(EMPLOYEE_FILE, "Invalid file format. Must be csv");
+				
 			}
 		}
 		return webMessages;

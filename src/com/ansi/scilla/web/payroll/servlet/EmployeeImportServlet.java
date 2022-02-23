@@ -81,6 +81,12 @@ public class EmployeeImportServlet extends AbstractServlet {
 //				
 				PreparedStatement ps = conn.prepareStatement("select * from payroll_employee where employee_code=? or (lower(employee_first_name)=? and lower(employee_last_name)=?)");
 				data = new EmployeeImportResponse(conn, uploadRequest);
+				
+//				try {data = new EmployeeImportResponse(conn, uploadRequest);}
+//				catch (InvalidPayrollImportException e) {
+//					webMessages.addMessage(EMPLOYEE_FILE, "Not a valid employee import.");
+//				}
+				
 				CollectionUtils.transform(data.getEmployeeRecords(), new EmployeeRecordTransformer(ps, divMap, employeeStatusMap));
 				responseCode = ResponseCode.SUCCESS;
 			} else {

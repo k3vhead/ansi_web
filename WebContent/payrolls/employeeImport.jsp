@@ -23,6 +23,7 @@
     
     
     <tiles:put name="headextra" type="string">
+    	<link rel="stylesheet" href="css/callNote.css" />
        	<link rel="stylesheet" href="css/lookup.css" />
     	<link rel="stylesheet" href="css/ticket.css" />
     	<link rel="stylesheet" href="css/document.css" />
@@ -30,6 +31,7 @@
     	<script type="text/javascript" src="js/addressUtils.js"></script>
     	<script type="text/javascript" src="js/lookup.js"></script> 
     	<script type="text/javascript" src="js/document.js"></script> 
+    	<script type="text/javascript" src="js/callNote.js"></script>  
     
         <style type="text/css">
         	#display-div {
@@ -115,6 +117,16 @@
                    				var reader = new FileReader();
                    				if ( file == null ) { 
         							$("#prompt-div .employeeFileErr").html("Required Value").show();
+        							var counter = 5;
+        							var interval = setInterval(function() {
+        							    counter--;
+        							  	if (counter <= 0) {
+        							     		clearInterval(interval);
+        							     	$("#prompt-div .employeeFileErr").html("Required Value").hide();
+        							      	 
+        							        return;
+        							    }
+        							}, 1000);
         						
         						} else {
         	           				reader.readAsText(file, 'UTF-8');	           				
@@ -290,22 +302,26 @@
             			        		}
             			        	}, */
             			        	{ title: "Notes", width:"10%", searchable:true, "defaultContent": "", data:'notes' },    			        	
-            			            { title: "Action",  width:"5%", searchable:false,  
+            			            { title: "Action", "orderable": false,  width:"5%", searchable:false,  
             			            	data: function ( row, type, set ) { 
             			            		var $viewLink = '<span class="action-link view-link" data-id="'+row.rowId+'"><webthing:view>Alias</webthing:view></span>';
             			            		var $editLink = '<ansi:hasPermission permissionRequired="PAYROLL_WRITE"><span class="action-link edit-link" data-id="'+row.rowId+'"><webthing:edit>Edit</webthing:edit></span></ansi:hasPermission>';
+            			            		var $noteLink = '<webthing:notes xrefType="EMPLOYEE" xrefId="' + row.quote_id + '">Employee Notes</webthing:notes>';
+            			            		return $editLink + $noteLink + $viewLink;
             			            		var $deleteLink = '';
             			            		if ( row.timesheet_count == 0 ) {
             			            			$deleteLink = '<ansi:hasPermission permissionRequired="PAYROLL_WRITE"><span class="action-link delete-link" data-id="'+row.rowID+'"><webthing:delete>Delete</webthing:delete></span></ansi:hasPermission>';
             			            		}
             			            		var $actionLink = $viewLink + $editLink + $deleteLink;
             			            		return $actionLink;
+            			            		
             			            	}
+            			        	
             			         	   },
             			      		 ],
             			      		 "initComplete": function(settings, json) {
              			            	var myTable = this;
-             			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#employeeLookup", EMPLOYEE_IMPORT.makeEmployeeTable);
+             			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#employeeImport", EMPLOYEE_IMPORT.makeEmployeeTable);
              			            },
              			            drawCallback : function() {
              			            	$(".edit-link").off("click");
@@ -389,10 +405,13 @@
                 		
                    		processUploadFailure : function($data) {
                    			console.log("processUploadFailure");
+                   			$("#workingtag").hide();
                    			$("#prompt-div .err").html("");
                    			$.each($data.data.webMessages, function($index, $value) {
                    				var $selector = "#prompt-div ." + $index + "Err";
                    				$($selector).html($value[0]).show();
+                   				
+                   				
                    			});
                    		},
                    		
@@ -488,7 +507,8 @@
     
    <tiles:put name="content" type="string">
     	<h1>Payroll Employee Import</h1> 
-
+    	
+		<webthing:lookupFilter filterContainer="filter-container" />
    
 	    	
 	    <div id="prompt-div">
@@ -609,6 +629,9 @@
 					<td><input name="notes" /></td>
 					<td><span class="err notesErr"></span></td>
 				</tr>
+			</table>
+			<table>
+				<webthing:callNoteModals />
 			</table>
 		</div>
 		
