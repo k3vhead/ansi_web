@@ -202,10 +202,10 @@ public class TimesheetServlet extends AbstractServlet {
 
 	private void processUpdate(Connection conn, HttpServletResponse response, TimesheetRequest timesheetRequest, SessionData sessionData) throws RecordNotFoundException, Exception {
 		TimesheetResponse data = new TimesheetResponse();
-		ResponseCode responseCode = null;
-		WebMessages webMessages = timesheetRequest.validateUpdate(conn);
+		PayrollValidationResponse validationResponse = timesheetRequest.validateUpdate(conn);
 		
-		if ( webMessages.isEmpty() ) {
+		// do the update for success and warning, but not for failure.
+		if ( ! validationResponse.getResponseCode().equals(ResponseCode.EDIT_FAILURE) ) {
 			Calendar today = AppUtils.getToday();
 			
 			PayrollWorksheet timesheet = new PayrollWorksheet();
@@ -219,14 +219,14 @@ public class TimesheetServlet extends AbstractServlet {
 			timesheet.update(conn, key);
 			
 			conn.commit();
-			responseCode = ResponseCode.SUCCESS;
-		} else {
-			responseCode = ResponseCode.EDIT_FAILURE;
-		}
-		data.setWebMessages(webMessages);
-		super.sendResponse(conn, response, responseCode, data);
+		} 
+		
+		data.setWebMessages(validationResponse.getWebMessages());
+		super.sendResponse(conn, response, validationResponse.getResponseCode(), data);
 	}
 
+	
+	
 	private void processDelete(Connection conn, TimesheetRequest timesheetRequest) throws Exception {
 		PayrollWorksheet timesheet = new PayrollWorksheet();		
 		populateTimesheetKeys(timesheet, timesheetRequest);
