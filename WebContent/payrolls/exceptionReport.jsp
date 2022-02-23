@@ -82,6 +82,7 @@
 			}
 			.view-link {
 				color:#404040;
+				cursor:pointer;
 			}		
         </style>
         
@@ -89,6 +90,8 @@
         
         $(document).ready(function(){
         	;EXCEPTION_REPORT = {
+        		exceptionMap : {},
+        			
         		init : function() {
         			$("#prompt-div select[name='companyCode']").change(function() {
         				$("#prompt-div .companyCodeErr").html("");
@@ -97,36 +100,37 @@
         					$("#prompt-div .companyCodeErr").html("Required Value");
         				} else {
         					EXCEPTION_REPORT.makeExceptionTable($companyCode);
+        					EXCEPTION_REPORT.makeModals();
         				}
        				});
         		},
         		
         		
-        		displayExceptionModal : function($employee_code) {
-        			console.log("displayEmployeeModal");
+        		displayExceptionModal : function($myRow) {
+        			console.log("displayExceptionModal");
         			$("#exception-display input").val("");
         			$("#exception-display select").val("");
         			$("#exception-display .err").html("");
-        			$("#exception-display input[name='employee_code']").val($data.data.employee_code);
-        			$("#exception-display input[name='division_id']").val($data.data.division_id);
-        			$("#exception-display select[name='employee_name']").val($data.data.employee_name);
-        			$("#exception-display select[name='employee_status']").val($data.data.employee_status);
-        			$("#exception-display input[name='union_member']").val($data.data.union_member);
-        			$("#exception-display input[name='union_code']").val($data.data.union_code);
-        			$("#exception-display input[name='under_union_min']").val($data.data.under_union_min);
-        			$("#exception-display input[name='under_government_min']").val($data.data.under_government_min);
-        			$("#exception-display select[name='under_government_min']").val($data.data.under_government_min);
-        			$("#exception-display input[name='expenses_pct']").val($data.data.expenses_pct);
-        			$("#exception-display input[name='expenses_pct']").val($data.data.expenses_pct);
-        			$("#exception-display select[name='expenses_claim']").val($data.data.expenses_claim);
-        			$("#exception-display select[name='ytd_expenses_pct']").val($data.data.ytd_expenses_pct);
-        			$("#exception-display input[name='ytd_expenses_pct']").val($data.data.ytd_expenses_pct);
-        			$("#exception-display input[name='ytd_expenses_claim']").val($data.ytd_expenses_claim);
-        			$("#exception-display select[name='expenses_submitted']").val($data.expenses_submitted);
-        			$("#exception-display select[name='volume']").val($data.volume);
-        			$("#exception-display select[name='direct_labor']").val($data.direct_labor);
-        			$("#exception-display input[name='foreign_company']").val($data.foreign_company);
-        			$("#exception-display input[name='foreign_division']").val($data.foreign_division);
+        			$("#exception-display input[name='employee_code']").val(EXCEPTION_REPORT.exceptionMap[$myRow].employee_code);
+        			$("#exception-display input[name='division_id']").val(EXCEPTION_REPORT.exceptionMap[$myRow].division_id);
+        			$("#exception-display select[name='employee_name']").val(EXCEPTION_REPORT.exceptionMap[$myRow].employee_name);
+        			$("#exception-display select[name='employee_status']").val(EXCEPTION_REPORT.exceptionMap[$myRow].employee_status);
+        			$("#exception-display input[name='union_member']").val(EXCEPTION_REPORT.exceptionMap[$myRow].union_member);
+        			$("#exception-display input[name='union_code']").val(EXCEPTION_REPORT.exceptionMap[$myRow].union_code);
+        			$("#exception-display input[name='under_union_min']").val(EXCEPTION_REPORT.exceptionMap[$myRow].under_union_min);
+        			$("#exception-display input[name='under_government_min']").val(EXCEPTION_REPORT.exceptionMap[$myRow].under_government_min);
+        			$("#exception-display select[name='under_government_min']").val(EXCEPTION_REPORT.exceptionMap[$myRow].under_government_min);
+        			$("#exception-display input[name='expenses_pct']").val(EXCEPTION_REPORT.exceptionMap[$myRow].expenses_pct);
+        			$("#exception-display input[name='expenses_pct']").val(EXCEPTION_REPORT.exceptionMap[$myRow].expenses_pct);
+        			$("#exception-display select[name='expenses_claim']").val(EXCEPTION_REPORT.exceptionMap[$myRow].expenses_claim);
+        			$("#exception-display select[name='ytd_expenses_pct']").val(EXCEPTION_REPORT.exceptionMap[$myRow].ytd_expenses_pct);
+        			$("#exception-display input[name='ytd_expenses_pct']").val(EXCEPTION_REPORT.exceptionMap[$myRow].ytd_expenses_pct);
+        			$("#exception-display input[name='ytd_expenses_claim']").val(EXCEPTION_REPORT.exceptionMap[$myRow].ytd_expenses_claim);
+        			$("#exception-display select[name='expenses_submitted']").val(EXCEPTION_REPORT.exceptionMap[$myRow].expenses_submitted);
+        			$("#exception-display select[name='volume']").val(EXCEPTION_REPORT.exceptionMap[$myRow].volume);
+        			$("#exception-display select[name='direct_labor']").val(EXCEPTION_REPORT.exceptionMap[$myRow].direct_labor);
+        			$("#exception-display input[name='foreign_company']").val(EXCEPTION_REPORT.exceptionMap[$myRow].foreign_company);
+        			$("#exception-display input[name='foreign_division']").val(EXCEPTION_REPORT.exceptionMap[$myRow].foreign_division);
         			
         			$("#exception-display").dialog("open");
         		},
@@ -153,6 +157,7 @@
         				]
         			});	
         			$("#exception_display_cancel").button('option', 'label', 'Done');    
+        			EXCEPTION_REPORT.displayExceptionModal($myRow);
         		},
     		
 
@@ -177,7 +182,7 @@
         			var $unknown = '<webthing:questionmark>Invalid</webthing:questionmark>';
         			
         			$("#exceptionReportTable").DataTable( {
-            			"aaSorting":		[[0,'asc']],
+            			"aaSorting":		[[3,'asc']],
             			"processing": 		true,
             	        "serverSide": 		true,
             	        "autoWidth": 		false,
@@ -243,9 +248,9 @@
             	        "columnDefs": [
              	            { "orderable": true, "targets": -1 },
              	            { className: "dt-head-center", "targets":[]},
-            	            { className: "dt-left", "targets": [2] },
+            	            { className: "dt-left", "targets": [3] },
             	            { className: "dt-center", "targets": [0,1,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19] },
-            	         	{ "visible": false, "targets": [4,5,6,8,10,13,18]},
+            	         	{ "visible": false, "targets": [4,5,6,8,10,13,19]},
             	       		],
             	         	// "paging": true,
     			        "ajax": {
@@ -454,6 +459,7 @@
         			            	var myTable = this;
         			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#exceptionReportTable", EXCEPTION_REPORT.makeExceptionTable);
         			            	$.each(json.data, function($index, $myRow) {
+        			            		EXCEPTION_REPORT.exceptionMap[$myRow.employee_code +" " + $myRow.div +" " + $myRow.week_ending]=$value;
         			            		console.log($myRow.employee_code +" " + $myRow.div +" " + $myRow.week_ending);	
         			            	});
         			             	   
@@ -462,10 +468,10 @@
         			            	//CALL_NOTE.lookupLink();
     			            		$(".view-link").off("click");
         			            	$(".view-link").click(function($clickevent) {
-        			            		var $employee_code = $(this).attr("data-id");
-        			            		console.log("company code: " + $employee_code);
+        			            		var $myRow = $(this).attr("data-id");
+        			            		console.log("exception code: " + $myRow);
         			            		
-        			            		EXCEPTION_REPORT.displayExceptionModal($employee_code);
+        			            		EXCEPTION_REPORT.makeModals($myRow);
         			            	});
         			            }
         			    } );
