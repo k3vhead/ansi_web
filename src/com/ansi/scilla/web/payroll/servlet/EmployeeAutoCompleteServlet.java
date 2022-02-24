@@ -73,7 +73,7 @@ public class EmployeeAutoCompleteServlet extends AbstractAutoCompleteServlet {
 			String fName = rs.getString("employee_first_name");
 			String mi = rs.getString("employee_mi");
 			String lName = rs.getString("employee_last_name");
-			String employeeName = fName + (StringUtils.isBlank(mi) ? " " : " " + mi + " ") + lName;
+			String employeeName = lName + ", " + fName + (StringUtils.isBlank(mi) ? "" : " " + mi);
 			this.label = employeeName;
 			this.value = employeeName;
 			this.id = rs.getInt("employee_code");				

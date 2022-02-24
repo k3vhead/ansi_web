@@ -372,8 +372,8 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 			ApplicationProperties maxExpenseProperty = ApplicationProperty.get(conn, ApplicationProperty.EXPENSE_MAX);
 			Double maxExpenseRate = maxExpenseProperty.getValueFloat().doubleValue();
 	
-			
-			addMessage(WprCols.EMPLOYEE_NAME, validateEmployeeName(conn));
+			// We're not validating name because the name is just used to get the code, and we validate the code before we get here
+//			addMessage(WprCols.EMPLOYEE_NAME, validateEmployeeName(conn));  
 			addMessage(WprCols.GROSS_PAY, validateMinimumGovtPay(division)); 
 			addMessage(WprCols.EXPENSES_SUBMITTED, validateExcessExpense(maxExpenseRate));
 			if ( this.employeeCode != null ) {
