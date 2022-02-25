@@ -185,13 +185,13 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 		this.poNumber = job.getPoNumber();
 		// populate actual po with actual if we have one.
 		// else populate with job's po if we have one
-		if ( StringUtils.isBlank(ticket.getActPoNumber())) {
-			if ( ! StringUtils.isBlank(job.getPoNumber())) {
-				this.actPoNumber = job.getPoNumber();
-			}
-		} else {
+//		if ( StringUtils.isBlank(ticket.getActPoNumber())) {
+//			if ( ! StringUtils.isBlank(job.getPoNumber())) {
+//				this.actPoNumber = job.getPoNumber();
+//			}
+//		} else {
 			this.actPoNumber = ticket.getActPoNumber();
-		}
+//		}
 		makeJobTagList(conn, this.jobId);
 		
 		this.remainingDlAmt = this.actDlAmt.subtract(ticketClaimTotals.getTotalClaimedDlAmt());    
