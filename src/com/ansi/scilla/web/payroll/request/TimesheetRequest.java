@@ -372,10 +372,8 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 			ApplicationProperties maxExpenseProperty = ApplicationProperty.get(conn, ApplicationProperty.EXPENSE_MAX);
 			Double maxExpenseRate = maxExpenseProperty.getValueFloat().doubleValue();
 	
-			for ( String key : getValues().keySet() ) {
-				logger.log(Level.DEBUG, "values: " + key + "\t" + getValues().get(key));
-			}
-			addMessage(WprCols.EMPLOYEE_NAME, validateEmployeeName(conn));
+			// We're not validating name because the name is just used to get the code, and we validate the code before we get here
+//			addMessage(WprCols.EMPLOYEE_NAME, validateEmployeeName(conn));  
 			addMessage(WprCols.GROSS_PAY, validateMinimumGovtPay(division)); 
 			addMessage(WprCols.EXPENSES_SUBMITTED, validateExcessExpense(maxExpenseRate));
 			if ( this.employeeCode != null ) {
@@ -415,10 +413,7 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 			}
 			
 
-		}
-		
-		logger.log(Level.DEBUG, "WebMessages size: " + webMessages.size() );
-		
+		}		
 		
 		return new PayrollValidationResponse(responseCode, webMessages);
 	}
@@ -428,6 +423,77 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 	
 	
 	
+	/**
+	 * There are 2 steps to the validation when update a worksheet record:
+	 * 1. Are all the required fields in place, and valid (eg Is division id populated and in the division table?)
+	 * 2. Add this record to the system and do a "what if" to see if we are creating an error / warning situation
+	 * Then we try to take that info and present it to the user in a useful way.
+	 * 
+	 * @param conn
+	 * @return
+	 * @throws Exception
+	 */
+	public PayrollValidationResponse validateUpdate(Connection conn) throws Exception {
+		Logger logger = LogManager.getLogger(this.getClass());
+		ResponseCode responseCode = null;
+		WebMessages webMessages = new WebMessages();	
+
+		makeValues();
+		validateNumbers(webMessages);
+
+
+
+		// division id has already been validated, so if this query fails we have bigger problems than a 500 return code
+		Division division = new Division();
+		division.setDivisionId(divisionId);
+		division.selectOne(conn);
+
+		ApplicationProperties maxExpenseProperty = ApplicationProperty.get(conn, ApplicationProperty.EXPENSE_MAX);
+		Double maxExpenseRate = maxExpenseProperty.getValueFloat().doubleValue();
+
+
+		addMessage(WprCols.GROSS_PAY, validateMinimumGovtPay(division)); 
+		addMessage(WprCols.EXPENSES_SUBMITTED, validateExcessExpense(maxExpenseRate));
+		if ( this.employeeCode != null ) {
+			makeEmployeeDefaults(conn, this.employeeCode);
+			YtdValues ytdValues = makeYtdValues(conn, this.employeeCode);
+			if ( ytdValues.isTrue(YtdValues.FieldName.union_member)) {
+				addMessage(WprCols.GROSS_PAY, validateMinimumUnionPay(this.unionRate));
+				addMessage(WprCols.GROSS_PAY, validateYtdMinimumUnionPay(ytdValues));
+			}
+			addMessage(WprCols.GROSS_PAY, validateYtdMinimumGovtPay(ytdValues));
+			addMessage(WprCols.DIVISION, validateHomeDivision(this.standardDivisionId));
+			addMessage(WprCols.DIVISION, validateHomeCompany(division.getGroupId(), this.standardCompanyId));
+			addMessage(WprCols.EXPENSES_SUBMITTED, validateYtdExcessExpense(ytdValues));
+			addMessage(WprCols.WEEK_ENDING, validateLatePay(ytdValues));
+		}
+
+
+		// Now we have potential for errors & warnings in getMessages()
+		// Set the message response level, then convert PayrollMessage to web messages
+		// Then figure out what to do in the JSP
+
+		switch ( getErrorLevel() ) {
+		case ERROR:
+			responseCode = ResponseCode.EDIT_FAILURE;
+			webMessages = makeWebMessages(getMessageList());
+			break;
+		case OK:
+			responseCode = ResponseCode.SUCCESS;
+			break;
+		case WARNING:
+			responseCode = ResponseCode.EDIT_WARNING;
+			webMessages = makeWebMessages(getMessageList());
+			break;
+		default:
+			throw new InvalidValueException(getErrorLevel() + " is not a valid response");
+		}
+		
+		return new PayrollValidationResponse(responseCode, webMessages);
+	}
+	
+	
+
 	/**
 	 * Convert payroll messages to something the JSP will understand
 	 * @param messageList
@@ -521,60 +587,7 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 		return webMessages;
 	}
 
-	public WebMessages validateUpdate(Connection conn) throws Exception {
-		Logger logger = LogManager.getLogger(this.getClass());
-		WebMessages webMessages = new WebMessages();		
-		validateNumbers(webMessages);
-		RequestValidator.validateId(conn, webMessages, Division.TABLE, Division.DIVISION_ID, DIVISION_ID, this.divisionId, true);
-		RequestValidator.validateState(webMessages, STATE, this.state, true, null);
-		RequestValidator.validateString(webMessages, CITY, this.city, 255, false, null);
-		RequestValidator.validateDate(webMessages, WEEK_ENDING, this.weekEnding, true, null, null);
-		RequestValidator.validateEmployeeCode(conn, webMessages, EMPLOYEE_CODE, this.employeeCode, true, null);
 	
-		for ( String x : webMessages.keySet() ) {
-			logger.log(Level.DEBUG, x + "=>" + webMessages.get(x));
-		}
-		// Validate code/name combo
-		// Handles: Franklin Roosevelt
-		//			Franklin D Roosevelt
-		//			Franklin D. Roosevelt
-		//			Roosevelt, Franklin
-		//			Roosevelt, Franklin D
-		//			Roosevelt, Franklin D.
-		if ( ! webMessages.containsKey(EMPLOYEE_CODE) ) {
-			String sql = "select count(*) as record_count from payroll_employee pe where pe.employee_code = ? \n" + 
-					"	and (\n" + 
-					"		lower(concat(pe.employee_first_name,' ',pe.employee_last_name)) = ?\n" + 
-					"		or lower(concat(pe.employee_first_name,' ',pe.employee_mi,' ',pe.employee_last_name)) = ?\n" + 
-					"		or lower(concat(pe.employee_first_name,' ',pe.employee_mi,'. ',pe.employee_last_name)) = ?\n" + 
-					"		or lower(concat(pe.employee_last_name,', ',pe.employee_first_name)) = ?\n" + 
-					"		or lower(concat(pe.employee_last_name,', ',pe.employee_first_name,' ',pe.employee_mi)) = ?\n" + 
-					"		or lower(concat(pe.employee_last_name,', ',pe.employee_first_name,' ',pe.employee_mi,'.')) = ?\n" + 
-					"	)";
-			PreparedStatement ps = conn.prepareStatement(sql);
-			ps.setInt(1, employeeCode);
-			for ( int n = 2; n < 8; n++ ) {
-				ps.setString(n, this.employeeName.toLowerCase());
-			}
-			ResultSet rs = ps.executeQuery();
-			if ( rs.next() ) {
-				if ( rs.getInt("record_count") == 0 ) {
-					webMessages.addMessage(EMPLOYEE_CODE, "Invalid EmployeeCode/Employee Name combination");
-				}
-			} else {
-				webMessages.addMessage(EMPLOYEE_CODE, "Error while validating");
-			}
-			rs.close();
-		}
-		
-		if ( webMessages.isEmpty() ) {
-			TimesheetValidator.validateEmployeeName(conn, webMessages, EMPLOYEE_NAME, this.employeeName, "Employee Name");
-			TimesheetValidator.validateExpenses(conn, webMessages, PayrollField.EXPENSES_SUBMITTED.fieldName(), expensesAllowed, expensesSubmitted, grossPay);
-			TimesheetValidator.validateExpensesYTD(conn, webMessages, PayrollField.EXPENSES_SUBMITTED.fieldName(), employeeCode, weekEnding);
-		}
-		return webMessages;
-	}
-
 	public WebMessages validateDelete(Connection conn) throws Exception {
 		WebMessages webMessages = new WebMessages();		
 		RequestValidator.validateId(conn, webMessages, Division.TABLE, Division.DIVISION_ID, DIVISION_ID, this.divisionId, true);

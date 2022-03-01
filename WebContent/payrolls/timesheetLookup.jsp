@@ -286,6 +286,7 @@
            			});
        				$("#edit-modal input[name='action']").val("ADD");
        				$("#edit-modal .update-field").prop("disabled", false);
+       				$("#edit-modal input[name='employeeCode']").prop("disabled", true);
            			$("#edit-modal").dialog("open");
            		},
            		
@@ -664,7 +665,7 @@
 				</tr>
 				<tr>
 					<td><span class="form-label">Employee Code: </span></td>
-					<td><input type="text" name="employeeCode" class="update-field" /></td>
+					<td><input type="text" name="employeeCode" class="update-field" disabled="" /></td>
 					<td><span class="employeeCodeErr err"></span></td>
 				</tr>
 				<tr>

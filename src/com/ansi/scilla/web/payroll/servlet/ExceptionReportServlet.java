@@ -1,8 +1,12 @@
 package com.ansi.scilla.web.payroll.servlet;
 
 import java.io.IOException;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -65,7 +69,7 @@ public class ExceptionReportServlet extends AbstractLookupServlet {
 	public static final String FORMATTED_PROCESS_DATE = "formatted_process_date";
 	
 	
-	
+	public static final String ROW_ID = "row_id";
 	
 
 	private static final long serialVersionUID = 1L;
@@ -207,6 +211,25 @@ public class ExceptionReportServlet extends AbstractLookupServlet {
 			String formattedProcessDate = processDate == null ? null : sdf.format(processDate);
 			arg0.put(FORMATTED_PROCESS_DATE, formattedProcessDate);
 			
+			
+			
+			Integer employeeCode = (Integer)arg0.get(EMPLOYEE_CODE);
+			Integer divisionId = (Integer)arg0.get(DIVISION_ID);
+			String weekEnding = (String)arg0.get("week_ending_display");
+
+			List<String> source = new ArrayList<String>();
+			source.add(employeeCode == null ? "" : String.valueOf(employeeCode));
+			source.add(divisionId == null ? "" : String.valueOf(divisionId));
+			source.add(weekEnding == null ? "" : weekEnding);
+			try {
+				MessageDigest md = MessageDigest.getInstance("MD5");
+				byte[] messageDigest = md.digest(StringUtils.join(source, "").getBytes());
+				BigInteger number = new BigInteger(1, messageDigest);
+				arg0.put(ROW_ID, number.toString(16));
+			} catch (NoSuchAlgorithmException e) {
+				throw new RuntimeException(e);
+			}
+					
 			return arg0;
 		}
 

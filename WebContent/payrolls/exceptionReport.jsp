@@ -107,14 +107,15 @@
         		
         		
         		displayExceptionModal : function($myRow) {
-        			console.log("displayExceptionModal");
+        			console.log("displayExceptionModal: " + $myRow);
+        			console.log(EXCEPTION_REPORT.exceptionMap[$myRow]);
         			$("#exception-display input").val("");
         			$("#exception-display select").val("");
         			$("#exception-display .err").html("");
-        			$("#exception-display input[name='employee_code']").val(EXCEPTION_REPORT.exceptionMap[$myRow].employee_code);
-        			$("#exception-display input[name='division_id']").val(EXCEPTION_REPORT.exceptionMap[$myRow].division_id);
-        			$("#exception-display select[name='employee_name']").val(EXCEPTION_REPORT.exceptionMap[$myRow].employee_name);
-        			$("#exception-display select[name='employee_status']").val(EXCEPTION_REPORT.exceptionMap[$myRow].employee_status);
+        			$("#exception-display input[name='employeeCode']").val(EXCEPTION_REPORT.exceptionMap[$myRow].employee_code);
+        			$("#exception-display select[name='divisionId']").val(EXCEPTION_REPORT.exceptionMap[$myRow].division_id);
+        			$("#exception-display input[name='employeeName']").val(EXCEPTION_REPORT.exceptionMap[$myRow].employee_name);
+        			$("#exception-display select[name='employeeStatus']").val(EXCEPTION_REPORT.exceptionMap[$myRow].employee_status);
         			$("#exception-display input[name='union_member']").val(EXCEPTION_REPORT.exceptionMap[$myRow].union_member);
         			$("#exception-display input[name='union_code']").val(EXCEPTION_REPORT.exceptionMap[$myRow].union_code);
         			$("#exception-display input[name='under_union_min']").val(EXCEPTION_REPORT.exceptionMap[$myRow].under_union_min);
@@ -157,7 +158,7 @@
         				]
         			});	
         			$("#exception_display_cancel").button('option', 'label', 'Done');    
-        			EXCEPTION_REPORT.displayExceptionModal($myRow);
+        			// EXCEPTION_REPORT.displayExceptionModal($myRow);
         		},
     		
 
@@ -250,7 +251,7 @@
              	            { className: "dt-head-center", "targets":[]},
             	            { className: "dt-left", "targets": [3] },
             	            { className: "dt-center", "targets": [0,1,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19] },
-            	         	{ "visible": false, "targets": [4,5,6,8,10,13,19]},
+            	         	{ "visible": false, "targets": [4,5,6,8,10,13]},
             	       		],
             	         	// "paging": true,
     			        "ajax": {
@@ -450,29 +451,29 @@
     			        		},
         			        	{ title: "Action",  width:"5%", searchable:false,  
         			            	data: function ( row, type, set ) { 
-        			            		var $viewLink = '<span class="action-link view-link" data-id="'+row.employeeCode+'"><webthing:view>Exception_Report_Record</webthing:view></span>';
-        			            		var $actionLink = $viewLink;
-        			            		return $actionLink;
+        			            		var $viewLink = '<span class="action-link view-link" data-id="'+row.row_id+'"><webthing:view>Detail</webthing:view></span>';
+        			            		return $viewLink;
         			            	}
         			            }],
         			            "initComplete": function(settings, json) {
         			            	var myTable = this;
         			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#exceptionReportTable", EXCEPTION_REPORT.makeExceptionTable);
         			            	$.each(json.data, function($index, $myRow) {
-        			            		EXCEPTION_REPORT.exceptionMap[$myRow.employee_code +" " + $myRow.div +" " + $myRow.week_ending]=$value;
-        			            		console.log($myRow.employee_code +" " + $myRow.div +" " + $myRow.week_ending);	
+        			            		EXCEPTION_REPORT.exceptionMap[$myRow.row_id]=$myRow;
+        			            		console.log($myRow.row_id + " " + $myRow.employee_code +" " + $myRow.div +" " + $myRow.week_ending);	
         			            	});
-        			             	   
+        			            	
+        			            	
+        			            	$(".view-link").off("click");
+        			            	$(".view-link").click(function($clickevent) {
+        			            		var $myRow = $(this).attr("data-id");
+        			            		console.log("exception row id: " + $myRow);        			            		
+        			        			EXCEPTION_REPORT.displayExceptionModal($myRow);
+        			            	});   
         			            },
         			            "drawCallback": function( settings ) {
         			            	//CALL_NOTE.lookupLink();
-    			            		$(".view-link").off("click");
-        			            	$(".view-link").click(function($clickevent) {
-        			            		var $myRow = $(this).attr("data-id");
-        			            		console.log("exception code: " + $myRow);
-        			            		
-        			            		EXCEPTION_REPORT.makeModals($myRow);
-        			            	});
+    			            		
         			            }
         			    } );
                 	},

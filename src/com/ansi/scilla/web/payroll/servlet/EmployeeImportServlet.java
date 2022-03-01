@@ -20,6 +20,7 @@ import org.apache.logging.log4j.Level;
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.payroll.common.EmployeeStatus;
 import com.ansi.scilla.common.payroll.parser.EmployeeImportRecord;
+import com.ansi.scilla.common.payroll.parser.NotAnEmployeeFileException;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
@@ -80,15 +81,17 @@ public class EmployeeImportServlet extends AbstractServlet {
 				}
 //				
 				PreparedStatement ps = conn.prepareStatement("select * from payroll_employee where employee_code=? or (lower(employee_first_name)=? and lower(employee_last_name)=?)");
-				data = new EmployeeImportResponse(conn, uploadRequest);
 				
-//				try {data = new EmployeeImportResponse(conn, uploadRequest);}
-//				catch (InvalidPayrollImportException e) {
-//					webMessages.addMessage(EMPLOYEE_FILE, "Not a valid employee import.");
-//				}
+				try {
+					data = new EmployeeImportResponse(conn, uploadRequest);
+					CollectionUtils.transform(data.getEmployeeRecords(), new EmployeeRecordTransformer(ps, divMap, employeeStatusMap));
+					responseCode = ResponseCode.SUCCESS;
+				} catch (NotAnEmployeeFileException e) {
+					webMessages.addMessage(EmployeeImportRequest.EMPLOYEE_FILE, "Not a valid employee import.");
+					responseCode = ResponseCode.EDIT_FAILURE;
+				}
 				
-				CollectionUtils.transform(data.getEmployeeRecords(), new EmployeeRecordTransformer(ps, divMap, employeeStatusMap));
-				responseCode = ResponseCode.SUCCESS;
+				
 			} else {
 				responseCode = ResponseCode.EDIT_FAILURE;
 			}
