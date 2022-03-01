@@ -307,12 +307,12 @@
             			            		var $viewLink = '<span class="action-link view-link" data-id="'+row.rowId+'"><webthing:view>Alias</webthing:view></span>';
             			            		var $editLink = '<ansi:hasPermission permissionRequired="PAYROLL_WRITE"><span class="action-link edit-link" data-id="'+row.rowId+'"><webthing:edit>Edit</webthing:edit></span></ansi:hasPermission>';
             			            		var $noteLink = '<webthing:notes xrefType="EMPLOYEE" xrefId="' + row.quote_id + '">Employee Notes</webthing:notes>';
-            			            		return $editLink + $noteLink + $viewLink;
+            			            		
             			            		var $deleteLink = '';
             			            		if ( row.timesheet_count == 0 ) {
             			            			$deleteLink = '<ansi:hasPermission permissionRequired="PAYROLL_WRITE"><span class="action-link delete-link" data-id="'+row.rowID+'"><webthing:delete>Delete</webthing:delete></span></ansi:hasPermission>';
             			            		}
-            			            		var $actionLink = $viewLink + $editLink + $deleteLink;
+            			            		var $actionLink = $viewLink + $editLink + $deleteLink + $notLink;
             			            		return $actionLink;
             			            		
             			            	}
