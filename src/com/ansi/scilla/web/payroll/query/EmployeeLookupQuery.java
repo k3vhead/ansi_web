@@ -37,7 +37,7 @@ public class EmployeeLookupQuery extends LookupQuery {
 	private static final String sqlFromClause =
 			"from payroll_employee \n" +
 			"inner join division on division.division_id=payroll_employee.division_id\n" +
-			"left outer join (select employee_code, count(*) as record_count from payroll_worksheet group by employee_code) as timesheet \n" + 
+			"left outer join (select payroll_worksheet.employee_code, count(*) as record_count from payroll_worksheet group by payroll_worksheet.employee_code) as timesheet \n" + 
 			"	on timesheet.employee_code=payroll_employee.employee_code";
 	private static final String sqlWhereClause = "";
 			

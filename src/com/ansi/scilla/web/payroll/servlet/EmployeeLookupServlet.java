@@ -29,7 +29,7 @@ public class EmployeeLookupServlet extends AbstractLookupServlet {
 	private static final long serialVersionUID = 1L;
 	public static final String REALM = "employeeLookup";
 	
-	public static final String EMPLOYEE_CODE = "employee_code";
+	public static final String EMPLOYEE_CODE = "payroll_employee.employee_code";
 	public static final String COMPANY_CODE = "company_code";
 	public static final String DIVISION = "concat(division.division_nbr, '-',division.division_code)";
 //	public static final String "	division_id";

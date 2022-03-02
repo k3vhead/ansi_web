@@ -33,6 +33,7 @@ import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.payroll.request.EmployeeRequest;
 import com.ansi.scilla.web.payroll.response.EmployeeResponse;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class EmployeeServlet extends AbstractServlet {
@@ -128,7 +129,14 @@ public class EmployeeServlet extends AbstractServlet {
 					processAddRequest(conn, response, employeeRequest, sessionData, today);
 				} else {
 					processUpdateRequest(conn, response, employeeCode, employeeRequest, sessionData.getUser().getUserId(), today);
-				}					
+				}		
+			} catch ( InvalidFormatException e) {
+				String badField = super.findBadField(e.toString());
+				EmployeeResponse data = new EmployeeResponse();
+				WebMessages webMessages = new WebMessages();
+				webMessages.addMessage(badField, "Invalid Format");
+				data.setWebMessages(webMessages);
+				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
 			} catch ( RecordNotFoundException e) {
 				super.sendNotFound(response);
 			} finally {
