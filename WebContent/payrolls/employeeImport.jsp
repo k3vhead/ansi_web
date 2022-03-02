@@ -116,19 +116,11 @@
                    				var file = document.getElementById('employee-file').files[0];
                    				var reader = new FileReader();
                    				if ( file == null ) { 
-        							$("#prompt-div .employeeFileErr").html("Required Value").show();
-        							var counter = 5;
-        							var interval = setInterval(function() {
-        							    counter--;
-        							  	if (counter <= 0) {
-        							     		clearInterval(interval);
-        							     	$("#prompt-div .employeeFileErr").html("Required Value").hide();
-        							      	 
-        							        return;
-        							    }
-        							}, 1000);
+        							$("#prompt-div .employeeFileErr").html("Required Value").fadeIn(10).fadeOut(4000);
+        							
         						
-        						} else {
+        						}  
+                   				else {
         	           				reader.readAsText(file, 'UTF-8');	           				
         	           				reader.onload = EMPLOYEE_IMPORT.saveFile;
         	           				// reader.onprogress ...  (progress bar)
@@ -143,6 +135,7 @@
                    				$("#prompt-div").show();
                    				$("#employee-display").hide();
                    				$("#workingtag").hide();
+                   				$("#employee-file").val(null);
                    			});
                    		},
                    		
@@ -304,16 +297,16 @@
             			        	{ title: "Notes", width:"10%", searchable:true, "defaultContent": "", data:'notes' },    			        	
             			            { title: "Action", "orderable": false,  width:"5%", searchable:false,  
             			            	data: function ( row, type, set ) { 
-            			            		var $viewLink = '<span class="action-link view-link" data-id="'+row.rowId+'"><webthing:view>Alias</webthing:view></span>';
+            			            		/* var $viewLink = '<span class="action-link view-link" data-id="'+row.rowId+'"><webthing:view>Alias</webthing:view></span>'; */
             			            		var $editLink = '<ansi:hasPermission permissionRequired="PAYROLL_WRITE"><span class="action-link edit-link" data-id="'+row.rowId+'"><webthing:edit>Edit</webthing:edit></span></ansi:hasPermission>';
-            			            		var $noteLink = '<webthing:notes xrefType="EMPLOYEE" xrefId="' + row.quote_id + '">Employee Notes</webthing:notes>';
-            			            		
-            			            		var $deleteLink = '';
+            			            		/* var $noteLink = '<webthing:notes xrefType="EMPLOYEE" xrefId="' + row.quote_id + '">Employee Notes</webthing:notes>'; */
+            			            		return $editLink;
+            			            		/* var $deleteLink = '';
             			            		if ( row.timesheet_count == 0 ) {
             			            			$deleteLink = '<ansi:hasPermission permissionRequired="PAYROLL_WRITE"><span class="action-link delete-link" data-id="'+row.rowID+'"><webthing:delete>Delete</webthing:delete></span></ansi:hasPermission>';
             			            		}
-            			            		var $actionLink = $viewLink + $editLink + $deleteLink + $notLink;
-            			            		return $actionLink;
+            			            		var $actionLink = $viewLink + $editLink + $deleteLink;
+            			            		return $actionLink; */
             			            		
             			            	}
             			        	
@@ -409,7 +402,12 @@
                    			$("#prompt-div .err").html("");
                    			$.each($data.data.webMessages, function($index, $value) {
                    				var $selector = "#prompt-div ." + $index + "Err";
-                   				$($selector).html($value[0]).show();
+                   				$($selector).html($value[0]).fadeIn(10).fadeOut(4000);
+                   				/* var interval = setInterval(function() {
+    								clearInterval(interval);
+    							     $("#prompt-div .employeeFileErr").html("").hide();
+    							     return;
+    							    }, 4000); */
                    				
                    				
                    			});
@@ -508,10 +506,11 @@
    <tiles:put name="content" type="string">
     	<h1>Payroll Employee Import</h1> 
     	
-		<webthing:lookupFilter filterContainer="filter-container" />
+		
    
 	    	
 	    <div id="prompt-div">
+	   
 	    <table>
     		
     		<tr>
@@ -531,7 +530,9 @@
 	    	<webthing:working />
 	    </div>
     	
-    	<table id="display-div">
+    	<div id="display-div">
+    	 <webthing:lookupFilter filterContainer="filter-container" />
+    	<table>
     		<tr id="makeedit">
    				<td><span class="form-label">Paycom Import File:</span></td>
    				<td><span class="employeeFile"></span></td>
@@ -539,7 +540,7 @@
    				
     		</tr>
     	</table>
-    	
+    	</div>
 		<div id="employee-display">
 			<div class="employee-message err"></div>
 			<table id="employeeImport">				
