@@ -10,6 +10,7 @@
 <%@ taglib uri="WEB-INF/struts-bean.tld"  prefix="bean"  %>
 <%@ taglib uri="WEB-INF/struts-tiles.tld" prefix="tiles" %>
 <%@ taglib tagdir="/WEB-INF/tags/webthing" prefix="webthing" %>
+<%@ taglib tagdir="/WEB-INF/tags/document" prefix="document" %>
 <%@ taglib uri="WEB-INF/theTagThing.tld" prefix="ansi" %>
 
 
@@ -25,11 +26,14 @@
     <tiles:put name="headextra" type="string">
        	<link rel="stylesheet" href="css/callNote.css" />
     	<link rel="stylesheet" href="css/accordion.css" type="text/css" />
+    	<link rel="stylesheet" href="css/document.css" type="text/css" />
     	
     
     	<script type="text/javascript" src="js/ansi_utils.js"></script>
    	 	<script type="text/javascript" src="js/addressUtils.js"></script>
-   	 	<script type="text/javascript" src="js/callNote.js"></script>
+   	 	<script type="text/javascript" src="js/lookup.js"></script>
+   	 	<script type="text/javascript" src="js/callNote.js"></script>   	 	
+   	 	<jsp:include page="documents/documentViewJS.jsp" /> <%-- We do this way so the custom tags in the JS will get parsed properly --%>
    	 	
         <style type="text/css">
         	td { border:solid 1px #FF000;}
@@ -92,7 +96,9 @@
 			.dataTables_scrollBody, .dataTables_scrollHead, .display dataTable, .dataTables_scroll {
 				width:1360px;
 			}
-			
+			.documentAction {
+				cursor:pointer;
+			}
 			.formLabel {
 				font-weight:bold;
 			}
@@ -145,6 +151,10 @@
 				; ADDRESSMAINTENANCE = {
 					ansiModal : '<c:out value="${ANSI_MODAL}" />',
 					dataTable : null,
+					countryList : null,
+			   		invoiceGrouping : null,
+			   		invoiceTerm : null,
+			   		invoiceStyle : null,
 			
 					init : function() {
 						CALLNOTE.init();
@@ -162,6 +172,7 @@
 	    					$('html, body').animate({scrollTop: 0}, 800);
 	    	      	  		return false;
 	    	      	    });
+	    				DOCVIEW.init();
 					},	
 					
 					
@@ -259,17 +270,21 @@
 //					            } },
 					            
 					            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
-					            	$viewLink = '<a href="#" class="viewAction" data-id="'+row.addressId+'"><webthing:view>View</webthing:view></a>';
-					            	$editLink = '<ansi:hasPermission permissionRequired="ADDRESS_WRITE"><a href="#" class="editAction" data-id="'+row.addressId+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>';
-					            	$copyLink = '<ansi:hasPermission permissionRequired="ADDRESS_WRITE"><a href="#" class="copyAction" data-id="'+row.addressId+'"><webthing:copy>Copy</webthing:copy></a></ansi:hasPermission>';
-					            	$deleteLink = '<ansi:hasPermission permissionRequired="ADDRESS_WRITE"><a href="#" class="delAction" data-id="'+row.addressId+'"><webthing:delete>Delete</webthing:delete></a></ansi:hasPermission>';					            	
+					            	var $viewLink = '<a href="#" class="viewAction" data-id="'+row.addressId+'"><webthing:view>View</webthing:view></a>';
+					            	var $editLink = '<ansi:hasPermission permissionRequired="ADDRESS_WRITE"><a href="#" class="editAction" data-id="'+row.addressId+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>';
+					            	var $copyLink = '<ansi:hasPermission permissionRequired="ADDRESS_WRITE"><a href="#" class="copyAction" data-id="'+row.addressId+'"><webthing:copy>Copy</webthing:copy></a></ansi:hasPermission>';
+					            	var $deleteLink = '<ansi:hasPermission permissionRequired="ADDRESS_WRITE"><a href="#" class="delAction" data-id="'+row.addressId+'"><webthing:delete>Delete</webthing:delete></a></ansi:hasPermission>';					            	
 					            	var $noteLink = '<webthing:notes xrefType="ADDRESS" xrefId="' + row.addressId + '" xrefName="'+row.name+'">Address Notes</webthing:notes>'
+				            		var $docLink = "";
+					            	if ( row.documentCount > 0 ) {
+					            		$docLink = '<webthing:document styleClass="documentAction" xrefType="TAX_EXEMPT" xrefId="'+row.addressId+'">Tax Exempt Document</webthing:document>';
+					            	}
 					            	
 					            	$action = $viewLink + " " + $editLink + " " + $copyLink;
 					            	if(row.count < 1) {
 					            		$action = $action + " " + $deleteLink;
 					            	}
-					            	$action = $action + " " + $noteLink;
+					            	$action = $action + " " + $noteLink + " " + $docLink;
 					            	return $action;	
 					            } }],
 					            "initComplete": function(settings, json) {
@@ -278,6 +293,7 @@
 					            "drawCallback": function( settings ) {
 					            	ADDRESSMAINTENANCE.doFunctionBinding();
 					            	CALLNOTE.lookupLink();
+					            	DOCVIEW.lookupLink("documentAction");
 					            }
 					            
 					            
@@ -773,18 +789,31 @@
 							$("#jobsiteBuildingTypeDefaultErr").hide();
 						});
 					},
+				   	
+				   	populateOptionList : function ($optionData) {	
+				   		ADDRESSMAINTENANCE.countryList = $optionData.country;
+				   		ADDRESSMAINTENANCE.invoiceGrouping = $optionData.invoiceGrouping;
+				   		ADDRESSMAINTENANCE.invoiceTerm = $optionData.invoiceTerm;
+				   		ADDRESSMAINTENANCE.invoiceStyle = $optionData.invoiceStyle;
+				   		ADDRESSMAINTENANCE.populateOptionLists();
+				   	},
 					
-					
-					makeOptionLists : function(){
-						$optionData = ANSI_UTILS.getOptions('COUNTRY,INVOICE_GROUPING,INVOICE_STYLE,INVOICE_TERM');
-						var $countryList = $optionData.country;
-						//$jobSiteDetail = "";
+					makeOptionLists : function (){
+	        			console.log("Making options");
 
+						ANSI_UTILS.getOptionList('COUNTRY,INVOICE_GROUPING,INVOICE_STYLE,INVOICE_TERM',ADDRESSMAINTENANCE.populateOptionList);
 						$('option', "#addAddressForm select[name='countryCode']").remove();
 						$('option', "#addAddressForm select[name='state']").remove();
 						$("#addAddressForm select[name='countryCode']").append(new Option("", ""));
 						$("#addAddressForm select[name='state']").append(new Option("", ""));
-		                $.each($countryList, function($index, $value) {
+					},
+				   	
+				   	
+					populateOptionLists : function(){	
+	        			console.log("Making all the things");
+						//var $countryList = $optionData.country;
+						//$jobSiteDetail = "";
+		                $.each(ADDRESSMAINTENANCE.countryList, function($index, $value) {
 		                	$("#addAddressForm select[name='countryCode']").append(new Option($value.display, $value.abbrev));
 		                	
 		                	var $optGroup = $("<optgroup>");
@@ -796,9 +825,9 @@
 		                });
 		                
 		                
-		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceGroupingDefault']", $optionData.invoiceGrouping, null);
-		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceTermsDefault']", $optionData.invoiceTerm, null);
-		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceStyleDefault']", $optionData.invoiceStyle,null);
+		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceGroupingDefault']", ADDRESSMAINTENANCE.invoiceGrouping, null);
+		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceTermsDefault']", ADDRESSMAINTENANCE.invoiceTerm, null);
+		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceStyleDefault']", ADDRESSMAINTENANCE.invoiceStyle,null);
 		                
 		                
 		                // get building type options
@@ -897,11 +926,6 @@
     <tiles:put name="content" type="string">
     	<h1><bean:message key="page.label.address" /> <bean:message key="menu.label.lookup" /></h1>    	
 
-	    <ansi:hasPermission permissionRequired="ADDRESS_WRITE">
-   			<div class="addButtonDiv">
-   				<input type="button" class="addButton prettyWideButton" value="New" />
-   			</div>
-		</ansi:hasPermission>
  		<table id="addressTable" class="display" cellspacing="0" style="font-size:9pt;">
 	        <thead>
 	            <tr>
@@ -1205,6 +1229,7 @@
     	<webthing:scrolltop />
     		
     	<webthing:callNoteModals />
+    	<document:documentViewModals />
     </tiles:put>	
 </tiles:insert>
 

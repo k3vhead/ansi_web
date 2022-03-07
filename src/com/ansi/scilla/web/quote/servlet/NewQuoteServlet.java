@@ -3,7 +3,9 @@ package com.ansi.scilla.web.quote.servlet;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -19,6 +21,8 @@ import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
 import com.ansi.scilla.common.exceptions.InvalidJobStatusException;
 import com.ansi.scilla.common.jobticket.JobStatus;
+import com.ansi.scilla.common.jobticket.JobTagDisplay;
+import com.ansi.scilla.common.jobticket.JobUtils;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.struts.SessionData;
@@ -42,6 +46,7 @@ import com.ansi.scilla.web.quote.response.QuoteResponseItem;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class NewQuoteServlet extends AbstractQuoteServlet {
@@ -91,6 +96,19 @@ public class NewQuoteServlet extends AbstractQuoteServlet {
 			
 		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
 			super.sendForbidden(response);
+		} catch (InvalidFormatException e) {
+			String badField = super.findBadField(e.toString());
+			QuoteResponse data = new QuoteResponse();
+			WebMessages messages = new WebMessages();
+			messages.addMessage(badField, "Invalid Format");
+			data.setWebMessages(messages);
+			try {
+				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
+			} catch (Exception e2) {
+				AppUtils.logException(e2);
+				AppUtils.rollbackQuiet(conn);
+				throw new ServletException(e2);
+			}
 		} catch ( Exception e ) {
 			AppUtils.logException(e);
 			AppUtils.rollbackQuiet(conn);
@@ -196,14 +214,23 @@ public class NewQuoteServlet extends AbstractQuoteServlet {
 		try {
 			webMessages = jobRequest.validateNewQuote(conn);
 			if ( webMessages.isEmpty() ) {
-				Job newJob = populateNewJob(jobRequest);
-				logger.log(Level.DEBUG, newJob);
-				JobDetail jobDetail = new JobDetail(newJob, new User(), new User());
-				logger.log(Level.DEBUG, jobDetail);
-				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
-				responseCode = ResponseCode.SUCCESS;
-				jobDetailResponse = new JobDetailResponse();
-				jobDetailResponse.setJob(jobDetail);
+				if ( ! JobUtils.isValidDLPct(jobRequest.getDirectLaborPct())) {
+					webMessages.addMessage("directLaborPct", "Invalid DL Pct");
+					responseCode = ResponseCode.EDIT_FAILURE;
+				} else {
+					Job newJob = populateNewJob(jobRequest);
+					List<JobTagDisplay> jobTagDisplayList = new ArrayList<JobTagDisplay>();
+					if ( jobRequest.getJobtags() != null && jobRequest.getJobtags().length > 0 ) {
+						jobTagDisplayList = JobTagDisplay.makeDisplayList(conn, jobRequest.getJobtags());
+					}
+					logger.log(Level.DEBUG, newJob);
+					JobDetail jobDetail = new JobDetail(conn, newJob, jobTagDisplayList, new User(), new User());
+					logger.log(Level.DEBUG, jobDetail);
+					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
+					responseCode = ResponseCode.SUCCESS;
+					jobDetailResponse = new JobDetailResponse();
+					jobDetailResponse.setJob(jobDetail);
+				}
 			} else {
 				responseCode = ResponseCode.EDIT_FAILURE;
 			}

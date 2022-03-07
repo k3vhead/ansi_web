@@ -36,6 +36,11 @@ public enum Permission {
 	JOB_WRITE(JOB_READ, true, "Can Edit jobs"),   // this is for backwards compatibility
 	**/
 	
+	JOBTAG(null, false, "Functional Area: Job Tags"),
+	JOBTAG_READ(JOBTAG, false, "For consistency only, we actually use quote_read"),
+	JOBTAG_WRITE(JOBTAG_READ, false, "Edit/Delete Job Tags"),
+	
+	
 	TICKET(null, true, "Functional area: Tickets"),
 	TICKET_READ(TICKET, true, "Read-only access to Tickets"),		// this is for backwards compatibility
 	TICKET_WRITE(TICKET_READ, true, "Edit Tickets"),		// this is for backwards compatibility
@@ -87,6 +92,12 @@ public enum Permission {
 	ACTIVITIES(null, false, "Can Perform External Activities"),
 	CAN_RUN_TICKETS(ACTIVITIES, true, "Can wash windows, etc"),
 	CAN_COMPLETE_TICKETS(CAN_RUN_TICKETS, true, "Can set tickets to ready-to-bill"),
+	
+	PAYROLL(null, false, "Functional Area: Payroll"),
+	PAYROLL_READ(PAYROLL, false, "Can read payroll information"),
+	PAYROLL_WRITE(PAYROLL_READ, false, "Can create/update payroll data"),
+	PAYROLL_OVERRIDE(PAYROLL_WRITE, false, "Can override payroll information"),
+	
 	
 	PERMISSIONS(null, false, "Functional Area: Permissions"),
 	PERMISSIONS_READ(PERMISSIONS, false, "Can read permission group assignments"),
@@ -141,9 +152,10 @@ public enum Permission {
 	DEVELOPMENT(null, false, "Functional Area: System Developers"),
 	DEV(DEVELOPMENT, false, "Can Access Developer Areas"),
 
-	DOCUMENTS(null, false, "Functional Area: Documents"),
-	DOCUMENTS_READ(DOCUMENTS, false, "Can read stored documents"),
-	DOCUMENTS_WRITE(DOCUMENTS_READ, false, "Can store documents"),
+
+	DOCUMENT(null, false, "Functional Area: Documents"),
+	DOCUMENT_READ(DOCUMENT, false, "Can read stored documents"),
+	DOCUMENT_WRITE(DOCUMENT_READ, false, "Can store documents"),
 
 	CALENDAR(null, false, "Functional Area: Calendar"),
 	CALENDAR_READ(CALENDAR, false, "Can see the corporate calendar"),
@@ -155,6 +167,15 @@ public enum Permission {
 
 	BATCH_LOG(null, false, "Functional Area: Batch Logging"),
 	BATCH_LOG_READ(BATCH_LOG, false, "Can view the batch log"),
+	
+	LEADERSHIP(null, false, "Functional Area: Leadership"),
+	LEADERSHIP_READ(LEADERSHIP, false, "Limited to corporate leaders - read-only"),
+	LEADERSHIP_WRITE(LEADERSHIP_READ, false, "Limited to corporate leaders - CRUD"),
+
+	REPORT_DISTRIBUTION(null, false, "Functional Area: Report Distribution"),
+	REPORT_DISTRIBUTION_READ(REPORT_DISTRIBUTION, false, "Can read other report subscriptions"),
+	REPORT_DISTRIBUTION_WRITE(REPORT_DISTRIBUTION_READ, false, "Can write report subscriptions"),
+	REPORT_DISTRIBUTION_OVERRIDE(REPORT_DISTRIBUTION_WRITE, false, "Can read/write other users' report subscriptions"),
 	;
 	
 	private final Boolean divisionSpecific;

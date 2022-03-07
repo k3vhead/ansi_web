@@ -139,7 +139,7 @@ public class NonDirectLaborServlet extends AbstractCrudServlet {
 			division.selectOne(conn);
 			logger.log(Level.DEBUG, division);
 			Double maxRegHrsPerDay = division.getMaxRegHrsPerDay() == null ? 24.0D : division.getMaxRegHrsPerDay() * 1.0D;  // make java 11 happy because they deprecated all the good constructors
-			RequestValidator.validateNumber(webMessages, "hours", addRequest.get("hours"), 0.0D, maxRegHrsPerDay, true);
+			RequestValidator.validateNumber(webMessages, "hours", addRequest.get("hours"), 0.0D, maxRegHrsPerDay, true, null);
 		} catch ( RecordNotFoundException e) {
 			// this would have been caught with the divisionid validation
 			logger.log(Level.DEBUG, "Hours validation was skipped b/c of Record Not Found");
@@ -157,7 +157,7 @@ public class NonDirectLaborServlet extends AbstractCrudServlet {
 			Double hours = (Double)addRequest.get(HOURS);
 			Date workDate = standardDateFormat.parse((String)addRequest.get(WORK_DATE));
 			Double minimumPay = workType.calculateDefaultPay(conn, divisionId, workerId, workDate, hours);
-			RequestValidator.validateNumber(webMessages, ACT_PAYOUT_AMT, addRequest.get(ACT_PAYOUT_AMT), minimumPay, null, true);
+			RequestValidator.validateNumber(webMessages, ACT_PAYOUT_AMT, addRequest.get(ACT_PAYOUT_AMT), minimumPay, null, true, null);
 		}
 		
 		return webMessages;

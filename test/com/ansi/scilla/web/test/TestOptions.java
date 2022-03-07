@@ -16,6 +16,7 @@ public class TestOptions {
 				OptionsListResponse r = new OptionsListResponse(o, null);
 				String json = r.toJson();
 //				String json = TesterUtils.getJson("http://127.0.0.1:8080/ansi_web/options?INVOICE_STYLE");
+				System.out.println(x.name());
 				System.out.println(json);
 				System.out.println("*********************");
 			}

@@ -4,13 +4,25 @@
 		<Console name="STDOUT" target="SYSTEM_OUT">
 			<PatternLayout pattern="%d{yyyy/MM/dd HH:mm:ss.S} | %p | %l | %m%n"/>
 		</Console>
-		<File name="transaction_log" fileName="/home/dclewis/Documents/webthing_v2/projects/ANSI/testresults/logs/ansi_scilla_transaction_log" append="true">
+		<File name="transaction_log" fileName="logs/ansi_scilla_transaction_log" append="true">
+			<PatternLayout pattern="%d{yyyy/MM/dd HH:mm:ss.S} | %p | %l | %m%n"/>
+		</File>
+		<File name="stress_log" fileName="logs/ansi_scilla_stress.log" append="false">
+			<PatternLayout pattern="%d{yyyy/MM/dd HH:mm:ss.S} | %p | %l | %m%n"/>
+		</File>
+		<File name="stress_stop_log" fileName="logs/ansi_scilla_stress_stop.log" append="false">
 			<PatternLayout pattern="%d{yyyy/MM/dd HH:mm:ss.S} | %p | %l | %m%n"/>
 		</File>
 	</Appenders>
 	
 	
 	<Loggers>
+		<Logger name="ansi_stress_log" level="debug">
+			<appender-ref ref="stress_log" level="debug" />
+		</Logger>
+		<Logger name="ansi_stress_stop_log" level="debug">
+			<appender-ref ref="stress_stop_log" level="debug" />
+		</Logger>
 		<Logger name="com.ansi.scilla" level="debug">
 			<appender-ref ref="STDOUT" level="debug" />
 		</Logger>

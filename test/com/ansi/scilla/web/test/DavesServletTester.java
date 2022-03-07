@@ -75,6 +75,9 @@ public class DavesServletTester extends TestServlet {
 			throw new Exception("Huh");
 		}
 		
+		return results;
+	}
+		
 	private String testCallNote(Header sessionCookie) throws ClientProtocolException, URISyntaxException, IOException {
 		String url = "/ansi_web/callNote/callNote/PAYMENT/49907";
 		String results = super.doGet(sessionCookie, url, (HashMap<String, String>)null);

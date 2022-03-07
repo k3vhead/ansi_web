@@ -1,0 +1,18 @@
+package com.ansi.scilla.web.test.bcr;
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
+import com.ansi.scilla.common.utils.WorkYear;
+
+public class TestDateTrunc {
+
+	private void go() {
+		WorkYear wd = new WorkYear(2020);
+	}
+	
+	public static void main(String[] args) {
+		new TestDateTrunc().go();
+	}
+
+}

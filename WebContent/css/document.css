@@ -1,0 +1,24 @@
+#new-document-modal {
+	display:none;
+}
+#document-upload-message-modal {
+	display:none;
+}
+#documentConfirmation {
+	display:none;
+	width:400px;
+	height:400px;
+	text-align:center;
+	vertical-align:center;
+}
+#documentViewer {
+	display:none;
+	width:1000px;
+	height:800px;
+}
+.document-message {
+	font-weight:bold;
+}   
+.document-view-action-link {
+	color:#000000;
+}

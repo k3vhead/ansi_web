@@ -56,13 +56,14 @@ public class JobDetailResponse extends ApplicationObject {
 		
 		User addedBy = new User();
 		try {
-		addedBy.setUserId(job.getAddedBy());
-		addedBy.selectOne(conn);
+			addedBy.setUserId(job.getAddedBy());
+			addedBy.selectOne(conn);
 		} catch ( RecordNotFoundException e ) {
 			// not good, but not fatal here either
 		}
 
-		this.job = new JobDetail(job, addedBy, updatedBy);
+		
+		this.job = new JobDetail(conn, job, addedBy, updatedBy);
 
 		
 		logger.log(Level.DEBUG, this.job.toJson());

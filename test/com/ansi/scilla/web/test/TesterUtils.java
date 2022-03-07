@@ -1,6 +1,12 @@
 package com.ansi.scilla.web.test;
 
 import java.io.StringWriter;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
@@ -13,6 +19,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
+import com.ansi.scilla.web.common.struts.SessionDivision;
 import com.thewebthing.commons.lang.StringUtils;
 
 public class TesterUtils {
@@ -89,5 +96,26 @@ public class TesterUtils {
 			response.close();
 		}
 		return pageContent;
+	}
+	
+	public static List<SessionDivision> makeSessionDivisionList(Connection conn, Integer userId) throws SQLException {
+		List<SessionDivision> sessionDivisionList = new ArrayList<SessionDivision>();
+		String sql = "select division.division_id, division.division_nbr, division.division_code \n" + 
+				"from division \n" + 
+				"inner join division_user on division_user.division_id =division.division_id and division_user.user_id=?\n" + 
+				"order by division_id";
+		PreparedStatement ps = conn.prepareStatement(sql);
+		ps.setInt(1,  userId);
+		ResultSet rs = ps.executeQuery();
+		while ( rs.next() ) {
+			SessionDivision sd = new SessionDivision();
+			sd.setDivisionCode(rs.getString("division_code"));
+			sd.setDivisionId(rs.getInt("division_id"));
+			sd.setDivisionNbr(rs.getInt("division_nbr"));
+			sessionDivisionList.add(sd);
+		}
+		rs.close();
+		return sessionDivisionList;
+		
 	}
 }

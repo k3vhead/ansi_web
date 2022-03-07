@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -245,7 +246,8 @@ public abstract class LookupQuery extends ApplicationObject {
 		String offsetPhrase = makeOffset(selectType, offset);
 		String fetchPhrase = makeFetch(selectType, rowCount);
 		String orderByPhrase = makeOrderBy(selectType);
-		String wherePhrase = selectType.equals(SelectType.COUNTALL) ? baseWhereClause : makeWhereClause(this.searchTerm);
+		String searchPhrase = this.searchTerm.indexOf("'") > -1 ? this.searchTerm.replaceAll("'", "''") : this.searchTerm;
+		String wherePhrase = selectType.equals(SelectType.COUNTALL) ? baseWhereClause : makeWhereClause(searchPhrase);
 		String filterPhrase = makeFilterPhrase(wherePhrase);
 		
 		this.logger.log(Level.DEBUG, "wherePhrase: " + wherePhrase);
@@ -310,6 +312,9 @@ public abstract class LookupQuery extends ApplicationObject {
 				} else if ( o instanceof java.util.Date) {
 					java.util.Date date = (java.util.Date)o;
 					ps.setDate(idx, new java.sql.Date(date.getTime()));
+				} else if ( o instanceof java.util.GregorianCalendar) {
+					GregorianCalendar date = (GregorianCalendar)o;
+					ps.setDate(idx, new java.sql.Date(date.getTime().getTime()));
 				} else {
 					throw new RuntimeException("Add another value to the else for " + o.getClass().getName());
 				}
@@ -347,7 +352,7 @@ public abstract class LookupQuery extends ApplicationObject {
 			Method method;
 			try {
 				method = ColumnFilter.class.getMethod(filter.getComparisonType().getMethodName());
-				String value = (String)method.invoke(filter);
+				String value = (String)method.invoke(filter);				
 				return value;
 			} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				throw new RuntimeException(e);

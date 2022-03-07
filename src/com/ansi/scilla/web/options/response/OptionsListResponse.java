@@ -12,12 +12,15 @@ import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.address.Country;
 import com.ansi.scilla.common.claims.WorkHoursType;
+import com.ansi.scilla.common.document.DocumentType;
 import com.ansi.scilla.common.employee.EmployeeHoursType;
 import com.ansi.scilla.common.invoice.InvoiceGrouping;
 import com.ansi.scilla.common.invoice.InvoiceStyle;
 import com.ansi.scilla.common.invoice.InvoiceTerm;
 import com.ansi.scilla.common.jobticket.JobFrequency;
 import com.ansi.scilla.common.jobticket.JobStatus;
+import com.ansi.scilla.common.jobticket.JobTagStatus;
+import com.ansi.scilla.common.jobticket.JobTagType;
 import com.ansi.scilla.common.jobticket.TicketStatus;
 import com.ansi.scilla.common.payment.PaymentMethod;
 import com.ansi.scilla.common.utils.LocaleType;
@@ -28,6 +31,8 @@ import com.ansi.scilla.web.report.common.ReportType;
 
 public class OptionsListResponse extends MessageResponse {
 	private static final long serialVersionUID = 1L;
+	private Logger logger;
+	
 	private List<JobFrequencyOption> jobFrequency;
 	private List<JobStatusOption> jobStatus;
 	private List<TicketStatusOption> ticketStatus;
@@ -42,8 +47,13 @@ public class OptionsListResponse extends MessageResponse {
 	private List<ExpenseTypeOption> expenseType;
 	private List<LocaleTypeOption> localeType;
 	
+	private List<DocumentTypeOption> documentType;
+	private List<JobTagStatusOption> jobTagStatus;
+	private List<JobTagTypeOption> jobTagType;
 
 	public OptionsListResponse(List<ResponseOption> options, SessionData sessionData) throws ClassNotFoundException, Exception {
+		this.logger = LogManager.getLogger(this.getClass());
+		
 		if ( options.contains(ResponseOption.JOB_FREQUENCY)) {
 			makeJobFrequencyList();
 		}
@@ -83,7 +93,17 @@ public class OptionsListResponse extends MessageResponse {
 		if ( options.contains(ResponseOption.LOCALE_TYPE)) {
 			makeLocaleTypeList(sessionData);
 		}
+		if ( options.contains(ResponseOption.DOCUMENT_TYPE)) {
+			makeDocumentTypeList();
+		}
+		if ( options.contains(ResponseOption.JOBTAG_TYPE)) {
+			makeJobTagTypeList();
+		}
+		if ( options.contains(ResponseOption.JOBTAG_STATUS)) {
+			makeJobTagStatusList();
+		}
 	}
+
 
 	private void makeInvoiceStyleList() {
 		this.invoiceStyle = new ArrayList<InvoiceStyleOption>();
@@ -161,7 +181,7 @@ public class OptionsListResponse extends MessageResponse {
 	private void makeReportTypeList(SessionData sessionData) throws ClassNotFoundException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException  {
 		this.reportType = new ArrayList<ReportTypeOption>();
 		for ( ReportType reportType : ReportType.values()) {
-			if ( sessionData.hasPermission(reportType.getPermission().name())) {
+			if ( sessionData != null && sessionData.hasPermission(reportType.getPermission().name())) {
 				String reportClassName = reportType.reportClassName();
 				Class<?> reportClass = Class.forName(reportClassName);
 				Field field = reportClass.getDeclaredField("REPORT_TITLE");
@@ -202,6 +222,33 @@ public class OptionsListResponse extends MessageResponse {
 		Collections.sort(this.localeType);
 
 	}
+
+	private void makeDocumentTypeList() {
+		this.documentType = new ArrayList<DocumentTypeOption>();
+		for ( DocumentType documentType : DocumentType.values()) {
+			this.documentType.add(new DocumentTypeOption(documentType));
+		}
+		Collections.sort(this.documentType);
+		
+	}
+	
+	private void makeJobTagStatusList() {
+		this.jobTagStatus = new ArrayList<JobTagStatusOption>();
+		for ( JobTagStatus value : JobTagStatus.values()) {
+			this.jobTagStatus.add(new JobTagStatusOption(value));
+		}
+		Collections.sort(this.jobTagStatus);
+		
+	}
+
+	private void makeJobTagTypeList() {
+		this.jobTagType = new ArrayList<JobTagTypeOption>();
+		for ( JobTagType value : JobTagType.values()) {
+			this.jobTagType.add(new JobTagTypeOption(value));
+		}
+		Collections.sort(this.jobTagType);		
+	}
+
 	
 	public List<JobFrequencyOption> getJobFrequency() {
 		return jobFrequency;
@@ -305,6 +352,32 @@ public class OptionsListResponse extends MessageResponse {
 
 	public void setLocaleType(List<LocaleTypeOption> localeType) {
 		this.localeType = localeType;
+	}
+	
+	public List<DocumentTypeOption> getDocumentType() {
+		return documentType;
+	}
+
+	public void setDocumentType(List<DocumentTypeOption> documentType) {
+		this.documentType = documentType;
+	}
+
+
+	public List<JobTagStatusOption> getJobTagStatus() {
+		return jobTagStatus;
+	}
+
+
+	public void setJobTagStatus(List<JobTagStatusOption> jobTagStatus) {
+		this.jobTagStatus = jobTagStatus;
+	}
+
+	public List<JobTagTypeOption> getJobTagType() {
+		return jobTagType;
+	}
+
+	public void setJobTagType(List<JobTagTypeOption> jobTagType) {
+		this.jobTagType = jobTagType;
 	}
 
 

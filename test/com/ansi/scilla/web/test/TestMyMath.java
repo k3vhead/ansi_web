@@ -1,6 +1,7 @@
 package com.ansi.scilla.web.test;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -11,14 +12,30 @@ import com.ansi.scilla.web.common.utils.AppUtils;
 public class TestMyMath {
 
 	public static void main(String[] args) {
-		TesterUtils.makeLoggers();
+		
 		try {
-			new TestMyMath().go();
+//			new TestMyMath().go();
+			new TestMyMath().goRound();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
+	
+	
+	public void goRound() {
+		Double x = 5.75D;
+		Double y = 5.76D;
+		
+		
+		BigDecimal xd = (new BigDecimal(x)).round(MathContext.DECIMAL32);
+		BigDecimal yd = (new BigDecimal(y)).round(MathContext.DECIMAL32);
+		
+		
+		System.out.println(xd);
+		System.out.println(yd);
+	}
+	
 	
 	public void go() throws Exception {
 		BigDecimal smaller = new BigDecimal(100);

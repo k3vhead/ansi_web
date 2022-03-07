@@ -1,5 +1,77 @@
 $( document ).ready(function() {
 	;ANSI_UTILS = {
+		// $type          : POST or GET
+		// $url           : the url to call
+		// $outbound      : dictionary or json string of name/value pairs to be sent to the URL via query string or post data
+		// $successMethod : callback when the HTTP returns a 200 and the response code is SUCCESS (ie. no edit errors)
+		// $failureMethod : callback when the HTTP returns a 200 and the response code is EDIT_FAILURE
+		// $expiredMethod : callback when the HTTP returns a 403. Default is to display a message in #globalMsg
+		// $passThruData  : dictionary of data to be passed to callback methods, along with the HTTP response object.
+		// Note that callbacks will be called, passing HTTP response object and $passThruData
+		doServerCall : function($type, $url, $outbound, $successMethod, $failureMethod, $expiredMethod, $passThruData) {
+			var jqxhr = $.ajax({
+				type: $type,
+				url: $url,
+				data: $outbound,
+				statusCode: {
+					200: function($data) {
+						if ( $data.responseHeader.responseCode == 'SUCCESS' ) {
+							$successMethod($data, $passThruData);
+						} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE' ) {
+							$failureMethod($data, $passThruData);
+						} else {
+							$("#globalMsg").html("System Error: " + $url + " Invalid response code " + $data.responseHeader.responseCode + ". Contact Support").show().fadeOut(5000);
+						}
+					},					
+					403: function($data) {
+						if ( $expiredMethod == null ) {
+							$("#globalMsg").html("Session has expired.").show().fadeOut(5000);
+						} else {
+							$expiredMethod($data, $passThruData);
+						}
+					},
+					404: function($data) {
+						$("#globalMsg").html("System Error: " + $url + " 404. Contact Support").show().fadeOut(5000);
+					},
+					500: function($data) {
+						$("#globalMsg").html("System Error: " + $url + " 500. Contact Support").show().fadeOut(5000);
+					}
+				},
+				dataType: "json"
+			});
+		},
+		
+		
+			
+		// loops through all inputs & selects in a form and creates a map (suitable for a server call) with
+		// name/value pairs. If a fieldname exists as a key in the $nameMapping map, the field will be renamed
+		// in the outbound map accordingly.
+		form2outbound : function($selector, $nameMapping) {
+			var $outbound = {};
+			var $inputSelector = $selector + " input";
+			var $selectSelector = $selector + " select";
+
+			$.each($($inputSelector), function($index, $value) {
+				if ( $value.name in $nameMapping ) {
+					$outbound[ $nameMapping[$value.name] ] = $($value).val();
+				} else {
+					$outbound[$value.name] = $($value).val();
+				}
+				
+			});
+			$.each($($selectSelector), function($index, $value) {
+				if ( $value.name in $nameMapping ) {
+					$outbound[ $nameMapping[$value.name] ] = $($value).val();
+				} else {
+					$outbound[$value.name] = $($value).val();
+				}
+			});			
+			
+			return $outbound;
+		},
+		
+		
+			
 		getOptions: function($optionList) {
 			var $returnValue = null;
 			var jqxhr1 = $.ajax({

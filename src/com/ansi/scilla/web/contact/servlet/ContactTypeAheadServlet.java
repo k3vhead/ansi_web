@@ -119,7 +119,7 @@ public class ContactTypeAheadServlet extends AbstractServlet {
 								+ " ORDER BY concat(first_name, ' ', last_name) "
 //								+ " ORDER BY concat(last_name,', ',first_name) "
 								+ " OFFSET 0 ROWS"
-								+ " FETCH NEXT 500 ROWS ONLY";
+								+ " FETCH NEXT 250 ROWS ONLY";
 						
 						Statement s = conn.createStatement();
 						ResultSet rs = s.executeQuery(sql);

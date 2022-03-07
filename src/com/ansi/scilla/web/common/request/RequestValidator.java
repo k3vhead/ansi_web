@@ -25,22 +25,27 @@ import org.apache.logging.log4j.Logger;
 import com.ansi.scilla.common.callNote.CallNoteReference;
 import com.ansi.scilla.common.claims.WorkHoursType;
 import com.ansi.scilla.common.db.CallLog;
+import com.ansi.scilla.common.db.Document;
 import com.ansi.scilla.common.db.EmployeeExpense;
+import com.ansi.scilla.common.db.JobTag;
 import com.ansi.scilla.common.db.MSTable;
 import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.common.db.User;
+import com.ansi.scilla.common.document.DocumentType;
 import com.ansi.scilla.common.invoice.InvoiceGrouping;
 import com.ansi.scilla.common.invoice.InvoiceStyle;
 import com.ansi.scilla.common.invoice.InvoiceTerm;
 import com.ansi.scilla.common.jobticket.JobFrequency;
+import com.ansi.scilla.common.jobticket.JobTagStatus;
+import com.ansi.scilla.common.jobticket.JobTagType;
 import com.ansi.scilla.common.payment.PaymentMethod;
 import com.ansi.scilla.common.utils.LocaleType;
+import com.ansi.scilla.common.utils.QMarkTransformer;
 import com.ansi.scilla.web.claims.request.ClaimEntryRequestType;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.utils.FieldMap;
 import com.ansi.scilla.web.common.utils.Permission;
 import com.thewebthing.commons.db2.DBTable;
-import com.thewebthing.commons.db2.RecordNotFoundException;
 import com.thewebthing.commons.lang.StringUtils;
 
 public class RequestValidator {
@@ -89,7 +94,7 @@ public class RequestValidator {
 
 	public static void validateAccountType(Connection conn, WebMessages webMessages, String fieldName, String value,
 			boolean required) throws Exception {
-		validateCode(conn, webMessages, "quote", "account_type", fieldName, value, required);
+		validateCode(conn, webMessages, "quote", "account_type", fieldName, value, required, null);
 	}
 
 	public static void validateBigDecimal(WebMessages webMessages, String fieldName, BigDecimal value,
@@ -129,7 +134,7 @@ public class RequestValidator {
 
 	public static void validateBuildingType(Connection conn, WebMessages webMessages, String fieldName, String value,
 			boolean required) throws Exception {
-		validateCode(conn, webMessages, "job", "building_type", fieldName, value, required);
+		validateCode(conn, webMessages, "job", "building_type", fieldName, value, required, null);
 	}
 
 	
@@ -167,11 +172,44 @@ public class RequestValidator {
 		}
 	}
 
+	public static void validateClaimWeek(WebMessages webMessages, String fieldName, String value, boolean required) {
+		if ( StringUtils.isBlank(value) ) {
+			if ( required ) {
+				webMessages.addMessage(fieldName, "Claim Week is Required");
+			} 
+		} else {
+			Pattern pattern = Pattern.compile("^([0-9][0-9][0-9][0-9])(-)([0-9][0-9])$",Pattern.CASE_INSENSITIVE);
+			Matcher matcher = pattern.matcher(value);
+			if ( matcher.matches() ) {
+				int weekNum = Integer.valueOf(matcher.group(3)).intValue();
+				if ( weekNum < 1 || weekNum > 53 ) {
+					webMessages.addMessage(fieldName, "Invalid claim week (week number)");
+				}
+			} else {
+				webMessages.addMessage(fieldName, "Invalid claim week (format)");
+			}
+			
+		}
+	}
+
+	/**
+	 * 
+	 * @param conn
+	 * @param webMessages
+	 * @param dbTableName
+	 * @param dbFieldName
+	 * @param fieldName
+	 * @param value
+	 * @param required
+	 * @param label Optional String value to be incorporated into the error message. Useful for those cases where the message is not displayed next to the field being validated
+	 * @throws Exception
+	 */
 	private static void validateCode(Connection conn, WebMessages webMessages, String dbTableName, String dbFieldName,
-			String fieldName, String value, boolean required) throws Exception {
+			String fieldName, String value, boolean required, String label) throws Exception {
 		if (StringUtils.isBlank(value) ) {
 			if (required) {
-				webMessages.addMessage(fieldName, "Required Value");
+				String message = StringUtils.isBlank(label) ? "Required Value" : label + " is required";
+				webMessages.addMessage(fieldName, message);
 			}
 		} else {
 			String sql = "select * from code where table_name=? and field_name=? and value=?";
@@ -181,7 +219,8 @@ public class RequestValidator {
 			ps.setString(3, value);
 			ResultSet rs = ps.executeQuery();
 			if (!rs.next()) {
-				webMessages.addMessage(fieldName, "Invalid Value");
+				String message = StringUtils.isBlank(label) ? "Invalid Value" : label + " is invalid";
+				webMessages.addMessage(fieldName, message);
 			}
 		}
 	}
@@ -189,7 +228,7 @@ public class RequestValidator {
 	
 	
 	public static void validateContactType(Connection conn, WebMessages webMessages, String fieldName, String value, boolean required) throws Exception {
-		validateCode(conn, webMessages, CallLog.TABLE, CallLog.CONTACT_TYPE, fieldName, value, required);
+		validateCode(conn, webMessages, CallLog.TABLE, CallLog.CONTACT_TYPE, fieldName, value, required, null);
 	}
 	
 
@@ -265,18 +304,85 @@ public class RequestValidator {
 
 		}
 	}
+	
+	
+	public static void validateDivisionUser(Connection conn, WebMessages webMessages, Integer divisionId, String divisionField, Integer userId, String userField, boolean required) throws SQLException {
+		if ( divisionId == null ) {
+			if ( required == true ) {
+				webMessages.addMessage(divisionField, "Not authorized for this division");
+			}
+		} else if ( userId == null ) {
+			if ( required == true ) {
+				webMessages.addMessage(userField, "Not authorized for this division");
+			}
+		} else {
+			PreparedStatement ps = conn.prepareStatement("select count(*) as record_count from division_user where division_id=? and user_id=?");
+			ps.setInt(1,  divisionId);
+			ps.setInt(2,  userId);
+			ResultSet rs = ps.executeQuery();
+			if ( rs.next() ) {
+				if ( rs.getInt("record_count") == 0 ) {
+					webMessages.addMessage(divisionField, "Not authorized for this division");
+				}
+			} else {
+				webMessages.addMessage(divisionField, "Error checking authorization");
+			}
+			rs.close();
+			
+		}
+		
+	}
 
-	public static void validateDouble(WebMessages webMessages, String fieldName, Double value, Double minValue,
-			Double maxValue, boolean required) {
-		if (value == null) {
+	public static void validateDocumentId(Connection conn, WebMessages webMessages, String fieldName, Integer value, boolean required) throws Exception {
+		validateId(conn, webMessages, Document.TABLE, Document.DOCUMENT_ID, fieldName, value, required, null);
+	}
+
+	
+	public static void validateDocumentType(WebMessages webMessages, String fieldName, String value, boolean required) {
+		if (StringUtils.isBlank(value)) {
 			if (required) {
 				webMessages.addMessage(fieldName, "Required Value");
 			}
 		} else {
+			try {
+				DocumentType documentType = DocumentType.valueOf(value);
+				if (documentType == null) {
+					webMessages.addMessage(fieldName, "Invalid Value");
+				}
+			} catch (IllegalArgumentException e) {
+				webMessages.addMessage(fieldName, "Invalid Value");
+			}
+		}		
+	}
+
+
+	public static void validateDocumentTypeXref(Connection conn, WebMessages webMessages, String fieldName, DocumentType documentType, Integer value, boolean required) throws SQLException {
+		if ( value == null ) {
+			if ( required ) {
+				webMessages.addMessage(fieldName, "Required Value");			
+			} 
+		} else {
+			if ( ! documentType.isValidXref(conn, value) ) {
+				webMessages.addMessage(fieldName, "Invalid cross-reference");
+			}
+		}
+	}
+
+	
+	
+	public static void validateDouble(WebMessages webMessages, String fieldName, Double value, Double minValue,
+			Double maxValue, boolean required, String label) {
+		if (value == null) {
+			if (required) {
+				String message = StringUtils.isBlank(label) ? "Required Value" : label + " is required";
+				webMessages.addMessage(fieldName, message);
+			}
+		} else {
+			String message = StringUtils.isBlank(label) ? "" : label + " ";
 			if (minValue != null && value < minValue) {
-				webMessages.addMessage(fieldName, "Must be at least " + minValue.toString());
+				webMessages.addMessage(fieldName, message + "Must be at least " + minValue.toString());
 			} else if (maxValue != null && value > maxValue) {
-				webMessages.addMessage(fieldName, "Cannot be more than " + maxValue.toString());
+				webMessages.addMessage(fieldName, message + "Cannot be more than " + maxValue.toString());
 			}
 		}
 	}
@@ -319,16 +425,85 @@ public class RequestValidator {
 
 	}
 
-	public static void validateExpenseType(Connection conn, WebMessages webMessages, String fieldName, String value,
-			boolean required) throws Exception {
-		validateCode(conn, webMessages, EmployeeExpense.TABLE, EmployeeExpense.EXPENSE_TYPE, fieldName, value, required);
+	/**
+	 * 
+	 * @param conn
+	 * @param webMessages
+	 * @param value comma-separated list of job tag id's of type 'EQUIPMENT'
+	 * @param ticketId
+	 * @param fieldName
+	 * @param required
+	 * @param label
+	 * @throws SQLException 
+	 */
+	public static void validateEquipmentTags(Connection conn, WebMessages webMessages, String fieldName,
+			Integer ticketId, String value, boolean required, String label) throws SQLException {
+		if ( StringUtils.isBlank(value) ) {
+			if ( required ) {
+				if ( StringUtils.isBlank(label) ) {
+					webMessages.addMessage(fieldName, "Required Value");
+				} else {
+					webMessages.addMessage(fieldName, label + " is required");
+				}
+			}
+		} else {
+			String sql = "select xref.tag_id\n" + 
+					"from ticket\n" + 
+					"inner join job_tag_xref xref on xref.job_id=ticket.job_id\n" + 
+					"inner join job_tag on job_tag.tag_id=xref.tag_id and job_tag.tag_type ='EQUIPMENT'\n" + 
+					"where ticket.ticket_id=?";
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setInt(1, ticketId);
+			ResultSet rs = ps.executeQuery();
+			List<Integer> validTagList = new ArrayList<Integer>();
+			while ( rs.next() ) {
+				validTagList.add( rs.getInt("tag_id"));
+			}
+			rs.close();
+			
+			for (String testTag : value.split(",") ) {
+				if ( ! validTagList.contains(Integer.valueOf(testTag)) && ! webMessages.containsKey(fieldName)) {
+					if (StringUtils.isBlank(label) ) {
+						webMessages.addMessage(fieldName, "Invalid Value");
+					} else {
+						webMessages.addMessage(fieldName, "Invalid " + label);
+					}
+				}
+			}
+		}
+		
 	}
 
+	public static void validateExpenseType(Connection conn, WebMessages webMessages, String fieldName, String value,
+			boolean required) throws Exception {
+		validateCode(conn, webMessages, EmployeeExpense.TABLE, EmployeeExpense.EXPENSE_TYPE, fieldName, value, required, null);
+	}
+
+	
 	public static void validateId(Connection conn, WebMessages webMessages, String dbTableName, String dbFieldName,
 			String fieldName, Integer value, boolean required) throws Exception {
+		validateId(conn, webMessages, dbTableName, dbFieldName, fieldName, value, required, null);
+	}
+	
+	
+	/**
+	 * Validate the unique key into a database table, typically generated by an auto-increment. (eg. ticket_id for the Ticket table)
+	 * @param conn
+	 * @param webMessages
+	 * @param dbTableName
+	 * @param dbFieldName
+	 * @param fieldName
+	 * @param value
+	 * @param required
+	 * @param label Optional String value to be incorporated into the error message. Useful for those cases where the message is not displayed next to the field being validated
+	 * @throws Exception
+	 */
+	public static void validateId(Connection conn, WebMessages webMessages, String dbTableName, String dbFieldName,
+			String fieldName, Integer value, boolean required, String label) throws Exception {
 		if (value == null) {
 			if (required) {
-				webMessages.addMessage(fieldName, "Required Value");
+				String message = StringUtils.isBlank(label) ? "Required Value" : label + " is required";
+				webMessages.addMessage(fieldName, message);
 			}
 		} else {
 			String sql = "select * from " + dbTableName + " where " + dbFieldName + "=?";
@@ -336,7 +511,8 @@ public class RequestValidator {
 			ps.setInt(1, value);
 			ResultSet rs = ps.executeQuery();
 			if (!rs.next()) {
-				webMessages.addMessage(fieldName, "Invalid Value");
+				String message = StringUtils.isBlank(label) ? "Invalid Value" : label + " is invalid";
+				webMessages.addMessage(fieldName, message);
 			}
 		}
 	}
@@ -432,7 +608,7 @@ public class RequestValidator {
 
 	public static void validateLeadType(Connection conn, WebMessages webMessages, String fieldName, String value,
 			boolean required) throws Exception {
-		validateCode(conn, webMessages, "quote", "lead_type", fieldName, value, required);
+		validateCode(conn, webMessages, "quote", "lead_type", fieldName, value, required, null);
 	}
 
 	
@@ -455,14 +631,14 @@ public class RequestValidator {
 	
 	
 	public static void validateNumber(WebMessages webMessages, String fieldName, Object value, Object minValue,
-			Object maxValue, boolean required) {
+			Object maxValue, boolean required, String label) {
 		if (value == null) {
 			if (required) {
-				webMessages.addMessage(fieldName, "Required Value");
+				webMessages.addMessage(fieldName, StringUtils.isBlank(label) ? "Required Value" : label + " is required");
 			}
 		} else {
 			if (value instanceof Double) {
-				validateDouble(webMessages, fieldName, (Double) value, (Double) minValue, (Double) maxValue, required);
+				validateDouble(webMessages, fieldName, (Double) value, (Double) minValue, (Double) maxValue, required, label);
 			} else if (value instanceof BigDecimal) {
 				validateBigDecimal(webMessages, fieldName, (BigDecimal) value, (BigDecimal) minValue, (BigDecimal) maxValue, required);
 			} else if (value instanceof Integer) {
@@ -470,31 +646,31 @@ public class RequestValidator {
 			} else if (value instanceof Float) {
 				validateFloat(webMessages, fieldName, (Float) value, (Float) minValue, (Float) maxValue, required);
 			} else {
-				webMessages.addMessage(fieldName, "Invalid Format");
+				webMessages.addMessage(fieldName, StringUtils.isBlank(label) ?  "Invalid Format" : label + " has invalid format");
 			}
 
 		}
 	}
 
 	
-	public static void validatePassthruExpenseType(Connection conn, WebMessages webMessages, String fieldName, String value, boolean required) throws Exception {
-		validateCode(conn, webMessages, "ticket_claim_passthru", "passthru_expense_type", fieldName, value, required);
+	public static void validatePassthruExpenseType(Connection conn, WebMessages webMessages, String fieldName, String value, boolean required, String label) throws Exception {
+		validateCode(conn, webMessages, "ticket_claim_passthru", "passthru_expense_type", fieldName, value, required, label);
 	}
 
 	
 	public static void validatePaymentTerms(WebMessages webMessages, String fieldName, String value, boolean required) {
 		if (StringUtils.isBlank(value)) {
 			if (required) {
-				webMessages.addMessage(fieldName, "Required Value");
+				webMessages.addMessage(fieldName, "Expense Type is required");
 			}
 		} else {
 			try {
 				PaymentMethod paymentTerms = PaymentMethod.valueOf(value);
 				if (paymentTerms == null) {
-					webMessages.addMessage(fieldName, "Invalid Value");
+					webMessages.addMessage(fieldName, "Invalid Passthru Expense");
 				}
 			} catch (IllegalArgumentException e) {
-				webMessages.addMessage(fieldName, "Invalid Value");
+				webMessages.addMessage(fieldName, "Invalid Passthru Expense");
 			}
 		}
 	}
@@ -533,6 +709,61 @@ public class RequestValidator {
 	
 	
 
+	/**
+	 * Given a list of ID's, make sure they are all valid job_tag_id's and at least one of them is of type "SERVICE"
+	 * @param conn
+	 * @param webMessages
+	 * @param fieldName
+	 * @param value
+	 * @param required
+	 * @param label
+	 * @throws SQLException 
+	 */
+	public static void validateServiceTags(Connection conn, WebMessages webMessages, String fieldName, Integer[] value, boolean required, String label) throws SQLException {
+		Logger logger = LogManager.getLogger(RequestValidator.class);
+		String reqMessage = StringUtils.isBlank(label) ? "Required Value" : label + " must be specified";
+		String invMessage = StringUtils.isBlank(label) ? "Invalid tag" : label + " is invalid";
+		
+		if ( value == null || value.length == 0 ) {
+			if ( required == true ) {
+				webMessages.addMessage(fieldName, reqMessage);
+			}
+		} else {
+			List<Integer> validTagList = new ArrayList<Integer>();
+			boolean foundAService = false;
+			boolean foundAnInvalidService = false;
+			
+			String sql = "select tag_id,tag_type, status from job_tag where tag_id in " + QMarkTransformer.makeQMarkWhereClause(value);
+			logger.log(Level.DEBUG, sql);
+			
+			PreparedStatement ps = conn.prepareStatement(sql);
+			for ( int n = 0; n < value.length; n++ ) {
+				ps.setInt(n+1, value[n]);
+			}
+			ResultSet rs = ps.executeQuery();
+			while ( rs.next() ) {
+				validTagList.add(rs.getInt(JobTag.TAG_ID));
+				if ( rs.getString(JobTag.TAG_TYPE).equalsIgnoreCase("SERVICE") ) {
+					foundAService = true;
+				}
+			}
+			rs.close();
+			for ( Integer tagId : value ) {
+				if ( ! validTagList.contains(tagId) ) {
+					foundAnInvalidService = true;
+				}
+			}
+			if ( ! foundAService ) { 
+				webMessages.addMessage(fieldName, reqMessage);
+			} else if ( foundAnInvalidService ) {
+				webMessages.addMessage(fieldName, invMessage);
+			} else {
+				// all is good -- go on with life
+			}
+		}
+		
+	}
+
 	public static void validateString(WebMessages webMessages, String fieldName, String value, boolean required) {
 		if (StringUtils.isBlank(value)) {
 			if (required) {
@@ -541,35 +772,156 @@ public class RequestValidator {
 		}
 	}
 
-	public static void validateString(WebMessages webMessages, String fieldName, String value, Integer maxLength, boolean required) {
+	/**
+	 * 
+	 * @param webMessages
+	 * @param fieldName
+	 * @param value
+	 * @param maxLength
+	 * @param required
+	 * @param label Optional String value to be incorporated into the error message. Useful for those cases where the message is not displayed next to the field being validated
+	 */
+	public static void validateString(WebMessages webMessages, String fieldName, String value, Integer maxLength, boolean required, String label) {
 		if (StringUtils.isBlank(value)) {
 			if (required) {
-				webMessages.addMessage(fieldName, "Required Value");
+				String message = StringUtils.isBlank(label) ? "Required Value" : label + " is required";
+				webMessages.addMessage(fieldName, message);
 			}
 		} else {
 			if (value.length() > maxLength ) {
-				webMessages.addMessage(fieldName, "Must be less than " + maxLength + " characters");
+				String message = StringUtils.isBlank(label) ? "" : label + " ";
+				webMessages.addMessage(fieldName, message + "Must be less than " + maxLength + " characters");
 			}
 		}
 	}
 
 	
-	public static void validateTicketId(Connection conn, WebMessages webMessages, String fieldName, Integer value, boolean required) throws Exception {
-		if (value == null) {
+	public static void validateStringFormat(WebMessages webMessages, String fieldName, String value, Pattern pattern, boolean required, String label) {
+		if (StringUtils.isBlank(value)) {
+			if (required) {
+				String message = StringUtils.isBlank(label) ? "Required Value" : label + " is required";
+				webMessages.addMessage(fieldName, message);
+			}
+		} else {
+			Matcher matcher = pattern.matcher(value);
+			if ( ! matcher.matches() ) {
+				String message = StringUtils.isBlank(label) ? "" : " for " + label;
+				webMessages.addMessage(fieldName, "Invalid format" + message);
+			}
+		}
+		
+	}
+
+	public static void validateTagAbbrev(Connection conn, WebMessages webMessages, String fieldName, String tagType,
+			String value, boolean required) throws Exception {
+		if (StringUtils.isBlank(value)) {
 			if (required) {
 				webMessages.addMessage(fieldName, "Required Value");
 			}
 		} else {
-			Ticket ticket = new Ticket();
-			ticket.setTicketId(value);
-			try { 
-				ticket.selectOne(conn);
-			} catch ( RecordNotFoundException e) {
+			try {
+				PreparedStatement ps = conn.prepareStatement("select count(*) as record_count from job_tag where tag_type=? and abbrev=?");
+				ps.setString(1, tagType);
+				ps.setString(2, value);
+				ResultSet rs = ps.executeQuery();
+				if ( rs.next() ) {
+					if ( rs.getInt("record_count") > 0 ) {
+						webMessages.addMessage(fieldName, "Duplicate Tag Abbreviation");
+					}
+				} else {
+					throw new Exception("Error validating abbreviation. Contact Support");
+				}
+			} catch (IllegalArgumentException e) {
 				webMessages.addMessage(fieldName, "Invalid Value");
 			}
-			
+		}
+		
+	}
+	
+	public static void validateTagCode(Connection conn, WebMessages webMessages, String fieldName, String tagType,
+			String value, boolean required) throws Exception {
+		if (StringUtils.isBlank(value)) {
+			if (required) {
+				webMessages.addMessage(fieldName, "Required Value");
+			}
+		} else {
+			try {
+				PreparedStatement ps = conn.prepareStatement("select count(*) as record_count from job_tag where tag_type=? and long_code=?");
+				ps.setString(1, tagType);
+				ps.setString(2, value);
+				ResultSet rs = ps.executeQuery();
+				if ( rs.next() ) {
+					if ( rs.getInt("record_count") > 0 ) {
+						webMessages.addMessage(fieldName, "Duplicate Tag Code");
+					}
+				} else {
+					throw new Exception("Error validating code. Contact Support");
+				}
+			} catch (IllegalArgumentException e) {
+				webMessages.addMessage(fieldName, "Invalid Value");
+			}
+		}
+		
+	}
+
+	public static void validateTagStatus(WebMessages webMessages, String fieldName, String value, boolean required) {
+		if (StringUtils.isBlank(value)) {
+			if (required) {
+				webMessages.addMessage(fieldName, "Required Value");
+			}
+		} else {
+			try {
+				JobTagStatus tagStatus = JobTagStatus.valueOf(value);
+				if (tagStatus == null) {
+					webMessages.addMessage(fieldName, "Invalid Value");
+				}
+			} catch (IllegalArgumentException e) {
+				webMessages.addMessage(fieldName, "Invalid Value");
+			}
+		}
+		
+	}
+
+	public static void validateTagType(WebMessages webMessages, String fieldName, String value, boolean required) {
+		if (StringUtils.isBlank(value)) {
+			if (required) {
+				webMessages.addMessage(fieldName, "Required Value");
+			}
+		} else {
+			try {
+				JobTagType tagType = JobTagType.valueOf(value);
+				if (tagType == null) {
+					webMessages.addMessage(fieldName, "Invalid Value");
+				}
+			} catch (IllegalArgumentException e) {
+				webMessages.addMessage(fieldName, "Invalid Value");
+			}
+		}
+		
+	}
+
+	/**
+	 * 
+	 * @param conn
+	 * @param webMessages
+	 * @param fieldName
+	 * @param value
+	 * @param required
+	 * @param label Optional String value to be incorporated into the error message. Useful for those cases where the message is not displayed next to the field being validated
+	 * @throws Exception
+	 */
+	public static void validateTicketId(Connection conn, WebMessages webMessages, String fieldName, Integer value, boolean required, String label) throws Exception {
+		if (value == null) {
+			if (required) {
+				String message = StringUtils.isBlank(label) ? "Required Value" : label + " is required";
+				webMessages.addMessage(fieldName, message);
+			}
+		} else {
+			validateId(conn, webMessages, Ticket.TABLE, Ticket.TICKET_ID, fieldName, value, required, label);
 		}
 	}
+	
+	
 	
 	public static void validateUserStatus(WebMessages webMessages, String fieldName, Integer value, boolean required) {
 		List<Integer> validValues = Arrays
@@ -638,5 +990,6 @@ public class RequestValidator {
 			}
 		}
 	}
+
 
 }
