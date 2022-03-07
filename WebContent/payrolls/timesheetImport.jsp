@@ -249,6 +249,7 @@
 	           		       		
 	           		makeClickers : function() {
 	           			$("#open-button").click(function($event) {
+	           				$("#open-button").off("click");
 	           				$("#prompt-div .err").html("");
 	           				var file = document.getElementById('timesheet-file').files[0];
 	           				var reader = new FileReader();
@@ -295,7 +296,7 @@
 	           			$("#display-div .city").html($data.data.city);
 	           			$("#display-div .timesheetFile").html($data.data.fileName);
 	
-	           			// create and populate dicttionary object for use in model
+	           			// create and populate dicttionary object for use in modal
 	           			var dictionary = $data.data.employeeRecordList;
 	   
 	           			// populate the visible table on-screen
@@ -448,23 +449,44 @@
 	        			TIMESHEET_IMPORT.populateEmployeeModal($rowNumber);
 	        		},
 	        		populateEmployeeModal : function($rowNumber) {
-	           			console.log("populateEmployeeModal: " + $rowNumber + " ");
-	           			console.log(TIMESHEET_IMPORT.employeeMap[$rowNumber])
+	        			console.log("populateEmployeeModal: " + $rowNumber);
+	           			console.log(TIMESHEET_IMPORT.employeeMap[$rowNumber]);
 	           			console.log(TIMESHEET_IMPORT.employeeMap[$rowNumber].employeeName);
 	           			
 	           			$('[name="row"]').val(TIMESHEET_IMPORT.employeeMap[$rowNumber].row);
 	           			$('[name="employeeName"]').val(TIMESHEET_IMPORT.employeeMap[$rowNumber].employeeName);
 						// status
-	           			$('[name="regularHours"]').val(TIMESHEET_IMPORT.employeeMap[$rowNumber].regularHours);
 	           			$('[name="regularPay"]').val(TIMESHEET_IMPORT.employeeMap[$rowNumber].regularPay);
-	           			$('[name="otHours"]').val(TIMESHEET_IMPORT.employeeMap[$rowNumber].otHours);
 	           			$('[name="otPay"]').val(TIMESHEET_IMPORT.employeeMap[$rowNumber].otPay);
-	           			$('[name="vacationHours"]').val(TIMESHEET_IMPORT.employeeMap[$rowNumber].vacationHours);
 	           			$('[name="vacationPay"]').val(TIMESHEET_IMPORT.employeeMap[$rowNumber].vacationPay);
+	           			$('[name="holidayPay"]').val(TIMESHEET_IMPORT.employeeMap[$rowNumber].holidayPay);
+	           				           		 		
+	           			
+	    				<!-- <table  id="time-calcs"style="width:100%;border:1px solid;">   -->
+
+	           			
+	           			
 						
+						$('[name="regularHours"]').val(TIMESHEET_IMPORT.employeeMap[$rowNumber].regularHours);
+	           			$('[name="otHours"]').val(TIMESHEET_IMPORT.employeeMap[$rowNumber].otHours);
+	           			$('[name="vacationHours"]').val(TIMESHEET_IMPORT.employeeMap[$rowNumber].vacationHours);
 	           			//these columns not on grid
 	           			$('[name="holidayHours"]').val(TIMESHEET_IMPORT.employeeMap[$rowNumber].holidayHours);
-	           			$('[name="holidayPay"]').val(TIMESHEET_IMPORT.employeeMap[$rowNumber].holidayPay);
+	           			
+	           			console.log(TIMESHEET_IMPORT.employeeMap[$rowNumber].reglarHours);
+        				console.log(TIMESHEET_IMPORT.employeeMap[$rowNumber].otHours);
+             			console.log(TIMESHEET_IMPORT.employeeMap[$rowNumber].vacationHours);
+                        console.log(TIMESHEET_IMPORT.employeeMap[$rowNumber].holidayHours);
+
+	           			
+	           		 	var totHours = 
+	           		 		TIMESHEET_IMPORT.employeeMap[$rowNumber].reglarHours +
+	           		 		TIMESHEET_IMPORT.employeeMap[$rowNumber].otHours +
+	           		 		TIMESHEET_IMPORT.employeeMap[$rowNumber].vacationHours +
+	           		 		TIMESHEET_IMPORT.employeeMap[$rowNumber].holidayHours;
+	  
+	           			$('[name="totalHours"]').val(totHours);
+	           			$('[name="totalHours"]').val(37);
 	           			
 	           			
 	           			$('[name="directLabor"]').val(TIMESHEET_IMPORT.employeeMap[$rowNumber].directLabor);
@@ -486,8 +508,102 @@
 	           			//$rowNumber, $action
 	           		},
 	           		saveEmployeeModal : function() {
-	           			alert("Do Stuff here to store the changes");
-	           			console.log("saveEmployeeModal: ")
+	           			console.log("saveEmployeeModal - grabbing values");
+						//var $ticketId = $("#employee-modal").attr("ticketId");
+	           				           		
+						//<td class="employeeName"><input type="text" class="employeeName" Name="employeeName"tabindex="1" /></td>						
+	           			var $rowNumber 		= $("#employee-modal [name='row']").val();	           			
+	           			var $employeeName 	= $("#employee-modal [name='employeeName']").val();
+	           			var $regularPay  	= $("#employee-modal [name='regularPay']").val();
+	           			var $otPay 			= $("#employee-modal [name='otPay']").val();
+	           			var $vacationPay  	= $("#employee-modal [name='vacationPay']").val();
+	           			var $holidayPay  	= $("#employee-modal [name='holidayPay']").val();
+	           			var $regularHours 	= $("#employee-modal [name='regularHours']").val();
+	           			var $otHours  		= $("#employee-modal [name='otHours']").val();
+	    	           	var $vacationHours 	= $("#employee-modal [name='vacationHours']").val();
+	           			var $holidayHours  	= $("#employee-modal [name='holidayHours']").val();
+	           			var $directLabor  	= $("#employee-modal [name='directLabor']").val();
+	           			var $volume  		= $("#employee-modal [name='volume']").val();
+	           			var $grossPay   	= $("#employee-modal [name='grossPay']").val();
+	           			var $expenses  		= $("#employee-modal [name='expenses']").val();
+	           			var $expensesAllowed = $("#employee-modal [name='expensesAllowed']").val();
+	           			var $expensesSubmitted  = $("#employee-modal [name='expensesSubmitted']").val();
+	           			var $productivity 	= $("#employee-modal [name='productivity']").val();
+
+//	           			$rowNumber 		= 1;	           			
+//	           			$employeeName 	= 2;
+// 	           			$regularPay  	= 3;
+// 	           			$otPay 			= 4;
+// 	           			$vacationPay  	= 5;
+// 	           			$holidayPay  	= 6;
+// 	           			$regularHours 	= 7;
+// 	           			$otHours  		= 8;
+// 	    	           	$vacationHours 	= 9;
+// 	           			$holidayHours  	= 10;
+// 	           			$directLabor  	= 11;
+// 	           			$volume  		= 12;
+// 	           			$grossPay   	= 13;
+// 	           			$expenses  		= 14;
+// 	           			$expensesAllowed = 15;
+// 	           			$expensesSubmitted  = 16;
+// 	           			$productivity 	= 17;
+	           				           			
+	           			console.log("Edit Val for rowNumber = " 	+ $rowNumber);	           			
+	    	           	console.log("Edit Val for employeeName = "   	+ $employeeName);
+	    	           	console.log("Edit Val for regularPay = " 		+ $regularPay);
+	    	           	console.log("Edit Val for otPay = " 			+ $otPay);
+	    	           	console.log("Edit Val for vacationPay = " 		+ $vacationPay);
+	    	           	console.log("Edit Val for holidayPay = " 		+ $holidayPay);
+	    	           	console.log("Edit Val for regularHours = " 	+ $regularHours);
+	    	           	console.log("Edit Val for otHours = " 			+ $otHours);
+	    	           	console.log("Edit Val for vacationHours = " 	+ $vacationHours);
+	    	           	console.log("Edit Val for holidayHours = " 	+ $holidayHours);
+	    	           	console.log("Edit Val for directLabor = " 		+ $directLabor);
+	    	           	console.log("Edit Val for volume = " 			+ $volume);
+	    	           	console.log("Edit Val for grossPay" 		+ $grossPay);
+	    	           	console.log("Edit Val for expenses" 		+ $expenses);
+	    	           	console.log("Edit Val for expensesAllowed" 	+ $expensesAllowed);
+	    	           	console.log("Edit Val for expensesSubmitted" + $expensesSubmitted);
+	    	           	console.log("Edit Val for productivity" 	+ $productivity);
+	           			
+	    	           	
+	           			console.log("saveEmployeeModal: ");
+	           				           			
+	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].rowNumber = $rowNumber;	           			
+	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].employeeName = $employeeName;
+	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].regularPay = $regularPay;
+	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].otPay = $otPay;
+	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].vacationPay = $vacationPay;
+	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].holidayPay = $holidayPay;
+	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].regularHours = $regularHours;
+	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].otHours = $otHours;
+	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].vacationHours = $vacationHours;
+	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].holidayHours = $holidayHours;
+	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].directLabor = $directLabor; 
+	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].volume	 = $volume;
+	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].grossPay = $grossPay;
+	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].expenses = $expenses;
+	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].expensesAllowed = $expensesAllowed;
+	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].expensesSubmitted = $expensesSubmitted;
+	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].productivity = $productivity;	           			
+	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].directLabor = $directLabor;
+	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].volume = $volume;
+	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].grossPay = $grossPay;
+	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].expenses = $expenses;
+	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].expensesAllowed = $expensesAllowed;
+	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].expensesSubmitted = $expensesSubmitted;
+	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].productivity = $productivity;
+	           			
+	           			//alert("Do Stuff here to store the changes");	           			
+// 	           			console.log("Employee name from employeeRecordList = " + $data.data.employeeRecordList[$rowNumber].employeeName);
+					    //var $test = "TIMESHEET_IMPORT.employeeMap[" + $rowNumber + "] = " + TIMESHEET_IMPORT.employeeMap[$rowNumber].directLabor;
+					 				
+					    var table = $("#timesheet").DataTable();
+					    table.row($rowNumber).remove();
+					    table.row($rowNumber).data(TIMESHEET_IMPORT.employeeMap[$rowNumber]).draw();			    
+
+					    console.log("test row update");
+					    console.log(TIMESHEET_IMPORT.employeeMap[$rowNumber]);
 	           		},
 	           	};
 	           	
@@ -561,14 +677,13 @@
 					<td class="state"><input type="text" name="state" 												tabindex="2" /></td>
 					<td class="err"><span class="stateErr err"></span></td>
 
-					<td class="form-label"<span class="form-label">Row:</span></td>
+					<td class="form-label"><span class="form-label">Row:</span></td>
 					<td class="row"><input type="text" class="row" name="row" 							tabindex="3" /></td>
 					<td class="err"><span class="rowErr err"></span></td>						
 				</tr>
 			</table>
 
 			<table  id="time-calcs">   
-				<!-- <table  id="time-calcs"style="width:100%;border:1px solid;">   -->
 				<tr>
 					<td class="form-label"></td>
 					<td colspan="2" class="col-heading hours ">Hours</td>
@@ -630,8 +745,8 @@
 				<!-- <table id="prod-calcs" style="width:100%;border:1px solid;">   -->
 				<tr>
 					<td class="form-label">Direct Labor:</td>
-					<td class="money"><input class="money" type="text" name="dlAmt" 					tabindex="14" /></td>
-					<td class="err"><span class="dlAmtErr err"></span></td>
+					<td class="money"><input class="money" type="text" name="directLabor" 					tabindex="14" /></td>
+					<td class="err"><span class="directLaborErr err"></span></td>
 
 					<td class="form-label">Volume :</td>
 					<td class="money"><input class="money" type="text" name="volume" 					tabindex="15" /></td>
@@ -653,7 +768,7 @@
 
 					<td class="form-label">Expenses Allowed:</td>
 					<td class="money"><input class="money" type="text" name="expensesAllowed" 			tabindex="19" /></td>
-					<td class="err"><span class="dlAmtErr err"></span></td>
+					<td class="err"><span class="expensesAllowedErr err"></span></td>
 				</tr>
 			</table>
 		</div>				
