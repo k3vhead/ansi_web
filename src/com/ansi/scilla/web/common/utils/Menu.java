@@ -52,7 +52,7 @@ public enum Menu {
 	
 	SETTINGS("Settings", null, Permission.SYSADMIN_READ,"#"),
 
-	TAX_MAINTENANCE(	"Tax Rate Archive",		SETTINGS,	Permission.SYSADMIN_READ,	"taxRateMaintenance.html"),
+	// TAX_MAINTENANCE(	"Tax Rate Archive",		SETTINGS,	Permission.SYSADMIN_READ,	"taxRateMaintenance.html"),
 	CODES(				"Codes",				SETTINGS,	Permission.SYSADMIN_READ,	"codeMaintenance.html"),
 	DIVISIONS(			"Divisions",			SETTINGS,	Permission.SYSADMIN_READ,	"divisionAdmin.html"),
 	USER_LOOKUP(		"User Lookup",			SETTINGS,	Permission.SYSADMIN_READ,	"userLookup.html"),
