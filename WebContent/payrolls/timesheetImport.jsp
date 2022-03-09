@@ -28,9 +28,50 @@
     	<script type="text/javascript" src="js/document.js"></script> 
     
         <style type="text/css">
-		#display-div {
+        
+        div #data-file{
+        	margin-bottom : 20px;
+        }
+        
+		div #data-header {
 			display:none;
+			width : 450px;
+			/* border: 2px solid red; */ 
+		}		
+		#data-header table {
+			/* width: 100%; */
 		}
+
+		#data-header table td.col1{
+			width:50px;
+			/* border: 2px solid yellow; */ 
+		}		
+		
+		#data-header table td.col2{
+			width:150px;
+			/* border: 2px solid red; */ 
+		}		
+		
+		#data-header table td.col3{
+			width: 100px;
+		}		
+		#data-header table td.col4{
+			/* width:140px; */
+			text-align: right;
+			/* border: 2px solid blue;*/  
+		}		
+	
+		td #cancel-save-buttons{
+			text-align: right;
+		}	
+	
+		#data-header table td #operations-manager-label{
+		 	/* width:200px; */
+		}		
+		
+		#data-header table td #week-ending-label{
+			/* width:200px; */
+		}		
 
 		#employee-modal {
 			display:none;
@@ -77,7 +118,6 @@
 			/* width: 100%; */
 			text-align: right; 
 		}
-	
 		
 		.col-heading{
 			text-align: left;
@@ -156,6 +196,33 @@
 		#organization-edit th {
 			text-align:left;
 		}
+		#prompt-div{
+			width: 450px;
+			/*border: 2px solid black;*/
+		}
+		#prompt-div table.prompt{
+			width: 100;
+			/* border: 2px solid red; */
+		}
+		#prompt-div table.prompt #file-picker-label{
+			/* background-color: yellow; */
+		}
+		
+		#prompt-div table.prompt #file-picker{
+			/* background-color: blue; */
+			width:95%;
+		}
+		
+		#prompt-div table.prompt #file-picker-err{
+			/* background-color: red; */
+		}
+		
+		#prompt-div table.prompt #open-button-cell{
+			/* background-color: green; */
+		}
+		
+		
+		
 		.action-link {
 			text-decoration:none;
 			cursor:pointer;
@@ -171,6 +238,7 @@
 			white-space: nowrap;
 		}
 
+
 		td .pay {
 			margin: auto;
 		}
@@ -180,7 +248,20 @@
 		}
 		.view-link {
 			color:#404040;
-		}		
+		}
+		
+		.workingBox {
+			width:20px;
+			display:inline-block;
+		}
+		.working {
+			display:none;
+		}
+				
+		.thinking {
+			display:none;
+		}
+				
         </style>
         <script type="text/javascript">    
 	       	$(document).ready(function(){
@@ -246,30 +327,38 @@
 	   					//{ title : "Productivity", "defaultContent": "", data:'productivity' },
 	
 	           		},
-	           		       		
+	           		openTheFile : function(){
+	           			console.log("openTheFile");
+           				
+           				$("#prompt-div .err").html("");
+           				var file = document.getElementById('timesheet-file').files[0];
+           				var reader = new FileReader();
+           				if ( file == null ) { 
+							$("#prompt-div .timesheetFileErr").html("Required Value").show();
+							//if ( $("#prompt-div select[name='divisionId']").val().length == 0) { $("#prompt-div .divisionIdErr").html("Required Value").show(); }
+							//if ( $("#prompt-div input[name='payrollDate']").val().length == 0 ) {$("#prompt-div .payrollDateErr").html("Required Value").show(); }
+							//if ( $("#prompt-div select[name='state']").val().length == 0 ) {$("#prompt-div .stateErr").html("Required Value").show(); }
+							//if ( $("#prompt-div input[name='city']").val().length == 0 ) {$("#prompt-div .cityErr").html("Required Value").show(); }
+           				} else {
+	           				reader.readAsText(file, 'UTF-8');	           				
+	           				reader.onload = TIMESHEET_IMPORT.openFile;		           				
+	           				// reader.onprogress ...  (progress bar)
+           				}
+	           		},    		
 	           		makeClickers : function() {
-	           			$("#open-button").click(function($event) {
-	           				$("#open-button").off("click");
-	           				$("#prompt-div .err").html("");
-	           				var file = document.getElementById('timesheet-file').files[0];
-	           				var reader = new FileReader();
-	           				if ( file == null ) { 
-								$("#prompt-div .timesheetFileErr").html("Required Value").show();
-								//if ( $("#prompt-div select[name='divisionId']").val().length == 0) { $("#prompt-div .divisionIdErr").html("Required Value").show(); }
-								//if ( $("#prompt-div input[name='payrollDate']").val().length == 0 ) {$("#prompt-div .payrollDateErr").html("Required Value").show(); }
-								//if ( $("#prompt-div select[name='state']").val().length == 0 ) {$("#prompt-div .stateErr").html("Required Value").show(); }
-								//if ( $("#prompt-div input[name='city']").val().length == 0 ) {$("#prompt-div .cityErr").html("Required Value").show(); }
-	           				} else {
-		           				reader.readAsText(file, 'UTF-8');	           				
-		           				reader.onload = TIMESHEET_IMPORT.saveFile;
-		           				// reader.onprogress ...  (progress bar)
-	           				}
-	           			});
+	           			console.log("Creating Button Click events..");
+	           			$("#open-button").click(
+	           				function($event) { 
+	    	           			console.log("this is inside the open-button click event");
+		           				/* $("#open-button").off("click"); */
+		           				$("#prompt-div").hide();
+		           				$(".thinking").show();		           				
+		           				TIMESHEET_IMPORT.openTheFile();
+		           				/* $("#open-button").on("click"); */
+		           			});
 	           			
-	           			$("#display-div input[name='cancelButton']").click(function($event) {
-	           				$("#display-div").hide();
-	           				$("#prompt-div").show();
-	           				$("#prompt-div .timesheet-file").val('');
+	           			$("#data-header input[name='cancelButton']").click(function($event) {
+	           				TIMESHEET_IMPORT.initializeDisplay();
 	           			});
 	           		},
 	           		           		           		
@@ -281,20 +370,46 @@
 	           				$($selector).html($value[0]).show();
 	           			});
 	           		},
-	           		           		
+	           		           
+	           		initializeDisplay: function(){
+           				$("#data-header").hide();
+           				$("#prompt-div").show();
+           				$("#prompt-div .timesheet-file").val('');
+	           			$("#data-header .divisionId").html("");
+	           			$("#data-header .operationsManagerName").html("");           			
+	           			$("#data-header .payrollDate").html("");
+	           			$("#data-header .state").html("");
+	           			$("#data-header .city").html("");
+	           			$("#data-header .timesheetFile").html("");
+           				$("#open-button").on("click");
+           				$("#data-detail").hide();
+           				$("#timesheet").hide();
+
+           				$("#timesheet").DataTable().clear();
+           				/*
+           				$("#timesheet").DataTable().draw();           				
+           				$("#timesheet").DataTable().destroy
+           				*/
+           				
+           				var $el = $('#timesheet-file');
+                        $el.wrap('<form>').closest('form').get(0).reset();
+                        $el.unwrap();
+           
+	           		},	           		
 	           		processUploadSuccess : function($data) {
 	           			console.log("processUploadSuccess");
 	           			$("#prompt-div").hide();
-	           			$("#display-div").show();
+	           			$("#data-header").show();
 	           			console.log("showing display div.. ");
 	           			console.log($data);
 	           			console.log($data.data.division);
-	           			$("#display-div .divisionId").html($data.data.division);
-	           			$("#display-div .operationsManagerName").html($data.data.operationsManagerName);           			
-	           			$("#display-div .payrollDate").html($data.data.weekEnding);
-	           			$("#display-div .state").html($data.data.state);
-	           			$("#display-div .city").html($data.data.city);
-	           			$("#display-div .timesheetFile").html($data.data.fileName);
+           				$(".thinking").hide();
+	           			$("#data-header .divisionId").html($data.data.division);
+	           			$("#data-header .operationsManagerName").html($data.data.operationsManagerName);           			
+	           			$("#data-header .payrollDate").html($data.data.weekEnding);
+	           			$("#data-header .state").html($data.data.state);
+	           			$("#data-header .city").html($data.data.city);
+	           			$("#data-header .timesheetFile").html($data.data.fileName);
 	
 	           			// create and populate dicttionary object for use in modal
 	           			var dictionary = $data.data.employeeRecordList;
@@ -371,9 +486,10 @@
 	           					});
 	           				}
 	           			});
-	           		},
-	        
-	           		saveFile : function($event) {
+	           			$("#data-detail").show();
+	           			$("#timesheet").show();
+	           		},	        
+	           		openFile : function($event) {
 	           			var results = $event.target.result;
 	           			var fileName = document.getElementById('timesheet-file').files[0].name;
 	           			var formData = new FormData();
@@ -565,41 +681,49 @@
 	    	           	console.log("Edit Val for expensesAllowed" 	+ $expensesAllowed);
 	    	           	console.log("Edit Val for expensesSubmitted" + $expensesSubmitted);
 	    	           	console.log("Edit Val for productivity" 	+ $productivity);
-	           			
-	    	           	
+	           				    	           	
 	           			console.log("saveEmployeeModal: ");
+	           			
+	           			var $idx = $rowNumber +1;
+	           			$idx = $idx -1;
+
+	           			console.log("Using index number = " + $idx);	           			
+
+	           			
+					    var table = $("#timesheet").DataTable();
+					    
+// 	           			console.log("Removing row = " + $idx);	           			
+// 	           			table.row($idx).remove();
 	           				           			
-	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].rowNumber = $rowNumber;	           			
-	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].employeeName = $employeeName;
-	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].regularPay = $regularPay;
-	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].otPay = $otPay;
-	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].vacationPay = $vacationPay;
-	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].holidayPay = $holidayPay;
-	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].regularHours = $regularHours;
-	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].otHours = $otHours;
-	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].vacationHours = $vacationHours;
-	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].holidayHours = $holidayHours;
-	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].directLabor = $directLabor; 
-	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].volume	 = $volume;
-	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].grossPay = $grossPay;
-	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].expenses = $expenses;
-	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].expensesAllowed = $expensesAllowed;
-	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].expensesSubmitted = $expensesSubmitted;
-	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].productivity = $productivity;	           			
-	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].directLabor = $directLabor;
-	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].volume = $volume;
-	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].grossPay = $grossPay;
-	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].expenses = $expenses;
-	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].expensesAllowed = $expensesAllowed;
-	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].expensesSubmitted = $expensesSubmitted;
-	           			TIMESHEET_IMPORT.employeeMap[$rowNumber].productivity = $productivity;
+	           			console.log("re-adding row? = " + $idx);	           			
+	           			TIMESHEET_IMPORT.employeeMap[$idx].employeeName = $employeeName;
+	           			TIMESHEET_IMPORT.employeeMap[$idx].regularPay = $regularPay;
+	           			TIMESHEET_IMPORT.employeeMap[$idx].otPay = $otPay;
+	           			TIMESHEET_IMPORT.employeeMap[$idx].vacationPay = $vacationPay;
+	           			TIMESHEET_IMPORT.employeeMap[$idx].holidayPay = $holidayPay;
+	           			TIMESHEET_IMPORT.employeeMap[$idx].regularHours = $regularHours;
+	           			TIMESHEET_IMPORT.employeeMap[$idx].otHours = $otHours;
+	           			TIMESHEET_IMPORT.employeeMap[$idx].vacationHours = $vacationHours;
+	           			TIMESHEET_IMPORT.employeeMap[$idx].holidayHours = $holidayHours;
+	           			TIMESHEET_IMPORT.employeeMap[$idx].directLabor = $directLabor; 
+	           			TIMESHEET_IMPORT.employeeMap[$idx].volume	 = $volume;
+	           			TIMESHEET_IMPORT.employeeMap[$idx].grossPay = $grossPay;
+	           			TIMESHEET_IMPORT.employeeMap[$idx].expenses = $expenses;
+	           			TIMESHEET_IMPORT.employeeMap[$idx].expensesAllowed = $expensesAllowed;
+	           			TIMESHEET_IMPORT.employeeMap[$idx].expensesSubmitted = $expensesSubmitted;
+	           			TIMESHEET_IMPORT.employeeMap[$idx].productivity = $productivity;	           			
+	           			TIMESHEET_IMPORT.employeeMap[$idx].directLabor = $directLabor;
+	           			TIMESHEET_IMPORT.employeeMap[$idx].volume = $volume;
+	           			TIMESHEET_IMPORT.employeeMap[$idx].grossPay = $grossPay;
+	           			TIMESHEET_IMPORT.employeeMap[$idx].expenses = $expenses;
+	           			TIMESHEET_IMPORT.employeeMap[$idx].expensesAllowed = $expensesAllowed;
+	           			TIMESHEET_IMPORT.employeeMap[$idx].expensesSubmitted = $expensesSubmitted;
+	           			TIMESHEET_IMPORT.employeeMap[$idx].productivity = $productivity;
 	           			
 	           			//alert("Do Stuff here to store the changes");	           			
 // 	           			console.log("Employee name from employeeRecordList = " + $data.data.employeeRecordList[$rowNumber].employeeName);
 					    //var $test = "TIMESHEET_IMPORT.employeeMap[" + $rowNumber + "] = " + TIMESHEET_IMPORT.employeeMap[$rowNumber].directLabor;
 					 				
-					    var table = $("#timesheet").DataTable();
-					    table.row($rowNumber).remove();
 					    table.row($rowNumber).data(TIMESHEET_IMPORT.employeeMap[$rowNumber]).draw();			    
 
 					    console.log("test row update");
@@ -616,30 +740,115 @@
     <tiles:put name="content" type="string">
     	<h1>Payroll Timesheet Import</h1> 
     	<div id="prompt-div">
-    		<table>
-    			<tr>
-    				<td><span class="form-label">Payroll File:</span></td>
-    				<td>
-    					<input type="file" id="timesheet-file" name="files[]" />
+    		<form id="file-selection">
+	    		<table class="prompt">
+	    			<tr>
+	    				<td id="file-picker-label">
+	    					<span class="form-label">Payroll File:</span>
+	    				</td>
+	    				<td id="file-picker">
+	    					<input type="file" id="timesheet-file" name="files[]" />
+	    				</td>
+	    				<td id="file-picker-err">
+	    					<span class="timesheetFileErr err"></span>
+	    				</td>
+	    				<!--   <td colspan="2" style="text-align:center;"> -->
+	    				<td id="open-button-cell">
+	    					<input type="button" value="Open" id="open-button" />
+	    				</td>    				
+	    			</tr>
+	    			<tr>
+	    			</tr>    			
+	    		</table>
+	    	</form>
+    	</div>
+ 		<div class="thinking"><webthing:thinking style="width:100%" /></div>
+
+
+  		<div id="data-header">
+			<table id="data-file">
+    			<tr>			
+	  				<td id="payroll-file-label" >		
+	  					<span class="form-label">Currently Viewing Payroll File :</span>
+	  					<span class="timesheetFile"></span>
+	  				</td>
+    			</tr>  	
+    		</table>
+			<table id="file-header-data">
+    			<tr class="label-row">
+    				<td class="col1" id="division-label" >			
+    					<span class="form-label">Division</span>
     				</td>
-    				<td><span class="timesheetFileErr err"></span></td>
+    				<td class="col2"  id="operations-manager-label" >	
+    					<span class="form-label">Operations Manager</span>
+    				</td>
+    				<td class="col3" id="week-ending-label" >		
+    					<span class="form-label">Week Ending</span>
+    				</td>
+    				<td class="col4">
+    				</td>
     			</tr>
     			<tr>
-    				<td colspan="2" style="text-align:center;"><input type="button" value="Open" id="open-button" /></td>
-    			</tr>    			
-    		</table>
-    	</div>
-
-		<div id="display-div">
-			<table style="width:100%;">
+    				<td class="col1"><span class="divisionId"></span></td>
+    				<td class="col2"><span class="operationsManagerName"></span></td>
+    				<td class="col3"><span class="payrollDate"></span></td>
+    				<td class="col4"></td>
+    			</tr>
     			<tr>
-    				<td><span class="form-label">Division:</span></td>
-    				<td><span class="form-label">Operations Manager:</span></td>
-    				<td><span class="form-label">Week Ending:</span></td>
-    				<td><span class="form-label">State:</span></td>
-    				<td><span class="form-label">City/Jurisdiction:</span></td>
-    				<td><span class="form-label">Payroll File:</span></td>
-    				<td rowspan="2">
+    			</tr>
+    			<tr>
+    				<td  class="col1" id="state-label" >				
+    					<span class="form-label">State</span>
+    				</td>
+    				<td  class="col2" id="city-label" >				
+    					<span class="form-label">City/Jurisdiction</span>
+    				</td>
+    				<td  class="col3" id="payroll-file-label" >
+    					<!-- 		
+    					<span class="form-label">Payroll File</span>
+    					 -->
+    				</td>
+    				<td class="col4">
+    				</td>
+    			</tr>
+    			<tr>
+    				<td  class="col1"><span class="state"></span></td>
+    				<td  class="col2"><span class="city"></span></td>
+    				<td  class="col3"><!--  <span class="timesheetFile"></span> --> </td>
+    				<td  class="col4" id="cancel-save-buttons">
+    					<input type="button" value="Cancel" name="cancelButton" class="action-button" />
+    					<input type="button" value="Save" id="open-button" />
+    				</td>
+    			</tr>
+    			
+    			    			
+    		</table>
+		</div>
+
+
+		<!-- 
+  		<div id="data-header">
+			<table id="file-header-data">
+    			<tr>
+    				<td id="division-label" >			
+    					<span class="form-label">Division</span>
+    				</td>
+    				<td id="operations-manager-label" >	
+    					<span class="form-label">Operations Manager</span>
+    				</td>
+    				<td id="week-ending-label" >		
+    					<span class="form-label">Week Ending</span>
+    				</td>
+    				<td id="state-label" >				
+    					<span class="form-label">State</span>
+    				</td>
+    				<td id="city-label" >				
+    					<span class="form-label">City/Jurisdiction</span>
+    				</td>
+    				<td id="payroll-file-label" >		
+    					<span class="form-label">Payroll File</span>
+    				</td>
+    				<td id="cancel-save-buttons">
     					<input type="button" value="Cancel" name="cancelButton" class="action-button" />
     					<input type="button" value="Save" id="open-button" />
     				</td>
@@ -655,12 +864,13 @@
     			<tr>
     			</tr>    			
     		</table>
+		</div>
+		 -->
+
+		<div id="data-detail">
 			<table id="timesheet">
 			</table>
 		</div>
-		
-		
-		
 		
 		<div id="employee-modal">
 			<div style="width:100%; height:0px;">
