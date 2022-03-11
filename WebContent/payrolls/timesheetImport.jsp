@@ -29,37 +29,77 @@
     
         <style type="text/css">
         
-        div #data-file{
-        	margin-bottom : 20px;
+        
+        #data-detail{
+			/* border: 2px solid red; */ 
+			width:100%;
         }
         
-		div #data-header {
+        #data-detail #timesheet{
+			/* border: 2px solid blue; */ 
+			width:100%;
+        }
+        
+        #data-file{
+        	/* margin-bottom : 20px; */
+        	display:none;
+        }
+        
+		#data-header {
 			display:none;
-			width : 450px;
+			width : 1000px;
 			/* border: 2px solid red; */ 
 		}		
+		
 		#data-header table {
 			/* width: 100%; */
 		}
 
-		#data-header table td.col1{
-			width:50px;
+		/* division */
+		#data-header table td.col1{ 	
+			width:60px;
 			/* border: 2px solid yellow; */ 
 		}		
 		
+		/* Operations Manager Name */
 		#data-header table td.col2{
 			width:150px;
 			/* border: 2px solid red; */ 
 		}		
 		
+		/* Week ending */
 		#data-header table td.col3{
 			width: 100px;
 		}		
+
+		/* State */
 		#data-header table td.col4{
-			/* width:140px; */
+			width:50px; */
+			/* text-align: right; */
+			/* border: 2px solid blue;*/  
+		}		
+	
+		/* City/Juristiction  */
+		#data-header table td.col5{
+			width:140px; 
+			/* text-align: right; */
+			/* border: 2px solid blue;*/  
+		}		
+
+		/* Payroll File */
+		#data-header table td.col6{
+			width:200px; 
+			/* text-align: right; */
+			/* border: 2px solid blue; */ 
+		}		
+	
+		/* Buttons   */
+		#data-header table td.col7{
+			width: 150px; */
 			text-align: right;
 			/* border: 2px solid blue;*/  
 		}		
+	
 	
 		td #cancel-save-buttons{
 			text-align: right;
@@ -197,29 +237,33 @@
 			text-align:left;
 		}
 		#prompt-div{
-			width: 450px;
-			/*border: 2px solid black;*/
+			width: 600px;
 		}
 		#prompt-div table.prompt{
+			width: 900;
+		}
+		
+		/* file-picker-label */
+		#prompt-div table.prompt td.col1{
 			width: 100;
-			/* border: 2px solid red; */
-		}
-		#prompt-div table.prompt #file-picker-label{
-			/* background-color: yellow; */
 		}
 		
-		#prompt-div table.prompt #file-picker{
-			/* background-color: blue; */
-			width:95%;
+		/* file-picker-input control */
+		#prompt-div table.prompt td.col2{
+			width: 400;
 		}
 		
-		#prompt-div table.prompt #file-picker-err{
-			/* background-color: red; */
+		/* open button */
+		#prompt-div table.prompt td.col3{
+			width: 100;
 		}
 		
-		#prompt-div table.prompt #open-button-cell{
-			/* background-color: green; */
+		/* file-selection-error */
+		#prompt-div table.prompt td.col4{
+			width: 300;
 		}
+		
+		
 		
 		
 		
@@ -333,17 +377,23 @@
            				$("#prompt-div .err").html("");
            				var file = document.getElementById('timesheet-file').files[0];
            				var reader = new FileReader();
-           				if ( file == null ) { 
-							$("#prompt-div .timesheetFileErr").html("Required Value").show();
+           				
+           				
+	           			if (typeof file !== 'undefined'){
+	           				reader.readAsText(file, 'UTF-8');	           				
+	           				reader.onload = TIMESHEET_IMPORT.openFile;		           				
+	           				$("#prompt-div").hide();
+	           				$(".thinking").show();		           				
+		           			console.log(file);
+	           				// reader.onprogress ...  (progress bar)	  
+	           			} else{
+		           			console.log("No file selected");
+							$("#prompt-div .timesheetFileErr").html("Please select a file to open").show();
 							//if ( $("#prompt-div select[name='divisionId']").val().length == 0) { $("#prompt-div .divisionIdErr").html("Required Value").show(); }
 							//if ( $("#prompt-div input[name='payrollDate']").val().length == 0 ) {$("#prompt-div .payrollDateErr").html("Required Value").show(); }
 							//if ( $("#prompt-div select[name='state']").val().length == 0 ) {$("#prompt-div .stateErr").html("Required Value").show(); }
 							//if ( $("#prompt-div input[name='city']").val().length == 0 ) {$("#prompt-div .cityErr").html("Required Value").show(); }
-           				} else {
-	           				reader.readAsText(file, 'UTF-8');	           				
-	           				reader.onload = TIMESHEET_IMPORT.openFile;		           				
-	           				// reader.onprogress ...  (progress bar)
-           				}
+	           			}
 	           		},    		
 	           		makeClickers : function() {
 	           			console.log("Creating Button Click events..");
@@ -351,8 +401,6 @@
 	           				function($event) { 
 	    	           			console.log("this is inside the open-button click event");
 		           				/* $("#open-button").off("click"); */
-		           				$("#prompt-div").hide();
-		           				$(".thinking").show();		           				
 		           				TIMESHEET_IMPORT.openTheFile();
 		           				/* $("#open-button").on("click"); */
 		           			});
@@ -423,6 +471,7 @@
 	            	        searchDelay : 800,
 	            	        paging: false,
 	            	        destroy: true,
+	            	        autoWidth: false,
 	           				columnDefs : [
 	             	            { orderable : true, "targets": -1 },
 	             	            //{ className : "dt-head-center", "targets":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]},
@@ -743,22 +792,11 @@
     		<form id="file-selection">
 	    		<table class="prompt">
 	    			<tr>
-	    				<td id="file-picker-label">
-	    					<span class="form-label">Payroll File:</span>
-	    				</td>
-	    				<td id="file-picker">
-	    					<input type="file" id="timesheet-file" name="files[]" />
-	    				</td>
-	    				<td id="file-picker-err">
-	    					<span class="timesheetFileErr err"></span>
-	    				</td>
-	    				<!--   <td colspan="2" style="text-align:center;"> -->
-	    				<td id="open-button-cell">
-	    					<input type="button" value="Open" id="open-button" />
-	    				</td>    				
+	    				<td class="col1" id="file-picker-label"> 	<span 	class="form-label">Payroll File:						</span>		</td>
+	    				<td class="col2"  id="file-picker"> 		<input 	type="file" 	id="timesheet-file" name="files[]" />				</td>
+	    				<td class="col3" id="open-button-cell"> 	<input 	type="button" 	id="open-button"	value="Open"  /> 				</td>    				
+	    				<td class="col4" id="file-picker-err">		<span 	class="timesheetFileErr err">							</span> 	</td>
 	    			</tr>
-	    			<tr>
-	    			</tr>    			
 	    		</table>
 	    	</form>
     	</div>
@@ -776,96 +814,28 @@
     		</table>
 			<table id="file-header-data">
     			<tr class="label-row">
-    				<td class="col1" id="division-label" >			
-    					<span class="form-label">Division</span>
-    				</td>
-    				<td class="col2"  id="operations-manager-label" >	
-    					<span class="form-label">Operations Manager</span>
-    				</td>
-    				<td class="col3" id="week-ending-label" >		
-    					<span class="form-label">Week Ending</span>
-    				</td>
-    				<td class="col4">
-    				</td>
-    			</tr>
-    			<tr>
-    				<td class="col1"><span class="divisionId"></span></td>
-    				<td class="col2"><span class="operationsManagerName"></span></td>
-    				<td class="col3"><span class="payrollDate"></span></td>
-    				<td class="col4"></td>
-    			</tr>
-    			<tr>
-    			</tr>
-    			<tr>
-    				<td  class="col1" id="state-label" >				
-    					<span class="form-label">State</span>
-    				</td>
-    				<td  class="col2" id="city-label" >				
-    					<span class="form-label">City/Jurisdiction</span>
-    				</td>
-    				<td  class="col3" id="payroll-file-label" >
-    					<!-- 		
-    					<span class="form-label">Payroll File</span>
-    					 -->
-    				</td>
-    				<td class="col4">
-    				</td>
-    			</tr>
-    			<tr>
-    				<td  class="col1"><span class="state"></span></td>
-    				<td  class="col2"><span class="city"></span></td>
-    				<td  class="col3"><!--  <span class="timesheetFile"></span> --> </td>
-    				<td  class="col4" id="cancel-save-buttons">
-    					<input type="button" value="Cancel" name="cancelButton" class="action-button" />
-    					<input type="button" value="Save" id="open-button" />
-    				</td>
-    			</tr>
-    			
-    			    			
-    		</table>
-		</div>
-
-
-		<!-- 
-  		<div id="data-header">
-			<table id="file-header-data">
-    			<tr>
-    				<td id="division-label" >			
-    					<span class="form-label">Division</span>
-    				</td>
-    				<td id="operations-manager-label" >	
-    					<span class="form-label">Operations Manager</span>
-    				</td>
-    				<td id="week-ending-label" >		
-    					<span class="form-label">Week Ending</span>
-    				</td>
-    				<td id="state-label" >				
-    					<span class="form-label">State</span>
-    				</td>
-    				<td id="city-label" >				
-    					<span class="form-label">City/Jurisdiction</span>
-    				</td>
-    				<td id="payroll-file-label" >		
-    					<span class="form-label">Payroll File</span>
-    				</td>
-    				<td id="cancel-save-buttons">
-    					<input type="button" value="Cancel" name="cancelButton" class="action-button" />
-    					<input type="button" value="Save" id="open-button" />
-    				</td>
-    			</tr>
-    			<tr>
-    				<td><span class="divisionId"></span></td>
-    				<td><span class="operationsManagerName"></span></td>
-    				<td><span class="payrollDate"></span></td>
-    				<td><span class="state"></span></td>
-    				<td><span class="city"></span></td>
-    				<td><span class="timesheetFile"></span></td>
-    			</tr>
-    			<tr>
+    				<td class="col1" id="division-label" >  			<span class="form-label">Division			</span>   	</td>
+    				<td class="col2" id="operations-manager-label" > 	<span class="form-label">Operations Manager	</span>		</td>
+    				<td class="col3" id="week-ending-label" >			<span class="form-label">Week Ending		</span> 	</td>
+    				<td class="col4" id="state-label" > 				<span class="form-label">State				</span>		</td>
+    				<td class="col5" id="city-label" >					<span class="form-label">City/Jurisdiction	</span> 	</td>
+    				<td class="col6" id="payroll-file-label" >			<span class="form-label">Payroll File		</span> 	</td>
+    				<td class="col7">									<span class="form-label">					</span>		</td>
     			</tr>    			
+    			<tr>
+    				<td class="col1"><span class="divisionId">				</span></td>
+    				<td class="col2"><span class="operationsManagerName">	</span></td>
+    				<td class="col3"><span class="payrollDate">				</span></td>
+    				<td class="col4"><span class="state">					</span></td>
+    				<td class="col5"><span class="city">					</span></td>
+    				<td class="col6"><span class="timesheetFile">			</span></td>
+    				<td class="col7" id="cancel-save-buttons">
+    					<input type="button" value="Cancel" name="cancelButton" class="action-button" />
+    					<input type="button" value="Save" id="open-button" />
+    				</td>
+    			</tr>
     		</table>
 		</div>
-		 -->
 
 		<div id="data-detail">
 			<table id="timesheet">
