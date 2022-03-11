@@ -66,6 +66,7 @@ public class OrganizationServlet extends AbstractServlet {
 			String uri = request.getRequestURI();
 			String trigger = REALM + "/";
 			String uriDetail = uri.substring(uri.indexOf(trigger)+trigger.length());
+			logger.log(Level.DEBUG, uriDetail);
 			// destination[0] should be one of the OrganizationType values (except for division)
 			String[] destination = uriDetail.split("/");
 	

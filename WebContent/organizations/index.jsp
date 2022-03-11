@@ -56,10 +56,16 @@
         	#organization-edit th {
         		text-align:left;
         	}
+        	#organization-new {
+        		display:none;
+        	}
         	.action-link {
         		text-decoration:none;
         	}
         	.company-field {
+        		display:none;
+        	}
+        	.company-specific {
         		display:none;
         	}
 			.dataTables_wrapper {
@@ -99,6 +105,12 @@
         			ORGMAINT.getOrgs(); 
         			ORGMAINT.makeModals();
         			ORGMAINT.makeClickers();
+        			
+        			if ( ORGMAINT.orgType == 'COMPANY' ) {
+        				$(".company-specific").show();
+        			} else {
+        				$(".company-specific").hide();
+        			}
         		},
         		
         		
@@ -197,6 +209,16 @@
 	        				ANSI_UTILS.makeServerCall("POST", $url, JSON.stringify($outbound), $callbacks, {});
         				}
         			});
+        			
+        			
+        			
+        			$("#new-organization-button").click(function($event) {
+        				console.log("new org click");
+        				$("#organization-new input").val("");
+        				$("#organization-new select").val("");
+        				$("#organization-new .err").html("");
+        				$("#organization-new").dialog("open");
+        			});
         		},
         		
         		
@@ -243,6 +265,37 @@
         				]
         			});	
         			$("#org_edit_cancel").button('option', 'label', 'Done');
+        			
+        			
+        			
+        			
+        			$( "#organization-new" ).dialog({
+        				title:'New ' + ORGMAINT.orgTypeDisplay,
+        				autoOpen: false,
+        				height: 500,
+        				width: 1200,
+        				modal: true,
+        				closeOnEscape:true,
+        				//open: function(event, ui) {
+        				//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+        				//},
+        				buttons: [
+        					{
+        						id:  "org_new_cancel",
+        						click: function($event) {
+       								$( "#organization-new" ).dialog("close");
+        						}
+        					},{
+        						id:  "org_new_save",
+        						click: function($event) {
+       								ORGMAINT.saveNewOrg();
+        						}
+        					}
+        					
+        				]
+        			});	
+        			$("#org_new_cancel").button('option', 'label', 'Cancel');
+        			$("#org_new_save").button('option', 'label', 'Save');
         		},
         		
         		
@@ -382,6 +435,55 @@
         				//this happens if the data attributes on the lookup are weird.
         				$("#organization-edit .organization-msg").html("Update error. Reload page and try again").show();
         			}
+        		},
+        		
+        		
+        		
+        		
+        		saveNewOrg : function() {
+        			console.log("saveNewOrg");
+        			
+        			var $url = "organization/" + ORGMAINT.orgType; // + "/" + $organizationId;
+    				var $outbound = {};
+    				$.each( $("#organization-new input"), function($index, $value) {
+    					$outbound[$($value).attr("name")] = $($value).val();
+    				});
+    				$.each( $("#organization-new select"), function($index, $value) {
+    					$outbound[$($value).attr("name")] = $($value).val();
+    				});
+    				// Status is a boolean
+    				$outbound['status'] = $("#organization-new select[name='status']").val() == 1;
+    				console.log(JSON.stringify($outbound));
+    				var $callbacks = {
+    					200 : ORGMAINT.saveNewOrgSuccess,
+    				};
+    				ANSI_UTILS.makeServerCall("POST", $url, JSON.stringify($outbound), $callbacks, {});
+    				
+        		},
+        		
+        		
+        		
+        		saveNewOrgSuccess : function($data, $passthru) {
+        			console.log("saveNewOrgSuccess");
+        			if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+        				$("#organization-new .err").html("");
+        				$.each($data.data.webMessages, function($key, $value) {
+        					var $errField = "#organization-new ."+$key+"Err";
+        					console.log($errField);
+        					console.log($value[0]);
+        					$($errField).html($value[0]);
+        				});
+        			} else if ( $data.responseHeader.responseCode = 'SUCCESS') {
+        				$( "#organization-new" ).dialog("close");
+        				$("#globalMsg").html("Success").show().fadeOut(3000);
+        				var $newOrgId = $data.data.organization.organizationId;
+        				ORGMAINT.getOrgs();
+        				ORGMAINT.getOrganizationDetail("edit", $newOrgId, false);
+        			} else {
+        				$("#globalMsg").html("System Error. Invalid response code. Contact Support").show();
+        			}
+        			
+
         		},
         		
         		
@@ -566,6 +668,42 @@
 			</table>
 		</div>
 		
+		
+		
+		<div id="organization-new">
+			<table>
+				<tr>
+					<td><span class="form-label">Name:</span></td>
+					<td><input type="text" name="name" /></td>
+					<td><span class="err nameErr"></span></td>
+				</tr>
+				<tr class="company-specific">
+					<td><span class="form-label">Parent:</span></td>
+					<td>
+						<select name="parentId">
+							<option value=""></option>
+							<ansi:selectOrganization active="true" type="REGION" />
+						</select>
+					</td>
+					<td><span class="err nameErr"></span></td>
+				</tr>
+				<tr class="company-specific">
+					<td><span class="form-label">Company Code:</span></td>
+					<td><input type="text" name="companyCode" /></td>
+					<td><span class="err companyCodeErr"></span></td>
+				</tr>
+				<tr>
+					<td><span class="form-label">Status:</span></td>
+					<td>
+						<select name="status">
+							<option value=""></option>
+							<webthing:organizationStatusOptions />
+						</select>
+					</td>
+					<td><span class="err statusErr"></span></td>
+				</tr>
+			</table>
+		</div>
     </tiles:put>
 		
 </tiles:insert>

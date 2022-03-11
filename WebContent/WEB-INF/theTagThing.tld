@@ -305,6 +305,27 @@
 	
 	
 	
+	<tag>
+		<name>selectParentOrganization</name>
+		<tagclass>com.ansi.scilla.web.tags.SelectParentOrganization</tagclass>
+		<bodycontent>JSP</bodycontent>
+		<info>
+			Displays the options for a parent of a division or division_group selector/dropdown. Must be surrounded by "select" tag
+		</info>
+		<attribute>
+			<name>active</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<attribute>
+			<name>type</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+	</tag>
+	
+	
+	
 	
 	<tag>
 		<name>selectPayrollCompany</name>

@@ -5,6 +5,8 @@ import java.sql.Connection;
 import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.db.DivisionGroup;
+import com.ansi.scilla.common.exceptions.InvalidValueException;
+import com.ansi.scilla.common.organization.OrganizationType;
 import com.ansi.scilla.web.common.request.AbstractRequest;
 import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.WebMessages;
@@ -72,5 +74,34 @@ public class OrganizationDetailRequest extends AbstractRequest {
 				RequestValidator.validateString(webMessages, COMPANY_CODE, this.companyCode, 45, false, "Company Code");
 			}
 		}
+	}
+	
+	
+	public void validateAdd(Connection conn, WebMessages webMessages, String organizationType) throws Exception {
+		OrganizationType orgType = OrganizationType.valueOf(organizationType);
+		
+		
+		switch ( orgType ) {
+		case COMPANY:
+			RequestValidator.validateString(webMessages, NAME, this.name, 45, true, "Name");
+			RequestValidator.validateId(conn, webMessages, "division_group", DivisionGroup.GROUP_ID, PARENT_ID, this.parentId, true, "Parent");
+			RequestValidator.validateString(webMessages, COMPANY_CODE, this.companyCode, 45, false, "Company Code");
+			RequestValidator.validateBoolean(webMessages, STATUS, this.status, true);
+			break;
+		case DIVISION:
+			throw new InvalidValueException("Invalid org type; divisison is elsewhere");
+		case GROUP:
+			RequestValidator.validateString(webMessages, NAME, this.name, 45, true, "Name");
+			RequestValidator.validateBoolean(webMessages, STATUS, this.status, true);
+			break;
+		case REGION:
+			RequestValidator.validateString(webMessages, NAME, this.name, 45, true, "Name");
+			RequestValidator.validateBoolean(webMessages, STATUS, this.status, true);
+			break;
+		default:
+			throw new InvalidValueException("Invalid org type: " + orgType);		
+		}
+		
+		
 	}
 }
