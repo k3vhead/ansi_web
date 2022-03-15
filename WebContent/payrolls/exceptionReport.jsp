@@ -113,25 +113,25 @@
         			$("#exception-display select").val("");
         			$("#exception-display .err").html("");
         			$("#exception-display input[name='employeeCode']").val(EXCEPTION_REPORT.exceptionMap[$myRow].employee_code);
-        			$("#exception-display select[name='divisionId']").val(EXCEPTION_REPORT.exceptionMap[$myRow].division_id);
+        			$("#exception-display input[name='div']").val(EXCEPTION_REPORT.exceptionMap[$myRow].div);
+        			$("#exception-display input[name='weekEnding']").val(EXCEPTION_REPORT.exceptionMap[$myRow].week_ending);
         			$("#exception-display input[name='employeeName']").val(EXCEPTION_REPORT.exceptionMap[$myRow].employee_name);
+        			$("#exception-display input[name='unionMember']").val(EXCEPTION_REPORT.exceptionMap[$myRow].union_member);
+        			$("#exception-display input[name='unionRate']").val(EXCEPTION_REPORT.exceptionMap[$myRow].union_rate);
+        			$("#exception-display input[name='unionCode']").val(EXCEPTION_REPORT.exceptionMap[$myRow].union_code);
+        			$("#exception-display input[name='underUnionMinPay']").val(EXCEPTION_REPORT.exceptionMap[$myRow].under_union_min_pay);
+        		//	$("#exception-display input[name='minimumHourlyPay']").val(EXCEPTION_REPORT.exceptionMap[$myRow].minimum_hourly_pay);
+        			$("#exception-display input[name='underGovtMinPay']").val(EXCEPTION_REPORT.exceptionMap[$myRow].under_govt_min_pay);
+        			$("#exception-display input[name='expensesPct']").val(EXCEPTION_REPORT.exceptionMap[$myRow].expenses_pct);
+        			$("#exception-display input[name='expensesClaim']").val(EXCEPTION_REPORT.exceptionMap[$myRow].expenses_claim);
+        			$("#exception-display select[name='ytdExpensesPct']").val(EXCEPTION_REPORT.exceptionMap[$myRow].ytd_expenses_pct);
+        			$("#exception-display input[name='ytdExcessExpensesClaim']").val(EXCEPTION_REPORT.exceptionMap[$myRow].ytd_excess_expenses_claim);
+        			$("#exception-display input[name='expensesSubmitted']").val(EXCEPTION_REPORT.exceptionMap[$myRow].expenses_submitted);
+        			$("#exception-display input[name='volume']").val(EXCEPTION_REPORT.exceptionMap[$myRow].volume);
+        			$("#exception-display input[name='directLabor']").val(EXCEPTION_REPORT.exceptionMap[$myRow].direct_labor);
+        			$("#exception-display input[name='foreignCompany']").val(EXCEPTION_REPORT.exceptionMap[$myRow].foreign_company);
+        			$("#exception-display input[name='foreignDivision']").val(EXCEPTION_REPORT.exceptionMap[$myRow].foreign_division);
         			$("#exception-display select[name='employeeStatus']").val(EXCEPTION_REPORT.exceptionMap[$myRow].employee_status);
-        			$("#exception-display input[name='union_member']").val(EXCEPTION_REPORT.exceptionMap[$myRow].union_member);
-        			$("#exception-display input[name='union_code']").val(EXCEPTION_REPORT.exceptionMap[$myRow].union_code);
-        			$("#exception-display input[name='under_union_min']").val(EXCEPTION_REPORT.exceptionMap[$myRow].under_union_min);
-        			$("#exception-display input[name='under_government_min']").val(EXCEPTION_REPORT.exceptionMap[$myRow].under_government_min);
-        			$("#exception-display select[name='under_government_min']").val(EXCEPTION_REPORT.exceptionMap[$myRow].under_government_min);
-        			$("#exception-display input[name='expenses_pct']").val(EXCEPTION_REPORT.exceptionMap[$myRow].expenses_pct);
-        			$("#exception-display input[name='expenses_pct']").val(EXCEPTION_REPORT.exceptionMap[$myRow].expenses_pct);
-        			$("#exception-display select[name='expenses_claim']").val(EXCEPTION_REPORT.exceptionMap[$myRow].expenses_claim);
-        			$("#exception-display select[name='ytd_expenses_pct']").val(EXCEPTION_REPORT.exceptionMap[$myRow].ytd_expenses_pct);
-        			$("#exception-display input[name='ytd_expenses_pct']").val(EXCEPTION_REPORT.exceptionMap[$myRow].ytd_expenses_pct);
-        			$("#exception-display input[name='ytd_expenses_claim']").val(EXCEPTION_REPORT.exceptionMap[$myRow].ytd_expenses_claim);
-        			$("#exception-display select[name='expenses_submitted']").val(EXCEPTION_REPORT.exceptionMap[$myRow].expenses_submitted);
-        			$("#exception-display select[name='volume']").val(EXCEPTION_REPORT.exceptionMap[$myRow].volume);
-        			$("#exception-display select[name='direct_labor']").val(EXCEPTION_REPORT.exceptionMap[$myRow].direct_labor);
-        			$("#exception-display input[name='foreign_company']").val(EXCEPTION_REPORT.exceptionMap[$myRow].foreign_company);
-        			$("#exception-display input[name='foreign_division']").val(EXCEPTION_REPORT.exceptionMap[$myRow].foreign_division);
         			
         			$("#exception-display").dialog("open");
         		},
@@ -293,7 +293,7 @@
     			        		}
     			        		},
     			        		//{ title: "< Union Min", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'under_union_min_pay' },
-        			        	{ title: "< Union Min", width:"5%", searchable:true, "defaultContent": "",
+        			        	{ title: "Under Union Min", width:"5%", searchable:true, "defaultContent": "",
     			        		data:function(row, type, set) {
     			        			var $value = $unknown;
     			        			if ( row.under_union_min_pay != null ) {
@@ -310,10 +310,10 @@
     			        			return $value;
     			        			}
     			        		},
-    			        		//{ title: "< Gov Min", width:"5%", searchFormat: "#.##", data: function ( row, type, set ) {
-       			        		//	if(row.under_govt_min_pay != null){return (parseFloat(row.under_govt_min_pay).toFixed(2));}
-   		            			//} },
-    			        		{ title: "< Gov Min", width:"5%", searchable:true, "defaultContent": "",
+    			        	//	{ title: "Minimum Hourly", width:"5%", searchFormat: "#.##", data: function ( row, type, set ) {
+       			        	//		if(row.minimum_hourly_pay != null){return (parseFloat(row.minimum_hourly_pay).toFixed(2));}
+   		            		//	} },
+    			        		{ title: "Under Govt Min", width:"5%", searchable:true, "defaultContent": "",
     			        		data:function(row, type, set) {
     			        			var $value = $unknown;
     			        			if ( row.under_govt_min_pay != null ) {
@@ -528,85 +528,74 @@
 				<tr>
 					<td class="form-label">Employee Code:</td>
 					<td>
-						<input type="text" name="employeeCode" />
+						<input type="text" name="employeeCode" readonly="true" />
 						<input type="hidden" name="selectedEmployeeCode" />
 					</td>
 					<td><span class="err employeeCodeErr"></span></td>
 				</tr>
 				<tr>
-					<td class="form-label">Company:</td>
-					<td>
-						<select name="companyCode">
-							<option value=""></option>
-							<ansi:selectPayrollCompany active="true" />
-						</select>
-					</td>
-					<td><span class="err companyCodeErr"></span></td>
-				</tr>
-				<tr>
 					<td class="form-label">Division:</td>
 					<td>
-						<select name="divisionId">
-							<option value=""></option>
-							<ansi:selectOrganization active="true" type="DIVISION" />
-						</select>
+						<input type="text" name="div" readonly="true" />
+						<input type="hidden" name="selectedDiv" />
 					</td>
-					<td><span class="err divisionIdErr"></span></td>
+					<td><span class="err divErr"></span></td>
+				</tr>
+				<tr>
+					<td class="form-label">Week Ending:</td>
+					<td>
+						<input type="text" name="weekEnding" readonly="true" />
+						<input type="hidden" name="selectedWeekEnding" />
+					</td>
+					<td><span class="err weekEndingErr"></span></td>
 				</tr>
 				<tr>
 					<td class="form-label">Name:</td>
 					<td>
-						<input name="firstName" type="text" placeholder="First" />
-						<input name="middleInitial" type="text" placeholder="MI" style="width:15px;" />
-						<input name="lastName" type="text" placeholder="Last" />
+						<input type="text" name="employeeName" readonly="true" />
+						<input type="hidden" name="selectedEmployeeName" />
 					</td>
 					<td><span class="err nameErr"></span></td>
-				</tr>				
-				<tr>
-					<td class="form-label">Department:</td>
-					<td><input name="departmentDescription" type="text" /></td>
-					<td><span class="err departmentErr"></span></td>
-				</tr>
-				<tr>
-					<td class="form-label">Status</td>
-					<td>
-						<select name="status">
-							<option value=""></option>
-							<option value="ACTIVE">Active</option>
-							<option value="TERMINATED">Terminated</option>
-						</select>
-					</td>
-					<td><span class="err statusErr"></span></td>
-				</tr>
-				<tr>
-					<td class="form-label">Termination Date:</td>
-					<td><input name="terminationDate" type="date" /></td>
-					<td><span class="err terminationDateErr"></span></td>
 				</tr>
 				<tr>
 					<td class="form-label">Union Member:</td>
-					<td><input name="unionMember"  type="checkbox" value="1" /></td>
+					<td><input type="text" name="unionMember" readonly="true" />
+						<input type="hidden" name="selectedUnionMember" />
 					<td><span class="err unionMemberErr"></span></td>
 				</tr>
 				<tr>
-					<td class="form-label">Union Code:</td>
-					<td><input name="unionCode" class="unionInput" type="text" /></td>
-					<td><span class="err unionCodeErr"></span></td>
-				</tr>
-				<tr>
 					<td class="form-label">Union Rate:</td>
-					<td><input name="unionRate" style="height:12px;" class="unionInput" type="text"  placeholder="0.00"  /></td>
+					<td><input type="select" name="unionRate" readonly="true" />
+						<input type="hidden" name="selectedUnionRate" />
 					<td><span class="err unionRateErr"></span></td>
+				</tr>				
+				<tr>
+					<td class="form-label">Expenses Submitted:</td>
+					<td><input type="text" name="expensesSubmitted" readonly="true" />
+						<input type="hidden" name="selectedExpensesSubmitted" />
+						</td>
+					<td><span class="err expensesSubmittedErr"></span></td>
+				</tr>						
+				<tr>
+					<td class="form-label">Direct Labor:</td>
+					<td><input type="text" name="directLabor" readonly="true" />
+						<input type="hidden" name="selectedDirectLabor" />
+						</td>
+					<td><span class="err directLaborErr"></span></td>
+				</tr>				
+				<tr>
+					<td class="form-label">Foreign Company:</td>
+					<td><input type="text" name="foreignCompany" readonly="true" />
+						<input type="hidden" name="selectedForeignCompany" />
+						</td>
+					<td><span class="err departmentErr"></span></td>
 				</tr>
 				<tr>
-					<td class="form-label">Process Date:</td>
-					<td><input name="processDate" type="date" /></td>
-					<td><span class="err processDateErr"></span></td>
-				</tr>
-				<tr>
-					<td class="form-label">Notes:</td>
-					<td><input name="notes" type="text" /></td>
-					<td><span class="err notesErr"></span></td>
+					<td class="form-label">Foreign Division:</td>
+					<td><input type="text" name="foreignDivision" readonly="true"/>
+						<input type="hidden" name="selectedForeignDivision" />
+						</td>
+					<td><span class="err foreignDivisionErr"></span></td>
 				</tr>
 			</table>
 		</div>

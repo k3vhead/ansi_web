@@ -41,17 +41,18 @@ public class ExceptionReportServlet extends AbstractLookupServlet {
 //	public static final String COMPANY_CODE = "company_code";
 	public static final String EMPLOYEE_CODE = "payroll_worksheet.employee_code";
 	public static final String DIVISION_ID = "division.division_id";
+	public static final String WEEK_ENDING = "week_ending";
 	public static final String EMPLOYEE_FIRST_NAME = "employee_name";
 	public static final String EMPLOYEE_LAST_NAME = "employee_last_name";
 	public static final String EMPLOYEE_STATUS = "payroll_employee.employee_status";
 
-	public static final String WEEK_ENDING = "week_ending";
 	//	public static final String DESCRIPTION = "description";
 	public static final String UNION_MEMBER = "union_member";
 	public static final String UNION_CODE = "union_code";
 	public static final String UNION_RATE = "union_rate";
 	public static final String UNDER_UNION_MIN_PAY = "under_union_min_pay";
 	public static final String MINIMUM_HOURLY_PAY = DivisionLookupQuery.MINIMUM_HOURLY_PAY;
+	public static final String UNDER_GOVT_MIN_PAY = "under_govt_min_pay";
 	public static final String EXCESS_EXPENSE_PCT = "excess_expense_pct";
 	public static final String EXCESS_EXPENSE_CLAIM = "excess_expense_claim";
 	public static final String YTD_EXCESS_EXPENSE_PCT = "ytd_excess_expense_pct";
@@ -94,6 +95,7 @@ public class ExceptionReportServlet extends AbstractLookupServlet {
 				UNION_RATE,
 				UNDER_UNION_MIN_PAY,
 				MINIMUM_HOURLY_PAY,
+				UNDER_GOVT_MIN_PAY,
 				EXCESS_EXPENSE_PCT,
 				EXCESS_EXPENSE_CLAIM,
 				YTD_EXCESS_EXPENSE_PCT,
