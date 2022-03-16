@@ -20,11 +20,9 @@ public enum Menu {
 	INVOICES(			"Invoices", 			LOOKUPS, Permission.INVOICE_READ, 	"invoiceLookup.html"),
 	INVOICE_DETAIL(     "Invoice Detail",       LOOKUPS, Permission.INVOICE_READ,   "invoiceDetailLookup.html"),
 	PAYMENTS(			"Payments", 			LOOKUPS, Permission.PAYMENT_READ, 	"paymentLookup.html"),
-//	NON_DIRECT_LABOR(	"Non-Direct Labor", 	LOOKUPS, Permission.CLAIMS_READ, 	"nonDirectLaborLookup.html"),
-//	EMPLOYEE_EXPENSE(	"Employee Expense", 	LOOKUPS, Permission.CLAIMS_READ, 	"employeeExpenseLookup.html"),
-//	TICKET_STATUS(		"Ticket Status", 		LOOKUPS, Permission.CLAIMS_READ, 	"ticketStatusLookup.html"),
-//	BUDGET_CONTROL(		"Budget Control", 		LOOKUPS, Permission.CLAIMS_READ, 	"budgetControlLookup.html"),
-//	CLAIM_DETAIL(		"Claim Detail", 		LOOKUPS, Permission.CLAIMS_READ, 	"claimDetailLookup.html"),
+	LOCALE(             "Locale",               LOOKUPS, Permission.TAX_READ,       "localeLookup.html"),
+	//TAXRATE_LOOKUP(	    "Tax Rate Lookup",		LOOKUPS, Permission.TAX_READ,	    "taxRateLookup.html"),
+	//LOCALE_DIVISION(	"Nexus Taxed Lookup",	LOOKUPS, Permission.TAX_READ,		"localeDivisionLookup.html"),
 	CALL_NOTES(         "Call Notes",           LOOKUPS, Permission.CALL_NOTE_READ, "callNoteLookup.html"),
 	DOCUMENT_LOOKUP(	"Document", 			LOOKUPS, Permission.DOCUMENT_READ, "documentLookup.html"),
 	
@@ -62,7 +60,8 @@ public enum Menu {
 	
 	
 	SETTINGS("Settings", null, Permission.SYSADMIN_READ,"#"),
-	TAX_MAINTENANCE(	"Tax Maintenance",		SETTINGS,	Permission.SYSADMIN_READ,	"taxRateMaintenance.html"),
+
+	// TAX_MAINTENANCE(	"Tax Rate Archive",		SETTINGS,	Permission.SYSADMIN_READ,	"taxRateMaintenance.html"),
 	CODES(				"Codes",				SETTINGS,	Permission.SYSADMIN_READ,	"codeMaintenance.html"),
 	DIVISIONS(			"Divisions",			SETTINGS,	Permission.SYSADMIN_READ,	"divisionAdmin.html"),
 	COMPANIES(          "Companies",            SETTINGS,   Permission.SYSADMIN_READ,   "companies.html"),

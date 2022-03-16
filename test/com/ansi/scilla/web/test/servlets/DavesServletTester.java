@@ -59,6 +59,26 @@ public class DavesServletTester extends TestServlet {
 
 
 
+	private String testLocale(Header sessionCookie, MyTestType type) throws Exception {
+		String results = null;
+		if ( type.equals(MyTestType.ITEM)) {
+			String url = "/ansi_web/locale/100";	
+			results = super.doGet(sessionCookie, url, (HashMap<String,String>)null);
+		} else if ( type.equals(MyTestType.ADD)) {
+			String url = "/ansi_web/locale";
+			String json = "{\"name\":\"Dave V3\", \"stateName\":\"ID\",\"localeTypeId\":\"COUNTY\"}";
+			results = super.doPost(sessionCookie, url, json);
+		} else if ( type.equals(MyTestType.UPDATE)) {
+			String url = "/ansi_web/locale/181";
+			String json = "{\"name\":\"Dave v2\", \"stateName\":\"ID\",\"abbreviation\":\"DV3\", \"localeTypeId\":\"CITY\"}";
+			results = super.doPost(sessionCookie, url, json);
+		} else {
+			throw new Exception("Huh");
+		}
+		
+		return results;
+	}
+		
 	private String testCallNote(Header sessionCookie) throws ClientProtocolException, URISyntaxException, IOException {
 		String url = "/ansi_web/callNote/callNote/PAYMENT/49907";
 		String results = super.doGet(sessionCookie, url, (HashMap<String, String>)null);

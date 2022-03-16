@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.db.User;
+import com.ansi.scilla.web.ansiUser.AnsiUserResponse;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
@@ -26,7 +27,6 @@ import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
-import com.ansi.scilla.web.ticket.response.TicketReturnResponse;
 import com.ansi.scilla.web.user.request.AnsiUserRequest;
 import com.ansi.scilla.web.user.response.UserResponse;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
@@ -94,7 +94,7 @@ public class AnsiUserServlet extends AbstractServlet {
 					}
 				}  catch ( InvalidFormatException e ) {
 					String badField = super.findBadField(e.toString());
-					TicketReturnResponse data = new TicketReturnResponse();
+					AnsiUserResponse data = new AnsiUserResponse();
 					WebMessages messages = new WebMessages();
 					messages.addMessage(badField, "Invalid Format");
 					data.setWebMessages(messages);

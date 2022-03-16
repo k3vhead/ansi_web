@@ -253,6 +253,19 @@
             <forward name="login" path="/login.jsp" />            
         </action>
 		<action
+            path="/localeLookup"
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
+            <forward name="valid" path="/taxes/localeLookup.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+        <action
+            path="/localeDivisionLookup"
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
+            <forward name="valid" path="/taxes/localeDivisionLookup.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+     	
+        <action
             path="/jobTagLookup"
             type="com.ansi.scilla.web.common.action.SessionPageDisplayAction"
             scope="request">
@@ -407,10 +420,24 @@
             <forward name="reportNoInput" path="/reportNoInput.jsp" /> 
             <forward name="login" path="/login.jsp" />            
         </action>  
+        
+        
+        
+        
+        
          <action
             path="/specialOverride"
             type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
             <forward name="valid" path="/specialOverride/specialOverride.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+        <action
+            path="/taxRateLookup"
+            type="com.ansi.scilla.web.tax.action.TaxRateLookupAction"
+            name="idForm"
+            input="/invoiceLookup.jsp"
+            scope="request">
+            <forward name="valid" path="/taxes/localeTaxRateLookup.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
         <action

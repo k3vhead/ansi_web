@@ -154,6 +154,18 @@
 		<attribute><name>styleClass</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
 		<attribute><name>id</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
 	</tag>
+	
+	
+	<tag>
+		<name>isSuperUser</name>
+		<tagclass>com.ansi.scilla.web.tags.IsSuperUser</tagclass>
+		<bodycontent>JSP</bodycontent>
+		<info>
+			Displays tag body if user is superuser
+		</info>		
+	</tag>
+	
+	
 
 	<tag>
 		<name>password</name>

@@ -9,8 +9,8 @@ public class TestTimesheetRequest {
 		try {
 			TimesheetRequest request = new TimesheetRequest();
 			request.setDirectLabor(-1.0D);
-			WebMessages webMessages = request.validate(null);
-			System.out.println(webMessages);
+//			WebMessages webMessages = request.validateAdd(null);
+//			System.out.println(webMessages);
 //			Field[] fields = TimesheetRequest.class.getDeclaredFields();
 //			for ( Field field: fields ) {
 //				System.out.println(field.getName() + " " + field.getType().getName());

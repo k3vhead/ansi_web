@@ -384,6 +384,7 @@
     	<url-pattern>/divisionLookup</url-pattern>
     </servlet-mapping>
 
+
     <servlet>
     	<servlet-name>divisionTypeAhead</servlet-name>
     	<servlet-class>com.ansi.scilla.web.division.servlet.DivisionTypeAheadServlet</servlet-class>
@@ -392,6 +393,7 @@
     	<servlet-name>divisionTypeAhead</servlet-name>
     	<url-pattern>/divisionTypeAhead/*</url-pattern>
     </servlet-mapping>
+    
     
     <servlet>
         <servlet-name>divisionUser</servlet-name>
@@ -497,22 +499,22 @@
 
 
 	<servlet>
-		<servlet-name>invoiceReprint</servlet-name>
-		<servlet-class>com.ansi.scilla.web.invoice.servlet.InvoiceReprintServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>invoiceReprint</servlet-name>
-		<url-pattern>/invoiceReprint/*</url-pattern>
-	</servlet-mapping>
-
-
-	<servlet>
 		<servlet-name>invoicePrintLookup</servlet-name>
 		<servlet-class>com.ansi.scilla.web.invoice.servlet.InvoicePrintLookupServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>invoicePrintLookup</servlet-name>
 		<url-pattern>/invoicePrintLookup/*</url-pattern>
+	</servlet-mapping>
+
+
+	<servlet>
+		<servlet-name>invoiceReprint</servlet-name>
+		<servlet-class>com.ansi.scilla.web.invoice.servlet.InvoiceReprintServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>invoiceReprint</servlet-name>
+		<url-pattern>/invoiceReprint/*</url-pattern>
 	</servlet-mapping>
 
 
@@ -595,6 +597,81 @@
 	<servlet-mapping>
 		<servlet-name>jobTable</servlet-name>
 		<url-pattern>/jobTable/*</url-pattern>
+	</servlet-mapping>
+	
+	
+	
+	
+	<servlet>
+		<servlet-name>localeAutocomplete</servlet-name>
+		<servlet-class>com.ansi.scilla.web.locale.servlet.LocaleAutocompleteServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	<servlet-name>localeAutocomplete</servlet-name>
+		<url-pattern>/localeAutocomplete</url-pattern>
+	</servlet-mapping>
+	
+	
+	
+	
+	<servlet>
+		<servlet-name>localeServlet</servlet-name>
+		<servlet-class>com.ansi.scilla.web.locale.servlet.LocaleServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>localeServlet</servlet-name>
+		<url-pattern>/locale/*</url-pattern>
+		<url-pattern>/locale</url-pattern>
+	</servlet-mapping>
+	
+	 <servlet>
+		<servlet-name>localeLookup</servlet-name>
+		<servlet-class>com.ansi.scilla.web.locale.servlet.LocaleLookupServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>localeLookup</servlet-name>
+		<url-pattern>/localeLookup</url-pattern>
+	</servlet-mapping>
+	
+	
+	<servlet>
+		<servlet-name>localeDivisionLookup</servlet-name>
+		<servlet-class>com.ansi.scilla.web.locale.servlet.LocaleDivisionLookupServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>localeDivisionLookup</servlet-name>
+		<url-pattern>/localeDivisionLookup</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>localeDivisionServlet</servlet-name>
+		<servlet-class>com.ansi.scilla.web.locale.servlet.LocaleDivisionServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>localeDivisionServlet</servlet-name>
+		<url-pattern>/localeDivision/*</url-pattern>
+		<url-pattern>/localeDivision</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>localeTaxRateLookup</servlet-name>
+		<servlet-class>com.ansi.scilla.web.tax.servlet.LocaleTaxRateLookupServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>localeTaxRateLookup</servlet-name>
+		<url-pattern>/taxRateLookup/*</url-pattern>
+		<url-pattern>/taxRateLookup</url-pattern>
+	</servlet-mapping>
+
+
+	<servlet>
+		<servlet-name>localeTaxRate</servlet-name>
+		<servlet-class>com.ansi.scilla.web.tax.servlet.LocaleTaxRateServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>localeTaxRate</servlet-name>
+		<url-pattern>/localeTaxRate/*</url-pattern>
+		<url-pattern>/localeTaxRate</url-pattern>
 	</servlet-mapping>
 
 
@@ -762,6 +839,8 @@
         <url-pattern>/permissionGroup/*</url-pattern>
     </servlet-mapping>
 
+
+
 	<servlet>
         <servlet-name>permission</servlet-name>
         <servlet-class>com.ansi.scilla.web.permission.servlet.PermissionServlet</servlet-class>
@@ -810,6 +889,7 @@
         <servlet-name>quotePrint</servlet-name>
         <url-pattern>/quotePrint/*</url-pattern>
     </servlet-mapping>
+    
     
     
 	<servlet>

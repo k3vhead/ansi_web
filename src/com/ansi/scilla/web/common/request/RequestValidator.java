@@ -42,6 +42,7 @@ import com.ansi.scilla.common.jobticket.JobTagType;
 import com.ansi.scilla.common.organization.OrganizationType;
 import com.ansi.scilla.common.payment.PaymentMethod;
 import com.ansi.scilla.common.payroll.common.EmployeeStatus;
+import com.ansi.scilla.common.utils.LocaleType;
 import com.ansi.scilla.common.utils.QMarkTransformer;
 import com.ansi.scilla.web.claims.request.ClaimEntryRequestType;
 import com.ansi.scilla.web.common.response.WebMessages;
@@ -52,22 +53,27 @@ import com.thewebthing.commons.db2.RecordNotFoundException;
 import com.thewebthing.commons.lang.StringUtils;
 
 public class RequestValidator {
+	
+	private static final List<String> STATE_NAMES = Arrays.asList( new String[] {
+			"AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",  
+			"HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",  
+			"MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", 
+			"NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", 
+			"SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"
+	} );
 
+	
+
+	
+	
+	
 	public static void checkForDuplicates(Connection conn, WebMessages webMessages, MSTable table,
 			HashMap<String, Object> addRequest, List<FieldMap> fieldMap, SimpleDateFormat standardDateFormat)
 			throws Exception {
 		Logger logger = LogManager.getLogger(RequestValidator.class);
 		String tableName = table.getClass().getAnnotation(DBTable.class).value();
 		logger.log(Level.DEBUG, "Table: " + tableName);
-		HashMap<String, List<String>> indexMap = new HashMap<String, List<String>>(); // index
-																						// name
-																						// ->
-																						// list
-																						// of
-																						// column
-																						// in
-																						// that
-																						// index
+		HashMap<String, List<String>> indexMap = new HashMap<String, List<String>>(); // index name -> list of column in that index
 		DatabaseMetaData dbmd = conn.getMetaData();
 		ResultSet rs = dbmd.getIndexInfo(null, null, tableName, true, false);
 		while (rs.next()) {
@@ -735,6 +741,8 @@ public class RequestValidator {
 		}
 	}
 
+	
+	
 	public static void validateInvoiceTerms(WebMessages webMessages, String fieldName, String value, boolean required) {
 		if (StringUtils.isBlank(value)) {
 			if (required) {
@@ -752,6 +760,8 @@ public class RequestValidator {
 		}
 	}
 
+	
+	
 	public static void validateJobFrequency(WebMessages webMessages, String fieldName, String value, boolean required) {
 		if (StringUtils.isBlank(value)) {
 			if (required) {
@@ -774,6 +784,25 @@ public class RequestValidator {
 		validateCode(conn, webMessages, "quote", "lead_type", fieldName, value, required, null);
 	}
 
+	
+	public static void validateLocaleType(WebMessages webMessages, String fieldName, String value, boolean required) {
+		if (StringUtils.isBlank(value)) {
+			if (required) {
+				webMessages.addMessage(fieldName, "Required Value");
+			}
+		} else {
+			try {
+				LocaleType invoiceStyle = LocaleType.valueOf(value);
+				if (invoiceStyle == null) {
+					webMessages.addMessage(fieldName, "Invalid Value");
+				}
+			} catch (IllegalArgumentException e) {
+				webMessages.addMessage(fieldName, "Invalid Value");
+			}
+		}
+	}
+	
+	
 	public static void validateNumber(WebMessages webMessages, String fieldName, Object value, Object minValue,
 			Object maxValue, boolean required, String label) {
 		if (value == null) {
@@ -865,6 +894,22 @@ public class RequestValidator {
 			}
 		}
 	}
+	
+	
+	public static void validateState(WebMessages webMessages, String fieldName, String value, boolean required) {
+		if (StringUtils.isBlank(value)) {
+			if (required) {
+				webMessages.addMessage(fieldName, "Required Value");
+			}
+		} else {
+			if ( ! STATE_NAMES.contains(value)) {
+				webMessages.addMessage(fieldName, "Invalid State");
+			}
+		}
+	}
+
+	
+	
 
 	/**
 	 * Given a list of ID's, make sure they are all valid job_tag_id's and at least one of them is of type "SERVICE"

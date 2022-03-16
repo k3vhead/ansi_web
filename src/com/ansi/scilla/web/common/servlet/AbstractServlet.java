@@ -130,7 +130,7 @@ public class AbstractServlet extends HttpServlet {
 	 */
 	public String makeJsonString(HttpServletRequest request) throws UnsupportedEncodingException, IOException {
 		Writer writer = new StringWriter();
-		 
+
         char[] buffer = new char[1024];
         try {
             Reader reader = new BufferedReader(new InputStreamReader(request.getInputStream(), "UTF-8"));
