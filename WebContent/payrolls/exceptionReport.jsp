@@ -91,7 +91,8 @@
         $(document).ready(function(){
         	;EXCEPTION_REPORT = {
         		exceptionMap : {},
-        			
+        		currentCompanyCode : null,
+        		
         		init : function() {
         			$("#prompt-div select[name='companyCode']").change(function() {
         				$("#prompt-div .companyCodeErr").html("");
@@ -99,7 +100,8 @@
         				if ( $companyCode == null ) {
         					$("#prompt-div .companyCodeErr").html("Required Value");
         				} else {
-        					EXCEPTION_REPORT.makeExceptionTable($companyCode);
+        					EXCEPTION_REPORT.currentCompanyCode = $companyCode;
+        					EXCEPTION_REPORT.makeExceptionTable();
         					EXCEPTION_REPORT.makeModals();
         				}
        				});
@@ -175,7 +177,9 @@
         		
         		
         		
-        		makeExceptionTable : function($companyCode) {
+        		makeExceptionTable : function() {
+        			var $companyCode = EXCEPTION_REPORT.currentCompanyCode;
+        			
         			var $yes = '<webthing:checkmark>Yes</webthing:checkmark>';
         			var $no = '<webthing:ban>No</webthing:ban>';
         			var $noErrorFound = '<payroll:noErrorFound>No Error Found</payroll:noErrorFound>';
