@@ -388,7 +388,7 @@
 	           				// reader.onprogress ...  (progress bar)	  
 	           			} else{
 		           			console.log("No file selected");
-							$("#prompt-div .timesheetFileErr").html("Please select a file to open").show();
+							$("#prompt-div .timesheetFileErr").html("Please select a file to open").show().fadeOut(3000);
 							//if ( $("#prompt-div select[name='divisionId']").val().length == 0) { $("#prompt-div .divisionIdErr").html("Required Value").show(); }
 							//if ( $("#prompt-div input[name='payrollDate']").val().length == 0 ) {$("#prompt-div .payrollDateErr").html("Required Value").show(); }
 							//if ( $("#prompt-div select[name='state']").val().length == 0 ) {$("#prompt-div .stateErr").html("Required Value").show(); }
