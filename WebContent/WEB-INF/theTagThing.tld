@@ -400,6 +400,18 @@
 		<attribute><name>styleClass</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
 		<attribute><name>id</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
 	</tag>
+	
+	
+	
+	
+	<tag>
+    	<name>divisionSelect</name>
+    	<tagclass>com.ansi.scilla.web.tags.DivisionSelect</tagclass>
+	    <bodycontent>JSP</bodycontent>
+    	<info>Displays an option list of all Divisions</info>
+	    <attribute><name>format</name><required>true</required><rtexprvalue>true</rtexprvalue></attribute>
+	    <attribute><name>name</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+	</tag>
 </taglib>
 
 
