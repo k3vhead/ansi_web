@@ -127,33 +127,4 @@ public class TimesheetImportResponse extends MessageResponse {
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
 	}
-
-	
-	
-//	public void parseODSFile(InputStream inputStream) throws Exception {    	    	
-//		logger.log(Level.DEBUG,"Inside Parser.. ");
-//		
-//    	SpreadsheetDocument speadsheetDocument = null;
-//    	speadsheetDocument = SpreadsheetDocument.loadDocument(inputStream);
-//		List<Table> tables = speadsheetDocument.getTableList();
-//					
-//		Table table = tables.get(2);
-//		for(Integer row=6; row<39;row++) {			
-//			timesheetRecords.add(new TimesheetRecord(table, row));
-//		}		
-//		this.setEmployeeRecordList(timesheetRecords);	
-//		this.setDivision(table.getCellByPosition(TimesheetRecord.WprCols.DIVISION.cellLocation()).getDisplayText());
-//		this.setWeekEnding(table.getCellByPosition(TimesheetRecord.WprCols.WEEK_ENDING.cellLocation()).getDisplayText());
-//		this.setOperationsManagerName(table.getCellByPosition(TimesheetRecord.WprCols.OPERATIONS_MANAGER_NAME.cellLocation()).getDisplayText());
-//		this.setState(table.getCellByPosition(TimesheetRecord.WprCols.STATE.cellLocation()).getDisplayText());
-//		this.setCity(table.getCellByPosition(TimesheetRecord.WprCols.CITY.cellLocation()).getDisplayText());
-//
-//		logger.log(Level.DEBUG,"Division = " + this.getDivision());
-//		logger.log(Level.DEBUG,"Week Ending = " + this.getWeekEnding());
-//		logger.log(Level.DEBUG,"OM Name = " + this.getOperationsManagerName());
-//		logger.log(Level.DEBUG,"State = " + this.getState());
-//		logger.log(Level.DEBUG,"City = " + this.getCity());
-//				
-//		logger.log(Level.DEBUG,"Rows stored = " + this.getEmployeeRecordList().size());
-//    }
 }
