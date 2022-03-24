@@ -348,6 +348,12 @@
             <forward name="valid" path="/payrolls/employeeLookup.jsp" />
             <forward name="login" path="/login.jsp" />
         </action>
+        <action
+            path="/payrollTaxProfileLookup"
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
+            <forward name="valid" path="/payrolls/taxProfileLookup.jsp" />
+            <forward name="login" path="/login.jsp" />
+        </action>
 		<action
             path="/payrollTimesheetImport"
             type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">

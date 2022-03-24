@@ -25,6 +25,8 @@ public class PayrollServlet extends AbstractServlet {
 	public static final String EMPLOYEE_CODECOMPLETE = "employeeCodeComplete";
 	public static final String EMPLOYEE_IMPORT = "employeeImport";
 	public static final String EMPLOYEE_LOOKUP = "employeeLookup";
+	public static final String TAX_PROFILE = "taxProfile";
+	public static final String TAX_PROFILE_LOOKUP = "taxProfileLookup";
 	public static final String TIMESHEET = "timesheet";
 	public static final String TIMESHEET_IMPORT = "timesheetImport";
 	public static final String TIMESHEET_LOOKUP = "timesheetLookup";
@@ -77,6 +79,11 @@ public class PayrollServlet extends AbstractServlet {
 		case TIMESHEET_LOOKUP:
 			new TimesheetLookupServlet().doGet(request, response);
 			break;
+		case TAX_PROFILE:
+			new TaxProfileServlet().doGet(request, response);
+			break;
+		case TAX_PROFILE_LOOKUP:
+			new TaxProfileLookupServlet().doGet(request, response);
 		default:
 			super.sendNotFound(response);
 		}
@@ -105,6 +112,9 @@ public class PayrollServlet extends AbstractServlet {
 			break;
 		case EMPLOYEE:
 			new EmployeeServlet().doDelete(request, response);
+			break;
+		case TAX_PROFILE:
+			new TaxProfileServlet().doDelete(request, response);
 			break;
 		case TIMESHEET:
 			new TimesheetServlet().doDelete(request, response);
@@ -140,6 +150,9 @@ public class PayrollServlet extends AbstractServlet {
 		case EMPLOYEE_IMPORT:
 			new EmployeeImportServlet().doPost(request, response);
 			break;		
+		case TAX_PROFILE:
+			new TaxProfileServlet().doPost(request, response);
+			break;
 		case TIMESHEET:
 			new TimesheetServlet().doPost(request, response);
 			break;
