@@ -3,6 +3,7 @@ package com.ansi.scilla.web.locale.request;
 import java.sql.Connection;
 
 import com.ansi.scilla.common.db.Locale;
+import com.ansi.scilla.common.db.PayrollTaxProfile;
 import com.ansi.scilla.web.common.request.AbstractRequest;
 import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.WebMessages;
@@ -18,6 +19,7 @@ public class LocaleRequest extends AbstractRequest {
 	public static final String ABBREVIATION = "abbreviation";
 	public static final String LOCALE_TYPE_ID = "localeTypeId";
 	public static final String PARENT_ID = "parentId";
+	public static final String PROFILE_ID = "profileId";
 		
 	private Integer localeId;
 	private String name;
@@ -25,6 +27,7 @@ public class LocaleRequest extends AbstractRequest {
 	private String abbreviation;
 	private String localeTypeId;
 	private Integer parentId;
+	private Integer profileId;
 	
 	public Integer getLocaleId() {
 		return localeId;
@@ -63,6 +66,12 @@ public class LocaleRequest extends AbstractRequest {
 		this.parentId = parentId;
 	}
 	
+	public Integer getProfileId() {
+		return profileId;
+	}
+	public void setProfileId(Integer profileId) {
+		this.profileId = profileId;
+	}
 	public WebMessages validateAdd(Connection conn) throws Exception {
 		WebMessages webMessages = new WebMessages();
 		
@@ -71,6 +80,7 @@ public class LocaleRequest extends AbstractRequest {
 		RequestValidator.validateLocaleType(webMessages, LOCALE_TYPE_ID, this.localeTypeId, true);
 		RequestValidator.validateString(webMessages, ABBREVIATION, this.abbreviation, false);
 		RequestValidator.validateId(conn, webMessages, "locale", Locale.LOCALE_ID, PARENT_ID, this.parentId, false);
+		RequestValidator.validateId(conn, webMessages, PayrollTaxProfile.TABLE, PayrollTaxProfile.PROFILE_ID, PROFILE_ID, this.profileId, false);
 		if ( isDuplicate(conn)) {
 			webMessages.addMessage(NAME, "Duplicate Entry");
 		}

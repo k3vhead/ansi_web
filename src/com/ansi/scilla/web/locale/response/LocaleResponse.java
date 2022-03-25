@@ -24,6 +24,7 @@ public class LocaleResponse extends MessageResponse {
 	private String localeTypeId;
 	private Integer parentId;
 	private String parentName;
+	private Integer profileId;
 	
 	public LocaleResponse() {
 		super();
@@ -87,15 +88,24 @@ public class LocaleResponse extends MessageResponse {
 	public void setParentName(String parentName) {
 		this.parentName = parentName;
 	}
+	public Integer getProfileId() {
+		return profileId;
+	}
+	public void setProfileId(Integer profileId) {
+		this.profileId = profileId;
+	}
 
-	
+
 	private void make(Locale locale) {
+//		Logger logger = LogManager.getLogger(this.getClass());
+//		logger.log(Level.DEBUG, locale);
 		this.localeId = locale.getLocaleId();
 		this.name = locale.getName();
 		this.stateName = locale.getStateName();
 		this.abbreviation = locale.getAbbreviation();
 		this.localeTypeId = locale.getLocaleTypeId();
 		this.parentId = locale.getLocaleParentId();
+		this.profileId = locale.getPayrollTaxProfile();
 	}
 	
 }

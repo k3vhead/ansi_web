@@ -40,9 +40,10 @@ public class LocaleLookupServlet extends AbstractLookupServlet {
 				LocaleLookupQuery.NAME,
 				LocaleLookupQuery.STATE_NAME,
 				LocaleLookupQuery.LOCALE_ABBREVIATION,
-				LocaleLookupQuery.LOCALE_TYPE_ID
-				
-				};
+				LocaleLookupQuery.LOCALE_TYPE_ID,
+				LocaleLookupQuery.PARENT_NAME,
+				LocaleLookupQuery.PAYROLL_TAX_PROFILE,				
+			};
 		super.itemTransformer = new ItemTransformer();
 	}
 

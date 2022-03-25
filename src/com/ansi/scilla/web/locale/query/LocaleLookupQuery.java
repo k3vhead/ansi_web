@@ -33,14 +33,17 @@ public class LocaleLookupQuery extends LookupQuery {
 	public static final String PARENT_NAME = "parent.name";
 	public static final String PARENT_STATE = "parent.state_name";
 	public static final String PARENT_TYPE_ID = "parent.locale_type_id";
+	public static final String PAYROLL_TAX_PROFILE = "ptp.profile_desc";
 	
 	public static final String sqlSelect = 
 			"select locale.locale_id, locale.state_name, locale.name, locale.locale_type_id, locale.abbreviation,\n" + 
-			"		parent.name as parent_name, parent.state_name as parent_state, parent.locale_type_id as parent_type_id";
+			"		parent.name as parent_name, parent.state_name as parent_state, parent.locale_type_id as parent_type_id,\n"
+			+ "		ptp.profile_desc ";
 
 	public static final String sqlFromClause = 
 			"\n FROM locale  " +
-			"\n left outer join locale parent on parent.locale_id=locale.parent_locale_id";
+			"\n left outer join locale parent on parent.locale_id=locale.parent_locale_id" +
+			"\n left outer join payroll_tax_profile ptp on locale.payroll_tax_profile = ptp.profile_id";
 	
 	public static final String sqlWhereClause = "";
 	
@@ -84,6 +87,7 @@ public class LocaleLookupQuery extends LookupQuery {
 					LOCALE_ABBREVIATION,
 					PARENT_NAME,
 					PARENT_STATE,
+					PAYROLL_TAX_PROFILE,
 			});
 			Collection<String> numericFields = Arrays.asList(new String[] {
 					LOCALE_ID,				

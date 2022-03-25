@@ -170,6 +170,7 @@ public class LocaleServlet extends AbstractServlet {
 		locale.setStateName(localeRequest.getStateName());
 		locale.setAbbreviation(localeRequest.getAbbreviation());
 		locale.setLocaleTypeId(localeRequest.getLocaleTypeId());
+		locale.setPayrollTaxProfile(localeRequest.getProfileId());
 		locale.setLocaleParentId(localeRequest.getParentId());
 		if ( locale.getAddedBy() == null ) {
 			locale.setAddedBy(sessionUser.getUserId());

@@ -106,6 +106,7 @@
     						LOCALELOOKUP.markValid($inputField);
     					}
     				});
+    				$("#addLocaleForm select").val("");
     				$('.err').html("");
     				$('#addLocaleForm').data('rownum',null);
                 },
@@ -134,9 +135,9 @@
             	        
             	        "columnDefs": [
              	            { "orderable": false, "targets": -1 },
-            	            { className: "dt-head-left", "targets": [0,1] },
-            	            { className: "dt-body-center", "targets": [2,3,5] },
-            	            { className: "dt-right", "targets": [4]}
+            	            { className: "dt-head-left", "targets": [0,1,4,5,6] },
+            	            { className: "dt-body-center", "targets": [2,3,7] },
+            	            { className: "dt-right", "targets": []}
             	         ],
             	        "paging": true,
     			        "ajax": {
@@ -163,13 +164,13 @@
     			            { width:"10%", title: "Parent" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
     			            	if(row.parent_name != null){return (row.parent);}
     			            } },
-    			            
+    			            { width:"10%", title:"Payroll Tax", "defaultContent":"", searchable:true, data:"profile_desc"},
     			            { width:"5%", title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
     			            	//console.log(row);
     			            	var $actionData = "";
     			            	if ( row.locale_id != null ) {
     				            	var $editLink = '<ansi:hasPermission permissionRequired="TAX_WRITE"><a href="#" class="editAction" data-id="'+row.locale_id+'" data-name="'+row.locale_id+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>&nbsp;';
-									var $taxLink = '<ansi:hasPermission permissionRequired="TAX_WRITE"><a href="taxRateLookup.html?id='+row.locale_id+'"><webthing:taxes>Taxes</webthing:taxes></a></ansi:hasPermission>&nbsp;';
+									var $taxLink = '' //'<ansi:hasPermission permissionRequired="TAX_WRITE"><a href="taxRateLookup.html?id='+row.locale_id+'"><webthing:taxes>Taxes</webthing:taxes></a></ansi:hasPermission>&nbsp;';
 
 //    		            			var $ticketData = 'data-id="' + row.locale_id + '"';
 //    			            		$printLink = '<ansi:hasPermission permissionRequired="TAX_READ"><i class="print-link fa fa-print" aria-hidden="true" ' + $localeData + '></i></ansi:hasPermission>'
@@ -368,6 +369,7 @@
     			        		$("#stateName").val(($data.data).stateName);
     			        		$("#abbreviation").val(($data.data).abbreviation);
     			        		$("#localeTypeId").val(($data.data).localeTypeId);
+    			        		$("#addLocaleForm select[name='profileId']").val($data.data.profileId);
 				        		$("#addLocaleForm  .err").html("");
 				        		$("#addLocaleForm ").dialog("option","title", "Edit Locale").dialog("open");
 							},
@@ -396,7 +398,8 @@
 						$("#addLocaleForm  input[name='name']").val("");
 						$("#addLocaleForm  select[name='stateName']").val("");
 						$("#addLocaleForm  input[name='abbreviation']").val("");	
-						$("#addLocaleForm  select[name='localeTypeId']").val("");				        		
+						$("#addLocaleForm  select[name='localeTypeId']").val("");	
+						$("#addLocaleForm  select[name='profileId']").val("");
 		        		$("#addLocaleForm  .err").html("");
 		        		$("#addLocaleForm ").dialog("option","title", "Add New Locale").dialog("open");
 					});
@@ -424,6 +427,7 @@
 					$outbound['abbreviation'] = $("#addLocaleForm input[name='abbreviation']").val();
 					$outbound['localeTypeId'] = $("#addLocaleForm select[name='localeTypeId']").val();	
 					$outbound['parentId'] = $("#addLocaleForm input[name='parentId']").val();
+					$outbound['profileId'] = $("#addLocaleForm select[name='profileId']").val();
 					console.debug($outbound);
 					
 					var jqxhr = $.ajax({
@@ -479,7 +483,6 @@
 	        	LOCALELOOKUP.init();
 	        });
 	        
-	        /* get code for dropdowns from newQuote */
 	        		
 	        </script>        
     </tiles:put>
@@ -530,6 +533,16 @@
     			<td><span class="formHdr">Parent</span></td>
     			<td><input type="text" name="parentName" id="parentName" /><input type="hidden" name="parentId" /></td>
     			<td><span class="err" id="parentIdErr"></span></td>
+    		</tr>
+    		<tr>
+    			<td><span class="formHdr">Payroll Tax Profile</span></td>
+    			<td>
+    				<select name="profileId" id="profileId">
+    					<option value=""></option>
+    					<ansi:taxProfileSelect format="select" />
+    				</select>
+				</td>
+    			<td><span class="err" id="profileIdErr"></span></td>
     		</tr>
     	</table>
     </div>

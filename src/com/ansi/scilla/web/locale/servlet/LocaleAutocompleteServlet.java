@@ -62,7 +62,7 @@ public class LocaleAutocompleteServlet extends AbstractAutocompleteServlet {
 		String sqlTemplate = "select top(50) locale_id, name, state_name, locale_type_id from locale\n" + 
 				"where lower(name) like '%" + term.toLowerCase() + "%'";
 		
-		if ( map.containsKey(STATE_NAME) ) {
+		if ( map.containsKey(STATE_NAME)) {
 			String stateName = map.get(STATE_NAME)[0];
 			if ( ! StringUtils.isEmpty(stateName) ) {		
 				sqlTemplate = sqlTemplate + "\n and lower(state_name)='"+ stateName.toLowerCase() +"'";
