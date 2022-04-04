@@ -159,6 +159,61 @@ public class RequestValidator {
 		}
 	}
 	
+	
+	/**
+	 * Ensure that a jurisdiction exists (ie. a non-state level locale record exists). If a state is entered,
+	 * make sure the jurisdiction is in the right state.
+	 * @param conn
+	 * @param webMessages
+	 * @param fieldName
+	 * @param value
+	 * @param state
+	 * @param maxLength
+	 * @param required
+	 * @param label
+	 * @throws SQLException
+	 */
+	public static void validateCity(Connection conn, WebMessages webMessages, String fieldName, String value, String state, int maxLength, boolean required,
+			String label) throws SQLException {
+		if ( StringUtils.isBlank(value) ) {
+			if ( required ) {
+				String message = StringUtils.isBlank(label) ? "Required Value" : label + " is required";
+				webMessages.addMessage(fieldName, message);
+			}
+		} else {
+			
+			List<String> typeList = new ArrayList<String>();
+			for ( LocaleType localeType : LocaleType.values() ) {
+				if (localeType != LocaleType.STATE) {
+					typeList.add("'" + localeType.name() + "'");
+				}
+			}
+			PreparedStatement ps = null;
+			String message = StringUtils.isBlank(label) ? "Invalid Value" : label + " is invalid";
+			if ( StringUtils.isBlank(state) ) {
+				ps = conn.prepareStatement("select count(*) as rec_count from locale where lower(name)=? and locale_type_id in ("+StringUtils.join(typeList, ",")+")");
+				ps.setString(1, value.toLowerCase());
+			} else {
+				message = message + " for " + state;
+				ps = conn.prepareStatement("select count(*) as rec_count from locale where lower(name)=? and locale_type_id in ("+StringUtils.join(typeList, ",")+") and lower(state_name)=?");
+				ps.setString(1, value.toLowerCase());
+				ps.setString(2, state.toLowerCase());
+			}
+			ResultSet rs = ps.executeQuery();
+			if ( rs.next() ) {
+				if (rs.getInt("rec_count") == 0) {
+					webMessages.addMessage(fieldName, message);
+				}
+			} else {
+				webMessages.addMessage(fieldName, "Validation Error; Contact Support");
+			}
+			rs.close();
+		}
+		
+	}
+
+	
+	
 	public static void validateClaimDetailRequestType(WebMessages webMessages, String fieldName, String value, boolean required) {
 		if (StringUtils.isBlank(value)) {
 			if (required) {

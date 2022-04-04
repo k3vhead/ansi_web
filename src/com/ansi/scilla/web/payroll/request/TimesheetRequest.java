@@ -349,7 +349,7 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 		validateNumbers(webMessages);
 		RequestValidator.validateId(conn, webMessages, Division.TABLE, Division.DIVISION_ID, DIVISION_ID, this.divisionId, true);
 		RequestValidator.validateState(webMessages, STATE, this.state, true, null);
-		RequestValidator.validateString(webMessages, CITY, this.city, 255, false, null);
+		RequestValidator.validateCity(conn, webMessages, CITY, this.city, this.state, 255, false, null);
 		RequestValidator.validateDate(webMessages, WEEK_ENDING, this.weekEnding, true, null, null);
 		RequestValidator.validateEmployeeCode(conn, webMessages, EMPLOYEE_CODE, this.employeeCode, true, null);
 		if ( webMessages.isEmpty() ) {

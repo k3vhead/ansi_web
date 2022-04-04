@@ -230,6 +230,46 @@
 							}
        			      	}
        			 	});
+        			
+        			
+        			var $cityField = "#edit-modal input[name='city']";
+        			var $stateField = "#edit-modal select[name='state']";
+        			
+        			var $localeComplete = $( $cityField ).autocomplete({
+	    				source: function(request,response) {
+	    					term = $($cityField).val();
+	    					localeTypeId = null; 
+	    					stateName = null; 
+	    					if ( $( $stateField ).val() != null ) {
+	    						stateName = $( $stateField ).val();	
+	    					}
+	    					$.getJSON("localeAutocomplete", {"term":term, "localeTypeId":localeTypeId, "stateName":stateName}, response);
+	    				},
+	                    minLength: 2,
+	                    //select: function( event, ui ) {
+	                    	//$("#addLocaleForm input[name='parentId']").val(ui.item.id);
+	                    //	console.log("Got it: " + ui.item.id)
+	                    //},
+	                    response: function(event, ui) {
+	                        if (ui.content.length === 0) {
+	                        	$("#edit-modal .cityErr").html("No Matching Locale");
+	                        	//$("#addLocaleForm input[name='parentId']").val("");
+	                        } else {
+	                        	$("#edit-modal .cityErr").html("");
+	                        }
+	                    }
+	              	}).data('ui-autocomplete');	            	
+	                
+	    			//$localeComplete._renderMenu = function( ul, items ) {
+	    			//	var that = this;
+	    			//	$.each( items, function( index, item ) {
+	    			//		that._renderItemData( ul, item );
+	    			//	});
+	    			//	if ( items.length == 1 ) {
+	    			//		$("#addLocaleForm input[name='parentId']").val(items[0].id);
+	    			//		$($cityField).autocomplete("close");
+	    			//	}
+	    			//};
            		},
            		
            		

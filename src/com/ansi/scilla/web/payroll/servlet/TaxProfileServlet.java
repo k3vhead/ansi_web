@@ -169,7 +169,6 @@ public class TaxProfileServlet extends AbstractServlet {
 		WebMessages webMessages = profileRequest.validateAdd();
 		if ( webMessages.isEmpty() ) {
 			PayrollTaxProfile profile = new PayrollTaxProfile();
-			profile.setProfileId(getNextProfileId(conn));
 			profile.setAddedBy(sessionData.getUser().getUserId());
 			profile.setAddedDate(today.getTime());
 			profile.setDesc(profileRequest.getProfileDesc());
@@ -180,7 +179,7 @@ public class TaxProfileServlet extends AbstractServlet {
 			profile.setRegularPay(profileRequest.getRegularPay());
 			profile.setUpdatedBy(sessionData.getUser().getUserId());
 			profile.setUpdatedDate(today.getTime());
-			profile.insertWithNoKey(conn);
+			profile.insertWithKey(conn);
 			conn.commit();
 			responseCode = ResponseCode.SUCCESS;
 		} else {
@@ -229,16 +228,7 @@ public class TaxProfileServlet extends AbstractServlet {
 		}
 	}
 
-	private Integer getNextProfileId(Connection conn) throws SQLException {
-		Statement s = conn.createStatement();
-		Integer profileMax = 1;
-		ResultSet rs = s.executeQuery("select max(profile_id) as profile_max from payroll_tax_profile");
-		if ( rs.next() ) {
-			profileMax = rs.getInt("profile_max");
-		}
-		rs.close();
-		return profileMax == null || profileMax < 1 ? 1 : profileMax.intValue() + 1;
-	}
+	
 
 	
 }
