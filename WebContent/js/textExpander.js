@@ -18,7 +18,11 @@ $(function() {
 		},
 		
 		
-
+		// Turn off text expander for a given field
+		cancel : function($target) {
+			$target.off("keyup");
+			$target.off("blur");
+		},
 		
 		keyup : function($event, $target) {			
 			console.log("TEXTEXPANDER.keyup");
