@@ -252,8 +252,8 @@ public class BcrTicketSql extends ApplicationObject {
 			" ) or ((isnull(ticket_claim_totals.claimed_volume,0.00)+ISNULL(ticket_claim.passthru_expense_volume,0.00)) - isnull(invoice_totals.invoiced_amount,0.00) <> 0.00)\n" + 
 //gag		"		and (isnull(ticket_claim_totals.claimed_volume,0.00)+ISNULL(ticket_claim.passthru_expense_volume,0.00) <> 0.00)\n" + 
 //gag		"		and (ticket.start_date >= '2020-10-01')\n" + 
-			"       and (ticket.start_date >= DATEADD(month, -1, DATEADD(month, DATEDIFF(month, 0, sysdatetime()), 0)) \n" +
-			"            or ticket.process_date >= DATEADD(month, -1, DATEADD(month, DATEDIFF(month, 0, sysdatetime()), 0)) \n" +
+			"       and (ticket.start_date >= DATEADD(month, -3, DATEADD(month, DATEDIFF(month, 0, sysdatetime()), 0)) \n" +
+			"            or ticket.process_date >= DATEADD(month, -3, DATEADD(month, DATEDIFF(month, 0, sysdatetime()), 0)) \n" +
 			"            ) \n" +
 			" )  \n" 
 			; 
@@ -265,8 +265,8 @@ public class BcrTicketSql extends ApplicationObject {
 			" ) or ((isnull(ticket_claim_totals.claimed_volume,0.00)+ISNULL(ticket_claim.passthru_expense_volume,0.00)) - isnull(invoice_totals.invoiced_amount,0.00) <> 0.00)\n" + 
 //gag		"		and (isnull(ticket_claim_totals.claimed_volume,0.00)+ISNULL(ticket_claim.passthru_expense_volume,0.00) <> 0.00)\n" + 
 //gag		"		and (ticket.start_date >= '2020-10-01')\n" + 
-			"       and (ticket.start_date >= DATEADD(month, -1, DATEADD(month, DATEDIFF(month, 0, sysdatetime()), 0)) \n" +
-			"            or ticket.process_date >= DATEADD(month, -1, DATEADD(month, DATEDIFF(month, 0, sysdatetime()), 0)) \n" +
+			"       and (ticket.start_date >= DATEADD(month, -3, DATEADD(month, DATEDIFF(month, 0, sysdatetime()), 0)) \n" +
+			"            or ticket.process_date >= DATEADD(month, -3, DATEADD(month, DATEDIFF(month, 0, sysdatetime()), 0)) \n" +
 			"            ) \n" +
 			" )  \n" 
 			; 
