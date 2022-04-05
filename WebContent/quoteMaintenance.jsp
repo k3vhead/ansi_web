@@ -1597,6 +1597,16 @@
 							});
 							var $nextJobNbr = $maxJobNbr + 1;
 							$("#job-edit-modal input[name='job-proposal-job-nbr']").val($nextJobNbr);
+							
+							// turn off the text expander before turning it on to make sure it is only called once
+							TEXTEXPANDER.cancel($("#job-edit-modal .proposal textarea[name='job-proposal-desc']"));
+							$("#job-edit-modal .proposal textarea[name='job-proposal-desc']").keyup(function($event) {								
+								TEXTEXPANDER.keyup($event, $("#job-edit-modal .proposal textarea[name='job-proposal-desc']"))
+							});
+							$("#job-edit-modal .proposal textarea[name='job-proposal-desc']").blur(function() {
+								TEXTEXPANDER.blur($("#job-edit-modal .proposal textarea[name='job-proposal-desc']"))
+							});
+							
 		    				$("#job-edit-modal").dialog("open");
 		    			});
 	

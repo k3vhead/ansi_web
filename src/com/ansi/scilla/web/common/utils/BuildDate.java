@@ -8,6 +8,7 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.util.HashMap;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -22,29 +23,32 @@ public class BuildDate extends ApplicationObject {
 	private String webBranch;
 	private String reportBranch;
 	private String commonBranch;
+	private String gitBranch;
 
 	public BuildDate() {
 		super();
+		HashMap<String, String> parms = new HashMap<String, String>();
 		try {
 			String webResource="resources/build_web.properties";
 			InputStream webStream = BuildDate.class.getClassLoader().getResourceAsStream(webResource);
-			this.webBuildDate = makeBuildDate(webStream);
+			this.webBuildDate = makeBuildDate(parms, webStream);
 			webStream.close();
 			
 			String commonResource="resources/build_common.properties";
 			InputStream commonStream = BuildDate.class.getClassLoader().getResourceAsStream(commonResource);
-			this.commonBuildDate = makeBuildDate(commonStream);
+			this.commonBuildDate = makeBuildDate(parms, commonStream);
 			commonStream.close();
 
 			String reportResource="resources/build_report.properties";
 			InputStream reportStream = BuildDate.class.getClassLoader().getResourceAsStream(reportResource);
-			this.reportBuildDate = makeBuildDate(reportStream);
+			this.reportBuildDate = makeBuildDate(parms, reportStream);
 			reportStream.close();
 			
 			String branchResource="resources/branch.properties";
 			InputStream branchStream = BuildDate.class.getClassLoader().getResourceAsStream(branchResource);
 			makeGitBranches(branchStream);
 			branchStream.close();
+			this.gitBranch = parms.get("gitbranch");
 		} catch ( Exception e ) {
 			AppUtils.logException(e);
 			this.webBuildDate = "Error";
@@ -53,8 +57,9 @@ public class BuildDate extends ApplicationObject {
 		}
 	}
 
-	private String makeBuildDate(InputStream is) throws IOException {
+	private String makeBuildDate(HashMap<String,String> parms, InputStream is) throws IOException {
 		String buildDate = "not available";
+		String gitBranch = "not available";
 		
 		Writer writer = new StringWriter();
         char[] buffer = new char[1024];
@@ -73,6 +78,11 @@ public class BuildDate extends ApplicationObject {
         	if ( lines[i].startsWith("builddate")) {
         		String[] values = lines[i].split("=");
         		buildDate = values[1];
+        	}
+        	if ( lines[i].startsWith("gitbranch")) {
+        		String[] values = lines[i].split("=");
+        		gitBranch = values[1];
+        		parms.put("gitbranch",gitBranch);
         	}
         		
         }
@@ -137,6 +147,9 @@ public class BuildDate extends ApplicationObject {
 
 	public String getCommonBranch() {
 		return commonBranch;
+	}
+	public String getGitBranch() {
+		return gitBranch;
 	}
 	
 	
