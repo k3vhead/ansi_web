@@ -83,6 +83,13 @@ public class EmployeeImportServlet extends AbstractServlet {
 				PreparedStatement ps = conn.prepareStatement("select * from payroll_employee where employee_code=? or (lower(employee_first_name)=? and lower(employee_last_name)=?)");
 				
 				try {
+					
+					/*HashMap<Integer, EmployeeImportRecord> employeeMap = EmployeeMap(xxx);
+					this.employeeRecords = new ArrayList<EmployeeImportResponseRec>();
+					for ( EmployeeImportRecord rec : parser.getEmployeeRecords() {
+					  boolean recordMatches = rec.ansiEquals( employeeMap.get(rec.getRowID) );
+					  this.employeeRecords.add(new EmployeeImportResponseRec(rec));*/
+					
 					data = new EmployeeImportResponse(conn, uploadRequest);
 					CollectionUtils.transform(data.getEmployeeRecords(), new EmployeeRecordTransformer(ps, divMap, employeeStatusMap));
 					responseCode = ResponseCode.SUCCESS;

@@ -23,7 +23,14 @@ public class EmployeeImportResponse extends MessageResponse {
 	private String fileName;
 	private List<EmployeeImportRecord> employeeRecords = new ArrayList<EmployeeImportRecord>();
 	
-	
+	/*
+	 * this.employeeRecords = new ArrayList<EmployeeImportResponseRec>(); for
+	 * (EmployeeImportRecord rec : parser.getEmployeeRecords()) {
+	 * this.employeeRecords.add(new EmployeeImportResponseRec(rec));
+	 * 
+	 * 
+	 * }
+	 */
 	
 	public EmployeeImportResponse() {
 		super();

@@ -89,7 +89,10 @@
 			}
 			.view-link {
 				color:#404040;
-			}		
+			}	
+			.highlight {
+  				background-color: yellow !important;
+			}
         </style>
         
         <script type="text/javascript">    
@@ -255,6 +258,8 @@
  //           			        	},
  								//"data":JSON.stringify($data.employeeRecords), 	
  								data: $data.employeeRecords,
+ 								
+ 								
             			        columns: [
             			        	{ title: "Employee Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employeeCode' }, 
             			        	{ title: "Company Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'companyCode' }, 
@@ -263,7 +268,7 @@
             			        	{ title: "Last Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'lastName' },
             			        	{ title: "MI", width:"5%", searchable:true, "defaultContent": "", data:'middleInitial' },
             			        	{ title: "Dept. Description", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'departmentDescription' },
-            			        	{ title: "Status", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'status' },
+            			        	{ title: "Status", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'status'},
             			        	{ title: "Termination", width:"10%", searchable:true, "defaultContent": "", data:'terminationDate' },
             			        	{ title: "Union", width:"5%", searchable:true, "defaultContent":"", data:$unknown,
             			        		data:function(row, type, set) {
@@ -311,6 +316,7 @@
             			            	}
             			        	
             			         	   },
+            			         	 
             			      		 ],
             			      		 "initComplete": function(settings, json) {
              			            	var myTable = this;
@@ -341,7 +347,7 @@
                 				terminationDisplay = b.toISOString().substring(0,10);
                 			} 
                 		
-                		
+                			
                 			
                 			$("#employee-modal input[name='employeeCode']").val($row['employeeCode']);
                 			$("#employee-modal input[name='companyCode']").val($row['companyCode']);
@@ -421,6 +427,8 @@
                    			$("#employee-display").show();
                    			$("#display-div .employeeFile").html($data.data.fileName);
                    			EMPLOYEE_IMPORT.makeEmployeeTable($data.data);
+                   			highlightChangingRows();
+                   			
                    			
                    			$.each($data.data.employeeRecords, function($index, $value) {
                    				EMPLOYEE_IMPORT.employeeDict[$value.rowId] = $value;
@@ -499,6 +507,19 @@
         	
         	EMPLOYEE_IMPORT.init();
         	});
+        		function highlightChangingRows() {
+        			
+        			  const changingIds = ["333c169911146ed80cc0e99a3d629fe7", "9fab5c2b256cb752af175ef31931f118"]
+        			  for (var highlightNbr = 0; highlightNbr < changingIds.length; highlightNbr++){var highlighted = document.getElementById(changingIds[highlightNbr]);
+        			  	
+       			   		highlighted.classList.add("highlight");
+       			   		
+         			 	
+      				}
+        			    
+        			
+ 
+        		}
         	
         </script>        
     </tiles:put>
