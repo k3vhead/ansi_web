@@ -4,26 +4,18 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.apache.commons.beanutils.BeanUtils;
 
-import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.payroll.parser.EmployeeImportRecord;
+import com.ansi.scilla.common.utils.AnsiComparable;
 
 	
-public	class EmployeeImportResponseRec extends EmployeeImportRecord{
+public	class EmployeeImportResponseRec extends EmployeeImportRecord implements AnsiComparable {
 	
 	private static final long serialVersionUID = 1L;
 		private Boolean recordMatches;
 		
-		public EmployeeImportResponseRec(EmployeeImportRecord record) {
+		public EmployeeImportResponseRec(EmployeeImportRecord record) throws IllegalAccessException, InvocationTargetException {
 			super();
-			try {
-				BeanUtils.copyProperties(this, record);
-			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			BeanUtils.copyProperties(this, record);
 			this.recordMatches = null;
 		}
 
@@ -33,6 +25,12 @@ public	class EmployeeImportResponseRec extends EmployeeImportRecord{
 
 		public void setRecordMatches(Boolean recordMatches) {
 			this.recordMatches = recordMatches;
+		}
+
+		@Override
+		public String[] makeFieldNameList(String arg0) {
+			// TODO Auto-generated method stub
+			return null;
 		}
 		
 	}
