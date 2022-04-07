@@ -1,6 +1,7 @@
 package com.ansi.scilla.web.payroll.servlet;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,13 +13,15 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.collections4.Transformer;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.db.Division;
+import com.ansi.scilla.common.db.PayrollEmployee;
 import com.ansi.scilla.common.payroll.common.EmployeeStatus;
+import com.ansi.scilla.common.payroll.parser.EmployeeImportParser;
 import com.ansi.scilla.common.payroll.parser.EmployeeImportRecord;
 import com.ansi.scilla.common.payroll.parser.NotAnEmployeeFileException;
 import com.ansi.scilla.web.common.response.ResponseCode;
@@ -34,6 +37,7 @@ import com.ansi.scilla.web.payroll.common.EmployeeRecord;
 import com.ansi.scilla.web.payroll.common.EmployeeRecordStatus;
 import com.ansi.scilla.web.payroll.request.EmployeeImportRequest;
 import com.ansi.scilla.web.payroll.response.EmployeeImportResponse;
+import com.ansi.scilla.web.payroll.response.EmployeeImportResponseRec;
 
 public class EmployeeImportServlet extends AbstractServlet {
 
@@ -79,12 +83,29 @@ public class EmployeeImportServlet extends AbstractServlet {
 				for ( EmployeeStatus s : employeeStatusList ) {
 					employeeStatusMap.put(s.display(), s );
 				}
-//				
-				PreparedStatement ps = conn.prepareStatement("select * from payroll_employee where employee_code=? or (lower(employee_first_name)=? and lower(employee_last_name)=?)");
+				
+//				PreparedStatement ps = conn.prepareStatement("select * from payroll_employee where employee_code=? or (lower(employee_first_name)=? and lower(employee_last_name)=?)");
 				
 				try {
-					data = new EmployeeImportResponse(conn, uploadRequest);
-					CollectionUtils.transform(data.getEmployeeRecords(), new EmployeeRecordTransformer(ps, divMap, employeeStatusMap));
+					
+					HashMap<Integer, PayrollEmployee> employeeMap = makeEmployeeMap(conn);
+					
+					// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+					// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+					// this is just so we can push code that compiles -- it needs to change
+					// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+					// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+					String fileName = null;
+					InputStream inputStream = null;
+					
+					EmployeeImportParser parser = new EmployeeImportParser(conn, fileName, inputStream);
+					List<EmployeeImportRecord> employeeRecords = parser.getEmployeeRecords();	
+					
+					BetterEmployeeRecordTransformer betterTransformer = new BetterEmployeeRecordTransformer(employeeMap, divMap, employeeStatusMap);
+					List<EmployeeImportResponseRec> matchedRecords = IterableUtils.toList(IterableUtils.transformedIterable(employeeRecords, betterTransformer));
+					data = new EmployeeImportResponse();
+					data.setFileName(fileName);
+					data.setEmployeeRecords(matchedRecords);
 					responseCode = ResponseCode.SUCCESS;
 				} catch (NotAnEmployeeFileException e) {
 					webMessages.addMessage(EmployeeImportRequest.EMPLOYEE_FILE, "Not a valid employee import.");
@@ -149,6 +170,64 @@ public class EmployeeImportServlet extends AbstractServlet {
 	}
 
 	
+
+	private HashMap<Integer, PayrollEmployee> makeEmployeeMap(Connection conn) throws Exception {
+		HashMap<Integer, PayrollEmployee> employeeMap = new HashMap<Integer, PayrollEmployee>();
+		List<PayrollEmployee> employeeList = PayrollEmployee.cast(new PayrollEmployee().selectAll(conn));
+		for ( PayrollEmployee employee : employeeList ) {
+			employeeMap.put(employee.getEmployeeCode(), employee);
+		}
+		return employeeMap;
+	}
+
+
+	public class BetterEmployeeRecordTransformer implements Transformer<EmployeeImportRecord, EmployeeImportResponseRec> {
+
+		HashMap<Integer, PayrollEmployee> employeeMap;
+		private HashMap<Integer, Division> divMap;
+		private HashMap<String, EmployeeStatus> employeeStatusMap;
+		
+		public BetterEmployeeRecordTransformer(HashMap<Integer, PayrollEmployee> employeeMap,
+				HashMap<Integer, Division> divMap, HashMap<String, EmployeeStatus> employeeStatusMap) {
+			super();
+			this.employeeMap = employeeMap;
+			this.divMap = divMap;
+			this.employeeStatusMap = employeeStatusMap;
+		}
+
+
+
+		@Override
+		public EmployeeImportResponseRec transform(EmployeeImportRecord arg0) {
+			try {
+				EmployeeImportResponseRec rec = new EmployeeImportResponseRec(arg0);
+				
+				if ( StringUtils.isNumeric(arg0.getDivisionNbr())) {
+					if ( divMap.containsKey(Integer.valueOf(arg0.getDivisionNbr()))) {
+						Division division= divMap.get(Integer.valueOf(arg0.getDivisionNbr()));
+						arg0.setDivisionId(division.getDivisionId());
+						arg0.setDiv(division.getDivisionNbr() + "-" + division.getDivisionCode());
+						
+					}
+					
+				}
+				
+				if ( employeeStatusMap.containsKey(arg0.getStatus())) {
+					EmployeeStatus employeeStatus= employeeStatusMap.get(arg0.getStatus());
+					arg0.setStatus(employeeStatus.name());
+					
+				}
+				
+				
+				rec.setRecordMatches( rec.ansiEquals(employeeMap.get(arg0.getEmployeeCode())));
+				return rec;
+			} catch ( Exception e) {
+				throw new RuntimeException(e);
+			}
+			
+		}
+		
+	}
 
 	public class EmployeeRecordTransformer implements Transformer<EmployeeImportRecord, EmployeeImportRecord> {
 
