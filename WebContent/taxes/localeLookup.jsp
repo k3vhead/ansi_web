@@ -91,6 +91,7 @@
        				LOCALELOOKUP.clearAddForm();  
        				LOCALELOOKUP.createTable();  
        				LOCALELOOKUP.makeClickers();
+       				LOCALELOOKUP.makeAliasTable();
        				LOCALELOOKUP.markValid();  
        				LOCALELOOKUP.makeEditPanel();
        				LOCALELOOKUP.makeLocaleTypeList();
@@ -141,7 +142,7 @@
             	         ],
             	        "paging": true,
     			        "ajax": {
-    			        	"url": "localeLookup",
+    			        	"url": "locale/lookup",
     			        	"type": "GET",
     			        	"data": {}
     			        	},
@@ -170,13 +171,14 @@
     			            	var $actionData = "";
     			            	if ( row.locale_id != null ) {
     				            	var $editLink = '<ansi:hasPermission permissionRequired="TAX_WRITE"><a href="#" class="editAction" data-id="'+row.locale_id+'" data-name="'+row.locale_id+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>&nbsp;';
+    				            	var $aliasLink = '<span class="action-link alias-link" data-id="'+row.locale_id+'"><webthing:view>Alias</webthing:view></span>';
 									var $taxLink = '' //'<ansi:hasPermission permissionRequired="TAX_WRITE"><a href="taxRateLookup.html?id='+row.locale_id+'"><webthing:taxes>Taxes</webthing:taxes></a></ansi:hasPermission>&nbsp;';
 
 //    		            			var $ticketData = 'data-id="' + row.locale_id + '"';
 //    			            		$printLink = '<ansi:hasPermission permissionRequired="TAX_READ"><i class="print-link fa fa-print" aria-hidden="true" ' + $localeData + '></i></ansi:hasPermission>'
 //    			            		var $claimLink = '';
 //    			            		
-    				            	$actionData = $editLink + " " + $taxLink;
+    				            	$actionData = $editLink + $aliasLink + $taxLink;
     			            	}
     			            	return $actionData;
     			            } }],
@@ -188,6 +190,11 @@
     			            },
     			            "drawCallback": function( settings ) {
     			            	LOCALELOOKUP.doFunctionBinding();
+    			            	$(".alias-link").off("click");
+    			            	$(".alias-link").click(function($clickevent) {
+    			            		var $localeId = $(this).attr("data-id");
+    			            		LOCALELOOKUP.showAliasTable($localeId);
+    			            	});
     			            }
     			    } );
             	},
@@ -210,6 +217,49 @@
 	
 	    		},
             	
+	    		
+	    		
+	    		doNewAliasSuccess : function($data, $passthru) {
+	    			console.log("doNewAliasSuccess");
+	    			if ( $data.responseHeader.responseCode == "EDIT_FAILURE") {
+	    				$("#alias-display .alias-message").html($data.data.webMessages['aliasName'][0]).show().fadeOut(3000);
+	    			} else if ( $data.responseHeader.responseCode == "SUCCESS") {
+	    				$("#alias-display .alias-message").html("Success").show().fadeOut(3000);
+	    				$("#alias-display input").val("");
+	    				$("#alias-lookup").DataTable().ajax.reload();
+	    			} else {
+	    				$("#alias-display .alias-message").html("Invalid response: " + $data.responseHeader.responseCode + ". Contact Support");
+	    			}
+	    			
+	    		},
+	    		
+	    		
+	    		
+	    		makeAliasTable : function() {
+	    			$( "#alias-display" ).dialog({
+        				title:'View Locale Alias',
+        				autoOpen: false,
+        				height: 500,
+        				width: 600,
+        				modal: true,
+        				closeOnEscape:true,
+        				//open: function(event, ui) {
+        				//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+        				//},
+        				buttons: [
+        					{
+        						id:  "alias_display_cancel",
+        						click: function($event) {
+       								$( "#alias-display" ).dialog("close");
+        						}
+        					}
+        				]
+        			});	
+        			$("#alias_display_cancel").button('option', 'label', 'Done');  
+	    		},
+	    		
+	    		
+	    		
             	
 	            makeClickers : function() {
 	            	$('.ScrollTop').click(function() {
@@ -250,6 +300,7 @@
 	    				}
 	    			}
 	            },
+	            
 	            
 	            
 	            makeLocaleTypeList: function (){ 			
@@ -331,6 +382,115 @@
 				},
 					
 						
+				
+				showAliasTable : function($localeId) {
+					console.log("showAliasTable: " + $localeId);
+					var $url = "locale/aliasLookup/" + $localeId;
+					
+        			$("#alias-display").dialog("open");
+        			$("#alias-lookup").DataTable( {
+            			"aaSorting":		[[1,'asc']],
+            			"processing": 		true,
+            	        "serverSide": 		true,
+            	        "autoWidth": 		false,
+            	        "deferRender": 		true,
+            	        "scrollCollapse": 	true,
+            	        "scrollX": 			true,
+            	        "pageLength":		50,
+            	        rowId: 				'dt_RowId',
+            	        destroy : 			true,		// this lets us reinitialize the table
+            	        dom: 				'Bfrtip',
+            	        "searching": 		true,
+            	        "searchDelay":		800,
+            	        lengthMenu: [
+            	        	[ 10, 50, 100, 500, 1000 ],
+            	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ]
+            	        ],
+            	        buttons: [
+            	        		'pageLength',
+            	        		'copy', 
+            	        		'csv', 
+            	        		'excel', 
+            	        		{extend: 'pdfHtml5', orientation: 'landscape'}, 
+            	        		'print',{extend: 'colvis',	label: function () {doFunctionBinding();$('#displayTable').draw();}},
+            	        	],
+            	        "columnDefs": [
+             	            { "orderable": true, "targets": -1 },
+             	            { className: "dt-head-center", "targets":[]},
+            	            { className: "dt-left", "targets": [1,2] },
+            	            { className: "dt-center", "targets": [0] },
+            	            { className: "dt-right", "targets": []}
+            	         ],
+            	        "paging": true,
+    			        "ajax": {
+    			        	"url": $url,
+    			        	"type": "GET",
+    			        	"data": null,
+    			        	},
+    			        columns: [
+    			        	{ title: "ID", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'locale_alias_id' },
+    			        	{ title: "Locale Alias", width:"50%", searchable:true, "defaultContent": "<i>N/A</i>", data:'locale_name' }, 
+    			            { title: "Action",  width:"10%", searchable:false, orderable:false, 
+    			            	data: function ( row, type, set ) { 
+    			            		//var $editLink = '<span class="action-link edit-link" data-id="'+row.employee_code+'" data-name="'+row.employee_name+'"><webthing:edit>Edit</webthing:edit></span>';
+    			            		var $deleteLink = '<span class="action-link delete-link" data-id="'+row.locale_id+'"><webthing:delete>Delete</webthing:delete></span>';
+    			            		return '<ansi:hasPermission permissionRequired="PAYROLL_WRITE">' + $deleteLink + '</ansi:hasPermission>'
+    			            	}
+    			            },
+    			            ],
+    			            "initComplete": function(settings, json) {
+    			            	var myTable = this;
+    			            	//LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#ticketTable", CALL_NOTE_LOOKUP.makeTable);
+    			            },
+    			            "drawCallback": function( settings ) {
+    			            	console.log("alias drawCallback");
+    			            	//$("#alias-lookup .edit-link").off("click");
+    			            	$("#alias-lookup .delete-link").off("click");
+    			            	$("#alias-lookup .cancel-new-alias").off("click");
+    			            	$("#alias-lookup .save-new-alias").off("click");
+    			            	$("#alias-lookup .delete-link").click(function($event) {
+    			            		var $localeId = $(this).attr("data-id");
+    			            		var $employeeName = $(this).attr("data-name");
+    			            		$("#confirm-save").attr("data-function","deleteAlias");
+    			            		$("#confirm-save").attr("data-id",$employeeCode);
+    			            		$("#confirm-save").attr("data-name",$employeeName);
+									$("#confirm-modal").dialog("open");
+    			            	});
+    			            	$("#alias-display .cancel-new-alias").click( function($event) {
+    			            		$("#alias-display input[name='employeeName']").val("");
+    			            	});
+    			            	$("#alias-display .save-new-alias").click( function($event) {    			            		
+    			            		var $localeId = $(this).attr("data-id");
+    			            		var $aliasName = null
+    			            		$.each( $("#alias-display input"), function($index, $value) {
+    			            			// for some reason, datatables is putting two input boxes, so get the one that is populated
+    			            			var $thisValue = $($value).val();
+    			            			if ( $thisValue != null ) {
+    			            				$aliasName = $thisValue;
+    			            			}
+    			            		});
+    			            		var $url = "locale/alias/" + $localeId;
+    			            		$("#alias-display .err").html("");
+    			            		console.log("new alias name: " + $aliasName);
+    			            		ANSI_UTILS.makeServerCall("POST", $url, {"aliasName":$aliasName}, {200:LOCALELOOKUP.doNewAliasSuccess}, {});
+    			            	});
+
+    			            },
+    			            "footerCallback" : function( row, data, start, end, display ) {
+    			            	console.log("alias footerCallback");
+    			            	var api = this.api();
+    			            	var $saveLink = '<span class="action-link save-new-alias" data-id="'+$localeId+'"><webthing:checkmark>Save</webthing:checkmark></span>';
+    			            	var $cancelLink = '<span class="action-link cancel-new-alias"><webthing:ban>Cancel</webthing:ban></span>';
+    			            	var $aliasInput = '<ansi:hasPermission permissionRequired="TAX_WRITE"><input type="text" name="employeeName" placeholder="New Alias" /></ansi:hasPermission>';
+    			            	var $aliasError = '<span class="employeeNameErr err"></span>';
+    			            	$( api.column(1).footer() ).html($aliasInput + " " + $aliasError);
+    			            	$( api.column(2).footer() ).html('<ansi:hasPermission permissionRequired="PAYROLL_WRITE">' + $saveLink + $cancelLink + '</ansi:hasPermission>');
+    			            }
+    			    } );
+				},
+				
+				
+				
 	            showEdit : function ($clickevent) {
 	            	
 	            //	$name = $("#addLocaleForm").attr("data-name");
@@ -548,11 +708,24 @@
     </div>
     
 	    
-	    <input type="button" class="prettyWideButton showNew" value="New" />
+    <input type="button" class="prettyWideButton showNew" value="New" />
     
     <webthing:scrolltop />
 
-
+	<div id="alias-display">
+			<div class="alias-message err"></div>
+			<table id="alias-lookup">
+				<thead></thead>
+				<tbody></tbody>
+				<tfoot>
+					<tr>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+				</tfoot>
+			</table>			
+		</div>
     </tiles:put>
 		
 </tiles:insert>
