@@ -47,6 +47,12 @@
 			#addLocaleForm {
 				display:none;
 			}
+			#confirm-modal {
+        		display:none;
+        	}
+			.action-link {
+				cursor:pointer;
+			}
 			.formHdr {
 				font-weight:bold;
 			}
@@ -199,6 +205,42 @@
     			    } );
             	},
             	
+            	
+            	
+            	doConfirm : function() {
+            		console.log("doConfirm");
+        			var $function = $("#confirm-save").attr("data-function");
+        			if ( $function == "deleteAlias" ) {
+        				var $localeAliasId = $("#confirm-save").attr("data-id");
+        				var $url = "locale/alias/" + $localeAliasId;
+        				ANSI_UTILS.makeServerCall("DELETE", $url, {}, {200:LOCALELOOKUP.doConfirmAliasSuccess}, {});
+        			} else if ( $function == "deleteLocale") {
+        				var $localeId = $("#confirm-save").attr("data-id");
+        				var $url = "locale/" + $employeeCode;
+        				ANSI_UTILS.makeServerCall("DELETE", $url, {}, {200:LOCALELOOKUP.doConfirmLocaleSuccess}, {});
+        			} else {
+        				$("#confirm-modal").dialog("close");
+        				console.log("Function: " + $function);
+        				$("#globalMsg").html("Invalid System State. Reload and try again").show();
+        			}
+        		},
+        		
+        		
+        		doConfirmAliasSuccess : function($data, $passthru) {
+        			$("#alias-lookup").DataTable().ajax.reload();
+        			$("#confirm-modal").dialog("close");
+        			$("#alias-display .alias-message").html("Success").show().fadeOut(3000);
+        		},
+        		
+        		
+        		
+        		doConfirmEmployeeSuccess : function($data, $passthru) {
+        			$("#employeeLookup").DataTable().ajax.reload();
+        			$("#confirm-modal").dialog("close");
+        			$("#globalMsg").html("Success").show().fadeOut(3000);
+        		},
+        		
+        		
             	
 	            doFunctionBinding : function() {
 	    			$( ".editAction" ).on( "click", function($clickevent) {
@@ -379,6 +421,35 @@
 							//allFields.removeClass( "ui-state-error" );
 						}
 					});		
+					
+					
+					
+					$( "#confirm-modal" ).dialog({
+        				title:'Confirm Delete',
+        				autoOpen: false,
+        				height: 200,
+        				width: 300,
+        				modal: true,
+        				closeOnEscape:true,
+        				//open: function(event, ui) {
+        				//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+        				//},
+        				buttons: [
+        					{
+        						id:  "confirm-cancel",
+        						click: function($event) {
+       								$( "#confirm-modal" ).dialog("close");
+        						}
+        					},{
+        						id:  "confirm-save",
+        						click: function($event) {
+       								LOCALELOOKUP.doConfirm();
+        						}
+        					}
+        				]
+        			});	
+        			$("#confirm-cancel").button('option', 'label', 'Cancel');  
+        			$("#confirm-save").button('option', 'label', 'Confirm');
 				},
 					
 						
@@ -389,7 +460,7 @@
 					
         			$("#alias-display").dialog("open");
         			$("#alias-lookup").DataTable( {
-            			"aaSorting":		[[1,'asc']],
+        				"aaSorting":		[[1,'asc']],
             			"processing": 		true,
             	        "serverSide": 		true,
             	        "autoWidth": 		false,
@@ -433,7 +504,7 @@
     			            { title: "Action",  width:"10%", searchable:false, orderable:false, 
     			            	data: function ( row, type, set ) { 
     			            		//var $editLink = '<span class="action-link edit-link" data-id="'+row.employee_code+'" data-name="'+row.employee_name+'"><webthing:edit>Edit</webthing:edit></span>';
-    			            		var $deleteLink = '<span class="action-link delete-link" data-id="'+row.locale_id+'"><webthing:delete>Delete</webthing:delete></span>';
+    			            		var $deleteLink = '<span class="action-link delete-link" data-id="'+row.locale_alias_id+'"><webthing:delete>Delete</webthing:delete></span>';
     			            		return '<ansi:hasPermission permissionRequired="PAYROLL_WRITE">' + $deleteLink + '</ansi:hasPermission>'
     			            	}
     			            },
@@ -450,10 +521,8 @@
     			            	$("#alias-lookup .save-new-alias").off("click");
     			            	$("#alias-lookup .delete-link").click(function($event) {
     			            		var $localeId = $(this).attr("data-id");
-    			            		var $employeeName = $(this).attr("data-name");
     			            		$("#confirm-save").attr("data-function","deleteAlias");
-    			            		$("#confirm-save").attr("data-id",$employeeCode);
-    			            		$("#confirm-save").attr("data-name",$employeeName);
+    			            		$("#confirm-save").attr("data-id",$localeId);
 									$("#confirm-modal").dialog("open");
     			            	});
     			            	$("#alias-display .cancel-new-alias").click( function($event) {
@@ -574,7 +643,7 @@
 					
 	
 					if ( $localeId == null || $localeId == '') {
-						$url = 'locale/';
+						$url = 'locale';
 					} else {
 						$url = 'locale/' + $localeId;
 					}
@@ -713,19 +782,23 @@
     <webthing:scrolltop />
 
 	<div id="alias-display">
-			<div class="alias-message err"></div>
-			<table id="alias-lookup">
-				<thead></thead>
-				<tbody></tbody>
-				<tfoot>
-					<tr>
-						<td></td>
-						<td></td>
-						<td></td>
-					</tr>
-				</tfoot>
-			</table>			
-		</div>
+		<div class="alias-message err"></div>
+		<table id="alias-lookup">
+			<thead></thead>
+			<tbody></tbody>
+			<tfoot>
+				<tr>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+			</tfoot>
+		</table>			
+	</div>
+	
+	<div id="confirm-modal">			
+		<h2>Are you sure?</h2>
+	</div>
     </tiles:put>
 		
 </tiles:insert>

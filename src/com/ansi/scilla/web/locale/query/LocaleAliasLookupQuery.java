@@ -46,7 +46,8 @@ public class LocaleAliasLookupQuery extends LookupQuery {
 				orderBy = " order by " + sortBy + " " + sortDir;
 			}
 		}
-		logger.log(Level.DEBUG, "Alias Sort: " + orderBy);
+		logger.log(Level.DEBUG, "Alias SortBy: " + sortBy);
+		logger.log(Level.DEBUG, "Alias OrderBy: " + orderBy);
 		return "\n" + orderBy;
 	}
 

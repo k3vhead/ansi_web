@@ -65,6 +65,7 @@ public class LocaleAliasLookupServlet extends AbstractLookupServlet {
 			if ( searchTerm != null ) {
 				lookupQuery.setSearchTerm(searchTerm);
 			}
+			
 			return lookupQuery;
 		} catch (ResourceNotFoundException e) {
 			throw new RuntimeException(e);
