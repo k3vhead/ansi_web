@@ -376,7 +376,10 @@
            				
            				$("#prompt-div .err").html("");
            				var file = document.getElementById('timesheet-file').files[0];
+           				var fileName = document.getElementById('timesheet-file').files[0].name;
            				var reader = new FileReader();
+						console.log("openTheFile kjw: Selected File was : " + file);
+	           			console.log("openTheFile kjw: Selected File was : " + fileName);
            				
            				
 	           			if (typeof file !== 'undefined'){
@@ -540,10 +543,14 @@
 	           		},	        
 	           		openFile : function($event) {
 	           			var results = $event.target.result;
+	           			/*  var fileName = document.getElementById('timesheet-file').files[0].name; */
+	           			var file = document.getElementById('timesheet-file').files[0];
 	           			var fileName = document.getElementById('timesheet-file').files[0].name;
 	           			var formData = new FormData();
-	           			var file = document.getElementById('timesheet-file').files[0];
+	           			
 	           			formData.append('timesheetFile',file, fileName);
+						console.log("openFile kjw Selected File was : " + file);
+	           			console.log("openFile kjw Selected File was : " + fileName);
 	           			//formData.append('divisionId', $("#prompt-div select[name='divisionId']").val());
 	           			//formData.append('payrollDate', $("#prompt-div input[name='payrollDate']").val());
 	           			//formData.append('state', $("#prompt-div select[name='state']").val());
@@ -567,7 +574,7 @@
 	           					$("#globalMsg").html("Response Code " + xhr.status + ". Contact Support");
 	           				}
 	           			};
-	           			
+	           			console.log("kjw - openFile :  FormData is : " + formData);
 	           			xhr.send(formData);
 	           		},	           		
 	           		showEmployeeModal : function($rowNumber, $action) {
@@ -789,11 +796,12 @@
     <tiles:put name="content" type="string">
     	<h1>Payroll Timesheet Import</h1> 
     	<div id="prompt-div">
-    		<form id="file-selection">
+    		<!-- <form id="file-selection" > -->
+    		<form id="file-selection" method="post" enctype="multipart/form-data" >
 	    		<table class="prompt">
 	    			<tr>
 	    				<td class="col1" id="file-picker-label"> 	<span 	class="form-label">Payroll File:						</span>		</td>
-	    				<td class="col2"  id="file-picker"> 		<input 	type="file" 	id="timesheet-file" name="files[]" />				</td>
+	    				<td class="col2" id="file-picker"> 			<input 	type="file" 	id="timesheet-file" name="files[]" />				</td>
 	    				<td class="col3" id="open-button-cell"> 	<input 	type="button" 	id="open-button"	value="Open"  /> 				</td>    				
 	    				<td class="col4" id="file-picker-err">		<span 	class="timesheetFileErr err">							</span> 	</td>
 	    			</tr>

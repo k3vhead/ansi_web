@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.Level;
 
+import com.ansi.scilla.common.payroll.parser.NotATimesheetException;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
@@ -30,7 +31,7 @@ public class TimesheetImportServlet extends AbstractServlet {
 		
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		logger.log(Level.DEBUG, "Employee Import post");
+		logger.log(Level.DEBUG, "TimesheetImportServlet: doPost");
 
 		Connection conn = null;
 		try {
@@ -58,7 +59,7 @@ public class TimesheetImportServlet extends AbstractServlet {
 			super.sendForbidden(response);	
 		} catch (Exception e) {
 			throw new ServletException(e);
-		}
+		}		
 		
 		
 

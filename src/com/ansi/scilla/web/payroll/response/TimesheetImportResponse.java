@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.fileupload.FileItem;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -44,6 +45,8 @@ public class TimesheetImportResponse extends MessageResponse {
 	
 	public TimesheetImportResponse(Connection conn, String fileName) throws FileNotFoundException, Exception {
 		this(conn, new File(fileName));
+		logger.log(Level.DEBUG, "After - call to TimesheetImportResponse(Connection, String)");	
+		logger.log(Level.DEBUG, "filename passed in was " + fileName);	
 	}
 	
 	public TimesheetImportResponse(Connection conn, File file) throws FileNotFoundException, Exception {
