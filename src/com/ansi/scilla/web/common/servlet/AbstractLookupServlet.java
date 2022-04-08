@@ -242,17 +242,19 @@ public abstract class AbstractLookupServlet extends AbstractServlet {
 					dir = "desc";
 				}
 			}
-	
+
 			String colName = cols[col];
 	
-	
+			logger.log(Level.DEBUG, "sCol: " + sCol + "\tCol: " + col + "\tCols[col]: " + cols[col]);
 			logger.log(Level.DEBUG, "Start: " + start + "\tAmount: " + amount + "\tTerm: " + term);
 			
 			
 			LookupQuery lookup = makeQuery(conn, request);
 			lookup.setSearchTerm(term);
-			lookup.setSortBy(colName);
-			lookup.setSortIsAscending(dir.equals("asc"));
+			if ( sCol != null ) {
+				lookup.setSortBy(colName);
+				lookup.setSortIsAscending(dir.equals("asc"));
+			}
 			
 			List<ColumnFilter> columnFilterList = makeColumnFilter(request);
 			for ( ColumnFilter filter : columnFilterList ) {

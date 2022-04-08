@@ -13,6 +13,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ansi.scilla.web.common.response.AbstractAutoCompleteItem;
 import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AppUtils;
@@ -30,15 +31,15 @@ public abstract class AbstractAutoCompleteServlet extends AbstractServlet {
 	protected Permission permission;
 	
 
-	/**
-	 * 
-	 * @param realm	This is the bit of the url 
-	 * @param permission
-	 * @param autoComplete
-	 */
+	protected AbstractAutoCompleteServlet() {
+		super();
+	}
+	
 	protected AbstractAutoCompleteServlet(Permission permission) {
+		this();
 		this.permission = permission;
 	}
+	
 	
 	
 	@Override
@@ -61,7 +62,7 @@ public abstract class AbstractAutoCompleteServlet extends AbstractServlet {
 		try {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
-			SessionData sessionData = AppUtils.validateSession(request, this.permission);
+			SessionData sessionData = this.permission == null ? AppUtils.validateSession(request) : AppUtils.validateSession(request, this.permission);
 			SessionUser user = sessionData.getUser();
 			processRequest(conn, user, request, response);
 

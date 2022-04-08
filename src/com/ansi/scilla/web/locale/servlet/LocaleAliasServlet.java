@@ -21,21 +21,23 @@ import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionUser;
+import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.locale.response.LocaleAliasResponse;
-import com.ansi.scilla.web.payroll.response.AliasResponse;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class LocaleAliasServlet extends AbstractServlet {
 
 	private static final long serialVersionUID = 1L;
-	private final Logger logger = LogManager.getLogger(LocaleAliasServlet.class);
-	
+
+	public static final String REALM = "alias";
 	public static final String ALIAS_NAME = "aliasName";
+
+	private final Logger logger = LogManager.getLogger(LocaleAliasServlet.class);
 
 	/**
 	 * 
@@ -58,8 +60,39 @@ public class LocaleAliasServlet extends AbstractServlet {
 	@Override
 	protected void doDelete(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		super.doDelete(request, response);
+		AnsiURL ansiURL = null;
+		Connection conn = null;
+		try {
+			conn = AppUtils.getDBCPConn();
+			conn.setAutoCommit(false);
+//			String jsonString = super.makeJsonString(request);
+//			logger.log(Level.DEBUG, "jsonstring1:"+jsonString);
+			
+			ansiURL = new AnsiURL(request, REALM, (String[])null); 
+
+			AppUtils.validateSession(request, Permission.TAX_WRITE);
+			LocaleAliasResponse data = new LocaleAliasResponse();
+			
+			if(ansiURL.getId() == null) {
+				super.sendNotFound(response);
+			} else {
+				LocaleAlias alias = new LocaleAlias();
+				alias.setLocaleAliasId(ansiURL.getId());
+				alias.delete(conn);
+				conn.commit();
+				super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
+			}
+						
+		} catch ( RecordNotFoundException e ) {
+			super.sendNotFound(response);			
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
+			super.sendForbidden(response);
+		} catch ( Exception e) {
+			AppUtils.logException(e);
+			throw new ServletException(e);
+		} finally {
+			AppUtils.closeQuiet(conn);
+		}
 	}
 
 	@Override
@@ -97,10 +130,10 @@ public class LocaleAliasServlet extends AbstractServlet {
 //				webMessages = employeeRequest.validate(conn);
 				if ( webMessages.isEmpty() ) {
 					try {
-						doUpdate(conn, localeId, aliasName, sessionData.getUser(), today);
+						Integer localeAliasId = doUpdate(conn, localeId, aliasName, sessionData.getUser(), today);
 						conn.commit();
 						responseCode = ResponseCode.SUCCESS;
-						data = new LocaleAliasResponse(conn, localeId);
+						data = new LocaleAliasResponse(conn, localeAliasId);
 					} catch ( DuplicateEntryException e ) {
 						webMessages.addMessage(ALIAS_NAME, "Duplicate Alias");
 						responseCode = ResponseCode.EDIT_FAILURE;
@@ -125,7 +158,9 @@ public class LocaleAliasServlet extends AbstractServlet {
 	}
 	
 	
-	private void doUpdate(Connection conn, Integer localeId, String aliasName, SessionUser sessionUser, Calendar today) throws DuplicateEntryException, RecordNotFoundException, Exception {
+	private Integer doUpdate(Connection conn, Integer localeId, String aliasName, SessionUser sessionUser, Calendar today) throws DuplicateEntryException, RecordNotFoundException, Exception {
+		Integer localeAliasId = null;
+		
 		LocaleAlias alias = new LocaleAlias();
 		alias.setLocaleName(aliasName);
 		alias.setLocaleId(localeId);
@@ -138,8 +173,11 @@ public class LocaleAliasServlet extends AbstractServlet {
 			alias.setAddedDate(today.getTime());
 			alias.setUpdatedBy(sessionUser.getUserId());
 			alias.setUpdatedDate(today.getTime());
-			alias.insertWithKey(conn);
+			localeAliasId = alias.insertWithKey(conn);
 		}
+		
+		return localeAliasId;
+		
 	}
 
 }

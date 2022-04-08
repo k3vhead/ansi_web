@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.common.servlet;
+package com.ansi.scilla.web.common.response;
 
 import java.sql.ResultSet;
 
