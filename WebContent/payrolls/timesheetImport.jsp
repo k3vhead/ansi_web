@@ -858,7 +858,7 @@
 			<table  id="employee-data">   
 				<tr>
 					<td class="form-label">Employee Name :</td>
-					<td class="employeeName"><input type="text" class="employeeName" Name="employeeName"tabindex="1" /></td>
+					<td class="employeeName"><input type="text" class="employeeName" name="employeeName"tabindex="1" /></td>
 					<td class="err"><span class="employeeNameErr err"></span></td>
 
 					<td class="form-label">State:</td>
@@ -903,7 +903,7 @@
 					<td class="hours"><input class="hours" type="text" name="vacationHours"				tabindex="8" /></td>
 					<td class="err"><span class="vacationHoursErr"></span></td>
 
-					<td class="money"><input class="money" "type="text" name="vacationPay" 				tabindex="9" /></td>
+					<td class="money"><input class="money" type="text" name="vacationPay" 				tabindex="9" /></td>
 					<td class="err"><span class="vacationPayErr err"></span></td>
 				</tr>
 								
