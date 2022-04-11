@@ -15,6 +15,10 @@ public class DashboardFavoriteResponse extends MessageResponse {
 
 	private List<DashboardFavoriteItem> favoriteList;
 
+	protected DashboardFavoriteResponse() {
+		super();
+	}
+	
 	public DashboardFavoriteResponse(Menu menu, Boolean selected) {
 		super();
 		this.favoriteList = Arrays.asList(new DashboardFavoriteItem[] {new DashboardFavoriteItem(menu, selected)} );
