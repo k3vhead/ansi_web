@@ -85,7 +85,6 @@
 			destination="${dist}/WEB-INF/classes/resources/completedTask.properties" 
 			doasana="${doasana}" />
 			
-			
 		<exec executable="git" outputproperty="git.revision" failifexecutionfails="false" errorproperty="">
 			<arg value="rev-parse" />
 			<arg value="--abbrev-ref" />
@@ -97,7 +96,6 @@
 				<length string="${git.revision}" trim="yes" length="0" when="greater" />
 			</and>
 		</condition>
-
 			
         <path id="ui.classpath">
             <path refid="compile.classpath"/>
@@ -108,7 +106,7 @@
 
     	<propertyfile file="${dist}/WEB-INF/classes/resources/build_web.properties" comment="ansi_web">
     		<entry key="builddate" type="date" value="now" pattern="MM/dd/yyyy HH:mm:ss" />
-    		<entry key="gitbranch" value="${git.revision}" />
+            <entry key="gitbranch" value="${git.revision}" />
     	</propertyfile>
 
         <javac srcdir="../../${projectName}/src"

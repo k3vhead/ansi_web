@@ -19,7 +19,7 @@ $(function(){
     	var $webDate = $(this).attr("data-webBuildDate");
     	var $commonDate = $(this).attr("data-commonBuildDate");
     	var $reportDate = $(this).attr("data-reportBuildDate");
-    	var $gitBranch = $(this).attr("data-gitbranch");
+        var $gitBranch = $(this).attr("data-gitbranch");
     	alert("Web Build: " + $webDate + "\nCommon Build: " + $commonDate + "\nReport Build: " + $reportDate + "\nWeb Git Branch: " + $gitBranch);
     });
     
