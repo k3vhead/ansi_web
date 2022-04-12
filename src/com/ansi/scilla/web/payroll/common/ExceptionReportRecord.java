@@ -40,8 +40,8 @@ public class ExceptionReportRecord extends ApplicationObject {
 	 private Integer holidayHours;
 	 private Integer holidayPay;
 	// private Integer grossPay; 
-	 private Integer underUnionMinPay;
-	 private Integer underGovtMinPay;
+	// private Integer underUnionMinPay;
+	// private Integer underGovtMinPay;
 	 private Integer expensesSubmitted;
 	 private Integer expensesAllowed;
 	 private Integer volume;
@@ -75,8 +75,8 @@ public class ExceptionReportRecord extends ApplicationObject {
 		this.otPay = rs.getInt("ot_pay");
 		this.holidayHours = rs.getInt("holiday_hours");
 		this.holidayPay = rs.getInt("holiday_pay");
-		this.underUnionMinPay = rs.getInt("under_union_min_pay");
-		this.underGovtMinPay = rs.getInt("under_govt_min_pay");
+	//	this.underUnionMinPay = rs.getInt("under_union_min_pay");
+	//	this.underGovtMinPay = rs.getInt("under_govt_min_pay");
 		//this.grossPay = rs.getInt("gross_pay"); 
 		this.expensesSubmitted = rs.getInt("expenses_submitted");
 		this.expensesAllowed = rs.getInt("expenses_allowed");
@@ -134,10 +134,10 @@ public class ExceptionReportRecord extends ApplicationObject {
 	} */
 /*	public Calendar getEmployeeTermination() {
 		return employeeTermination;
-	}
+	} */
 	public Calendar getWeekEnding() {
 		return weekEnding;
-	} */
+	} 
 	public String getState() {
 		return state;
 	}

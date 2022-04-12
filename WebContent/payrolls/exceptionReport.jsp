@@ -335,9 +335,6 @@
     			        			return $value;
     			        			}
     			        		},
-    			        	//	{ title: "Expenses Pct", width:"5%", searchFormat: "#.##", data: function ( row, type, set ) {
-       			        	//		if(row.excess_expense_pct != null){return (parseFloat(row.excess_expense_pct).toFixed(2));}
-   		            		//	} },
     			        		{ title: "Expense Pct", width:"5%", searchable:true, "defaultContent": "",
     			        		data:function(row, type, set) {
     			        			var $value = $unknown;
@@ -625,6 +622,13 @@
 						<input type="hidden" name="selectedExpensesSubmitted" />
 						</td>
 					<td><span class="err expensesSubmittedErr"></span></td>
+				</tr>							
+				<tr>
+					<td class="form-label">Volume:</td>
+					<td><input type="text" name="volume" readonly="true" />
+						<input type="hidden" name="selectedVolume" />
+						</td>
+					<td><span class="err volumeErr"></span></td>
 				</tr>						
 				<tr>
 					<td class="form-label">Direct Labor:</td>
