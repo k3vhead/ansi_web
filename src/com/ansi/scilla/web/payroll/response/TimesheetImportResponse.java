@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.ansi.scilla.common.payroll.parser.NotATimesheetException;
 import com.ansi.scilla.common.payroll.parser.PayrollWorksheetEmployee;
 import com.ansi.scilla.common.payroll.parser.PayrollWorksheetParser;
 import com.ansi.scilla.web.common.response.MessageResponse;
@@ -38,24 +39,24 @@ public class TimesheetImportResponse extends MessageResponse {
 		super();
 	}
 
-	public TimesheetImportResponse(Connection conn, TimesheetImportRequest request) throws IOException, Exception {
+	public TimesheetImportResponse(Connection conn, TimesheetImportRequest request) throws IOException, NotATimesheetException, Exception {
 		this(conn, request.getTimesheetFile());
 		
 	}
 	
-	public TimesheetImportResponse(Connection conn, String fileName) throws FileNotFoundException, Exception {
+	public TimesheetImportResponse(Connection conn, String fileName) throws FileNotFoundException, NotATimesheetException, Exception {
 		this(conn, new File(fileName));
 		logger.log(Level.DEBUG, "After - call to TimesheetImportResponse(Connection, String)");	
 		logger.log(Level.DEBUG, "filename passed in was " + fileName);	
 	}
 	
-	public TimesheetImportResponse(Connection conn, File file) throws FileNotFoundException, Exception {
+	public TimesheetImportResponse(Connection conn, File file) throws FileNotFoundException, NotATimesheetException, Exception {
 		this(conn, new PayrollWorksheetParser(file));
 //		this.fileName = file.getAbsolutePath();
 //		parseODSFile(new FileInputStream(file));
 	}
 	
-	public TimesheetImportResponse(Connection conn, FileItem file) throws IOException, Exception {
+	public TimesheetImportResponse(Connection conn, FileItem file) throws IOException, NotATimesheetException, Exception {
 		this(conn, new PayrollWorksheetParser(file.getName(), file.getInputStream()));
 		
 //		this.fileName = file.getName();

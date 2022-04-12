@@ -46,8 +46,13 @@ public class TimesheetImportServlet extends AbstractServlet {
 			data.setWebMessages(webMessages);
 			
 			if ( webMessages.isEmpty() ) {
-				data = new TimesheetImportResponse(conn, uploadRequest);
-				responseCode = ResponseCode.SUCCESS;
+				try {
+					data = new TimesheetImportResponse(conn, uploadRequest);
+					responseCode = ResponseCode.SUCCESS;
+				} catch ( NotATimesheetException e) {
+					responseCode = ResponseCode.EDIT_FAILURE;
+					webMessages.addMessage("filename field", "Not a Timesheet Worksheet");
+				}
 			} else {
 				responseCode = ResponseCode.EDIT_FAILURE;
 			}
