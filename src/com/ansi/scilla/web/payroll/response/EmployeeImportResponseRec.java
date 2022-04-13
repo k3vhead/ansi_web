@@ -1,6 +1,8 @@
 package com.ansi.scilla.web.payroll.response;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.beanutils.BeanUtils;
 
@@ -13,8 +15,12 @@ public	class EmployeeImportResponseRec extends EmployeeImportRecord implements A
 	private static final long serialVersionUID = 1L;
 		private Boolean recordMatches;
 		
-		public EmployeeImportResponseRec(EmployeeImportRecord record) throws IllegalAccessException, InvocationTargetException {
+		private EmployeeImportResponseRec() {
 			super();
+		}
+		
+		public EmployeeImportResponseRec(EmployeeImportRecord record) throws IllegalAccessException, InvocationTargetException {
+			this();
 			BeanUtils.copyProperties(this, record);
 			this.recordMatches = null;
 		}
@@ -29,8 +35,19 @@ public	class EmployeeImportResponseRec extends EmployeeImportRecord implements A
 
 		@Override
 		public String[] makeFieldNameList(String arg0) {
-			// TODO Auto-generated method stub
-			return null;
+			return new String[] {
+				"firstName",
+//				"lastName",
+////				"departmentDescription",
+//				"status",
+//				"terminationDate",
+//				"unionMember",
+//				"unionCode",
+//				"unionRate",
+//				"recordStatus",
+//				"divisionId",
+//				"div",
+			};
 		}
 		
 	}
