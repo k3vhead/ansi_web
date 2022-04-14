@@ -28,6 +28,7 @@ import com.ansi.scilla.common.db.CallLog;
 import com.ansi.scilla.common.db.Document;
 import com.ansi.scilla.common.db.EmployeeExpense;
 import com.ansi.scilla.common.db.JobTag;
+import com.ansi.scilla.common.db.Locale;
 import com.ansi.scilla.common.db.MSTable;
 import com.ansi.scilla.common.db.PayrollEmployee;
 import com.ansi.scilla.common.db.Ticket;
@@ -173,7 +174,7 @@ public class RequestValidator {
 	 * @param label
 	 * @throws SQLException
 	 */
-	public static void validateCity(Connection conn, WebMessages webMessages, String fieldName, String value, String state, int maxLength, boolean required,
+	public static void validateCity(Connection conn, WebMessages webMessages, String fieldName, String value, Integer state, int maxLength, boolean required,
 			String label) throws SQLException {
 		if ( StringUtils.isBlank(value) ) {
 			if ( required ) {
@@ -190,14 +191,14 @@ public class RequestValidator {
 			}
 			PreparedStatement ps = null;
 			String message = StringUtils.isBlank(label) ? "Invalid Value" : label + " is invalid";
-			if ( StringUtils.isBlank(state) ) {
+			if ( state == null ) {
 				ps = conn.prepareStatement("select count(*) as rec_count from locale where lower(name)=? and locale_type_id in ("+StringUtils.join(typeList, ",")+")");
 				ps.setString(1, value.toLowerCase());
 			} else {
 				message = message + " for " + state;
 				ps = conn.prepareStatement("select count(*) as rec_count from locale where lower(name)=? and locale_type_id in ("+StringUtils.join(typeList, ",")+") and lower(state_name)=?");
 				ps.setString(1, value.toLowerCase());
-				ps.setString(2, state.toLowerCase());
+				ps.setInt(2, state);
 			}
 			ResultSet rs = ps.executeQuery();
 			if ( rs.next() ) {
@@ -1035,6 +1036,25 @@ public class RequestValidator {
 			}
 		}
 		
+	}
+
+	public static void validateStateLocale(Connection conn, WebMessages webMessages, String fieldName, Integer value, boolean required, String label) throws Exception {
+		if ( required ) {
+			if ( value == null ) {
+				String message = StringUtils.isBlank(label) ? "Required Value" : label + " is required";
+				webMessages.addMessage(fieldName, message);
+			}
+		} else {
+			Locale locale = new Locale();
+			locale.setLocaleId(value);
+			locale.setLocaleTypeId(LocaleType.STATE.name());
+			try {
+				locale.selectOne(conn);				
+			} catch (RecordNotFoundException e) {
+				String message = StringUtils.isBlank(label) ? "Invalid Value" : label + " is invalid";
+				webMessages.addMessage(fieldName, message);
+			}
+		}		
 	}
 
 	public static void validateString(WebMessages webMessages, String fieldName, String value, boolean required) {

@@ -4,7 +4,9 @@ import java.sql.Connection;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import com.ansi.scilla.common.db.Locale;
 import com.ansi.scilla.common.utils.AppUtils;
+import com.ansi.scilla.web.locale.common.LocaleUtils;
 import com.ansi.scilla.web.payroll.response.TimesheetResponse;
 
 public class TestTimesheetResponse {
@@ -20,7 +22,9 @@ public class TestTimesheetResponse {
 			String city="Cleveland";
 			Integer employeeCode = 1869;
 			
-			TimesheetResponse response = new TimesheetResponse(conn,divisionId, weekEnding, state, employeeCode, city);
+			Locale locale = LocaleUtils.makeLocale(conn, state, city);
+			System.out.println(locale);
+			TimesheetResponse response = new TimesheetResponse(conn,divisionId, weekEnding, employeeCode, locale);
 			System.out.println(response);
 		} finally {
 			conn.close();

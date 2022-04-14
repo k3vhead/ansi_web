@@ -693,7 +693,7 @@
 					<td>
 						<select name="state" class="update-field">
 							<option value=""></option>
-							<webthing:states />
+							<ansi:localeSelect type="STATE" format="select" />
 						</select>
 					</td>
 					<td><span class="stateErr err"></span></td>

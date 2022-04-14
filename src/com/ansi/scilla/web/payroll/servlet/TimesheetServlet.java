@@ -13,8 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Level;
 
+import com.ansi.scilla.common.db.Locale;
 import com.ansi.scilla.common.db.PayrollWorksheet;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
@@ -25,6 +25,7 @@ import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
+import com.ansi.scilla.web.locale.common.LocaleUtils;
 import com.ansi.scilla.web.payroll.common.PayrollValidationResponse;
 import com.ansi.scilla.web.payroll.request.TimesheetRequest;
 import com.ansi.scilla.web.payroll.response.TimesheetResponse;
@@ -46,12 +47,12 @@ public class TimesheetServlet extends AbstractServlet {
 	
 				conn = AppUtils.getDBCPConn();
 				TimesheetRequest timesheetRequest = new TimesheetRequest(request);
+				Locale locale = LocaleUtils.MakeLocale(conn, timesheetRequest.getState(), timesheetRequest.getCity());
 				data = new TimesheetResponse(conn, 
 						timesheetRequest.getDivisionId(), 
 						timesheetRequest.getWeekEnding(), 
-						timesheetRequest.getState(), 
 						timesheetRequest.getEmployeeCode(), 
-						timesheetRequest.getCity());
+						locale);
 				data.setWebMessages(webMessages);
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
 	
@@ -180,7 +181,7 @@ public class TimesheetServlet extends AbstractServlet {
 		if ( ! validationResponse.getResponseCode().equals(ResponseCode.EDIT_FAILURE) ) {
 			Calendar today = AppUtils.getToday();
 			PayrollWorksheet timesheet = new PayrollWorksheet();		
-			populateTimesheetKeys(timesheet, timesheetRequest);
+			populateTimesheetKeys(conn, timesheet, timesheetRequest);
 			populateTimesheetValues(timesheet, timesheetRequest);
 			timesheet.setEmployeeName(timesheetRequest.getEmployeeName());
 			timesheet.setAddedBy(sessionData.getUser().getUserId());
@@ -209,7 +210,7 @@ public class TimesheetServlet extends AbstractServlet {
 			Calendar today = AppUtils.getToday();
 			
 			PayrollWorksheet timesheet = new PayrollWorksheet();
-			populateTimesheetKeys(timesheet, timesheetRequest);
+			populateTimesheetKeys(conn, timesheet, timesheetRequest);
 			PayrollWorksheet key = (PayrollWorksheet)timesheet.clone();
 			timesheet.selectOne(conn);
 			populateTimesheetValues(timesheet, timesheetRequest);
@@ -229,18 +230,19 @@ public class TimesheetServlet extends AbstractServlet {
 	
 	private void processDelete(Connection conn, TimesheetRequest timesheetRequest) throws Exception {
 		PayrollWorksheet timesheet = new PayrollWorksheet();		
-		populateTimesheetKeys(timesheet, timesheetRequest);
+		populateTimesheetKeys(conn, timesheet, timesheetRequest);
 		timesheet.delete(conn);		
 	}
 
 
 
-	private void populateTimesheetKeys(PayrollWorksheet timesheet, TimesheetRequest timesheetRequest) {
+	private void populateTimesheetKeys(Connection conn, PayrollWorksheet timesheet, TimesheetRequest timesheetRequest) throws RecordNotFoundException, Exception {
 		timesheet.setDivisionId(timesheetRequest.getDivisionId());
 		timesheet.setWeekEnding(timesheetRequest.getWeekEnding().getTime());
-		timesheet.setState(timesheetRequest.getState());
+//		timesheet.setState(timesheetRequest.getState());
 		timesheet.setEmployeeCode(timesheetRequest.getEmployeeCode());
-		timesheet.setCity(timesheetRequest.getCity());
+//		timesheet.setCity(timesheetRequest.getCity());
+		timesheet.setLocaleId(LocaleUtils.MakeLocale(conn, timesheetRequest.getState(), timesheetRequest.getCity()).getLocaleId());		
 		
 	}
 

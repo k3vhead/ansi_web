@@ -77,7 +77,7 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 	// these fields are used in the get to identify a unique record
 	private Integer divisionId;
 	private Calendar weekEnding;
-	private String state;
+	private Integer state;  // locale id from the state dropdown
 	private Integer employeeCode;
 	private String city;
 	
@@ -130,7 +130,7 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 				throw new InvalidFormatException(DIVISION_ID);
 			}
 		}
-		this.state = request.getParameter(STATE);
+		this.state = Integer.valueOf(request.getParameter(STATE));
 		String weekEnding = request.getParameter(WEEK_ENDING);
 		if ( ! StringUtils.isBlank(weekEnding)) {			
 			try {
@@ -177,11 +177,11 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 		this.weekEnding = weekEnding;
 	}
 
-	public String getState() {
+	public Integer getState() {
 		return state;
 	}
 
-	public void setState(String state) {
+	public void setState(Integer state) {
 		this.state = state;
 	}
 
@@ -348,7 +348,7 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 		// step 1 : the "normal" validation of values
 		validateNumbers(webMessages);
 		RequestValidator.validateId(conn, webMessages, Division.TABLE, Division.DIVISION_ID, DIVISION_ID, this.divisionId, true);
-		RequestValidator.validateState(webMessages, STATE, this.state, true, null);
+		RequestValidator.validateStateLocale(conn, webMessages, STATE, this.state, true, null);
 		RequestValidator.validateCity(conn, webMessages, CITY, this.city, this.state, 255, false, null);
 		RequestValidator.validateDate(webMessages, WEEK_ENDING, this.weekEnding, true, null, null);
 		RequestValidator.validateEmployeeCode(conn, webMessages, EMPLOYEE_CODE, this.employeeCode, true, null);
@@ -538,7 +538,7 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 		WebMessages webMessages = new WebMessages();		
 		validateNumbers(webMessages);
 		RequestValidator.validateId(conn, webMessages, Division.TABLE, Division.DIVISION_ID, DIVISION_ID, this.divisionId, true);
-		RequestValidator.validateState(webMessages, STATE, this.state, true, null);
+//		RequestValidator.validateState(webMessages, STATE, this.state, true, null);
 		RequestValidator.validateString(webMessages, CITY, this.city, 255, false, null);
 		RequestValidator.validateDate(webMessages, WEEK_ENDING, this.weekEnding, true, null, null);
 		RequestValidator.validateEmployeeCode(conn, webMessages, EMPLOYEE_CODE, this.employeeCode, true, null);
@@ -591,7 +591,7 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 	public WebMessages validateDelete(Connection conn) throws Exception {
 		WebMessages webMessages = new WebMessages();		
 		RequestValidator.validateId(conn, webMessages, Division.TABLE, Division.DIVISION_ID, DIVISION_ID, this.divisionId, true);
-		RequestValidator.validateState(webMessages, STATE, this.state, true, null);
+		RequestValidator.validateStateLocale(conn, webMessages, STATE, this.state, true, null);
 		RequestValidator.validateString(webMessages, CITY, this.city, 255, false, null);
 		RequestValidator.validateDate(webMessages, WEEK_ENDING, this.weekEnding, true, null, null);
 		RequestValidator.validateEmployeeCode(conn, webMessages, EMPLOYEE_CODE, this.employeeCode, true, null);
