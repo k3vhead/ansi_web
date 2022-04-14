@@ -1,0 +1,129 @@
+<project name="ANSI Web" default="war" basedir=".">
+    <description>Build ANSI Schedulding UI</description>
+        
+        
+    <!-- set global properties for this build -->
+	<property name="projectName" value="ansi_web" />
+	<property name="buildLoc" location="../work" />
+    <property name="build" location="${buildLoc}/build" />
+    <property name="dist"  location="${buildLoc}/dist" />
+    <property name="deploy" location="${buildLoc}/deploy" />
+    <property name="compile.debug" value="true"/>
+    <property environment="env" />
+	<property name="libdirectory"  value="../WebContent/WEB-INF/lib" />
+	
+    
+    <path id="compile.classpath">
+        <fileset dir="${env.CATALINA_HOME}/lib">
+            <include name="jsp-api.jar" />
+            <include name="servlet-api.jar" />
+            <include name="tomcat-api.jar" />
+            <include name="tomcat-dbcp.jar" />
+        	<include name="sqljdbc42.jar" />   <!-- this is ms sql server specific -->
+        </fileset>
+
+        <fileset dir="${libdirectory}">
+            <include name="*.jar"/>
+        </fileset>
+    	
+    </path>
+
+	<target name="asana">
+		<echo message="Setting asana to true" level="info" />																																																																																																																																	
+		<property name="doasana" value="true" />
+	</target>
+	
+    <target name="clean">
+        <!-- clear out old stuff -->
+        <delete dir="${build}"/>
+        <delete dir="${dist}"/> 
+        <delete dir="${deploy}"/>           
+	</target>
+	
+    <target name="init" depends="clean" description="Initializes build area">
+        <!-- Create the time stamp -->
+        <tstamp>
+        	<format property="build.time" pattern="yyyy.MM.dd_HH.mm.ss" />
+    	</tstamp>
+    	<property name="warfile" value="${projectName}##${build.time}.war" />
+        
+        <!-- Create the build directory structure used by compile -->
+        <mkdir dir="${build}" />
+        <mkdir dir="${dist}" />
+        <mkdir dir="${build}/lib" />
+        <mkdir dir="${deploy}" />
+        
+    </target>
+
+    <target name="centerpoint_ui" depends="init" description="Build UI components">
+        <copy todir="${dist}">
+            <fileset dir="../../${projectName}/WebContent"/>
+        </copy>
+        <copy todir="${dist}/WEB-INF/lib">
+            <fileset dir="${libdirectory}">
+                <include name="*.jar"/>
+            </fileset>
+        </copy>
+    </target>
+    
+
+    
+    <target name="build" depends="init, centerpoint_ui" description="Build everything">
+		<path id="asana.classpath">
+            <path refid="compile.classpath"/>
+			<pathelement location="../build/classes"/>
+        </path>
+		<taskdef name="asanatask" 
+			classname="com.thewebthing.asanaAPI.ant.AsanaTagTaskList">
+			<classpath refid="asana.classpath"/>
+		</taskdef>
+		<!-- Project: ANSI Scheduling -->
+		<!-- Tag: ANSI PROD_DEPLOY -->
+		<asanatask 
+			asanaProjectId="186314071512099" 
+			asanaTagId="360062619557556" 
+			destination="${dist}/WEB-INF/classes/resources/completedTask.properties" 
+			doasana="${doasana}" />
+			
+			
+		<exec executable="git" outputproperty="git.revision" failifexecutionfails="false" errorproperty="">
+			<arg value="rev-parse" />
+			<arg value="--abbrev-ref" />
+			<arg value="HEAD" />
+		</exec>
+		<condition property="repository.version" value="${git.revision}" else="unknown">
+			<and>
+				<isset property="git.revision" />
+				<length string="${git.revision}" trim="yes" length="0" when="greater" />
+			</and>
+		</condition>
+
+			
+        <path id="ui.classpath">
+            <path refid="compile.classpath"/>
+            <fileset dir="${dist}/WEB-INF/lib">
+                <include name="*.jar"/>
+            </fileset>
+        </path>
+
+    	<propertyfile file="${dist}/WEB-INF/classes/resources/build_web.properties" comment="ansi_web">
+    		<entry key="builddate" type="date" value="now" pattern="MM/dd/yyyy HH:mm:ss" />
+    		<entry key="gitbranch" value="${git.revision}" />
+    	</propertyfile>
+
+        <javac srcdir="../../${projectName}/src"
+               destdir="${dist}/WEB-INF/classes"
+               debug="${compile.debug}"
+               includeantruntime="false">
+            <classpath refid="ui.classpath"/>
+        </javac>
+    </target>
+    
+    <target name="war" depends="build" description="Make a WAR File">
+        <war destfile="${deploy}/${warfile}" basedir="${dist}" />
+    </target>
+    
+    <target name="deploy" depends="war">
+        <copy file="${deploy}/${warfile}" toDir="${env.CATALINA_HOME}/webapps" />
+    </target>
+</project>

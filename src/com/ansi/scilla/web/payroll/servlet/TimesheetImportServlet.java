@@ -32,7 +32,6 @@ public class TimesheetImportServlet extends AbstractServlet {
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		logger.log(Level.DEBUG, "TimesheetImportServlet: doPost");
-
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
@@ -51,7 +50,9 @@ public class TimesheetImportServlet extends AbstractServlet {
 					responseCode = ResponseCode.SUCCESS;
 				} catch ( NotATimesheetException e) {
 					responseCode = ResponseCode.EDIT_FAILURE;
-					webMessages.addMessage("filename field", "Not a Timesheet Worksheet");
+					//String fName = new String(uploadRequest.getTimesheetFile().toString()); 
+					String fName = new String(uploadRequest.getTimesheetFile().getName()); 
+					webMessages.addMessage(fName, "Not a Timesheet Worksheet");
 				}
 			} else {
 				responseCode = ResponseCode.EDIT_FAILURE;

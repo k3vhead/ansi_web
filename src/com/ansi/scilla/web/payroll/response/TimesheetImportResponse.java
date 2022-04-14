@@ -46,21 +46,14 @@ public class TimesheetImportResponse extends MessageResponse {
 	
 	public TimesheetImportResponse(Connection conn, String fileName) throws FileNotFoundException, NotATimesheetException, Exception {
 		this(conn, new File(fileName));
-		logger.log(Level.DEBUG, "After - call to TimesheetImportResponse(Connection, String)");	
-		logger.log(Level.DEBUG, "filename passed in was " + fileName);	
 	}
 	
 	public TimesheetImportResponse(Connection conn, File file) throws FileNotFoundException, NotATimesheetException, Exception {
 		this(conn, new PayrollWorksheetParser(file));
-//		this.fileName = file.getAbsolutePath();
-//		parseODSFile(new FileInputStream(file));
 	}
 	
 	public TimesheetImportResponse(Connection conn, FileItem file) throws IOException, NotATimesheetException, Exception {
 		this(conn, new PayrollWorksheetParser(file.getName(), file.getInputStream()));
-		
-//		this.fileName = file.getName();
-//		parseODSFile(file.getInputStream());
 	}
 	
 	private TimesheetImportResponse(Connection conn, PayrollWorksheetParser parser ) {

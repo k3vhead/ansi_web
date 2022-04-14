@@ -376,14 +376,14 @@
            				
            				$("#prompt-div .err").html("");
            				var file = document.getElementById('timesheet-file').files[0];
-           				var fileName = document.getElementById('timesheet-file').files[0].name;
-           				var reader = new FileReader();
-						console.log("openTheFile kjw: Selected File was : " + file);
-	           			console.log("openTheFile kjw: Selected File was : " + fileName);
-           				
            				
 	           			if (typeof file !== 'undefined'){
-	           				reader.readAsText(file, 'UTF-8');	           				
+	           				var fileName = document.getElementById('timesheet-file').files[0].name;
+	           				var reader = new FileReader();
+							console.log("openTheFile kjw: Selected File was : " + file);
+		           			console.log("openTheFile kjw: Selected File was : " + fileName);
+
+		           			reader.readAsText(file, 'UTF-8');	           				
 	           				reader.onload = TIMESHEET_IMPORT.openFile;		           				
 	           				$("#prompt-div").hide();
 	           				$(".thinking").show();		           				
@@ -414,30 +414,40 @@
 	           		},
 	           		           		           		
 	           		processUploadFailure : function($data) {
-	           			console.log("processUploadFailure");
 	           			$("#prompt-div .err").html("");
-	           			$.each($data.data.webMessages, function($index, $value) {
-	           				var $selector = "#prompt-div ." + $index + "Err";
-	           				$($selector).html($value[0]).show();
-	           			});
+	           			var fName = document.getElementById('timesheet-file').files[0].name;
+	           			$(".thinking").hide();		           				
+           				$("#prompt-div").show();
+						$("#prompt-div .timesheetFileErr").html(fName + " is not a Timesheet File").show().fadeOut(10000);
+           				
+	           			 var $el = $('#timesheet-file');
+	                     $el.wrap('<form>').closest(
+	                       'form').get(0).reset();
+	                     $el.unwrap();           				           				
 	           		},
 	           		           
 	           		initializeDisplay: function(){
-           				$("#data-header").hide();
+	           			console.log("TIMESHEET_IMPORT.initializeDisplay: function - begin");	           			
+
            				$("#prompt-div").show();
            				$("#prompt-div .timesheet-file").val('');
+
+           				$("#data-header").hide();
 	           			$("#data-header .divisionId").html("");
 	           			$("#data-header .operationsManagerName").html("");           			
 	           			$("#data-header .payrollDate").html("");
 	           			$("#data-header .state").html("");
 	           			$("#data-header .city").html("");
 	           			$("#data-header .timesheetFile").html("");
-           				$("#open-button").on("click");
+
+	           			$("#open-button").on("click");
            				$("#data-detail").hide();
            				$("#timesheet").hide();
 
            				$("#timesheet").DataTable().clear();
+
            				/*
+
            				$("#timesheet").DataTable().draw();           				
            				$("#timesheet").DataTable().destroy
            				*/
