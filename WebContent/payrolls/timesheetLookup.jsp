@@ -243,7 +243,7 @@
 	    					if ( $( $stateField ).val() != null ) {
 	    						stateName = $( $stateField ).val();	
 	    					}
-	    					$.getJSON("localeAutocomplete", {"term":term, "localeTypeId":localeTypeId, "stateName":stateName}, response);
+	    					$.getJSON("localeAutocomplete", {"term":term, "localeTypeId":localeTypeId, "stateId":stateName}, response);
 	    				},
 	                    minLength: 2,
 	                    //select: function( event, ui ) {

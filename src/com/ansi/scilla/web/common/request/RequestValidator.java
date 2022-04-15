@@ -162,20 +162,19 @@ public class RequestValidator {
 	
 	
 	/**
-	 * Ensure that a jurisdiction exists (ie. a non-state level locale record exists). If a state is entered,
-	 * make sure the jurisdiction is in the right state.
+	 * Ensure that a jurisdiction exists (ie. a non-state level locale record exists). 
 	 * @param conn
 	 * @param webMessages
 	 * @param fieldName
 	 * @param value
-	 * @param state
 	 * @param maxLength
 	 * @param required
 	 * @param label
 	 * @throws SQLException
 	 */
-	public static void validateCity(Connection conn, WebMessages webMessages, String fieldName, String value, Integer state, int maxLength, boolean required,
+	public static void validateCity(Connection conn, WebMessages webMessages, String fieldName, String value, int maxLength, boolean required,
 			String label) throws SQLException {
+		Logger logger = LogManager.getLogger(RequestValidator.class);
 		if ( StringUtils.isBlank(value) ) {
 			if ( required ) {
 				String message = StringUtils.isBlank(label) ? "Required Value" : label + " is required";
@@ -191,15 +190,10 @@ public class RequestValidator {
 			}
 			PreparedStatement ps = null;
 			String message = StringUtils.isBlank(label) ? "Invalid Value" : label + " is invalid";
-			if ( state == null ) {
-				ps = conn.prepareStatement("select count(*) as rec_count from locale where lower(name)=? and locale_type_id in ("+StringUtils.join(typeList, ",")+")");
-				ps.setString(1, value.toLowerCase());
-			} else {
-				message = message + " for " + state;
-				ps = conn.prepareStatement("select count(*) as rec_count from locale where lower(name)=? and locale_type_id in ("+StringUtils.join(typeList, ",")+") and lower(state_name)=?");
-				ps.setString(1, value.toLowerCase());
-				ps.setInt(2, state);
-			}
+			String sql = "select count(*) as rec_count from locale where lower(name)=? and locale_type_id in ("+StringUtils.join(typeList, ",")+")";
+			ps = conn.prepareStatement(sql);
+			ps.setString(1, value.toLowerCase());
+			logger.log(Level.DEBUG, sql);
 			ResultSet rs = ps.executeQuery();
 			if ( rs.next() ) {
 				if (rs.getInt("rec_count") == 0) {
@@ -212,6 +206,67 @@ public class RequestValidator {
 		}
 		
 	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * Ensure that a jurisdiction exists (ie. a non-state level locale record exists) and is in the right state.
+	 * @param conn
+	 * @param webMessages
+	 * @param fieldName
+	 * @param value
+	 * @param state
+	 * @param maxLength
+	 * @param required
+	 * @param label
+	 * @throws SQLException
+	 */
+	public static void validateCityState(Connection conn, WebMessages webMessages, String fieldName, String value, Integer state, int maxLength, boolean required,
+			String label) throws SQLException {
+		Logger logger = LogManager.getLogger(RequestValidator.class);
+		if ( StringUtils.isBlank(value) ) {
+			if ( required ) {
+				String message = StringUtils.isBlank(label) ? "Required Value" : label + " is required";
+				webMessages.addMessage(fieldName, message);
+			}
+		} else {
+			
+			List<String> typeList = new ArrayList<String>();
+			for ( LocaleType localeType : LocaleType.values() ) {
+				if (localeType != LocaleType.STATE) {
+					typeList.add("'" + localeType.name() + "'");
+				}
+			}
+			PreparedStatement ps = null;
+			String message = StringUtils.isBlank(label) ? "Invalid Value" : label + " is invalid";
+			String sql = "select city.locale_id as city_id, city.name as city_name, city.state_name as city_state_name,\n"
+					+ "	state.locale_id as state_id, state.name as state_name, state.state_name as state_state_name\n"
+					+ "from locale as city\n"
+					+ "inner join (select locale_id, name, state_name from locale) as state on state.locale_id=?\n"
+					+ "where lower(city.name)=? and city.locale_type_id in ("+StringUtils.join(typeList, ",")+")";
+			ps = conn.prepareStatement(sql);
+			ps.setInt(1, state);
+			ps.setString(2, value.toLowerCase());
+			logger.log(Level.DEBUG, sql);
+			ResultSet rs = ps.executeQuery();
+			if ( rs.next() ) {
+				if ( ! rs.getString("city_state_name").equals(rs.getString("state_state_name"))) {
+					webMessages.addMessage(fieldName, message);
+				}
+			} else {
+				webMessages.addMessage(fieldName, message);
+			}
+			rs.close();
+		}
+		
+	}
+	
+	
+	
+	
 
 	
 	

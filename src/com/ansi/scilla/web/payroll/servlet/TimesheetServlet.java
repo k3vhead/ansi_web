@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.db.Locale;
 import com.ansi.scilla.common.db.PayrollWorksheet;
@@ -92,6 +93,7 @@ public class TimesheetServlet extends AbstractServlet {
 				conn.setAutoCommit(false);
 				TimesheetRequest timesheetRequest = new TimesheetRequest();
 				String jsonString = super.makeJsonString(request);
+				logger.log(Level.DEBUG, jsonString);
 				AppUtils.json2object(jsonString, timesheetRequest);
 				
 				

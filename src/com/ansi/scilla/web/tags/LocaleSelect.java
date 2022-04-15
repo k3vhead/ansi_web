@@ -2,6 +2,8 @@ package com.ansi.scilla.web.tags;
 
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.servlet.jsp.JspException;
@@ -43,6 +45,11 @@ public class LocaleSelect extends OptionTag {
 				localeList = Locale.cast(locale.selectSome(conn));
 			}
 			
+			Collections.sort(localeList, new Comparator<Locale>() {
+				public int compare(Locale o1, Locale o2) {
+					return o1.getName().compareTo(o2.getName());
+				}
+			});
 			for ( Locale l : localeList ) {
 				optionList.add(new Option(String.valueOf(l.getLocaleId()), l.getName()));
 			}

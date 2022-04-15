@@ -349,7 +349,11 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 		validateNumbers(webMessages);
 		RequestValidator.validateId(conn, webMessages, Division.TABLE, Division.DIVISION_ID, DIVISION_ID, this.divisionId, true);
 		RequestValidator.validateStateLocale(conn, webMessages, STATE, this.state, true, null);
-		RequestValidator.validateCity(conn, webMessages, CITY, this.city, this.state, 255, false, null);
+		if ( this.state == null ) {
+			RequestValidator.validateCity(conn, webMessages, CITY, this.city, 255, false, null);
+		} else {
+			RequestValidator.validateCityState(conn, webMessages, CITY, this.city, this.state, 255, false, null);
+		}
 		RequestValidator.validateDate(webMessages, WEEK_ENDING, this.weekEnding, true, null, null);
 		RequestValidator.validateEmployeeCode(conn, webMessages, EMPLOYEE_CODE, this.employeeCode, true, null);
 		if ( webMessages.isEmpty() ) {
@@ -601,7 +605,7 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 	private void validateNumbers(WebMessages webMessages) throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
 		for (PayrollField payrollField : PayrollField.values() ) {
 			Field field = this.getClass().getDeclaredField(payrollField.fieldName());
-			logger.log(Level.DEBUG, payrollField);
+//			logger.log(Level.DEBUG, payrollField);
 			Double value = (Double)field.get(this);
 			RequestValidator.validateDouble(webMessages, payrollField.fieldName(), value, 0.0D, (Double)null, false, null);			
 		}
