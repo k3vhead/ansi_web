@@ -486,6 +486,39 @@ public class RequestValidator {
 	}
 	
 	
+	public static void validateDivisionField(Connection conn, WebMessages webMessages, String divisionField, boolean required) throws SQLException {
+		
+		if ( divisionField == null ) {
+			if ( required == true ) {
+				webMessages.addMessage(divisionField, "Required Field.  No Divison ID was specified. ");
+			}		
+		} else if (divisionField.trim().length() < 2) {
+			webMessages.addMessage(divisionField, "Invalid DivisionField.  Division ID must be at least 2 characters.");
+		} else if (divisionField.trim().length() > 5) {
+			webMessages.addMessage(divisionField, "Invalid DivisionField.  Division ID must be less than 6 characters.");
+		} else if (!(Integer.parseInt(divisionField.trim().substring(0, 1)) > 0) && (Integer.parseInt(divisionField.trim().substring(0, 1)) < 100)){
+			webMessages.addMessage(divisionField, "Invalid DivisionField.  The first 2 digits of DivsionFIeld must be numeric.");
+		} else {
+		    Integer division_nbr;
+		    division_nbr = Integer.parseInt(divisionField.trim().substring(0, 1));
+		    
+			PreparedStatement ps = conn.prepareStatement("select count(*) as record_count from division where division_nbr=?");
+			ps.setInt(1,  division_nbr);
+			ResultSet rs = ps.executeQuery();
+			if ( rs.next() ) {
+				if ( rs.getInt("record_count") == 0 ) {
+					webMessages.addMessage(divisionField, "Invalid division number.  Division has not been defined in db.");
+				}
+			} else {
+				webMessages.addMessage(divisionField, "Error checking authorization");
+			}
+			rs.close();
+			
+		}
+		
+	}
+	
+	
 	
 	
 	public static void validateDivisionUser(Connection conn, WebMessages webMessages, Integer divisionId, String divisionField, Integer userId, String userField, boolean required) throws SQLException {
