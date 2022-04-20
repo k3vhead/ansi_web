@@ -12,38 +12,22 @@ import com.ansi.scilla.common.db.Locale;
 import com.ansi.scilla.common.utils.LocaleType;
 import com.ansi.scilla.web.common.utils.AppUtils;
 
-public class LocaleSelect extends OptionTag {
+public class LocaleStateSelect extends OptionTag {
 
 	private static final long serialVersionUID = 1L;	
 	
-	private String type;	
-	
-	public String getType() {
-		return type;
-	}
-	public void setType(String type) {
-		this.type = type;
-	}
-	
-	
-
 	
 	@Override
 	protected List<Option> makeOptionList() throws Exception {
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
-			LocaleType localeType = LocaleType.valueOf(this.type);
 			List<Option> optionList = new ArrayList<Option>();
 			
 			Locale locale = new Locale();
 			List<Locale> localeList = new ArrayList<Locale>();
-			if ( localeType == null ) {
-				localeList = Locale.cast(locale.selectAll(conn));
-			} else {
-				locale.setLocaleTypeId(localeType.name());
-				localeList = Locale.cast(locale.selectSome(conn));
-			}
+			locale.setLocaleTypeId(LocaleType.STATE.name());
+			localeList = Locale.cast(locale.selectSome(conn));
 			
 			Collections.sort(localeList, new Comparator<Locale>() {
 				public int compare(Locale o1, Locale o2) {
@@ -51,7 +35,7 @@ public class LocaleSelect extends OptionTag {
 				}
 			});
 			for ( Locale l : localeList ) {
-				optionList.add(new Option(String.valueOf(l.getLocaleId()), l.getName()));
+				optionList.add(new Option(String.valueOf(l.getStateName()), l.getName()));
 			}
 			
 			return optionList;

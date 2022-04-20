@@ -21,6 +21,7 @@ public class TimesheetLookupQuery extends LookupQuery {
 			+ "	concat(division.division_nbr, '-', division.division_code) as div,\n"
 			+ "	payroll_worksheet.week_ending,\n"
 			+ "	locale.state_name as state,\n"
+			+ " locale_state.locale_id as state_id,\n"
 			+ "	case\n"
 			+ "	    when locale.locale_type_id='STATE' then null\n"
 			+ "	    else locale.name \n"
@@ -50,7 +51,8 @@ public class TimesheetLookupQuery extends LookupQuery {
 			"from payroll_worksheet \n" + 
 			"inner join division on division.division_id = payroll_worksheet.division_id\n" + 
 			"-- inner join payroll_employee on payroll_employee.employee_code = payroll_worksheet.employee_code \n" +
-			"left outer join locale on locale.locale_id=payroll_worksheet.locale_id\n";
+			"left outer join locale on locale.locale_id=payroll_worksheet.locale_id\n" +
+			"left outer join locale as locale_state on locale_state.state_name=locale.state_name and locale_state.locale_type_id='STATE'";
 	private static final String sqlWhereClause = "";
 			
 	

@@ -504,7 +504,11 @@
        			            { title: "Direct Labor",  width:"10%", searchable:false, "defaultContent": "", data: function ( row, type, set ) { return row.direct_labor == null ? "" : row.direct_labor.toFixed(2); } },
        			            { title: "Productivity",  visible:false, width:"10%", searchable:false, "defaultContent": "", data: function ( row, type, set ) { return row.productivity == null ? "" : row.productivity.toFixed(2); } },
        			            { title: "Action", searchable:false, "orderable": false, defaultContent:"", data: function(row, type, set) {
-       			            	var $parms = 'data-div="'+row.division_id+'" data-date="'+row.week_ending+'" data-state="'+row.state+'" data-employee="'+row.employee_code+'" data-city="'+row.city+'"';
+       			            	var $city = row.city;
+       			            	if ( $city == null ) {
+       			            		$city = '';
+       			            	}
+       			            	var $parms = 'data-div="'+row.division_id+'" data-date="'+row.week_ending+'" data-state="'+row.state+'" data-employee="'+row.employee_code+'" data-city="'+$city+'"';
        			            	var $deleteLink = '<span class="action-link delete-action" ' + $parms + '>' + $delete + '</span>';
        			            	var $editLink = '<span class="action-link edit-action"  ' + $parms + '>' + $edit + '</span>';
        			            	return '<ansi:hasPermission permissionRequired="PAYROLL_WRITE">' + $editLink + $deleteLink + '</ansi:hasPermission>';
@@ -693,7 +697,7 @@
 					<td>
 						<select name="state" class="update-field">
 							<option value=""></option>
-							<ansi:localeSelect type="STATE" format="select" />
+							<ansi:localeStateSelect format="select" />
 						</select>
 					</td>
 					<td><span class="stateErr err"></span></td>
