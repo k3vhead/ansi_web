@@ -25,6 +25,7 @@ import org.apache.logging.log4j.Logger;
 import com.ansi.scilla.common.callNote.CallNoteReference;
 import com.ansi.scilla.common.claims.WorkHoursType;
 import com.ansi.scilla.common.db.CallLog;
+import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.Document;
 import com.ansi.scilla.common.db.EmployeeExpense;
 import com.ansi.scilla.common.db.JobTag;
@@ -488,38 +489,62 @@ public class RequestValidator {
 	}
 	
 	
-	public static void validateDivisionField(Connection conn, WebMessages webMessages, String divisionField, boolean required) throws SQLException {
+	public static void validateDivisionNumber(Connection conn, WebMessages webMessages, String fieldName, String value, boolean required) throws SQLException, Exception {
 		
-		if ( divisionField == null ) {
+		if ( value == null ) {
 			if ( required == true ) {
-				webMessages.addMessage(divisionField, "Required Field.  No Divison ID was specified. ");
-			}		
-		} else if (divisionField.trim().length() < 2) {
-			webMessages.addMessage(divisionField, "Invalid DivisionField.  Division ID must be at least 2 characters.");
-		} else if (divisionField.trim().length() > 5) {
-			webMessages.addMessage(divisionField, "Invalid DivisionField.  Division ID must be less than 6 characters.");
-		} else if (!(Integer.parseInt(divisionField.trim().substring(0, 1)) > 0) && (Integer.parseInt(divisionField.trim().substring(0, 1)) < 100)){
-			webMessages.addMessage(divisionField, "Invalid DivisionField.  The first 2 digits of DivsionFIeld must be numeric.");
+				webMessages.addMessage(value, "Required Field.  No Divison ID was specified. ");
+			}	
+		} else {
+			if ( StringUtils.isNumeric(value)) {
+				validateDivisionNumber(conn, webMessages,fieldName, Integer.valueOf(value), required);
+			} else {
+				webMessages.addMessage(fieldName, "Invalid Format");
+			}
+		}
+			/*
+		} else if (value.trim().length() < 2) {
+			webMessages.addMessage(value, "Invalid DivisionField.  Division ID must be at least 2 characters.");
+		} else if (value.trim().length() > 5) {
+			webMessages.addMessage(value, "Invalid DivisionField.  Division ID must be less than 6 characters.");
+		} else if (!(Integer.parseInt(value.trim().substring(0, 1)) > 0) && (Integer.parseInt(value.trim().substring(0, 1)) < 100)){
+			webMessages.addMessage(value, "Invalid DivisionField.  The first 2 digits of DivsionFIeld must be numeric.");
 		} else {
 		    Integer division_nbr;
-		    division_nbr = Integer.parseInt(divisionField.trim().substring(0, 1));
+		    division_nbr = Integer.parseInt(value.trim().substring(0, 1));
 		    
 			PreparedStatement ps = conn.prepareStatement("select count(*) as record_count from division where division_nbr=?");
 			ps.setInt(1,  division_nbr);
 			ResultSet rs = ps.executeQuery();
 			if ( rs.next() ) {
 				if ( rs.getInt("record_count") == 0 ) {
-					webMessages.addMessage(divisionField, "Invalid division number.  Division has not been defined in db.");
+					webMessages.addMessage(value, "Invalid division number.  Division has not been defined in db.");
 				}
 			} else {
-				webMessages.addMessage(divisionField, "Error checking authorization");
+				webMessages.addMessage(value, "Error checking authorization");
 			}
 			rs.close();
 			
 		}
-		
+		*/
 	}
 	
+	
+	public static void validateDivisionNumber(Connection conn, WebMessages webMessages, String fieldName, Integer value, boolean required) throws SQLException, Exception {
+		if ( value == null ) {
+			if ( required == true ) {
+				webMessages.addMessage(fieldName, "Required Value.");
+			}				
+		} else {
+			Division division = new Division();
+			division.setDivisionNbr(value);
+			try {
+				division.selectOne(conn);
+			} catch ( RecordNotFoundException e ) {
+				webMessages.addMessage(fieldName, "Invalid value");
+			}
+		}
+	}
 	
 	
 	
