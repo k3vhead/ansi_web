@@ -50,7 +50,7 @@ public class TimesheetResponse extends MessageResponse {
 		this();
 		this.divisionId = divisionId;
 		this.weekEnding = weekEnding;
-		this.state = locale.getLocaleTypeId().equals(LocaleType.STATE.name()) ? locale.getName() : locale.getName();
+		this.state = locale.getStateName();
 		this.employeeCode = employeeCode;
 		this.city = locale.getLocaleTypeId().equals(LocaleType.STATE.name()) ? null : locale.getName();;
 		

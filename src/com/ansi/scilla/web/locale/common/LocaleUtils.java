@@ -42,17 +42,17 @@ public class LocaleUtils {
 	 * @param city City name, or null if looking for a state record (which is pretty redundant, since we already have the locale id)
 	 * @return Locale for state, if city is null; Locale for non-state (ie City or Jurisdiction), if city is entered 
 	 */
-	public static Locale MakeLocale(Connection conn, Integer state, String city) throws RecordNotFoundException, Exception {
+	public static Locale makeLocale(Connection conn, Integer stateId, String city) throws RecordNotFoundException, Exception {
 		Locale stateLocale = new Locale();
 		Locale cityLocale = new Locale();
 
-		stateLocale.setLocaleId(state);
+		stateLocale.setLocaleId(stateId);
 		stateLocale.setLocaleTypeId(LocaleType.STATE.name());
 		stateLocale.selectOne(conn);
 		
 		if ( ! StringUtils.isBlank(city) ) {
 			cityLocale.setName(city);
-			cityLocale.setLocaleParentId(stateLocale.getLocaleId());
+			cityLocale.setStateName(stateLocale.getAbbreviation());
 			cityLocale.selectOne(conn);
 		}
 		

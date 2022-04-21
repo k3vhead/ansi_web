@@ -77,7 +77,7 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 	// these fields are used in the get to identify a unique record
 	private Integer divisionId;
 	private Calendar weekEnding;
-	private Integer state;  // locale id from the state dropdown
+	private String state;  // abbreviation
 	private Integer employeeCode;
 	private String city;
 	
@@ -130,7 +130,7 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 				throw new InvalidFormatException(DIVISION_ID);
 			}
 		}
-		this.state = Integer.valueOf(request.getParameter(STATE));
+		this.state = request.getParameter(STATE);
 		String weekEnding = request.getParameter(WEEK_ENDING);
 		if ( ! StringUtils.isBlank(weekEnding)) {			
 			try {
@@ -177,11 +177,11 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 		this.weekEnding = weekEnding;
 	}
 
-	public Integer getState() {
+	public String getState() {
 		return state;
 	}
 
-	public void setState(Integer state) {
+	public void setState(String state) {
 		this.state = state;
 	}
 

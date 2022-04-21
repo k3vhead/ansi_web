@@ -48,7 +48,9 @@ public class TimesheetServlet extends AbstractServlet {
 	
 				conn = AppUtils.getDBCPConn();
 				TimesheetRequest timesheetRequest = new TimesheetRequest(request);
-				Locale locale = LocaleUtils.MakeLocale(conn, timesheetRequest.getState(), timesheetRequest.getCity());
+//				logger.log(Level.DEBUG, timesheetRequest);
+				
+				Locale locale = LocaleUtils.makeLocale(conn, timesheetRequest.getState(), timesheetRequest.getCity());
 				data = new TimesheetResponse(conn, 
 						timesheetRequest.getDivisionId(), 
 						timesheetRequest.getWeekEnding(), 
@@ -244,7 +246,7 @@ public class TimesheetServlet extends AbstractServlet {
 //		timesheet.setState(timesheetRequest.getState());
 		timesheet.setEmployeeCode(timesheetRequest.getEmployeeCode());
 //		timesheet.setCity(timesheetRequest.getCity());
-		timesheet.setLocaleId(LocaleUtils.MakeLocale(conn, timesheetRequest.getState(), timesheetRequest.getCity()).getLocaleId());		
+		timesheet.setLocaleId(LocaleUtils.makeLocale(conn, timesheetRequest.getState(), timesheetRequest.getCity()).getLocaleId());		
 		
 	}
 

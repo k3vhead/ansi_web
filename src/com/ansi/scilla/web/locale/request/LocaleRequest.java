@@ -78,7 +78,7 @@ public class LocaleRequest extends AbstractRequest {
 		RequestValidator.validateString(webMessages, NAME, this.name, true);
 		RequestValidator.validateState(webMessages, STATE_NAME, this.stateName, true);
 		RequestValidator.validateLocaleType(webMessages, LOCALE_TYPE_ID, this.localeTypeId, true);
-		RequestValidator.validateString(webMessages, ABBREVIATION, this.abbreviation, false);
+		RequestValidator.validateString(webMessages, ABBREVIATION, this.abbreviation, 3, false, null);
 		RequestValidator.validateId(conn, webMessages, "locale", Locale.LOCALE_ID, PARENT_ID, this.parentId, false);
 		RequestValidator.validateId(conn, webMessages, PayrollTaxProfile.TABLE, PayrollTaxProfile.PROFILE_ID, PROFILE_ID, this.profileId, false);
 		if ( isDuplicate(conn)) {
@@ -95,7 +95,7 @@ public class LocaleRequest extends AbstractRequest {
 		RequestValidator.validateString(webMessages, NAME, this.name, true);
 		RequestValidator.validateState(webMessages, STATE_NAME, this.stateName, true);
 		RequestValidator.validateLocaleType(webMessages, LOCALE_TYPE_ID, this.localeTypeId, true);
-		RequestValidator.validateString(webMessages, ABBREVIATION, this.abbreviation, false);
+		RequestValidator.validateString(webMessages, ABBREVIATION, this.abbreviation, 3, false, null);
 		RequestValidator.validateId(conn, webMessages, "locale", Locale.LOCALE_ID, PARENT_ID, this.parentId, false);
 		
 		return webMessages;
