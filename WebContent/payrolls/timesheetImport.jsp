@@ -60,6 +60,7 @@
 			width:60px;
 			/* border: 2px solid yellow; */ 
 		}		
+
 		
 		/* Operations Manager Name */
 		#data-header table td.col2{
@@ -69,8 +70,13 @@
 		
 		/* Week ending */
 		#data-header table td.col3{
-			width: 100px;
+			width: 75x;
 		}		
+
+		input[name="payrollDate"] {
+			width: 75px;
+		}		
+
 
 		/* State */
 		#data-header table td.col4{
@@ -100,6 +106,11 @@
 			/* border: 2px solid blue;*/  
 		}		
 	
+		#file-header-data table td.col1{ 	
+			width:60px;
+			/* border: 2px solid yellow; */ 
+		}		
+
 	
 		td #cancel-save-buttons{
 			text-align: right;
@@ -128,6 +139,14 @@
 
 		input[name="employeeName"] {
 			width: 150px;
+		}		
+
+		input[name="divisionId"] {
+			width: 50px;
+		}		
+
+		input[name="state"] {
+			width: 50px;
 		}		
 
 		td.money {
@@ -433,12 +452,12 @@
            				$("#prompt-div .timesheet-file").val('');
 
            				$("#data-header").hide();
-	           			$("#data-header .divisionId").html("");
-	           			$("#data-header .operationsManagerName").html("");           			
-	           			$("#data-header .payrollDate").html("");
-	           			$("#data-header .state").html("");
-	           			$("#data-header .city").html("");
-	           			$("#data-header .timesheetFile").html("");
+	           			//$("#data-header .divisionId").html("");
+	           			//$("#data-header .operationsManagerName").html("");           			
+	           			//$("#data-header .payrollDate").html("");
+	           			//$("#data-header .state").html("");
+	           			//$("#data-header .city").html("");
+	           			//$("#data-header .timesheetFile").html("");
 
 	           			$("#open-button").on("click");
            				$("#data-detail").hide();
@@ -465,13 +484,29 @@
 	           			console.log($data);
 	           			console.log($data.data.division);
            				$(".thinking").hide();
-	           			$("#data-header .divisionId").html($data.data.division);
+
+           				//$('select[name="divisionId"]').val($data.data.divisionId);
+	           			$('select[name="divisionId"]').val("12-IL02").change();
+	           			$('input[name="operationsManagerName"]').val($data.data.operationsManagerName);           			
+	           			$('input[name="payrollDate"]').val($data.data.weekEnding);
+	           			$('input[name="payrollDate"]').datepicker({
+			                prevText:'&lt;&lt;',
+			                nextText: '&gt;&gt;',
+			                showButtonPanel:true
+			            });	           			
+	           			$('input[name="state"]').val($data.data.state);
+	           			$('input[name="city"]').val($data.data.city);
+	           			$("#data-header .timesheetFile").html($data.data.fileName);
+
+	           			/*
+	           			$("#data-header input .divisionId").html($data.data.division);
 	           			$("#data-header .operationsManagerName").html($data.data.operationsManagerName);           			
 	           			$("#data-header .payrollDate").html($data.data.weekEnding);
 	           			$("#data-header .state").html($data.data.state);
 	           			$("#data-header .city").html($data.data.city);
 	           			$("#data-header .timesheetFile").html($data.data.fileName);
-	
+	           			*/
+	           			
 	           			// create and populate dicttionary object for use in modal
 	           			var dictionary = $data.data.employeeRecordList;
 	   
@@ -839,8 +874,39 @@
     				<td class="col5" id="city-label" >					<span class="form-label">City/Jurisdiction	</span> 	</td>
     				<td class="col6" id="payroll-file-label" >			<span class="form-label">Payroll File		</span> 	</td>
     				<td class="col7">									<span class="form-label">					</span>		</td>
-    			</tr>    			
-    			<tr>
+    			</tr>
+			    <tr>
+    				<td class="col1">
+    					<span class="divisionId">
+    						<select name="divisionId">
+								<option value=""></option>
+								<ansi:divisionSelect format="select"/>
+							</select>
+    					</span>
+    				</td>
+						<!--								
+    					<input type="text" class="division" 				name="divisionId"				tabindex="1" />
+    					-->								
+    				<td class="col2"><span class="operationsManagerName">	<input type="text" class="operationsManagerName" 	name="operationsManagerName"	tabindex="2" />					</span></td>
+    				<td class="col3"><span class="payrollDate">				<input type="text" class="payrollDate" 				name="payrollDate"				tabindex="3" />							</span></td>
+					<!-- 
+   					<td class="col4"><span class="ansi:states">				<input type="text" class="state" 					name="state"					tabindex="4" />									</span></td>
+					 -->
+   					<td class="col4">
+   						<span class="state">
+		   					<select id="state">
+		   						<webthing:states /> 
+							</select>
+   					     </span>
+   					</td>
+    				<td class="col5"><span class="city">					<input type="text" class="city" 					name="city"						tabindex="5" />							</span></td>
+    				<td class="col6"><span class="timesheetFile"></span></td>
+    				<td class="col7" id="cancel-save-buttons">
+    					<input type="button" value="Cancel" name="cancelButton" class="action-button" />
+    					<input type="button" value="Save" id="open-button" />
+    				</td>
+    			</tr>
+<!--     			<tr>
     				<td class="col1"><span class="divisionId">				</span></td>
     				<td class="col2"><span class="operationsManagerName">	</span></td>
     				<td class="col3"><span class="payrollDate">				</span></td>
@@ -852,7 +918,7 @@
     					<input type="button" value="Save" id="open-button" />
     				</td>
     			</tr>
-    		</table>
+ -->    		</table>
 		</div>
 
 		<div id="data-detail">

@@ -63,7 +63,7 @@ public class TimesheetImportResponse extends MessageResponse {
 	private TimesheetImportResponse(Connection conn, PayrollWorksheetParser parser ) {
 		this();
 		this.city = parser.getCity();
-		this.division = parser.getDivision();
+		this.setDivision(division);  division = parser.getDivision();
 		this.operationsManagerName = parser.getOperationsManagerName();
 		this.state = parser.getState();
 		this.timesheetRecords = parser.getTimesheetRecords();
@@ -88,8 +88,8 @@ public class TimesheetImportResponse extends MessageResponse {
 	
 	
 	public WebMessages validate(Connection conn) throws Exception {
-		RequestValidator.validateDivisionField(conn, webMessages, this.division, true);
-		
+		RequestValidator.validateDivisionNumber(conn, webMessages, "city", Integer.valueOf(division) , true);
+				
 		if ( webMessages != null ) {
 			logger.log(Level.DEBUG, "timesheetImportReponse.Validate(): " + webMessages.toString());
 			logger.log(Level.DEBUG, " : RequestValidator.validateDivisionField returned an error ");
@@ -110,6 +110,7 @@ public class TimesheetImportResponse extends MessageResponse {
 	public void setDivision(String division) {
 		this.division = division;
 	}
+	
 	public String getOperationsManagerName() {
 		return operationsManagerName;
 	}
