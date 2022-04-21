@@ -18,6 +18,8 @@ import com.ansi.scilla.common.payroll.parser.NotATimesheetException;
 import com.ansi.scilla.common.payroll.parser.PayrollWorksheetEmployee;
 import com.ansi.scilla.common.payroll.parser.PayrollWorksheetParser;
 import com.ansi.scilla.web.common.response.MessageResponse;
+import com.ansi.scilla.web.common.response.WebMessages;
+import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.payroll.request.TimesheetImportRequest;
 
 public class TimesheetImportResponse extends MessageResponse {
@@ -33,6 +35,8 @@ public class TimesheetImportResponse extends MessageResponse {
 	private List<PayrollWorksheetEmployee> timesheetRecords = new ArrayList<PayrollWorksheetEmployee>();
 	private String weekEnding;
 	private String fileName;
+	private WebMessages webMessages = new WebMessages();
+	
 	
 		
 	public TimesheetImportResponse() {	
@@ -82,6 +86,18 @@ public class TimesheetImportResponse extends MessageResponse {
 		this.timesheetRecords.add(record);
 	}
 	
+	
+	public WebMessages validate(Connection conn) throws Exception {
+		RequestValidator.validateDivisionField(conn, webMessages, this.division, true);
+		
+		if ( webMessages != null ) {
+			logger.log(Level.DEBUG, "timesheetImportReponse.Validate(): " + webMessages.toString());
+			logger.log(Level.DEBUG, " : RequestValidator.validateDivisionField returned an error ");
+		} 		
+		logger.log(Level.DEBUG, "From TimesheetImportResponse.Validate() : " + webMessages);
+		return webMessages;		
+	}
+	
 	public String getCity() {
 		return this.city;
 	}
@@ -124,4 +140,15 @@ public class TimesheetImportResponse extends MessageResponse {
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
 	}
+	
+	public WebMessages getWebMessages() {
+		return webMessages;
+	}
+
+	public void setWebMessages(WebMessages webMessages) {
+		this.webMessages = webMessages;
+	}
+
+	
+	
 }

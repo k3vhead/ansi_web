@@ -14,7 +14,7 @@ import com.ansi.scilla.common.payroll.parser.NotATimesheetException;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
-import com.ansi.scilla.web.common.struts.SessionData;
+//import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
@@ -36,7 +36,8 @@ public class TimesheetImportServlet extends AbstractServlet {
 		try {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
-			SessionData sessionData = AppUtils.validateSession(request, Permission.PAYROLL_WRITE);
+			//SessionData sessionData = AppUtils.validateSession(request, Permission.PAYROLL_WRITE);
+			AppUtils.validateSession(request, Permission.PAYROLL_WRITE);
 			TimesheetImportRequest uploadRequest = new TimesheetImportRequest(request);
 			ResponseCode responseCode = null;
 			WebMessages webMessages = uploadRequest.validate(conn);
@@ -47,7 +48,18 @@ public class TimesheetImportServlet extends AbstractServlet {
 			if ( webMessages.isEmpty() ) {
 				try {
 					data = new TimesheetImportResponse(conn, uploadRequest);
-					responseCode = ResponseCode.SUCCESS;
+					// document isn't parsed until the response item is created 
+					// so validation must occur there. 
+					logger.log(Level.DEBUG, "TimesheetImportServlet: doPost - no error creating request");
+					webMessages = data.validate(conn);
+					if ( webMessages.isEmpty() ) {
+						logger.log(Level.DEBUG, "TimesheetImportServlet: doPost - validation returned no errors");
+						responseCode = ResponseCode.SUCCESS;
+					} else {
+						logger.log(Level.DEBUG, "TimesheetImportServlet: doPost - validation returned errors");
+						logger.log(Level.DEBUG, webMessages.toJson());
+						responseCode = ResponseCode.EDIT_FAILURE;
+					}					
 				} catch ( NotATimesheetException e) {
 					responseCode = ResponseCode.EDIT_FAILURE;
 					//String fName = new String(uploadRequest.getTimesheetFile().toString()); 
@@ -68,7 +80,6 @@ public class TimesheetImportServlet extends AbstractServlet {
 		}		
 		
 		
-
 		Enumeration<String> parmNames =  request.getParameterNames();
 		while ( parmNames.hasMoreElements() ) {
 			String parmName = parmNames.nextElement();
