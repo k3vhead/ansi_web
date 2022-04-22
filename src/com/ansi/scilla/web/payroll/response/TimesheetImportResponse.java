@@ -4,25 +4,47 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 //import java.util.Arrays;
 //import java.util.Calendar;
 import java.util.List;
 
 import org.apache.commons.fileupload.FileItem;
-import org.apache.logging.log4j.Level;
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.ansi.scilla.common.ApplicationObject;
+import com.ansi.scilla.common.db.Division;
+import com.ansi.scilla.common.db.Locale;
+import com.ansi.scilla.common.exceptions.InvalidValueException;
+import com.ansi.scilla.common.payroll.common.PayrollUtils;
 import com.ansi.scilla.common.payroll.parser.NotATimesheetException;
 import com.ansi.scilla.common.payroll.parser.PayrollWorksheetEmployee;
 import com.ansi.scilla.common.payroll.parser.PayrollWorksheetParser;
-import com.ansi.scilla.web.common.response.MessageResponse;
-import com.ansi.scilla.web.common.response.WebMessages;
+import com.ansi.scilla.common.utils.LocaleType;
 import com.ansi.scilla.web.common.request.RequestValidator;
+import com.ansi.scilla.web.common.response.MessageResponse;
+import com.ansi.scilla.web.common.response.ResponseCode;
+import com.ansi.scilla.web.common.response.WebMessages;
+import com.ansi.scilla.web.common.response.WebMessagesStatus;
 import com.ansi.scilla.web.payroll.request.TimesheetImportRequest;
 
 public class TimesheetImportResponse extends MessageResponse {
+	
+	public static final String CITY = "city";
+	public static final String DIVISION = "division";
+	public static final String OPERATIONS_MANAGER_NAME = "operationsManagerName";
+	public static final String STATE = "state";
+	public static final String WEEK_ENDING = "weekEnding";
+	public static final String FILENAME = "fileName";
+	
+	
+	
 	/**
 	 * 
 	 */
@@ -36,6 +58,7 @@ public class TimesheetImportResponse extends MessageResponse {
 	private String weekEnding;
 	private String fileName;
 	private WebMessages webMessages = new WebMessages();
+	private NormalizedValues normal = new NormalizedValues();
 	
 	
 		
@@ -87,15 +110,35 @@ public class TimesheetImportResponse extends MessageResponse {
 	}
 	
 	
-	public WebMessages validate(Connection conn) throws Exception {
-		RequestValidator.validateDivisionNumber(conn, webMessages, "city", Integer.valueOf(division) , true);
-				
-		if ( webMessages != null ) {
-			logger.log(Level.DEBUG, "timesheetImportReponse.Validate(): " + webMessages.toString());
-			logger.log(Level.DEBUG, " : RequestValidator.validateDivisionField returned an error ");
-		} 		
-		logger.log(Level.DEBUG, "From TimesheetImportResponse.Validate() : " + webMessages);
-		return webMessages;		
+	public WebMessagesStatus validate(Connection conn) throws Exception {
+		WebMessages webMessages = new WebMessages();
+		RequestValidator.validateDivisionNumber(conn, webMessages, DIVISION, division, true);
+		if ( ! webMessages.containsKey(DIVISION)) { normalizeDivision(conn); }
+		RequestValidator.validateString(webMessages, OPERATIONS_MANAGER_NAME, this.operationsManagerName, true);
+		RequestValidator.validateDate(webMessages, WEEK_ENDING, this.weekEnding, "MM/dd/yy", true, null, null);
+		if ( ! webMessages.containsKey(WEEK_ENDING)) { normalizeWeekEnding(); }
+		RequestValidator.validateStateLocale(conn, webMessages, STATE, this.state, true, (String)null);
+		
+		// any problems up to here are errors
+		WebMessagesStatus webMessagesStatus = new WebMessagesStatus(webMessages, webMessages.isEmpty() ? ResponseCode.SUCCESS : ResponseCode.EDIT_FAILURE);
+
+		
+		try {
+			Locale locale = PayrollUtils.alias2Locale(conn, this.city, this.state);
+			normalizeLocale(locale);
+			if ( ! this.state.equalsIgnoreCase(this.normal.state) || ! this.city.equalsIgnoreCase(this.normal.city) ) {
+				// the normalization process has changed something
+				webMessagesStatus.addMessage(CITY, "Suggested locale change");
+				if ( webMessagesStatus.getResponseCode().equals(ResponseCode.SUCCESS) ) {
+					webMessagesStatus.setResponseCode(ResponseCode.EDIT_WARNING);
+				}
+			}
+		} catch (InvalidValueException e) {
+			webMessagesStatus.addMessage(CITY, "Invalid City/Jurisdiction");
+			webMessagesStatus.setResponseCode(ResponseCode.EDIT_FAILURE);
+		}
+
+		return webMessagesStatus;		
 	}
 	
 	public String getCity() {
@@ -142,6 +185,14 @@ public class TimesheetImportResponse extends MessageResponse {
 		this.fileName = fileName;
 	}
 	
+	public NormalizedValues getNormal() {
+		return normal;
+	}
+
+	public void setNormal(NormalizedValues normal) {
+		this.normal = normal;
+	}
+
 	public WebMessages getWebMessages() {
 		return webMessages;
 	}
@@ -151,5 +202,64 @@ public class TimesheetImportResponse extends MessageResponse {
 	}
 
 	
+	private void normalizeDivision(Connection conn) throws Exception {
+		try {
+			Division division = new Division();
+			division.setDivisionNbr(Integer.valueOf(this.division));
+			division.selectOne(conn);
+			normal.divisionId = division.getDivisionId();
+		} catch ( InvalidValueException e) {
+			// don't populate the normalized value if we can't translate
+		}
+	}
+	
+	private void normalizeWeekEnding() {
+		try {
+			SimpleDateFormat inbound = new SimpleDateFormat("MM/dd/yy");
+			SimpleDateFormat outbound = new SimpleDateFormat("yyyy-MM-dd");
+			normal.weekEnding = DateUtils.toCalendar(inbound.parse(this.weekEnding));
+			normal.weekEndingDisplay = outbound.format(normal.weekEnding.getTime());
+		} catch ( ParseException e) {
+			// don't populate the normalized value if we can't translate
+		}
+	}
+	
+	private void normalizeLocale(Locale locale) {
+		if ( locale.getLocaleTypeId().equals(LocaleType.STATE.name())) {
+			normal.city = null;
+			normal.state = locale.getStateName();
+		} else {
+			normal.city = locale.getName();
+			normal.state = locale.getStateName();
+		}
+	}
+
+	
+	public class NormalizedValues extends ApplicationObject {
+		private static final long serialVersionUID = 1L;
+		public Integer divisionId;
+		public String city;
+		public String state;
+		public Calendar weekEnding;
+		public String weekEndingDisplay;
+		
+		public Integer getDivisionId() {
+			return divisionId;
+		}
+		public String getCity() {
+			return city;
+		}
+		public String getState() {
+			return state;
+		}
+		public Calendar getWeekEnding() {
+			return weekEnding;
+		}
+		public String getWeekEndingDisplay() {
+			return weekEndingDisplay;
+		}
+		
+		
+	}
 	
 }

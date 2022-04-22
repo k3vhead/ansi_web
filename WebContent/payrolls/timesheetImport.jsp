@@ -28,302 +28,78 @@
     	<script type="text/javascript" src="js/document.js"></script> 
     
         <style type="text/css">
-        
-        
-        #data-detail{
-			/* border: 2px solid red; */ 
-			width:100%;
-        }
-        
-        #data-detail #timesheet{
-			/* border: 2px solid blue; */ 
-			width:100%;
-        }
-        
-        #data-file{
-        	/* margin-bottom : 20px; */
-        	display:none;
-        }
-        
-		#data-header {
-			display:none;
-			width : 1000px;
-			/* border: 2px solid red; */ 
-		}		
-		
-		#data-header table {
-			/* width: 100%; */
-		}
-
-		/* division */
-		#data-header table td.col1{ 	
-			width:60px;
-			/* border: 2px solid yellow; */ 
-		}		
-
-		
-		/* Operations Manager Name */
-		#data-header table td.col2{
-			width:150px;
-			/* border: 2px solid red; */ 
-		}		
-		
-		/* Week ending */
-		#data-header table td.col3{
-			width: 75x;
-		}		
-
-		input[name="payrollDate"] {
-			width: 75px;
-		}		
-
-
-		/* State */
-		#data-header table td.col4{
-			width:50px; */
-			/* text-align: right; */
-			/* border: 2px solid blue;*/  
-		}		
-	
-		/* City/Juristiction  */
-		#data-header table td.col5{
-			width:140px; 
-			/* text-align: right; */
-			/* border: 2px solid blue;*/  
-		}		
-
-		/* Payroll File */
-		#data-header table td.col6{
-			width:200px; 
-			/* text-align: right; */
-			/* border: 2px solid blue; */ 
-		}		
-	
-		/* Buttons   */
-		#data-header table td.col7{
-			width: 150px; */
-			text-align: right;
-			/* border: 2px solid blue;*/  
-		}		
-	
-		#file-header-data table td.col1{ 	
-			width:60px;
-			/* border: 2px solid yellow; */ 
-		}		
-
-	
-		td #cancel-save-buttons{
-			text-align: right;
-		}	
-	
-		#data-header table td #operations-manager-label{
-		 	/* width:200px; */
-		}		
-		
-		#data-header table td #week-ending-label{
-			/* width:200px; */
-		}		
-
-		#employee-modal {
-			display:none;
-		}
-
-		#employee-modal table, th, td {
-			border: 0px solid red; 
-		}
-
-		#employee-modal input.hours {
-			width: 100%;
-			text-align: center; 
-		}
-
-		input[name="employeeName"] {
-			width: 150px;
-		}		
-
-		input[name="divisionId"] {
-			width: 50px;
-		}		
-
-		input[name="state"] {
-			width: 50px;
-		}		
-
-		td.money {
-			width: 50px;
-		}
-		#employee-modal input.money {
-			width: 100%;
-			text-align: right; 
-		}
-
-		td.error {
-			width: 20px;
-			/* border: 10px solid red; */
-		}
-
-		td.hours {
-			width: 50px;
-			/* border: 2px dotted yellow; 	*/
-
-
-		}
-
-		.err {
-			width: 20px;
-		}
-
-		#employee-modal input.hours {
-			/* width: 100%; */
-			text-align: right; 
-		}
-		
-		.col-heading{
-			text-align: left;
-			font-weight: bold;
-		}
-		
-		#employee-data{
-			width: 100%;
-		}
-
-		#employee-data td.row{
-		   width: 50px;
-		}
-
-		#employee-data td.state{
-		   width: 50px;
-		}
-
-		#employee-data input {
-			width: 100%;
-		}
-
-		#time-calcs{
-			width: 50%;
-			margin-top: 20px;
-		}
-
-		#time-calcs td.total{
-			border-top : double 2px;
-		}
-
-		#prod-calcs{
-			width: 100%;
-			margin-top: 20px;
-		}
-
-		
-		#prod-calcs input.money {
-			width: 100%; 
-			/* border: 10px solid green; 	*/
-		}
-		
-		#prod-calcs td.money {
-			width: 50px;
-			/* border: 10px solid green; */
-		}
-
-		#prod-calcs td.percentage {
-			width: 20px;
-			/* border: 10px solid green; */
-		}
-
-		#prod-calcs input.percentage {
-			width: 100%;
-			/* border: 10px solid green; */
-		}
-
-		#filter-container {
-			width:402px;
-			float:right;
-		}			
-		#organization-display {
-			display:none;
-		}
+	        #data-file{
+	        	/* margin-bottom : 20px; */
+	        	display:none;
+	        }
+			#data-header {
+				display:none;
+			}		
+			#employee-modal {
+				display:none;
+			}
+			#employee-modal input.money {
+				text-align: right; 
+			}
+			#employee-modal input.hours {
+				/* width: 100%; */
+				text-align: right; 
+			}
+			#message-row {
+				display:none;
+			}
+			.col-heading{
+				text-align: left;
+				font-weight: bold;
+			}
+			#organization-display {
+				display:none;
+			}
 		#organization-display table {
 			width:100%;
 			border:solid 1px #404040;
 		}
-		#organization-display th {
-			text-align:left;
-		}
+			#organization-display th {
+				text-align:left;
+			}
 		#organization-edit table {
 			width:100%;
 			border:solid 1px #404040;
 		}
-		#organization-edit th {
-			text-align:left;
-		}
-		#prompt-div{
-			width: 600px;
-		}
-		#prompt-div table.prompt{
-			width: 900;
-		}
-		
-		/* file-picker-label */
-		#prompt-div table.prompt td.col1{
-			width: 100;
-		}
-		
-		/* file-picker-input control */
-		#prompt-div table.prompt td.col2{
-			width: 400;
-		}
-		
-		/* open button */
-		#prompt-div table.prompt td.col3{
-			width: 100;
-		}
-		
-		/* file-selection-error */
-		#prompt-div table.prompt td.col4{
-			width: 300;
-		}
-		
-		
-		
-		
-		
-		.action-link {
-			text-decoration:none;
-			cursor:pointer;
-		}
-		.dataTables_wrapper {
-			padding-top:10px;
-		}	
-		.details-control {
-			cursor:pointer;
-		}
-		.form-label {
-			font-weight:bold;
-			white-space: nowrap;
-		}
-
-
-		td .pay {
-			margin: auto;
-		}
-		.org-status-change {
-			display:none;
-			cursor:pointer;
-		}
-		.view-link {
-			color:#404040;
-		}
-		
-		.workingBox {
-			width:20px;
-			display:inline-block;
-		}
-		.working {
-			display:none;
-		}
-				
-		.thinking {
-			display:none;
-		}
+			#organization-edit th {
+				text-align:left;
+			}
+			.action-link {
+				text-decoration:none;
+				cursor:pointer;
+			}
+			.dataTables_wrapper {
+				padding-top:10px;
+			}	
+			.details-control {
+				cursor:pointer;
+			}
+			.form-label {
+				font-weight:bold;
+				white-space: nowrap;
+			}
+			.org-status-change {
+				display:none;
+				cursor:pointer;
+			}
+			.view-link {
+				color:#404040;
+			}
+			.workingBox {
+				width:20px;
+				display:inline-block;
+			}
+			.working {
+				display:none;
+			}
+			.thinking {
+				display:none;
+			}
 				
         </style>
         <script type="text/javascript">    
@@ -433,16 +209,36 @@
 	           		},
 	           		           		           		
 	           		processUploadFailure : function($data) {
+	           			console.log("processUploadFailure");
 	           			$("#prompt-div .err").html("");
 	           			var fName = document.getElementById('timesheet-file').files[0].name;
 	           			$(".thinking").hide();		           				
            				$("#prompt-div").show();
-						$("#prompt-div .timesheetFileErr").html(fName + " is not a Timesheet File").show().fadeOut(10000);
            				
-	           			 var $el = $('#timesheet-file');
-	                     $el.wrap('<form>').closest(
-	                       'form').get(0).reset();
-	                     $el.unwrap();           				           				
+           				var $fileMessages = $data.data.webMessages.timesheetFile;
+           				if ( $fileMessages == null ) {
+           					TIMESHEET_IMPORT.processUploadWarning($data);
+           				} else {
+           					$("#prompt-div .timesheetFileErr").html($fileMessages[0]).show().fadeOut(10000);
+               				
+   	           			 //var $el = $('#timesheet-file');
+   	                     //$el.wrap('<form>').closest('form').get(0).reset();
+   	                     //$el.unwrap();
+           				}
+           				
+						           				           				
+	           		},
+	           		
+	           		processUploadWarning : function($data) {
+	           			console.log("processUploadWarning");
+	           			$("#message-row").show();
+	           			$.each($data.data.webMessages, function($index, $value) {
+	           				var $destination = "#message-row ." + $index + "Err";
+	           				var $message = $value[0];
+	           				console.log($destination + " " + $message);
+	           				$($destination).html($message);
+	           			});
+	           			        				           				
 	           		},
 	           		           
 	           		initializeDisplay: function(){
@@ -485,17 +281,11 @@
 	           			console.log($data.data.division);
            				$(".thinking").hide();
 
-           				//$('select[name="divisionId"]').val($data.data.divisionId);
-	           			$('select[name="divisionId"]').val("12-IL02").change();
+           				$('select[name="divisionId"]').val($data.data.normal.divisionId);
 	           			$('input[name="operationsManagerName"]').val($data.data.operationsManagerName);           			
-	           			$('input[name="payrollDate"]').val($data.data.weekEnding);
-	           			$('input[name="payrollDate"]').datepicker({
-			                prevText:'&lt;&lt;',
-			                nextText: '&gt;&gt;',
-			                showButtonPanel:true
-			            });	           			
-	           			$('input[name="state"]').val($data.data.state);
-	           			$('input[name="city"]').val($data.data.city);
+	           			$('input[name="payrollDate"]').val($data.data.normal.weekEndingDisplay);
+	           			$('select[name="state"]').val($data.data.normal.state);
+	           			$('input[name="city"]').val($data.data.normal.city);
 	           			$("#data-header .timesheetFile").html($data.data.fileName);
 
 	           			/*
@@ -609,6 +399,10 @@
 	           					var $data = JSON.parse(this.response);
 	           					if ( $data.responseHeader.responseCode == "EDIT_FAILURE") {
 	           						TIMESHEET_IMPORT.processUploadFailure($data);
+	           					} else if ( $data.responseHeader.responseCode == "EDIT_WARNING" ) {
+		           						TIMESHEET_IMPORT.processUploadWarning($data);
+		           						TIMESHEET_IMPORT.processUploadSuccess($data); 
+		           						console.log($data.data.Division);  
 	           					} else if ( $data.responseHeader.responseCode == "SUCCESS" ) {
 	           						TIMESHEET_IMPORT.processUploadSuccess($data);
 	           						console.log($data.data.Division);           						
@@ -875,6 +669,15 @@
     				<td class="col6" id="payroll-file-label" >			<span class="form-label">Payroll File		</span> 	</td>
     				<td class="col7">									<span class="form-label">					</span>		</td>
     			</tr>
+    			<tr id="message-row">
+    				<td class="col1"><span class="divisionErr"></span></td>
+    				<td class="col2"><span class="operationsManagerNameErr"></span></td>
+    				<td class="col3"><span class="weekEndingErr"></span></td>
+    				<td class="col4"><span class="stateErr"></span></td>
+    				<td class="col5"><span class="cityErr"></span></td>
+    				<td class="col6">&nbsp;</td>
+    				<td class="col7">&nbsp;</td>
+    			</tr>
 			    <tr>
     				<td class="col1">
     					<span class="divisionId">
@@ -888,16 +691,15 @@
     					<input type="text" class="division" 				name="divisionId"				tabindex="1" />
     					-->								
     				<td class="col2"><span class="operationsManagerName">	<input type="text" class="operationsManagerName" 	name="operationsManagerName"	tabindex="2" />					</span></td>
-    				<td class="col3"><span class="payrollDate">				<input type="text" class="payrollDate" 				name="payrollDate"				tabindex="3" />							</span></td>
+    				<td class="col3"><span class="payrollDate">				<input type="date" class="payrollDate" 				name="payrollDate"				tabindex="3" />							</span></td>
 					<!-- 
    					<td class="col4"><span class="ansi:states">				<input type="text" class="state" 					name="state"					tabindex="4" />									</span></td>
 					 -->
    					<td class="col4">
-   						<span class="state">
-		   					<select id="state">
-		   						<webthing:states /> 
-							</select>
-   					     </span>
+	   					<select id="state" name="state">
+	   						<option value=""></option>
+	   						<webthing:states /> 
+						</select>
    					</td>
     				<td class="col5"><span class="city">					<input type="text" class="city" 					name="city"						tabindex="5" />							</span></td>
     				<td class="col6"><span class="timesheetFile"></span></td>

@@ -1067,21 +1067,6 @@ public class RequestValidator {
 	}
 	
 	
-	public static void validateState(WebMessages webMessages, String fieldName, String value, boolean required) {
-		if (StringUtils.isBlank(value)) {
-			if (required) {
-				webMessages.addMessage(fieldName, "Required Value");
-			}
-		} else {
-			if ( ! STATE_NAMES.contains(value)) {
-				webMessages.addMessage(fieldName, "Invalid State");
-			}
-		}
-	}
-
-	
-	
-
 	/**
 	 * Given a list of ID's, make sure they are all valid job_tag_id's and at least one of them is of type "SERVICE"
 	 * @param conn
@@ -1154,6 +1139,18 @@ public class RequestValidator {
 	}
 
 	
+	public static void validateState(WebMessages webMessages, String fieldName, String value, boolean required) {
+		if (StringUtils.isBlank(value)) {
+			if (required) {
+				webMessages.addMessage(fieldName, "Required Value");
+			}
+		} else {
+			if ( ! STATE_NAMES.contains(value)) {
+				webMessages.addMessage(fieldName, "Invalid State");
+			}
+		}
+	}
+
 	/**
 	 * Validate that a string state abbreviation is a valid locale
 	 * @param conn
