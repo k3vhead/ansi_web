@@ -5,7 +5,9 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.util.Calendar;
 
+import com.ansi.scilla.common.db.Locale;
 import com.ansi.scilla.common.db.PayrollWorksheet;
+import com.ansi.scilla.common.utils.LocaleType;
 import com.ansi.scilla.web.common.response.MessageResponse;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.thewebthing.commons.db2.RecordNotFoundException;
@@ -44,20 +46,21 @@ public class TimesheetResponse extends MessageResponse {
 
 	
 
-	public TimesheetResponse(Connection conn, Integer divisionId, Calendar weekEnding, String state, Integer employeeCode, String city) throws RecordNotFoundException, Exception {
+	public TimesheetResponse(Connection conn, Integer divisionId, Calendar weekEnding, Integer employeeCode, Locale locale) throws RecordNotFoundException, Exception {
 		this();
 		this.divisionId = divisionId;
 		this.weekEnding = weekEnding;
-		this.state = state;
+		this.state = locale.getStateName();
 		this.employeeCode = employeeCode;
-		this.city = city;
+		this.city = locale.getLocaleTypeId().equals(LocaleType.STATE.name()) ? null : locale.getName();;
 		
 		PayrollWorksheet timesheet = new PayrollWorksheet();
 		timesheet.setDivisionId(divisionId);
 		timesheet.setWeekEnding(weekEnding.getTime());
-		timesheet.setState(state);
+//		timesheet.setState(state);
 		timesheet.setEmployeeCode(employeeCode);
-		timesheet.setCity(city);
+//		timesheet.setCity(city);
+		timesheet.setLocaleId(locale.getLocaleId());
 		timesheet.selectOne(conn);
 		
 		this.employeeName = timesheet.getEmployeeName();

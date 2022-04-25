@@ -6,7 +6,7 @@ import java.sql.Connection;
 import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.utils.AppUtils;
-import com.ansi.scilla.report.reportBuilder.AbstractReport;
+import com.ansi.scilla.report.reportBuilder.reportType.AbstractReport;
 import com.ansi.scilla.web.report.common.ReportType;
 import com.ansi.scilla.web.report.request.ReportDefinition;
 

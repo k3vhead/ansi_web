@@ -13,8 +13,9 @@ import org.apache.logging.log4j.Level;
 import com.ansi.scilla.common.payroll.parser.NotATimesheetException;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
+import com.ansi.scilla.web.common.response.WebMessagesStatus;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
-import com.ansi.scilla.web.common.struts.SessionData;
+//import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
@@ -32,12 +33,12 @@ public class TimesheetImportServlet extends AbstractServlet {
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		logger.log(Level.DEBUG, "TimesheetImportServlet: doPost");
-
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
-			SessionData sessionData = AppUtils.validateSession(request, Permission.PAYROLL_WRITE);
+			//SessionData sessionData = AppUtils.validateSession(request, Permission.PAYROLL_WRITE);
+			AppUtils.validateSession(request, Permission.PAYROLL_WRITE);
 			TimesheetImportRequest uploadRequest = new TimesheetImportRequest(request);
 			ResponseCode responseCode = null;
 			WebMessages webMessages = uploadRequest.validate(conn);
@@ -46,8 +47,20 @@ public class TimesheetImportServlet extends AbstractServlet {
 			data.setWebMessages(webMessages);
 			
 			if ( webMessages.isEmpty() ) {
-				data = new TimesheetImportResponse(conn, uploadRequest);
-				responseCode = ResponseCode.SUCCESS;
+				try {
+					data = new TimesheetImportResponse(conn, uploadRequest);
+					// document isn't parsed until the response item is created 
+					// so validation must occur there. 
+					logger.log(Level.DEBUG, "TimesheetImportServlet: doPost - no error creating request");
+					WebMessagesStatus responseStatus = data.validate(conn);
+					responseCode = responseStatus.getResponseCode();
+					data.setWebMessages(responseStatus.getWebMessages());
+				} catch ( NotATimesheetException e) {
+					responseCode = ResponseCode.EDIT_FAILURE;
+					//String fName = new String(uploadRequest.getTimesheetFile().toString()); 
+//					String fName = new String(uploadRequest.getTimesheetFile().getName()); 
+					webMessages.addMessage(TimesheetImportRequest.TIMESHEET_FILE, "Not a Timesheet Worksheet");
+				}
 			} else {
 				responseCode = ResponseCode.EDIT_FAILURE;
 			}
@@ -62,7 +75,6 @@ public class TimesheetImportServlet extends AbstractServlet {
 		}		
 		
 		
-
 		Enumeration<String> parmNames =  request.getParameterNames();
 		while ( parmNames.hasMoreElements() ) {
 			String parmName = parmNames.nextElement();

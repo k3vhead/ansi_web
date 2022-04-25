@@ -90,13 +90,8 @@ public class EmployeeImportServlet extends AbstractServlet {
 					
 					HashMap<Integer, PayrollEmployee> employeeMap = makeEmployeeMap(conn);
 					
-					// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-					// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-					// this is just so we can push code that compiles -- it needs to change
-					// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-					// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-					String fileName = null;
-					InputStream inputStream = null;
+					String fileName = uploadRequest.getEmployeeFile().getName();
+					InputStream inputStream = uploadRequest.getEmployeeFile().getInputStream();
 					
 					EmployeeImportParser parser = new EmployeeImportParser(conn, fileName, inputStream);
 					List<EmployeeImportRecord> employeeRecords = parser.getEmployeeRecords();	
@@ -201,7 +196,6 @@ public class EmployeeImportServlet extends AbstractServlet {
 		public EmployeeImportResponseRec transform(EmployeeImportRecord arg0) {
 			try {
 				EmployeeImportResponseRec rec = new EmployeeImportResponseRec(arg0);
-				
 				if ( StringUtils.isNumeric(arg0.getDivisionNbr())) {
 					if ( divMap.containsKey(Integer.valueOf(arg0.getDivisionNbr()))) {
 						Division division= divMap.get(Integer.valueOf(arg0.getDivisionNbr()));
@@ -218,8 +212,9 @@ public class EmployeeImportServlet extends AbstractServlet {
 					
 				}
 				
-				
-				rec.setRecordMatches( rec.ansiEquals(employeeMap.get(arg0.getEmployeeCode())));
+				Integer employeeCode = Integer.valueOf( arg0.getEmployeeCode() );
+				PayrollEmployee employee = employeeMap.get(employeeCode);
+				rec.setRecordMatches( rec.ansiEquals(employee) );
 				return rec;
 			} catch ( Exception e) {
 				throw new RuntimeException(e);

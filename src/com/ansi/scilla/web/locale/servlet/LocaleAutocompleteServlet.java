@@ -27,6 +27,7 @@ public class LocaleAutocompleteServlet extends AbstractAutoCompleteServlet {
 	
 	protected final String LOCALE_TYPE_ID = "localeTypeId";
 	protected final String STATE_NAME = "stateName";
+	protected final String STATE_ID = "stateId";
 	
 	
 	
@@ -57,6 +58,13 @@ public class LocaleAutocompleteServlet extends AbstractAutoCompleteServlet {
 			String stateName = map.get(STATE_NAME);
 			if ( ! StringUtils.isEmpty(stateName) ) {		
 				sqlTemplate = sqlTemplate + "\n and lower(state_name)='"+ stateName.toLowerCase() +"'";
+			}
+		}
+		
+		if ( map.containsKey(STATE_ID) ) {
+			String stateId = map.get(STATE_ID);
+			if ( ! StringUtils.isEmpty(stateId) && StringUtils.isNumeric(stateId)) {		
+				sqlTemplate = sqlTemplate + "\n and parent_locale_id="+ stateId;
 			}
 		}
 		

@@ -25,9 +25,11 @@ import org.apache.logging.log4j.Logger;
 import com.ansi.scilla.common.callNote.CallNoteReference;
 import com.ansi.scilla.common.claims.WorkHoursType;
 import com.ansi.scilla.common.db.CallLog;
+import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.Document;
 import com.ansi.scilla.common.db.EmployeeExpense;
 import com.ansi.scilla.common.db.JobTag;
+import com.ansi.scilla.common.db.Locale;
 import com.ansi.scilla.common.db.MSTable;
 import com.ansi.scilla.common.db.PayrollEmployee;
 import com.ansi.scilla.common.db.Ticket;
@@ -161,20 +163,19 @@ public class RequestValidator {
 	
 	
 	/**
-	 * Ensure that a jurisdiction exists (ie. a non-state level locale record exists). If a state is entered,
-	 * make sure the jurisdiction is in the right state.
+	 * Ensure that a jurisdiction exists (ie. a non-state level locale record exists). 
 	 * @param conn
 	 * @param webMessages
 	 * @param fieldName
 	 * @param value
-	 * @param state
 	 * @param maxLength
 	 * @param required
 	 * @param label
 	 * @throws SQLException
 	 */
-	public static void validateCity(Connection conn, WebMessages webMessages, String fieldName, String value, String state, int maxLength, boolean required,
+	public static void validateCity(Connection conn, WebMessages webMessages, String fieldName, String value, int maxLength, boolean required,
 			String label) throws SQLException {
+		Logger logger = LogManager.getLogger(RequestValidator.class);
 		if ( StringUtils.isBlank(value) ) {
 			if ( required ) {
 				String message = StringUtils.isBlank(label) ? "Required Value" : label + " is required";
@@ -190,15 +191,10 @@ public class RequestValidator {
 			}
 			PreparedStatement ps = null;
 			String message = StringUtils.isBlank(label) ? "Invalid Value" : label + " is invalid";
-			if ( StringUtils.isBlank(state) ) {
-				ps = conn.prepareStatement("select count(*) as rec_count from locale where lower(name)=? and locale_type_id in ("+StringUtils.join(typeList, ",")+")");
-				ps.setString(1, value.toLowerCase());
-			} else {
-				message = message + " for " + state;
-				ps = conn.prepareStatement("select count(*) as rec_count from locale where lower(name)=? and locale_type_id in ("+StringUtils.join(typeList, ",")+") and lower(state_name)=?");
-				ps.setString(1, value.toLowerCase());
-				ps.setString(2, state.toLowerCase());
-			}
+			String sql = "select count(*) as rec_count from locale where lower(name)=? and locale_type_id in ("+StringUtils.join(typeList, ",")+")";
+			ps = conn.prepareStatement(sql);
+			ps.setString(1, value.toLowerCase());
+			logger.log(Level.DEBUG, sql);
 			ResultSet rs = ps.executeQuery();
 			if ( rs.next() ) {
 				if (rs.getInt("rec_count") == 0) {
@@ -211,6 +207,69 @@ public class RequestValidator {
 		}
 		
 	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * Ensure that a jurisdiction exists (ie. a non-state level locale record exists) and is in the right state.
+	 * @param conn
+	 * @param webMessages
+	 * @param fieldName
+	 * @param value
+	 * @param state
+	 * @param maxLength
+	 * @param required
+	 * @param label
+	 * @throws SQLException
+	 */
+	public static void validateCityState(Connection conn, WebMessages webMessages, String fieldName, String value, String state, int maxLength, boolean required,
+			String label) throws SQLException {
+		Logger logger = LogManager.getLogger(RequestValidator.class);
+		if ( StringUtils.isBlank(value) ) {
+			if ( required ) {
+				String message = StringUtils.isBlank(label) ? "Required Value" : label + " is required";
+				webMessages.addMessage(fieldName, message);
+			}
+		} else {
+			
+			List<String> typeList = new ArrayList<String>();
+			for ( LocaleType localeType : LocaleType.values() ) {
+				if (localeType != LocaleType.STATE) {
+					typeList.add("'" + localeType.name() + "'");
+				}
+			}
+			PreparedStatement ps = null;
+			String message = StringUtils.isBlank(label) ? "Invalid Value" : label + " is invalid";
+//			String sql = "select city.locale_id as city_id, city.name as city_name, city.state_name as city_state_name,\n"
+//					+ "	state.locale_id as state_id, state.name as state_name, state.state_name as state_state_name\n"
+//					+ "from locale as city\n"
+//					+ "inner join (select locale_id, name, state_name from locale) as state on state.locale_id=?\n"
+//					+ "where lower(city.name)=? and city.locale_type_id in ("+StringUtils.join(typeList, ",")+")";
+			String sql = "select count(*) as record_count from locale\n"
+					+ "where lower(name)=? and state_name=? and locale_type_id in ("+StringUtils.join(typeList, ",")+")";
+			ps = conn.prepareStatement(sql);
+			ps.setString(1, value.toLowerCase());
+			ps.setString(2, state);
+			logger.log(Level.DEBUG, sql);
+			ResultSet rs = ps.executeQuery();
+			if ( rs.next() ) {
+				if ( rs.getInt("record_count") == 0 ) {
+					webMessages.addMessage(fieldName, message);
+				}
+			} else {
+				webMessages.addMessage(fieldName, message);
+			}
+			rs.close();
+		}
+		
+	}
+	
+	
+	
+	
 
 	
 	
@@ -429,6 +488,63 @@ public class RequestValidator {
 		}
 	}
 	
+	
+	public static void validateDivisionNumber(Connection conn, WebMessages webMessages, String fieldName, String value, boolean required) throws SQLException, Exception {
+		
+		if ( value == null ) {
+			if ( required == true ) {
+				webMessages.addMessage(value, "Required Field.  No Divison ID was specified. ");
+			}	
+		} else {
+			if ( StringUtils.isNumeric(value)) {
+				validateDivisionNumber(conn, webMessages,fieldName, Integer.valueOf(value), required);
+			} else {
+				webMessages.addMessage(fieldName, "Invalid Format");
+			}
+		}
+			/*
+		} else if (value.trim().length() < 2) {
+			webMessages.addMessage(value, "Invalid DivisionField.  Division ID must be at least 2 characters.");
+		} else if (value.trim().length() > 5) {
+			webMessages.addMessage(value, "Invalid DivisionField.  Division ID must be less than 6 characters.");
+		} else if (!(Integer.parseInt(value.trim().substring(0, 1)) > 0) && (Integer.parseInt(value.trim().substring(0, 1)) < 100)){
+			webMessages.addMessage(value, "Invalid DivisionField.  The first 2 digits of DivsionFIeld must be numeric.");
+		} else {
+		    Integer division_nbr;
+		    division_nbr = Integer.parseInt(value.trim().substring(0, 1));
+		    
+			PreparedStatement ps = conn.prepareStatement("select count(*) as record_count from division where division_nbr=?");
+			ps.setInt(1,  division_nbr);
+			ResultSet rs = ps.executeQuery();
+			if ( rs.next() ) {
+				if ( rs.getInt("record_count") == 0 ) {
+					webMessages.addMessage(value, "Invalid division number.  Division has not been defined in db.");
+				}
+			} else {
+				webMessages.addMessage(value, "Error checking authorization");
+			}
+			rs.close();
+			
+		}
+		*/
+	}
+	
+	
+	public static void validateDivisionNumber(Connection conn, WebMessages webMessages, String fieldName, Integer value, boolean required) throws SQLException, Exception {
+		if ( value == null ) {
+			if ( required == true ) {
+				webMessages.addMessage(fieldName, "Required Value.");
+			}				
+		} else {
+			Division division = new Division();
+			division.setDivisionNbr(value);
+			try {
+				division.selectOne(conn);
+			} catch ( RecordNotFoundException e ) {
+				webMessages.addMessage(fieldName, "Invalid value");
+			}
+		}
+	}
 	
 	
 	
@@ -951,21 +1067,6 @@ public class RequestValidator {
 	}
 	
 	
-	public static void validateState(WebMessages webMessages, String fieldName, String value, boolean required) {
-		if (StringUtils.isBlank(value)) {
-			if (required) {
-				webMessages.addMessage(fieldName, "Required Value");
-			}
-		} else {
-			if ( ! STATE_NAMES.contains(value)) {
-				webMessages.addMessage(fieldName, "Invalid State");
-			}
-		}
-	}
-
-	
-	
-
 	/**
 	 * Given a list of ID's, make sure they are all valid job_tag_id's and at least one of them is of type "SERVICE"
 	 * @param conn
@@ -1035,6 +1136,48 @@ public class RequestValidator {
 			}
 		}
 		
+	}
+
+	
+	public static void validateState(WebMessages webMessages, String fieldName, String value, boolean required) {
+		if (StringUtils.isBlank(value)) {
+			if (required) {
+				webMessages.addMessage(fieldName, "Required Value");
+			}
+		} else {
+			if ( ! STATE_NAMES.contains(value)) {
+				webMessages.addMessage(fieldName, "Invalid State");
+			}
+		}
+	}
+
+	/**
+	 * Validate that a string state abbreviation is a valid locale
+	 * @param conn
+	 * @param webMessages
+	 * @param fieldName
+	 * @param value
+	 * @param required
+	 * @param label
+	 * @throws Exception
+	 */
+	public static void validateStateLocale(Connection conn, WebMessages webMessages, String fieldName, String value, boolean required, String label) throws Exception {
+		if ( required ) {
+			if ( value == null ) {
+				String message = StringUtils.isBlank(label) ? "Required Value" : label + " is required";
+				webMessages.addMessage(fieldName, message);
+			}
+		} else {
+			Locale locale = new Locale();
+			locale.setStateName(value);
+			locale.setLocaleTypeId(LocaleType.STATE.name());
+			try {
+				locale.selectOne(conn);				
+			} catch (RecordNotFoundException e) {
+				String message = StringUtils.isBlank(label) ? "Invalid Value" : label + " is invalid";
+				webMessages.addMessage(fieldName, message);
+			}
+		}		
 	}
 
 	public static void validateString(WebMessages webMessages, String fieldName, String value, boolean required) {

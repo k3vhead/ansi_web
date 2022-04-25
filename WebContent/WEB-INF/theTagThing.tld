@@ -412,6 +412,8 @@
 	    <attribute><name>format</name><required>true</required><rtexprvalue>true</rtexprvalue></attribute>
 	    <attribute><name>name</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
 	</tag>
+	
+	
 	<tag>
     	<name>taxProfileSelect</name>
     	<tagclass>com.ansi.scilla.web.tags.TaxProfileSelect</tagclass>
@@ -420,6 +422,24 @@
 	    <attribute><name>format</name><required>true</required><rtexprvalue>true</rtexprvalue></attribute>
 	    <attribute><name>name</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
 	</tag>
+	
+	<tag>
+    	<name>localeSelect</name>
+    	<tagclass>com.ansi.scilla.web.tags.LocaleSelect</tagclass>
+	    <bodycontent>JSP</bodycontent>
+    	<info>Displays an option list of all Locales, based on type</info>
+	    <attribute><name>format</name><required>true</required><rtexprvalue>true</rtexprvalue></attribute>
+	    <attribute><name>type</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+	</tag>
+	
+	<tag>
+    	<name>localeStateSelect</name>
+    	<tagclass>com.ansi.scilla.web.tags.LocaleStateSelect</tagclass>
+	    <bodycontent>JSP</bodycontent>
+    	<info>Displays an option list of state Locales</info>
+	    <attribute><name>format</name><required>true</required><rtexprvalue>true</rtexprvalue></attribute>
+	</tag>
+	
 </taglib>
 
 

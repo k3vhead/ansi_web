@@ -71,6 +71,8 @@ public class LoadPayrollWorksheets extends Loader {
 		this.defaultCity.put(115, "Cleveland");				
 		this.defaultCity.put(116, "Cleveland");				
 		this.defaultCity.put(117, "Memphis");
+		throw new RuntimeException("This program won't work. Not updated for new payroll_worksheet/locale FK");
+
 	}
 
 
@@ -141,7 +143,7 @@ public class LoadPayrollWorksheets extends Loader {
 				PayrollWorksheet pw = new PayrollWorksheet();
 				pw.setAddedBy(5);
 				pw.setAddedDate(now);
-				pw.setCity(city);
+//				pw.setCity(city);
 				pw.setDirectLabor(super.makeBD(employee.getDirectLabor()));
 				pw.setDivisionId(divisionId);
 				pw.setEmployeeCode(washer.employeeCode);
@@ -157,7 +159,7 @@ public class LoadPayrollWorksheets extends Loader {
 				pw.setProductivity(makeProductivity(employee.getProductivity()));
 				pw.setRegularHours(super.makeBD(employee.getRegularHours()));
 				pw.setRegularPay(super.makeBD(employee.getRegularPay()));
-				pw.setState(state);
+//				pw.setState(state);
 				pw.setUpdatedBy(5);
 				pw.setUpdatedDate(now);
 				pw.setVacationHours(super.makeBD(employee.getVacationHours()));
