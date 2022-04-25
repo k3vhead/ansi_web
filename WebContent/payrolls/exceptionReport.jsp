@@ -178,7 +178,7 @@
         		
         		
         		
-        		makeExceptionTable : function() {
+        		makeExceptionTable : function($companyCode) {
         			var $companyCode = EXCEPTION_REPORT.currentCompanyCode;
         			
         			var $yes = '<webthing:checkmark>Yes</webthing:checkmark>';
@@ -256,7 +256,8 @@
              	            { className: "dt-head-center", "targets":[]},
             	            { className: "dt-left", "targets": [3] },
             	            { className: "dt-center", "targets": [0,1,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19] },
-            	         	{ "visible": false, "targets": [4,5,6,8,10,13]},
+            	         	{ className: "dt-body-right", "targets": [7,9,12,13] },
+            	            { "visible": false, "targets": [4,5,6,8,10,13]},
             	       		],
             	         	// "paging": true,
     			        "ajax": {
@@ -267,7 +268,7 @@
     			        columns: [
         			        	{ title: "Emp Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_code' }, 
         			        	{ title: "Div", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'div' },
-        			        	{ title: "Week Ending", width:"5%", searchable:true, searchFormat: "MM/DD/YYYY", "defaultContent": "<i>N/A</i>", data:'week_ending' },
+        			        	{ title: "Week Ending", width:"5%", searchable:true, searchFormat: "YYYY/MM/DD", "defaultContent": "<i>N/A</i>", data:'week_ending' },
         			        	{ title: "Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_name' },
         			        	{ title: "Status", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_status' },
         			        	{ title: "Union", width:"5%", searchable:true, "defaultContent":$unknown,
@@ -297,7 +298,7 @@
     			        			return $value;
     			        		}
     			        		},
-    			        		//{ title: "< Union Min", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'under_union_min_pay' },
+    			        		
         			        	{ title: "Under Union Min", width:"5%", searchable:true, "defaultContent": "",
     			        		data:function(row, type, set) {
     			        			var $value = $unknown;
@@ -315,9 +316,9 @@
     			        			return $value;
     			        			}
     			        		},
-    			        	//	{ title: "Minimum Hourly", width:"5%", searchFormat: "#.##", data: function ( row, type, set ) {
-       			        	//		if(row.minimum_hourly_pay != null){return (parseFloat(row.minimum_hourly_pay).toFixed(2));}
-   		            		//	} },
+    			        		{ title: "Minimum Hourly", width:"5%", searchFormat: "#.##", data: function ( row, type, set ) {
+       			        			if(row.minimum_hourly_pay != null){return (parseFloat(row.minimum_hourly_pay).toFixed(2));}
+   		            			} },
     			        		{ title: "Under Govt Min", width:"5%", searchable:true, "defaultContent": "",
     			        		data:function(row, type, set) {
     			        			var $value = $unknown;
@@ -335,6 +336,9 @@
     			        			return $value;
     			        			}
     			        		},
+    			        		{ title: "Expense Pct", width:"5%", searchFormat: "#.##", data: function ( row, type, set ) {
+       			        			if(row.excess_expense_pct != null){return (parseFloat(row.excess_expense_pct).toFixed(2));}
+   		            			} },
     			        		{ title: "Expense Pct", width:"5%", searchable:true, "defaultContent": "",
     			        		data:function(row, type, set) {
     			        			var $value = $unknown;
@@ -354,7 +358,8 @@
     			        			return $value;
     			        			}
     			        		},
-    			        		{ title: "Expense Claim", width:"5%", searchable:true, "defaultContent": "",
+    			        		//{ title: "< Union Min", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'under_union_min_pay' },
+        			        	{ title: "Expense Claim", width:"5%", searchable:true, "defaultContent": "",
     			        		data:function(row, type, set) {
     			        			var $value = $unknown;
     			        			if ( row.excess_expense_claim != null ) {
@@ -371,9 +376,6 @@
     			        			return $value;
     			        			}
     			        		},
-    			        		//{ title: "YTD Expenses Pct", width:"5%", searchFormat: "#.##", data: function ( row, type, set ) {
-      			        		//	if(row.ytd_excess_expense_pct != null){return (parseFloat(row.ytd_excess_expense_pct).toFixed(2));}
-  		            			//} },
     			        		{ title: "YTD Expense Pct", width:"5%", searchable:true, "defaultContent": "",
         			        		data:function(row, type, set) {
         			        			var $value = $unknown;
@@ -454,7 +456,7 @@
     			        			return $value;
     			        			}
     			        		},
-        			        	{ title: "Action",  width:"5%", searchable:false,  
+        			        	{ title: "Action",  width:"5%", searchable:false,  orderable: false,
         			            	data: function ( row, type, set ) { 
         			            		var $viewLink = '<span class="action-link view-link" data-id="'+row.row_id+'"><webthing:view>Detail</webthing:view></span>';
         			            		return $viewLink;
@@ -485,7 +487,7 @@
         		
         		getReport : function($companyCode) {
         			var $url = "payroll/exceptionReport/" + $companyCode;
-        			ANSI_UTILS.makeServerCall("GET", $url, {}, {200:EXCEPTION_REPORT.getReportSuccess}, {});
+        			ANSI_UTILS.makeServerCall("GET", $url, {$companyCode}, {200:EXCEPTION_REPORT.getReportSuccess}, {});
         		},
         		
         		
