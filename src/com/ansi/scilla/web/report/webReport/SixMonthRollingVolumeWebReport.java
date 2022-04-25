@@ -1,9 +1,11 @@
 package com.ansi.scilla.web.report.webReport;
 
 import java.sql.Connection;
+import java.util.Calendar;
 
-import com.ansi.scilla.report.reportBuilder.AbstractReport;
-import com.ansi.scilla.report.reportBuilder.CompoundReport;
+import com.ansi.scilla.common.db.Division;
+import com.ansi.scilla.report.reportBuilder.reportType.AbstractReport;
+import com.ansi.scilla.report.reportBuilder.reportType.CompoundReport;
 import com.ansi.scilla.report.sixMonthRollingVolume.SixMonthRollingVolumeReport;
 
 /**
@@ -30,6 +32,18 @@ public class SixMonthRollingVolumeWebReport extends CompoundReport {
 		Integer month2 = month < 7 ? month + 6 : month+6-12;
 		Integer year2 = month < 7 ? year : year + 1;
 		return new SixMonthRollingVolumeWebReport(conn, divisionId, month, year, month2, year2);
+	}
+
+
+	@Override
+	public String makeFileName(String arg0, Calendar arg1, Division arg2, Calendar arg3, Calendar arg4) {
+		throw new RuntimeException("This shouldn't get called");
+	}
+
+
+	@Override
+	public String makeFileName(Calendar arg0, Division arg1, Calendar arg2, Calendar arg3) {
+		throw new RuntimeException("This shouldn't get called");
 	}
 
 	
