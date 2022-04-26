@@ -218,12 +218,13 @@
            				var $fileMessages = $data.data.webMessages.timesheetFile;
            				if ( $fileMessages == null ) {
            					TIMESHEET_IMPORT.processUploadWarning($data);
-           				} else {
+           					TIMESHEET_IMPORT.displayUnNormalizedHeaderData($data);
+           					TIMESHEET_IMPORT.populateDataGrid($data);           					
+           				} else {           					
            					$("#prompt-div .timesheetFileErr").html($fileMessages[0]).show().fadeOut(10000);
-               				
-   	           			 //var $el = $('#timesheet-file');
-   	                     //$el.wrap('<form>').closest('form').get(0).reset();
-   	                     //$el.unwrap();
+	   	           			 //var $el = $('#timesheet-file');
+	   	                     //$el.wrap('<form>').closest('form').get(0).reset();
+	   	                     //$el.unwrap();	   	                     
            				}
            				
 						           				           				
@@ -231,14 +232,14 @@
 	           		
 	           		processUploadWarning : function($data) {
 	           			console.log("processUploadWarning");
+	           			$("#data-header").show();
 	           			$("#message-row").show();
 	           			$.each($data.data.webMessages, function($index, $value) {
 	           				var $destination = "#message-row ." + $index + "Err";
 	           				var $message = $value[0];
 	           				console.log($destination + " " + $message);
 	           				$($destination).html($message);
-	           			});
-	           			        				           				
+	           			});	           			      				           				
 	           		},
 	           		           
 	           		initializeDisplay: function(){
@@ -271,32 +272,26 @@
                         $el.wrap('<form>').closest('form').get(0).reset();
                         $el.unwrap();
            
-	           		},	           		
-	           		processUploadSuccess : function($data) {
-	           			console.log("processUploadSuccess");
-	           			$("#prompt-div").hide();
-	           			$("#data-header").show();
-	           			console.log("showing display div.. ");
-	           			console.log($data);
-	           			console.log($data.data.division);
-           				$(".thinking").hide();
-
-           				$('select[name="divisionId"]').val($data.data.normal.divisionId);
+	           		},	      
+	           		displayUnNormalizedHeaderData : function($data) {
+	           			console.log("displayUnNormalizedHeaderData");
+	           			$('select[name="divisionId"]').val($data.data.divisionId)
+	           			$('input[name="operationsManagerName"]').val($data.data.operationsManagerName);           			
+	           			$('input[name="payrollDate"]').val($data.data.weekEnding);
+	           			$('select[name="state"]').val($data.data.state);
+	           			$('input[name="city"]').val($data.data.city);
+	           			$("#data-header .timesheetFile").html($data.data.fileName);	           				           		
+	           		},
+	           		displayNormalizedHeaderData : function($data) {
+	           			console.log("displayNormalizedHeaderData");
+	           			$('select[name="divisionId"]').val($data.data.divisionId);	           			
 	           			$('input[name="operationsManagerName"]').val($data.data.operationsManagerName);           			
 	           			$('input[name="payrollDate"]').val($data.data.normal.weekEndingDisplay);
 	           			$('select[name="state"]').val($data.data.normal.state);
 	           			$('input[name="city"]').val($data.data.normal.city);
-	           			$("#data-header .timesheetFile").html($data.data.fileName);
-
-	           			/*
-	           			$("#data-header input .divisionId").html($data.data.division);
-	           			$("#data-header .operationsManagerName").html($data.data.operationsManagerName);           			
-	           			$("#data-header .payrollDate").html($data.data.weekEnding);
-	           			$("#data-header .state").html($data.data.state);
-	           			$("#data-header .city").html($data.data.city);
-	           			$("#data-header .timesheetFile").html($data.data.fileName);
-	           			*/
-	           			
+	           			$("#data-header .timesheetFile").html($data.data.fileName);	           			
+	           		},	      
+	           		populateDataGrid : function($data){
 	           			// create and populate dicttionary object for use in modal
 	           			var dictionary = $data.data.employeeRecordList;
 	   
@@ -375,6 +370,40 @@
 	           			});
 	           			$("#data-detail").show();
 	           			$("#timesheet").show();
+	           		},
+	           		processUploadSuccess : function($data) {
+	           			console.log("processUploadSuccess");
+	           			$("#prompt-div").hide();
+	           			$("#data-header").show();
+	           			console.log("showing display div.. ");
+	           			console.log($data);
+	           			console.log($data.data.division);
+           				$(".thinking").hide();
+           				
+           				TIMESHEET_IMPORT.displayUnNormalizedHeaderData($data);
+           				TIMESHEET_IMPORT.populateDataGrid($data);
+
+           				/*
+           				$('select[name="divisionId"]').val($data.data.normal.divisionId);
+	           			$('input[name="operationsManagerName"]').val($data.data.operationsManagerName);           			
+	           			$('input[name="payrollDate"]').val($data.data.normal.weekEndingDisplay);
+	           			$('select[name="state"]').val($data.data.normal.state);
+	           			$('input[name="city"]').val($data.data.normal.city);
+	           			$("#data-header .timesheetFile").html($data.data.fileName);
+	           			*/
+
+           				console.log($data.data.normal.divisionId);
+	           			
+	           			
+	           			/*
+	           			$("#data-header input .divisionId").html($data.data.division);
+	           			$("#data-header .operationsManagerName").html($data.data.operationsManagerName);           			
+	           			$("#data-header .payrollDate").html($data.data.weekEnding);
+	           			$("#data-header .state").html($data.data.state);
+	           			$("#data-header .city").html($data.data.city);
+	           			$("#data-header .timesheetFile").html($data.data.fileName);
+	           			*/
+	           			
 	           		},	        
 	           		openFile : function($event) {
 	           			var results = $event.target.result;
@@ -701,26 +730,19 @@
 	   						<webthing:states /> 
 						</select>
    					</td>
-    				<td class="col5"><span class="city">					<input type="text" class="city" 					name="city"						tabindex="5" />							</span></td>
+    				<td class="col5"><span class="city">			<input type="text" class="city" 					name="city"						tabindex="5" />							</span></td>
     				<td class="col6"><span class="timesheetFile"></span></td>
     				<td class="col7" id="cancel-save-buttons">
     					<input type="button" value="Cancel" name="cancelButton" class="action-button" />
     					<input type="button" value="Save" id="open-button" />
     				</td>
     			</tr>
-<!--     			<tr>
-    				<td class="col1"><span class="divisionId">				</span></td>
-    				<td class="col2"><span class="operationsManagerName">	</span></td>
-    				<td class="col3"><span class="payrollDate">				</span></td>
-    				<td class="col4"><span class="state">					</span></td>
-    				<td class="col5"><span class="city">					</span></td>
-    				<td class="col6"><span class="timesheetFile">			</span></td>
-    				<td class="col7" id="cancel-save-buttons">
-    					<input type="button" value="Cancel" name="cancelButton" class="action-button" />
-    					<input type="button" value="Save" id="open-button" />
-    				</td>
-    			</tr>
- -->    		</table>
+<!-- 
+
+ -->
+
+
+    		</table>
 		</div>
 
 		<div id="data-detail">

@@ -37,7 +37,6 @@ public class TimesheetImportServlet extends AbstractServlet {
 		try {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
-			//SessionData sessionData = AppUtils.validateSession(request, Permission.PAYROLL_WRITE);
 			AppUtils.validateSession(request, Permission.PAYROLL_WRITE);
 			TimesheetImportRequest uploadRequest = new TimesheetImportRequest(request);
 			ResponseCode responseCode = null;
