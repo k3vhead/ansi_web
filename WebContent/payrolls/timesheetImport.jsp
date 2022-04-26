@@ -218,7 +218,7 @@
            				var $fileMessages = $data.data.webMessages.timesheetFile;
            				if ( $fileMessages == null ) {
            					TIMESHEET_IMPORT.processUploadWarning($data);
-           					TIMESHEET_IMPORT.displayUnNormalizedHeaderData($data);
+           					TIMESHEET_IMPORT.displayHeaderData($data);
            					TIMESHEET_IMPORT.populateDataGrid($data);           					
            				} else {           					
            					$("#prompt-div .timesheetFileErr").html($fileMessages[0]).show().fadeOut(10000);
@@ -232,6 +232,7 @@
 	           		
 	           		processUploadWarning : function($data) {
 	           			console.log("processUploadWarning");
+	           			
 	           			$("#data-header").show();
 	           			$("#message-row").show();
 	           			$.each($data.data.webMessages, function($index, $value) {
@@ -273,24 +274,60 @@
                         $el.unwrap();
            
 	           		},	      
-	           		displayUnNormalizedHeaderData : function($data) {
-	           			console.log("displayUnNormalizedHeaderData");
-	           			$('select[name="divisionId"]').val($data.data.divisionId)
-	           			$('input[name="operationsManagerName"]').val($data.data.operationsManagerName);           			
-	           			$('input[name="payrollDate"]').val($data.data.weekEnding);
-	           			$('select[name="state"]').val($data.data.state);
-	           			$('input[name="city"]').val($data.data.city);
+	           		displayHeaderData : function($data) {
+	           			console.log("displayHeaderData");
+	           			var $disp_divisionId="";
+	           			var $disp_operationsManagerName="";
+	           			var $disp_weekEnding="";
+	           			var $disp_state="";
+	           			var $disp_city="";
+
+	           			if(($data.data.normal.divisionId == null) && ($data.data.divisionId != null)){
+	           				$disp_divisionId= $data.data.divisionId;
+	           			} else {
+	           				$disp_divisionId= $data.data.normal.divisionId;
+	           			}
+	           			
+	           			if(($data.data.normal.operationsManagerName == null) && ($data.data.operationsManagerName != null)){
+	           				$disp_operationsManagerName= $data.data.operationsManagerName;
+	           			} else {
+	           				$disp_operationsManagerName= $data.data.normal.operationsManagerName;
+	           			}
+	           			
+	           			if(($data.data.normal.weekEnding == null) && ($data.data.weekEnding != null)){
+	           				$disp_weekEnding= $data.data.weekEnding;
+	           			} else {
+	           				$disp_weekEnding= $data.data.normal.weekEnding;
+	           			}
+	           			
+	           			if(($data.data.normal.state == null) && ($data.data.state != null)){
+	           				$disp_state= $data.data.state;
+	           			} else {
+	           				$disp_state= $data.data.normal.state;
+	           			}
+	           			
+	           			if(($data.data.normal.city == null) && ($data.data.city != null)){
+	           				$disp_city= $data.data.city;
+	           			} else {
+	           				$disp_city= $data.data.normal.city;
+	           			}
+	           				 
+	           			
+	           			var $formattedWeekendingDate = new Date($disp_weekEnding).toISOString().slice(0, 10);	           			
+	           			
+	           			console.log("\n disp_divisionId = " + $disp_divisionId
+           				+	"\n disp_operationsManagerName = " + $disp_operationsManagerName 
+           				+	"\n disp_weekEnding=" + $formattedWeekendingDate
+           				+	"\n disp_state=" +  $disp_state 
+           				+	"\n disp_city=" +  $disp_city);
+	           				           		
+	           			$('select[name="divisionId"]').val($disp_divisionId)
+	           			$('input[name="operationsManagerName"]').val($disp_operationsManagerName);           			
+	           			$('input[name="payrollDate"]').val($formattedWeekendingDate);
+	           			$('select[name="state"]').val($disp_state);
+	           			$('input[name="city"]').val($disp_city);
 	           			$("#data-header .timesheetFile").html($data.data.fileName);	           				           		
 	           		},
-	           		displayNormalizedHeaderData : function($data) {
-	           			console.log("displayNormalizedHeaderData");
-	           			$('select[name="divisionId"]').val($data.data.divisionId);	           			
-	           			$('input[name="operationsManagerName"]').val($data.data.operationsManagerName);           			
-	           			$('input[name="payrollDate"]').val($data.data.normal.weekEndingDisplay);
-	           			$('select[name="state"]').val($data.data.normal.state);
-	           			$('input[name="city"]').val($data.data.normal.city);
-	           			$("#data-header .timesheetFile").html($data.data.fileName);	           			
-	           		},	      
 	           		populateDataGrid : function($data){
 	           			// create and populate dicttionary object for use in modal
 	           			var dictionary = $data.data.employeeRecordList;
@@ -380,7 +417,7 @@
 	           			console.log($data.data.division);
            				$(".thinking").hide();
            				
-           				TIMESHEET_IMPORT.displayUnNormalizedHeaderData($data);
+           				TIMESHEET_IMPORT.displayHeaderData($data);
            				TIMESHEET_IMPORT.populateDataGrid($data);
 
            				/*
