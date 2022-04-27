@@ -215,10 +215,10 @@
 	           			$(".thinking").hide();		           				
            				$("#prompt-div").show();
            				
+       					$("#data-header .err").html("");
            				var $fileMessages = $data.data.webMessages.timesheetFile;
            				if ( $fileMessages == null ) {
            					$("#prompt-div").hide();
-           					$("#data-header .err").html("");
            					TIMESHEET_IMPORT.processUploadWarning($data);
            					TIMESHEET_IMPORT.displayHeaderData($data);
            					TIMESHEET_IMPORT.populateDataGrid($data);           					
@@ -413,6 +413,7 @@
 	           		processUploadSuccess : function($data) {
 	           			console.log("processUploadSuccess");
 	           			$("#prompt-div").hide();
+	           			$("#message-row").hide();
 	           			$("#data-header").show();
 	           			console.log("showing display div.. ");
 	           			console.log($data);
@@ -465,6 +466,7 @@
 	           			xhr.onload = function() {
 	           				if ( xhr.status == 200 ) {
 	           					var $data = JSON.parse(this.response);
+	           					$("#data-header .err").html("");
 	           					if ( $data.responseHeader.responseCode == "EDIT_FAILURE") {
 	           						TIMESHEET_IMPORT.processUploadFailure($data);
 	           					} else if ( $data.responseHeader.responseCode == "EDIT_WARNING" ) {
