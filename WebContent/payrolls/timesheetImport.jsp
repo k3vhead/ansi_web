@@ -218,6 +218,7 @@
            				var $fileMessages = $data.data.webMessages.timesheetFile;
            				if ( $fileMessages == null ) {
            					$("#prompt-div").hide();
+           					$("#data-header .err").html("");
            					TIMESHEET_IMPORT.processUploadWarning($data);
            					TIMESHEET_IMPORT.displayHeaderData($data);
            					TIMESHEET_IMPORT.populateDataGrid($data);           					
