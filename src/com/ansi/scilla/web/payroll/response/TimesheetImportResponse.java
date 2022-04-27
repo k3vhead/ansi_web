@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -131,7 +130,7 @@ public class TimesheetImportResponse extends MessageResponse {
 
 		// we can only validate the city if the state is legit
 		if ( ! webMessages.containsKey(STATE)) {
-			if ( ! this.state.equalsIgnoreCase(stateLocale.getName() )) {
+			if ( ! this.state.equalsIgnoreCase(stateLocale.getStateName() )) {
 				webMessages.addMessage(STATE, "Suggested change");
 				webMessagesStatus.setResponseCode(ResponseCode.EDIT_WARNING);
 			}
