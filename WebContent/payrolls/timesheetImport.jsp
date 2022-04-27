@@ -217,6 +217,7 @@
            				
            				var $fileMessages = $data.data.webMessages.timesheetFile;
            				if ( $fileMessages == null ) {
+           					$("#prompt-div").hide();
            					TIMESHEET_IMPORT.processUploadWarning($data);
            					TIMESHEET_IMPORT.displayHeaderData($data);
            					TIMESHEET_IMPORT.populateDataGrid($data);           					
@@ -736,11 +737,11 @@
     				<td class="col7">									<span class="form-label">					</span>		</td>
     			</tr>
     			<tr id="message-row">
-    				<td class="col1"><span class="divisionErr"></span></td>
-    				<td class="col2"><span class="operationsManagerNameErr"></span></td>
-    				<td class="col3"><span class="weekEndingErr"></span></td>
-    				<td class="col4"><span class="stateErr"></span></td>
-    				<td class="col5"><span class="cityErr"></span></td>
+    				<td class="col1"><span class="divisionErr err"></span></td>
+    				<td class="col2"><span class="operationsManagerNameErr err"></span></td>
+    				<td class="col3"><span class="weekEndingErr err"></span></td>
+    				<td class="col4"><span class="stateErr err"></span></td>
+    				<td class="col5"><span class="cityErr err"></span></td>
     				<td class="col6">&nbsp;</td>
     				<td class="col7">&nbsp;</td>
     			</tr>

@@ -117,25 +117,38 @@ public class TimesheetImportResponse extends MessageResponse {
 		RequestValidator.validateString(webMessages, OPERATIONS_MANAGER_NAME, this.operationsManagerName, true);
 		RequestValidator.validateDate(webMessages, WEEK_ENDING, this.weekEnding, "MM/dd/yy", true, null, null);
 		if ( ! webMessages.containsKey(WEEK_ENDING)) { normalizeWeekEnding(); }
-		RequestValidator.validateStateLocale(conn, webMessages, STATE, this.state, true, (String)null);
+//		RequestValidator.validateStateLocale(conn, webMessages, STATE, this.state, true, (String)null);
+		
+		Locale stateLocale = null;
+		try {
+			stateLocale = PayrollUtils.alias2State(conn, this.state);
+		} catch ( InvalidValueException e ) {
+			webMessages.addMessage(STATE, "Invalid Value");
+		}
 		
 		// any problems up to here are errors
 		WebMessagesStatus webMessagesStatus = new WebMessagesStatus(webMessages, webMessages.isEmpty() ? ResponseCode.SUCCESS : ResponseCode.EDIT_FAILURE);
 
-		
-		try {
-			Locale locale = PayrollUtils.alias2Locale(conn, this.city, this.state);
-			normalizeLocale(locale);
-			if ( ! this.state.equalsIgnoreCase(this.normal.state) || ! this.city.equalsIgnoreCase(this.normal.city) ) {
-				// the normalization process has changed something
-				webMessagesStatus.addMessage(CITY, "Suggested locale change");
-				if ( webMessagesStatus.getResponseCode().equals(ResponseCode.SUCCESS) ) {
-					webMessagesStatus.setResponseCode(ResponseCode.EDIT_WARNING);
-				}
+		// we can only validate the city if the state is legit
+		if ( ! webMessages.containsKey(STATE)) {
+			if ( ! this.state.equalsIgnoreCase(stateLocale.getName() )) {
+				webMessages.addMessage(STATE, "Suggested change");
+				webMessagesStatus.setResponseCode(ResponseCode.EDIT_WARNING);
 			}
-		} catch (InvalidValueException e) {
-			webMessagesStatus.addMessage(CITY, "Invalid City/Jurisdiction");
-			webMessagesStatus.setResponseCode(ResponseCode.EDIT_FAILURE);
+			try {
+				Locale locale = PayrollUtils.alias2Locale(conn, this.city, stateLocale.getStateName());
+				normalizeLocale(locale);
+				if ( ! this.state.equalsIgnoreCase(this.normal.state) || ! this.city.equalsIgnoreCase(this.normal.city) ) {
+					// the normalization process has changed something
+					webMessagesStatus.addMessage(CITY, "Suggested locale change");
+					if ( webMessagesStatus.getResponseCode().equals(ResponseCode.SUCCESS) ) {
+						webMessagesStatus.setResponseCode(ResponseCode.EDIT_WARNING);
+					}
+				}
+			} catch (InvalidValueException e) {
+				webMessagesStatus.addMessage(CITY, "Invalid City/Jurisdiction");
+				webMessagesStatus.setResponseCode(ResponseCode.EDIT_FAILURE);
+			}
 		}
 
 		return webMessagesStatus;		

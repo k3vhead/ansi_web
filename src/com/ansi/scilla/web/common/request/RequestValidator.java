@@ -1162,8 +1162,8 @@ public class RequestValidator {
 	 * @throws Exception
 	 */
 	public static void validateStateLocale(Connection conn, WebMessages webMessages, String fieldName, String value, boolean required, String label) throws Exception {
-		if ( required ) {
-			if ( value == null ) {
+		if ( StringUtils.isBlank(value) ) {
+			if ( required ) {
 				String message = StringUtils.isBlank(label) ? "Required Value" : label + " is required";
 				webMessages.addMessage(fieldName, message);
 			}
