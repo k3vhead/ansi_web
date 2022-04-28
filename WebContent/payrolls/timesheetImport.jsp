@@ -345,12 +345,13 @@
 	            	        destroy: true,
 	            	        autoWidth: false,
 	           				columnDefs : [
-	             	            { orderable : true, "targets": -1 },
 	             	            //{ className : "dt-head-center", "targets":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]},
 	            	            { className : "dt-left", "targets": [1] },
-	            	            { className : "dt-center", "targets": [2,3,5,7] },
+	            	            { className : "dt-center", "targets": [0,3] },
 	            	            //{ className : "dt-right", "targets": [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]}
-	            	            { className : "dt-right", "targets": [0,4,6,8]}
+	            	            { className : "dt-right", "targets": [4,5,6,7,8,9,10,11,12,13,14,15,16]}
+	            	            
+	            	            	            	      	            	             
 	            	         ],
 	           				columns : [
 	           					{ title : "Row", "defaultContent": "", data:'row' },
@@ -380,11 +381,13 @@
 	           					{ title : "Prod %", "defaultContent": "", data:'productivity' },
 	           					
 	           					{ title : "Action", 
+	           						'orderable': false, 	           						
 	    			            	data: function ( row, type, set ) { 
 	    			            		var $editLink = '<span class="action-link edit-link" data-id="'+row.row+'">' + TIMESHEET_IMPORT.edit + '</span>';
+	    			            		return  $editLink;	    			            		
 	    			            		//var $viewLink = '<span class="action-link view-link" data-id="'+row.row+'">' + TIMESHEET_IMPORT.view + '</span>';
 	    			            		//var $deleteLink = '<span class="action-link delete-link" data-id="'+row.employee_code+'" data-name="'+row.employee_name+'"><webthing:delete>Delete</webthing:delete></span>';
-	    			            		return  $editLink + TIMESHEET_IMPORT.saveButton;
+	    			            		//return  $editLink + TIMESHEET_IMPORT.saveButton;
 	    			            	} },
 	           				],
 	           				"initComplete": function(settings, json) {
