@@ -254,9 +254,9 @@
             	        "columnDefs": [
              	            { "orderable": true, "targets": -1 },
              	            { className: "dt-head-center", "targets":[]},
-            	            { className: "dt-left", "targets": [3] },
-            	            { className: "dt-center", "targets": [0,1,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19] },
-            	         	{ className: "dt-body-right", "targets": [7,9,12,13] },
+            	            { className: "dt-left", "targets": [] },
+            	            { className: "dt-center", "targets": [3,4,5,6,8,10,12,13,14,15,20,21] },
+            	         	{ className: "dt-body-right", "targets": [0,1,2,7,9,11,12,13,16,17,18,19] },
             	            { "visible": false, "targets": [4,5,6,8,10,13]},
             	       		],
             	         	// "paging": true,
@@ -267,7 +267,7 @@
     			        	},
     			        columns: [
         			        	{ title: "Emp Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_code' }, 
-        			        	{ title: "Div", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'div' },
+        			        	{ title: "Division Id", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'division_id' },
         			        	{ title: "Week Ending", width:"5%", searchable:true, searchFormat: "YYYY/MM/DD", "defaultContent": "<i>N/A</i>", data:'week_ending' },
         			        	{ title: "Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_name' },
         			        	{ title: "Status", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_status' },
