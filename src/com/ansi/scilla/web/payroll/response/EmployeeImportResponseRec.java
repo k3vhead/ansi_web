@@ -1,9 +1,14 @@
 package com.ansi.scilla.web.payroll.response;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.db.PayrollEmployee;
 import com.ansi.scilla.common.exceptions.InvalidValueException;
@@ -15,7 +20,7 @@ import com.ansi.scilla.common.utils.compare.StringComparison;
 
 	
 public	class EmployeeImportResponseRec extends EmployeeImportRecord implements AnsiComparable {
-	
+	private final Logger logger = LogManager.getLogger(EmployeeImportResponseRec.class);
 	private static final long serialVersionUID = 1L;
 		private Boolean recordMatches;
 		
@@ -25,7 +30,26 @@ public	class EmployeeImportResponseRec extends EmployeeImportRecord implements A
 		
 		public EmployeeImportResponseRec(EmployeeImportRecord record) throws IllegalAccessException, InvocationTargetException {
 			this();
-			BeanUtils.copyProperties(this, record);
+//			BeanUtils.copyProperties(this, record);
+			this.employeeCode = record.getEmployeeCode();
+			this.companyCode = record.getCompanyCode();
+			this.divisionNbr = record.getDivisionNbr();
+			
+			this.firstName = record.getFirstName();
+			this.lastName = record.getLastName();
+			this.departmentDescription = record.getDepartmentDescription();
+			this.status = record.getStatus();
+			this.terminationDate = record.getTerminationDate();
+			this.unionMember = record.getUnionMember();
+			this.unionCode = record.getUnionCode();
+			this.unionRate = record.getUnionRate();
+			this.processDate = record.getProcessDate();
+			this.recordStatus = record.getRecordStatus();
+			this.fieldList = record.getFieldList();
+			this.rowId = record.getRowId();
+			this.divisionId = record.getDivisionId();
+			this.div = record.getDiv();
+			logger.log(Level.DEBUG, record.getEmployeeCode() + "\t" + record.getRowId() + "\t" + this.getRowId());
 			this.recordMatches = null;
 		}
 

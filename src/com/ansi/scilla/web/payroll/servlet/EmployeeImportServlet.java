@@ -95,9 +95,10 @@ public class EmployeeImportServlet extends AbstractServlet {
 					
 					EmployeeImportParser parser = new EmployeeImportParser(conn, fileName, inputStream);
 					List<EmployeeImportRecord> employeeRecords = parser.getEmployeeRecords();	
-					
+
 					BetterEmployeeRecordTransformer betterTransformer = new BetterEmployeeRecordTransformer(employeeMap, divMap, employeeStatusMap);
 					List<EmployeeImportResponseRec> matchedRecords = IterableUtils.toList(IterableUtils.transformedIterable(employeeRecords, betterTransformer));
+
 					data = new EmployeeImportResponse();
 					data.setFileName(fileName);
 					data.setEmployeeRecords(matchedRecords);
