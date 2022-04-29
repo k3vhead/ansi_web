@@ -354,15 +354,47 @@
 	           				columnDefs : [
 	             	            //{ className : "dt-head-center", "targets":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]},
 	            	            { className : "dt-left", "targets": [1] },
-	            	            { className : "dt-center", "targets": [0,3] },
+	            	            { className : "dt-center", "targets": [17,18] },
 	            	            //{ className : "dt-right", "targets": [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]}
-	            	            { className : "dt-right", "targets": [4,5,6,7,8,9,10,11,12,13,14,15,16]}
+	            	            { className : "dt-right", "targets": [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]}
 	            	            
 	            	            	            	      	            	             
 	            	         ],
 	           				columns : [
+		           				// Row		
 	           					{ title : "Row", searchable:true, "defaultContent": "", data:'row' },
+		           				// Employee Name 		
 	           					{ title : "Employee Name", searchable:true, "defaultContent": "", data:'employeeName' },
+		           				// Regular  Hours		
+	           					{ title : "Reg Hrs", searchable:true, "defaultContent": "", data:'regularHours' },
+		           				// Regular  Pay		
+	           					{ title : "Reg Pay", searchable:true, "defaultContent": "", data:'regularPay' },
+		           				// Expenses		
+	           					{ title : "Exp", searchable:true, "defaultContent": "", data:'expenses' },
+		           				// O.T.  Hours		
+	           					{ title : "OT Hrs", searchable:true, "defaultContent": "", data:'otHours' },
+		           				// O.T.  Pay		
+	           					{ title : "OT Pay", searchable:true, "defaultContent": "", data:'otPay' },
+		           				// Vac   Hours		
+	           					{ title : "Vac Hrs", searchable:true, "defaultContent": "", data:'vacationHours' },
+		           				// Vac   Pay		
+	           					{ title : "Vac Pay", searchable:true, "defaultContent": "", data:'vacationPay' },
+		           				// Hol  Hours		
+	           					{ title : "Hol Hrs", searchable:true, "defaultContent": "", data:'holidayHours' },
+		           				// Hol Pay		
+	           					{ title : "Hol Pay", searchable:true, "defaultContent": "", data:'holidayPay' },
+		           				// Gross Pay		
+	           					{ title : "Gross Pay", searchable:true, "defaultContent": "", data:'grossPay' },
+		           				// Exp Smt'd		
+	           					{ title : "Exp Smt'd", searchable:true, "defaultContent": "", data:'expensesSubmitted' },
+		           				// Exp Allw'd		
+	           					{ title : "Exp All'd", searchable:true, "defaultContent": "", data:'expensesAllowed' },
+		           				// VOL		
+	           					{ title : "Volume", searchable:true, "defaultContent": "", data:'volume' },
+		           				// D/L		
+	           					{ title : "Direct Labor", searchable:true, "defaultContent": "", data:'directLabor' },
+		           				// Prod
+	           					{ title : "Prod %", searchable:true, "defaultContent": "", data:'productivity' },
 	           					{ title : "Status", "defaultContent":"", 
 	           						data : function(row, type, set) {
 										var $tag = TIMESHEET_IMPORT.statusIsGood;          							
@@ -370,23 +402,6 @@
 	           							return $tag;
 	           						}
 	           					},
-	           					{ title : "Reg Hrs", searchable:true, "defaultContent": "", data:'regularHours' },
-	           					{ title : "Reg Pay", searchable:true, "defaultContent": "", data:'regularPay' },
-	           					{ title : "OT Hrs", searchable:true, "defaultContent": "", data:'otHours' },
-	           					{ title : "OT Pay", searchable:true, "defaultContent": "", data:'otPay' },
-	           					{ title : "Vac Hrs", searchable:true, "defaultContent": "", data:'vacationHours' },
-	           					{ title : "Vac Pay", searchable:true, "defaultContent": "", data:'vacationPay' },
-
-	           					{ title : "Hol Hrs", searchable:true, "defaultContent": "", data:'holidayHours' },
-	           					{ title : "Hol Pay", searchable:true, "defaultContent": "", data:'holidayPay' },
-	           					{ title : "Direct Labor", searchable:true, "defaultContent": "", data:'directLabor' },
-	           					{ title : "Volume", searchable:true, "defaultContent": "", data:'volume' },
-	           					{ title : "Gross Pay", searchable:true, "defaultContent": "", data:'grossPay' },
-	           					{ title : "Exp", searchable:true, "defaultContent": "", data:'expenses' },
-	           					{ title : "Exp All'd", searchable:true, "defaultContent": "", data:'expensesAllowed' },
-	           					{ title : "Exp Smt'd", searchable:true, "defaultContent": "", data:'expensesSubmitted' },
-	           					{ title : "Prod %", searchable:true, "defaultContent": "", data:'productivity' },
-	           					
 	           					{ title : "Action", 
 	           						'orderable': false, 	           						
 	    			            	data: function ( row, type, set ) { 
@@ -910,3 +925,7 @@
 		</div>				
     </tiles:put>
 </tiles:insert>
+
+
+
+
