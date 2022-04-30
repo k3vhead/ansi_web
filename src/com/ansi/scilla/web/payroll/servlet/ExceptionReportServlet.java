@@ -73,6 +73,7 @@ public class ExceptionReportServlet extends AbstractLookupServlet {
 	
 	public static final String ROW_ID = "row_id";
 	
+	public static final String PARM_ERROR_FILTER = "errorFilter";
 
 	private static final long serialVersionUID = 1L;
 	public static final String REALM = "payroll/exceptionReport";
@@ -136,6 +137,10 @@ public class ExceptionReportServlet extends AbstractLookupServlet {
 		
 		String groupId = path.substring(StringUtils.lastIndexOf(path, "/")+1);
 		logger.log(Level.DEBUG, "groupId: " + groupId);
+		
+		String errorFilter = request.getParameter(PARM_ERROR_FILTER);
+		boolean errorsOnly = (! StringUtils.isBlank(errorFilter)) && errorFilter.equalsIgnoreCase("true");
+		logger.log(Level.DEBUG, "Errors: " + errorsOnly);
 		
 		if ( StringUtils.isNumeric(groupId) ) {
 			SessionData sessionData = (SessionData)request.getSession().getAttribute(SessionData.KEY);

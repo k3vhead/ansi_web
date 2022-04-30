@@ -106,6 +106,10 @@
         					EXCEPTION_REPORT.makeModals();
         				}
        				});
+        			
+        			$("#errorsOnlyCheckbox").click(function($event) {
+        				$("#prompt-div select[name='companyCode']").change(); //if the checkbox is clicked, act as if company has been selected
+        			});
         		},
         		
         		
@@ -181,6 +185,10 @@
         		
         		makeExceptionTable : function($companyCode) {
         			var $companyCode = EXCEPTION_REPORT.currentCompanyCode;
+        			var $errorsOnly = $("#errorsOnlyCheckbox").prop('checked');
+        			console.log($errorsOnly);
+        			var $outbound = {"errorFilter":$errorsOnly};
+        			
         			
         			var $yes = '<webthing:checkmark>Yes</webthing:checkmark>';
         			var $no = '<webthing:ban>No</webthing:ban>';
@@ -264,7 +272,7 @@
     			        "ajax": {
     			        	"url": "payroll/exceptionReport/" + $companyCode,
     			        	"type": "GET",
-    			        	"data": {},
+    			        	"data": $outbound,
     			        	},
     			        columns: [
         			        	{ title: "Emp Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_code' }, 
@@ -522,11 +530,13 @@
     	<h1>Payroll Exception Report</h1> 
     	
 		<div id="prompt-div">
+			<span class="err companyCodeErr"></span><br />
 	    	<select name="companyCode">
 				<option value=""></option>
 				<ansi:selectOrganization type="COMPANY" active="true" />
 			</select>
-			<span class="err companyCodeErr"></span>
+			<input type="checkbox" id="errorsOnlyCheckbox" /><label for="errorsOnly">Exceptions Only</label>
+			
 			<div style="clear:both; width:100%;font-size:1px;">&nbsp;</div>	
     		<webthing:lookupFilter filterContainer="filter-container" />
 			<h3 id="report-label"></h3>			
