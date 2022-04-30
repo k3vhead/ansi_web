@@ -97,10 +97,11 @@
         			$("#prompt-div select[name='companyCode']").change(function() {
         				$("#prompt-div .companyCodeErr").html("");
         				var $companyCode = $("#prompt-div select[name='companyCode']").val();
-        				if ( $companyCode == null ) {
+        				if ( $companyCode == null || $companyCode == "") {
         					$("#prompt-div .companyCodeErr").html("Required Value");
         				} else {
         					EXCEPTION_REPORT.currentCompanyCode = $companyCode;
+        					$("#report-label").html($("#prompt-div select[name='companyCode'] option:selected").text());
         					EXCEPTION_REPORT.makeExceptionTable();
         					EXCEPTION_REPORT.makeModals();
         				}
@@ -520,15 +521,17 @@
    <tiles:put name="content" type="string">
     	<h1>Payroll Exception Report</h1> 
     	
-    	<webthing:lookupFilter filterContainer="filter-container" />
 		<div id="prompt-div">
 	    	<select name="companyCode">
 				<option value=""></option>
 				<ansi:selectOrganization type="COMPANY" active="true" />
-				
+			</select>
+			<span class="err companyCodeErr"></span>
+			<div style="clear:both; width:100%;font-size:1px;">&nbsp;</div>	
+    		<webthing:lookupFilter filterContainer="filter-container" />
+			<h3 id="report-label"></h3>			
 			<table id="exceptionReportTable">
 			</table>
-			</select>
 		</div>
 		<div id="exception-display" class="modal-window">
 		<table>
