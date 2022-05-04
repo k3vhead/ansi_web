@@ -340,6 +340,8 @@
 	           		populateDataGrid : function($data){
 	           			// create and populate dicttionary object for use in modal
 	           			var dictionary = $data.data.employeeRecordList;
+					    var $errorFound = '<payroll:errorFound>Invalid Value</payroll:errorFound>';
+	           			
 	   
 	           			// populate the visible table on-screen
 	           			var $table = $("#timesheet").DataTable({
@@ -361,18 +363,12 @@
 	            	            	            	      	            	             
 	            	         ],
 	           				columns : [
-		           				// Row		
 	           					{ title : "Row", searchable:true, "defaultContent": "", data:'row' },
-		           				// Employee Name 		
 	           					{ title : "Employee Name", searchable:true, "defaultContent": "", data:'employeeName' },
-		           				// Regular  Hours		
-	           					// { title : "Reg Hrs", searchable:true, "defaultContent": "", data:'regularHours' },
-	           					//{ title : "Reg Hrs", searchable:true, "defaultContent": "", data: function ( row, type, set ) { return row.regularHours == null ? "" : row.regularHours.toFixed(parseFloat(row.regularHours,2)); } },
-	           					//{ title : "Reg Hrs", searchable:true, "defaultContent": "", data: function ( row, type, set ) { return row.regularHours == null ? "" : row.regularHours.toFixed(parseFloat(row.regularHours,2)); } },
-	           					{ title : "Reg Hrs", searchable:true, "defaultContent": "", data: function ( row, type, set ) {
+	           					{ title : "Reg Hrs", searchable:true, "defaultContent": "", 
+	           						data: function ( row, type, set ) {
 	           						    value = null;
-	           						    var $errorFound = '<payroll:errorFound>Invalid Value</payroll:errorFound>';
-	           						    if ( row.regularHours == null ) {
+	           						    if ( row.regularHours == null || row.regularHours == "" ) {
 	           						        value="";
 	           						    } else if ( isNaN(row.regularHours) ) {
 	           						        value=$errorFound;
@@ -382,36 +378,55 @@
 	           						    }
 	           						    return value;
 	           						}},
-		           				// Regular  Pay		
 	           					{ title : "Reg Pay", searchable:true, "defaultContent": "", data:'regularPay' },
-		           				// Expenses		
 	           					{ title : "Exp", searchable:true, "defaultContent": "", data:'expenses' },
-		           				// O.T.  Hours
-	           					{ title : "OT Hrs", searchable:true, "defaultContent": "", data:'otHours' },
-	           					//{ title : "OT Hrs", searchable:true, "defaultContent": "", data: function ( row, type, set ) { return row.otHours == null ? "" : row.otHours.toFixed(2); } },
-		           				// O.T.  Pay		
+	           					{ title : "OT Hrs", searchable:true, "defaultContent": "", 
+	           						data: function ( row, type, set ) {
+	           						    value = null;
+	           						    if ( row.otHours == null || row.otHours == "" ) {
+	           						        value="";
+	           						    } else if ( isNaN(row.otHours) ) {
+	           						        value=$errorFound;
+	           						    } else {
+	           						    	x = parseFloat(row.otHours);
+	           						        value = x.toFixed(2);
+	           						    }
+	           						    return value;
+	           						}},
 	           					{ title : "OT Pay", searchable:true, "defaultContent": "", data:'otPay' },
-		           				// Vac   Hours		
-	           					{ title : "Vac Hrs", searchable:true, "defaultContent": "", data:'vacationHours' },
-	           					//{ title : "Vac Hrs", searchable:true, "defaultContent": "", data: function ( row, type, set ) { return row.vacationHours == null ? "" : row.vacationHours.toFixed(2); } },
-		           				// Vac   Pay		
+	           					{ title : "Vac Hrs", searchable:true, "defaultContent": "", 
+	           						data: function ( row, type, set ) {
+	           						    value = null;
+	           						    if ( row.vacationHours == null || row.vacationHours == ""  ) {
+	           						        value="";
+	           						    } else if ( isNaN(row.vacationHours) ) {
+	           						        value=$errorFound;
+	           						    } else {
+	           						    	x = parseFloat(row.vacationHours);
+	           						        value = x.toFixed(2);
+	           						    }
+	           						    return value;
+	           						} },
 	           					{ title : "Vac Pay", searchable:true, "defaultContent": "", data:'vacationPay' },
-		           				// Hol  Hours		
-	           					{ title : "Hol Hrs", searchable:true, "defaultContent": "", data:'holidayHours' },
-	           					//{ title : "Hol Hrs", searchable:true, "defaultContent": "", data: function ( row, type, set ) { return row.holidayHours == null ? "" : row.holidayHours.toFixed(2); } },
-		           				// Hol Pay		
+	           					{ title : "Hol Hrs", searchable:true, "defaultContent": "", 
+	           						data: function ( row, type, set ) {
+	           						    value = null;
+	           						    if ( row.holidayHours == null || row.holidayHours == "") {
+	           						        value="";
+	           						    } else if ( isNaN(row.holidayHours) ) {
+	           						        value=$errorFound;
+	           						    } else {
+	           						    	x = parseFloat(row.holidayHours);
+	           						        value = x.toFixed(2);
+	           						    }
+	           						    return value;
+	           						} },
 	           					{ title : "Hol Pay", searchable:true, "defaultContent": "", data:'holidayPay' },
-		           				// Gross Pay		
 	           					{ title : "Gross Pay", searchable:true, "defaultContent": "", data:'grossPay' },
-		           				// Exp Smt'd		
 	           					{ title : "Exp Smt'd", searchable:true, "defaultContent": "", data:'expensesSubmitted' },
-		           				// Exp Allw'd		
 	           					{ title : "Exp All'd", searchable:true, "defaultContent": "", data:'expensesAllowed' },
-		           				// VOL		
 	           					{ title : "Volume", searchable:true, "defaultContent": "", data:'volume' },
-		           				// D/L		
 	           					{ title : "Direct Labor", searchable:true, "defaultContent": "", data:'directLabor' },
-		           				// Prod
 	           					{ title : "Prod %", searchable:true, "defaultContent": "", data:'productivity' },
 	           					{ title : "Status", "defaultContent":"", 
 	           						data : function(row, type, set) {
