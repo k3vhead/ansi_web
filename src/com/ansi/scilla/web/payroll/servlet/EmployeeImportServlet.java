@@ -200,8 +200,8 @@ public class EmployeeImportServlet extends AbstractServlet {
 				if ( StringUtils.isNumeric(arg0.getDivisionNbr())) {
 					if ( divMap.containsKey(Integer.valueOf(arg0.getDivisionNbr()))) {
 						Division division= divMap.get(Integer.valueOf(arg0.getDivisionNbr()));
-						arg0.setDivisionId(division.getDivisionId());
-						arg0.setDiv(division.getDivisionNbr() + "-" + division.getDivisionCode());
+						rec.setDivisionId(division.getDivisionId());
+						rec.setDiv(division.getDivisionNbr() + "-" + division.getDivisionCode());
 						
 					}
 					
@@ -209,7 +209,7 @@ public class EmployeeImportServlet extends AbstractServlet {
 				
 				if ( employeeStatusMap.containsKey(arg0.getStatus())) {
 					EmployeeStatus employeeStatus= employeeStatusMap.get(arg0.getStatus());
-					arg0.setStatus(employeeStatus.name());
+					rec.setStatus(employeeStatus.name());
 					
 				}
 				
