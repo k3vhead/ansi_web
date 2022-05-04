@@ -166,12 +166,7 @@ public class TimesheetImportResponse extends MessageResponse {
 			Integer localeId = locale == null ? stateLocale.getLocaleId() : locale.getLocaleId();
 			Integer returnCount=0;
 			
-			try {
-				String sql = "select count(*) as record_count" 
-						+ "from payroll_worksheet "
-						+ "where divsion_id= ? "
-						+ "and week_ending = ?"
-						+ "and locale_id=? ";
+				String sql = "select count(*) as record_count from payroll_worksheet where division_id=? and week_ending=? and locale_id=?";
 							
 				PreparedStatement ps = conn.prepareStatement(sql);
 				ps.setInt (1, this.normal.divisionId);
@@ -189,10 +184,7 @@ public class TimesheetImportResponse extends MessageResponse {
 					webMessagesStatus.addMessage(FILENAME, "Duplicate Upload. Existing records will be replaced");
 					webMessagesStatus.setResponseCode(ResponseCode.EDIT_WARNING);
 				}
-			} catch(SQLException e) {
-				webMessagesStatus.addMessage(FILENAME, "SQL Error while checking for previous upload");
-				webMessagesStatus.setResponseCode(ResponseCode.EDIT_FAILURE);
-			};
+			
 		}			
 		return webMessagesStatus;		
 	}

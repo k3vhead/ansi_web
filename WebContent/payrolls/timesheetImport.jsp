@@ -49,9 +49,7 @@
         		width:402px;
         		float:right;
         	}
-			#message-row {
-				display:none;
-			}
+			
 			.col-heading{
 				text-align: left;
 				font-weight: bold;
@@ -240,9 +238,9 @@
 	           			console.log("processUploadWarning");
 	           			
 	           			$("#data-header").show();
-	           			$("#message-row").show();
+	           			$("#file-header-data .err").html("");
 	           			$.each($data.data.webMessages, function($index, $value) {
-	           				var $destination = "#message-row ." + $index + "Err";
+	           				var $destination = "#file-header-data ." + $index + "Err";
 	           				var $message = $value[0];
 	           				console.log($destination + " " + $message);
 	           				$($destination).html($message);
@@ -467,7 +465,7 @@
 	           		processUploadSuccess : function($data) {
 	           			console.log("processUploadSuccess");
 	           			$("#prompt-div").hide();
-	           			$("#message-row").hide();
+	           			$("#file-header-data .err").html();
 	           			$("#data-header").show();
 	           			console.log("showing display div.. ");
 	           			console.log($data);
@@ -793,15 +791,6 @@
     				<td class="col6" id="payroll-file-label" >			<span class="form-label">Payroll File		</span> 	</td>
     				<td class="col7">									<span class="form-label">					</span>		</td>
     			</tr>
-    			<tr id="message-row">
-    				<td class="col1"><span class="divisionErr err"></span></td>
-    				<td class="col2"><span class="operationsManagerNameErr err"></span></td>
-    				<td class="col3"><span class="weekEndingErr err"></span></td>
-    				<td class="col4"><span class="stateErr err"></span></td>
-    				<td class="col5"><span class="cityErr err"></span></td>
-    				<td class="col6">&nbsp;</td>
-    				<td class="col7">&nbsp;</td>
-    			</tr>
 			    <tr>
     				<td class="col1">
     					<span class="divisionId">
@@ -832,11 +821,14 @@
     					<input type="button" value="Save" id="open-button" />
     				</td>
     			</tr>
-<!-- 
-
- -->
-
-
+				<tr class="message-row">
+    				<td class="col1"><span class="divisionErr err"></span></td>
+    				<td class="col2"><span class="operationsManagerNameErr err"></span></td>
+    				<td class="col3"><span class="weekEndingErr err"></span></td>
+    				<td class="col4"><span class="stateErr err"></span></td>
+    				<td class="col5"><span class="cityErr err"></span></td>
+    				<td class="col6" colspan="2"><span class="fileNameErr err"></span></td>
+    			</tr>
     		</table>
 		</div>
 
