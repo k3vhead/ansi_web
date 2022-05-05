@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -32,6 +35,7 @@ import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.response.WebMessagesStatus;
 import com.ansi.scilla.web.payroll.request.TimesheetImportRequest;
+import com.thewebthing.commons.lang.StringUtils;
 
 public class TimesheetImportResponse extends MessageResponse {
 	
@@ -125,9 +129,14 @@ public class TimesheetImportResponse extends MessageResponse {
 			webMessages.addMessage(STATE, "Invalid Value");
 		}
 		
+		
+		
 		// any problems up to here are errors
 		WebMessagesStatus webMessagesStatus = new WebMessagesStatus(webMessages, webMessages.isEmpty() ? ResponseCode.SUCCESS : ResponseCode.EDIT_FAILURE);
 
+		// defining this outside the try so it can be used later.
+		Locale locale = null;
+		
 		// we can only validate the city if the state is legit
 		if ( ! webMessages.containsKey(STATE)) {
 			if ( ! this.state.equalsIgnoreCase(stateLocale.getStateName() )) {
@@ -135,7 +144,7 @@ public class TimesheetImportResponse extends MessageResponse {
 				webMessagesStatus.setResponseCode(ResponseCode.EDIT_WARNING);
 			}
 			try {
-				Locale locale = PayrollUtils.alias2Locale(conn, this.city, stateLocale.getStateName());
+				locale = PayrollUtils.alias2Locale(conn, this.city, stateLocale.getStateName());
 				normalizeLocale(locale);
 				if ( ! this.state.equalsIgnoreCase(this.normal.state) || ! this.city.equalsIgnoreCase(this.normal.city) ) {
 					// the normalization process has changed something
@@ -150,6 +159,33 @@ public class TimesheetImportResponse extends MessageResponse {
 			}
 		}
 
+		// check to see if a weekly payroll report has already been uploaded
+		// for this division/week/locale id combination 
+		// in the payroll_worksheet table
+		if ( webMessages.isEmpty() || webMessagesStatus.getResponseCode() == ResponseCode.EDIT_WARNING ) { 
+			Integer localeId = locale == null ? stateLocale.getLocaleId() : locale.getLocaleId();
+			Integer returnCount=0;
+			
+				String sql = "select count(*) as record_count from payroll_worksheet where division_id=? and week_ending=? and locale_id=?";
+							
+				PreparedStatement ps = conn.prepareStatement(sql);
+				ps.setInt (1, this.normal.divisionId);
+				ps.setDate(2, new java.sql.Date(normal.weekEnding.getTimeInMillis()));
+				ps.setInt (3, localeId);
+								
+				ResultSet rs = ps.executeQuery();
+				
+				if (rs.next()) {
+					returnCount=rs.getInt("record_count");
+				}
+				rs.close();
+				
+				if(returnCount > 0) {
+					webMessagesStatus.addMessage(FILENAME, "Duplicate Upload. Existing records will be replaced");
+					webMessagesStatus.setResponseCode(ResponseCode.EDIT_WARNING);
+				}
+			
+		}			
 		return webMessagesStatus;		
 	}
 	
@@ -254,6 +290,7 @@ public class TimesheetImportResponse extends MessageResponse {
 		public String state;
 		public Calendar weekEnding;
 		public String weekEndingDisplay;
+		public int localeId;
 		
 		public Integer getDivisionId() {
 			return divisionId;
@@ -261,6 +298,11 @@ public class TimesheetImportResponse extends MessageResponse {
 		public String getCity() {
 			return city;
 		}
+
+		public Integer getLocaleID() {
+			return localeId;
+		}
+		
 		public String getState() {
 			return state;
 		}

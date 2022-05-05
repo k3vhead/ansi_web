@@ -40,7 +40,7 @@ public class ExceptionReportServlet extends AbstractLookupServlet {
 
 //	public static final String COMPANY_CODE = "company_code";
 	public static final String EMPLOYEE_CODE = "payroll_worksheet.employee_code";
-	public static final String DIV = "division.division_id";
+	public static final String DIVISION_ID = "concat(division.division_nbr, '-', division.division_code)";
 	public static final String WEEK_ENDING = "week_ending";
 	public static final String EMPLOYEE_FIRST_NAME = "employee_name";
 	public static final String EMPLOYEE_STATUS = "payroll_employee.employee_status";
@@ -73,6 +73,7 @@ public class ExceptionReportServlet extends AbstractLookupServlet {
 	
 	public static final String ROW_ID = "row_id";
 	
+	public static final String PARM_ERROR_FILTER = "errorFilter";
 
 	private static final long serialVersionUID = 1L;
 	public static final String REALM = "payroll/exceptionReport";
@@ -85,7 +86,7 @@ public class ExceptionReportServlet extends AbstractLookupServlet {
 
 		//		COMPANY_CODE,
 				EMPLOYEE_CODE,
-				DIV,
+				DIVISION_ID,
 				WEEK_ENDING,
 				EMPLOYEE_FIRST_NAME,
 		//		DESCRIPTION,
@@ -136,6 +137,10 @@ public class ExceptionReportServlet extends AbstractLookupServlet {
 		
 		String groupId = path.substring(StringUtils.lastIndexOf(path, "/")+1);
 		logger.log(Level.DEBUG, "groupId: " + groupId);
+		
+		String errorFilter = request.getParameter(PARM_ERROR_FILTER);
+		boolean errorsOnly = (! StringUtils.isBlank(errorFilter)) && errorFilter.equalsIgnoreCase("true");
+		logger.log(Level.DEBUG, "Errors: " + errorsOnly);
 		
 		if ( StringUtils.isNumeric(groupId) ) {
 			SessionData sessionData = (SessionData)request.getSession().getAttribute(SessionData.KEY);
@@ -219,7 +224,7 @@ public class ExceptionReportServlet extends AbstractLookupServlet {
 			
 			
 			Integer employeeCode = (Integer)arg0.get(EMPLOYEE_CODE);
-			Integer divisionId = (Integer)arg0.get(DIV);
+			Integer divisionId = (Integer)arg0.get(DIVISION_ID);
 			String weekEnding = (String)arg0.get("week_ending_display");
 
 			List<String> source = new ArrayList<String>();

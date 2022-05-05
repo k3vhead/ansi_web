@@ -97,14 +97,19 @@
         			$("#prompt-div select[name='companyCode']").change(function() {
         				$("#prompt-div .companyCodeErr").html("");
         				var $companyCode = $("#prompt-div select[name='companyCode']").val();
-        				if ( $companyCode == null ) {
+        				if ( $companyCode == null || $companyCode == "") {
         					$("#prompt-div .companyCodeErr").html("Required Value");
         				} else {
         					EXCEPTION_REPORT.currentCompanyCode = $companyCode;
+        					$("#report-label").html($("#prompt-div select[name='companyCode'] option:selected").text());
         					EXCEPTION_REPORT.makeExceptionTable();
         					EXCEPTION_REPORT.makeModals();
         				}
        				});
+        			
+        			$("#errorsOnlyCheckbox").click(function($event) {
+        				$("#prompt-div select[name='companyCode']").change(); //if the checkbox is clicked, act as if company has been selected
+        			});
         		},
         		
         		
@@ -180,6 +185,10 @@
         		
         		makeExceptionTable : function($companyCode) {
         			var $companyCode = EXCEPTION_REPORT.currentCompanyCode;
+        			var $errorsOnly = $("#errorsOnlyCheckbox").prop('checked');
+        			console.log($errorsOnly);
+        			var $outbound = {"errorFilter":$errorsOnly};
+        			
         			
         			var $yes = '<webthing:checkmark>Yes</webthing:checkmark>';
         			var $no = '<webthing:ban>No</webthing:ban>';
@@ -254,20 +263,20 @@
             	        "columnDefs": [
              	            { "orderable": true, "targets": -1 },
              	            { className: "dt-head-center", "targets":[]},
-            	            { className: "dt-left", "targets": [3] },
-            	            { className: "dt-center", "targets": [0,1,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19] },
-            	         	{ className: "dt-body-right", "targets": [7,9,12,13] },
+            	            { className: "dt-left", "targets": [] },
+            	            { className: "dt-center", "targets": [3,4,5,6,8,10,12,13,14,15,20,21] },
+            	         	{ className: "dt-body-right", "targets": [0,1,2,7,9,11,12,13,16,17,18,19] },
             	            { "visible": false, "targets": [4,5,6,8,10,13]},
             	       		],
             	         	// "paging": true,
     			        "ajax": {
     			        	"url": "payroll/exceptionReport/" + $companyCode,
     			        	"type": "GET",
-    			        	"data": {},
+    			        	"data": $outbound,
     			        	},
     			        columns: [
         			        	{ title: "Emp Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_code' }, 
-        			        	{ title: "Div", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'div' },
+        			        	{ title: "Division Id", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'division_id' },
         			        	{ title: "Week Ending", width:"5%", searchable:true, searchFormat: "YYYY/MM/DD", "defaultContent": "<i>N/A</i>", data:'week_ending' },
         			        	{ title: "Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_name' },
         			        	{ title: "Status", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_status' },
@@ -520,15 +529,19 @@
    <tiles:put name="content" type="string">
     	<h1>Payroll Exception Report</h1> 
     	
-    	<webthing:lookupFilter filterContainer="filter-container" />
 		<div id="prompt-div">
+			<span class="err companyCodeErr"></span><br />
 	    	<select name="companyCode">
 				<option value=""></option>
 				<ansi:selectOrganization type="COMPANY" active="true" />
-				
+			</select>
+			<input type="checkbox" id="errorsOnlyCheckbox" /><label for="errorsOnly">Exceptions Only</label>
+			
+			<div style="clear:both; width:100%;font-size:1px;">&nbsp;</div>	
+    		<webthing:lookupFilter filterContainer="filter-container" />
+			<h3 id="report-label"></h3>			
 			<table id="exceptionReportTable">
 			</table>
-			</select>
 		</div>
 		<div id="exception-display" class="modal-window">
 		<table>

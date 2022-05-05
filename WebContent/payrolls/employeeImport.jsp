@@ -642,9 +642,7 @@
 					<td><span class="err notesErr"></span></td>
 				</tr>
 			</table>
-			<table>
-				<webthing:callNoteModals />
-			</table>
+			
 		</div>
 		
     </tiles:put>

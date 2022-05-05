@@ -45,9 +45,11 @@
 				/* width: 100%; */
 				text-align: right; 
 			}
-			#message-row {
-				display:none;
-			}
+			#filter-container {
+        		width:402px;
+        		float:right;
+        	}
+			
 			.col-heading{
 				text-align: left;
 				font-weight: bold;
@@ -55,17 +57,17 @@
 			#organization-display {
 				display:none;
 			}
-		#organization-display table {
-			width:100%;
-			border:solid 1px #404040;
-		}
-			#organization-display th {
-				text-align:left;
+			#organization-display table {
+				width:100%;
+				border:solid 1px #404040;
 			}
-		#organization-edit table {
-			width:100%;
-			border:solid 1px #404040;
-		}
+				#organization-display th {
+					text-align:left;
+				}
+			#organization-edit table {
+				width:100%;
+				border:solid 1px #404040;
+			}
 			#organization-edit th {
 				text-align:left;
 			}
@@ -236,9 +238,9 @@
 	           			console.log("processUploadWarning");
 	           			
 	           			$("#data-header").show();
-	           			$("#message-row").show();
+	           			$("#file-header-data .err").html("");
 	           			$.each($data.data.webMessages, function($index, $value) {
-	           				var $destination = "#message-row ." + $index + "Err";
+	           				var $destination = "#file-header-data ." + $index + "Err";
 	           				var $message = $value[0];
 	           				console.log($destination + " " + $message);
 	           				$($destination).html($message);
@@ -330,9 +332,14 @@
 	           			$('input[name="city"]').val($disp_city);
 	           			$("#data-header .timesheetFile").html($data.data.fileName);	           				           		
 	           		},
+	           		
+	           		
+	           		
 	           		populateDataGrid : function($data){
 	           			// create and populate dicttionary object for use in modal
 	           			var dictionary = $data.data.employeeRecordList;
+					    var $errorFound = '<payroll:errorFound>Invalid Value</payroll:errorFound>';
+	           			
 	   
 	           			// populate the visible table on-screen
 	           			var $table = $("#timesheet").DataTable({
@@ -347,15 +354,78 @@
 	           				columnDefs : [
 	             	            //{ className : "dt-head-center", "targets":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]},
 	            	            { className : "dt-left", "targets": [1] },
-	            	            { className : "dt-center", "targets": [0,3] },
+	            	            { className : "dt-center", "targets": [17,18] },
 	            	            //{ className : "dt-right", "targets": [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]}
-	            	            { className : "dt-right", "targets": [4,5,6,7,8,9,10,11,12,13,14,15,16]}
+	            	            { className : "dt-right", "targets": [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]}
 	            	            
 	            	            	            	      	            	             
 	            	         ],
 	           				columns : [
-	           					{ title : "Row", "defaultContent": "", data:'row' },
-	           					{ title : "Employee Name", "defaultContent": "", data:'employeeName' },
+	           					{ title : "Row", searchable:true, "defaultContent": "", data:'row' },
+	           					{ title : "Employee Name", searchable:true, "defaultContent": "", data:'employeeName' },
+	           					{ title : "Reg Hrs", searchable:true, "defaultContent": "", 
+	           						data: function ( row, type, set ) {
+	           						    value = null;
+	           						    if ( row.regularHours == null || row.regularHours == "" ) {
+	           						        value="";
+	           						    } else if ( isNaN(row.regularHours) ) {
+	           						        value=$errorFound;
+	           						    } else {
+	           						    	x = parseFloat(row.regularHours);
+	           						        value = x.toFixed(2);
+	           						    }
+	           						    return value;
+	           						}},
+	           					{ title : "Reg Pay", searchable:true, "defaultContent": "", data:'regularPay' },
+	           					{ title : "Exp", searchable:true, "defaultContent": "", data:'expenses' },
+	           					{ title : "OT Hrs", searchable:true, "defaultContent": "", 
+	           						data: function ( row, type, set ) {
+	           						    value = null;
+	           						    if ( row.otHours == null || row.otHours == "" ) {
+	           						        value="";
+	           						    } else if ( isNaN(row.otHours) ) {
+	           						        value=$errorFound;
+	           						    } else {
+	           						    	x = parseFloat(row.otHours);
+	           						        value = x.toFixed(2);
+	           						    }
+	           						    return value;
+	           						}},
+	           					{ title : "OT Pay", searchable:true, "defaultContent": "", data:'otPay' },
+	           					{ title : "Vac Hrs", searchable:true, "defaultContent": "", 
+	           						data: function ( row, type, set ) {
+	           						    value = null;
+	           						    if ( row.vacationHours == null || row.vacationHours == ""  ) {
+	           						        value="";
+	           						    } else if ( isNaN(row.vacationHours) ) {
+	           						        value=$errorFound;
+	           						    } else {
+	           						    	x = parseFloat(row.vacationHours);
+	           						        value = x.toFixed(2);
+	           						    }
+	           						    return value;
+	           						} },
+	           					{ title : "Vac Pay", searchable:true, "defaultContent": "", data:'vacationPay' },
+	           					{ title : "Hol Hrs", searchable:true, "defaultContent": "", 
+	           						data: function ( row, type, set ) {
+	           						    value = null;
+	           						    if ( row.holidayHours == null || row.holidayHours == "") {
+	           						        value="";
+	           						    } else if ( isNaN(row.holidayHours) ) {
+	           						        value=$errorFound;
+	           						    } else {
+	           						    	x = parseFloat(row.holidayHours);
+	           						        value = x.toFixed(2);
+	           						    }
+	           						    return value;
+	           						} },
+	           					{ title : "Hol Pay", searchable:true, "defaultContent": "", data:'holidayPay' },
+	           					{ title : "Gross Pay", searchable:true, "defaultContent": "", data:'grossPay' },
+	           					{ title : "Exp Smt'd", searchable:true, "defaultContent": "", data:'expensesSubmitted' },
+	           					{ title : "Exp All'd", searchable:true, "defaultContent": "", data:'expensesAllowed' },
+	           					{ title : "Volume", searchable:true, "defaultContent": "", data:'volume' },
+	           					{ title : "Direct Labor", searchable:true, "defaultContent": "", data:'directLabor' },
+	           					{ title : "Prod %", searchable:true, "defaultContent": "", data:'productivity' },
 	           					{ title : "Status", "defaultContent":"", 
 	           						data : function(row, type, set) {
 										var $tag = TIMESHEET_IMPORT.statusIsGood;          							
@@ -363,23 +433,6 @@
 	           							return $tag;
 	           						}
 	           					},
-	           					{ title : "Reg Hrs", "defaultContent": "", data:'regularHours' },
-	           					{ title : "Reg Pay", "defaultContent": "", data:'regularPay' },
-	           					{ title : "OT Hrs", "defaultContent": "", data:'otHours' },
-	           					{ title : "OT Pay", "defaultContent": "", data:'otPay' },
-	           					{ title : "Vac Hrs", "defaultContent": "", data:'vacationHours' },
-	           					{ title : "Vac Pay", "defaultContent": "", data:'vacationPay' },
-
-	           					{ title : "Hol Hrs", "defaultContent": "", data:'holidayHours' },
-	           					{ title : "Hol Pay", "defaultContent": "", data:'holidayPay' },
-	           					{ title : "Direct Labor", "defaultContent": "", data:'directLabor' },
-	           					{ title : "Volume", "defaultContent": "", data:'volume' },
-	           					{ title : "Gross Pay", "defaultContent": "", data:'grossPay' },
-	           					{ title : "Exp", "defaultContent": "", data:'expenses' },
-	           					{ title : "Exp All'd", "defaultContent": "", data:'expensesAllowed' },
-	           					{ title : "Exp Smt'd", "defaultContent": "", data:'expensesSubmitted' },
-	           					{ title : "Prod %", "defaultContent": "", data:'productivity' },
-	           					
 	           					{ title : "Action", 
 	           						'orderable': false, 	           						
 	    			            	data: function ( row, type, set ) { 
@@ -392,14 +445,10 @@
 	           				],
 	           				"initComplete": function(settings, json) {
        			            	var myTable = this;
-       			            	// You're going to need this to add the field-level filters:
-       			            	//LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#timesheetLookup", TIMESHEETLOOKUP.makeTimesheetLookup);
+       			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#timesheet", TIMESHEET_IMPORT.populateDataGrid, null, $data);
 
        			            	$.each($data.data.employeeRecordList, function($index, $value) {
-       			            		
-       			            		//console.log($value.row + ":" + $value.employeeName);
        			            		TIMESHEET_IMPORT.employeeMap[$value.row] = $value;
-       			            		
        			            	});
        			            },
 	           				drawCallback : function( settings ) {
@@ -416,7 +465,7 @@
 	           		processUploadSuccess : function($data) {
 	           			console.log("processUploadSuccess");
 	           			$("#prompt-div").hide();
-	           			$("#message-row").hide();
+	           			$("#file-header-data .err").html();
 	           			$("#data-header").show();
 	           			console.log("showing display div.. ");
 	           			console.log($data);
@@ -742,15 +791,6 @@
     				<td class="col6" id="payroll-file-label" >			<span class="form-label">Payroll File		</span> 	</td>
     				<td class="col7">									<span class="form-label">					</span>		</td>
     			</tr>
-    			<tr id="message-row">
-    				<td class="col1"><span class="divisionErr err"></span></td>
-    				<td class="col2"><span class="operationsManagerNameErr err"></span></td>
-    				<td class="col3"><span class="weekEndingErr err"></span></td>
-    				<td class="col4"><span class="stateErr err"></span></td>
-    				<td class="col5"><span class="cityErr err"></span></td>
-    				<td class="col6">&nbsp;</td>
-    				<td class="col7">&nbsp;</td>
-    			</tr>
 			    <tr>
     				<td class="col1">
     					<span class="divisionId">
@@ -781,15 +821,19 @@
     					<input type="button" value="Save" id="open-button" />
     				</td>
     			</tr>
-<!-- 
-
- -->
-
-
+				<tr class="message-row">
+    				<td class="col1"><span class="divisionErr err"></span></td>
+    				<td class="col2"><span class="operationsManagerNameErr err"></span></td>
+    				<td class="col3"><span class="weekEndingErr err"></span></td>
+    				<td class="col4"><span class="stateErr err"></span></td>
+    				<td class="col5"><span class="cityErr err"></span></td>
+    				<td class="col6" colspan="2"><span class="fileNameErr err"></span></td>
+    			</tr>
     		</table>
 		</div>
 
 		<div id="data-detail">
+			<webthing:lookupFilter filterContainer="filter-container" />
 			<table id="timesheet">
 			</table>
 		</div>
@@ -906,3 +950,7 @@
 		</div>				
     </tiles:put>
 </tiles:insert>
+
+
+
+
