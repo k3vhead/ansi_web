@@ -8,11 +8,11 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.lang3.StringUtils;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+//import org.w3c.dom.Document;
+//import org.w3c.dom.Element;
+//import org.w3c.dom.NamedNodeMap;
+//import org.w3c.dom.Node;
+//import org.w3c.dom.NodeList;
 
 import com.ansi.scilla.common.ApplicationObject;
 
@@ -32,54 +32,54 @@ public class ODSImport {
 	
 	
 	public void go() throws Exception {
-		DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-		File file = new File(filePath);
-		Document doc = builder.parse(file);
-		doc.getDocumentElement().normalize();  // fix up whitespace weirdness
-
-		Element documentElement = doc.getDocumentElement();
-		//		NodeList nodeList = documentElement.getChildNodes();
-
-		NodeList tabList = documentElement.getElementsByTagName("table:table");
-		for ( int i = 0; i < tabList.getLength(); i++ ) {
-			Node node = tabList.item(i);
-			NamedNodeMap attributes = node.getAttributes();
-			Node tableName = attributes.getNamedItem("table:name");
-			String tabName = tableName.getNodeValue();
-			switch(tabName) {
-			case "Monthly Budget Control Summary":
-				processSummary((Element)node);
-				break;
-			case "DOData":
-				break;
-			case "Budget Control":
-				processBudgetControl((Element)node);
-				break;
-			case "TSR":
-				break;
-			case "ludata":
-				break;
-			default:
-				throw new Exception("unexpected tab name: " + tabName);
-			}
-			
-		}
+//		DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+//		File file = new File(filePath);
+//		Document doc = builder.parse(file);
+//		doc.getDocumentElement().normalize();  // fix up whitespace weirdness
+//
+//		Element documentElement = doc.getDocumentElement();
+//		//		NodeList nodeList = documentElement.getChildNodes();
+//
+//		NodeList tabList = documentElement.getElementsByTagName("table:table");
+//		for ( int i = 0; i < tabList.getLength(); i++ ) {
+//			Node node = tabList.item(i);
+//			NamedNodeMap attributes = node.getAttributes();
+//			Node tableName = attributes.getNamedItem("table:name");
+//			String tabName = tableName.getNodeValue();
+//			switch(tabName) {
+//			case "Monthly Budget Control Summary":
+//				processSummary((Element)node);
+//				break;
+//			case "DOData":
+//				break;
+//			case "Budget Control":
+//				processBudgetControl((Element)node);
+//				break;
+//			case "TSR":
+//				break;
+//			case "ludata":
+//				break;
+//			default:
+//				throw new Exception("unexpected tab name: " + tabName);
+//			}
+//			
+//		}
 	}
 	
 	
 	
-	private void processSummary(Element summaryTab) {
-			System.out.println("Processing Summary");
-			Node divisionNode = getNodeByReference(summaryTab, divisionRef);
-			String divisionName = divisionNode.getTextContent();
-			System.out.println("\tdivision name: " + divisionName);
-			Node managerNode = getNodeByReference(summaryTab, managerRef);
-			String managerName = managerNode.getTextContent();
-			System.out.println("\tmanager: " + managerName);
-			Integer year = Integer.valueOf(getNodeByReference(summaryTab, yearRef).getTextContent());
-			System.out.println("Year: " + year);
-			Integer month = Integer.valueOf(getNodeByReference(summaryTab, monthRef).getTextContent());
-			System.out.println("Month: " + month);
+//	private void processSummary(Element summaryTab) {
+//			System.out.println("Processing Summary");
+//			Node divisionNode = getNodeByReference(summaryTab, divisionRef);
+//			String divisionName = divisionNode.getTextContent();
+//			System.out.println("\tdivision name: " + divisionName);
+//			Node managerNode = getNodeByReference(summaryTab, managerRef);
+//			String managerName = managerNode.getTextContent();
+//			System.out.println("\tmanager: " + managerName);
+//			Integer year = Integer.valueOf(getNodeByReference(summaryTab, yearRef).getTextContent());
+//			System.out.println("Year: " + year);
+//			Integer month = Integer.valueOf(getNodeByReference(summaryTab, monthRef).getTextContent());
+//			System.out.println("Month: " + month);
 	
 	//		System.out.println("**************");
 	//		Node row = summaryTab.getElementsByTagName("table:table-row").item(week1Row);
@@ -95,32 +95,32 @@ public class ODSImport {
 	//			String actualOMValue = getNodeByReference(summaryTab, new NodeReference(weekRow, omDLCol)).getTextContent();
 	//			System.out.println("Week: " + weekNumberValue + "\tActual: " + actualDLValue + "\tOM: " + actualOMValue);
 	//		}
-		}
+//		}
 
 
 
-	private void processBudgetControl(Element node) {
-		NodeList rowList = node.getElementsByTagName("table:table-row");
-		Integer firstDataRow = 7;
-		for ( int i = firstDataRow; i < rowList.getLength(); i++ ) {
-			Node row = rowList.item(i);
-			Node firstColumn = ((Element)row).getElementsByTagName("table:table-cell").item(1);
-			if ( firstColumn != null ) {
-				String firstColumnText = firstColumn.getTextContent();
-				if ( ! StringUtils.isBlank(firstColumnText) ) {
-					System.out.println(i + ": " + firstColumnText);
-				}
-			}
-		}
-	}
+//	private void processBudgetControl(Element node) {
+//		NodeList rowList = node.getElementsByTagName("table:table-row");
+//		Integer firstDataRow = 7;
+//		for ( int i = firstDataRow; i < rowList.getLength(); i++ ) {
+//			Node row = rowList.item(i);
+//			Node firstColumn = ((Element)row).getElementsByTagName("table:table-cell").item(1);
+//			if ( firstColumn != null ) {
+//				String firstColumnText = firstColumn.getTextContent();
+//				if ( ! StringUtils.isBlank(firstColumnText) ) {
+//					System.out.println(i + ": " + firstColumnText);
+//				}
+//			}
+//		}
+//	}
 
 
 
-	private Node getNodeByReference(Element tab, NodeReference reference) {
-		Node rowNode = tab.getElementsByTagName("table:table-row").item(reference.row());
-		Node cell = ((Element)rowNode).getElementsByTagName("table:table-cell").item(reference.column());		
-		return cell;
-	}
+//	private Node getNodeByReference(Element tab, NodeReference reference) {
+//		Node rowNode = tab.getElementsByTagName("table:table-row").item(reference.row());
+//		Node cell = ((Element)rowNode).getElementsByTagName("table:table-cell").item(reference.column());		
+//		return cell;
+//	}
 
 
 
@@ -171,9 +171,9 @@ public class ODSImport {
 		public String ticketStatus;
 		public String employee;
 		
-		public BCRImportRow(Element node) {
-			super();
-			NodeList cellList = node.getElementsByTagName("table:table-cell");
-		}
+//		public BCRImportRow(Element node) {
+//			super();
+//			NodeList cellList = node.getElementsByTagName("table:table-cell");
+//		}
 	}
 }

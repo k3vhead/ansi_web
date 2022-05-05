@@ -43,6 +43,9 @@
         	#bcr_new_claim_modal {
         		display:none;
         	}
+        	#bcr_quick_claim_modal {
+        		display:none;
+        	}
         	#bcr_title_prompt {
         		display:none;
         	}
@@ -121,7 +124,9 @@
 				text-decoration:underline;
 				cursor:pointer;
 			}
-			
+			.quick-claim {
+				cursor:pointer;
+			}
 			
         	#filter-container {
         		width:402px;
@@ -1888,7 +1893,43 @@
         			$("#bcr_new_claim_cancel").attr("tabIndex", "9");
         			$("#bcr_new_claim_save").attr("tabIndex", "10");
         			BUDGETCONTROL.makeEmployeeAutoComplete("#bcr_new_claim_modal input[name='employee']");
-        			BUDGETCONTROL.saveOnEnter();        			
+        			BUDGETCONTROL.saveOnEnter(); 
+        			
+        			
+        			
+        			
+        			
+        			
+        			$("#bcr_quick_claim_modal").dialog({
+        				title:'Quick Claim',
+        				autoOpen: false,
+        				height: 420,
+        				width: 850,
+        				modal: true,
+        				closeOnEscape:true,
+        				open: function(event, ui) {
+        					$(".ui-dialog-titlebar-close", ui.dialog | ui).show();
+        				},
+        				buttons: [
+        					{
+        						id:  "bcr_quick_claim_cancel",
+        						click: function($event) {
+        							$("#bcr_quick_claim_modal").dialog("close");      							
+        						}
+        					},{
+        						id:  "bcr_quick_claim_save",
+        						click: function($event) {
+        							BUDGETCONTROL.makeNewClaim();
+        						}
+        					}
+        				]
+        			});
+        			$("#bcr_quick_claim_cancel").button('option', 'label', 'Cancel');
+        			$("#bcr_quick_claim_save").button('option', 'label', 'Save');
+        			//$("#bcr_new_claim_cancel").attr("tabIndex", "9");
+        			//$("#bcr_new_claim_save").attr("tabIndex", "10");
+        			BUDGETCONTROL.makeEmployeeAutoComplete("#bcr_quick_claim_modal input[name='employee']");
+        			//BUDGETCONTROL.saveOnEnter(); 
         		},
         		
         		
@@ -1989,17 +2030,14 @@
 					// populate the new claim expense type selector
 					console.log("Populating new claim expense selector");
 
-					var $select = $("#bcr_new_claim_modal select[name='expenseType']");
-					$('option', $select).remove();
-					$select.append(new Option("",""));
-					$.each(BUDGETCONTROL.expenseTypes, function(index, val) {
-					    $select.append(new Option(val.displayValue, val.value));
+					$.each(['#bcr_new_claim_modal','#bcr_quick_claim_modal'], function($idx, $modalId) {
+						var $select = $($modalId + " select[name='expenseType']");
+						$('option', $select).remove();
+						$select.append(new Option("",""));
+						$.each(BUDGETCONTROL.expenseTypes, function(index, val) {
+						    $select.append(new Option(val.displayValue, val.value));
+						});
 					});
-					// this may have been some extra copy on the copy & Paste. Re-examine if something starts going wrong
-					//$.each($data.data.expenses, function(index, val) {
-					//	var $expenseSelect = "#" + val.claimId + " select[name='expenseType']";
-					//	$($expenseSelect).val(val.passthruExpenseCode);
-					//});
 					
         		},
         		
@@ -2247,6 +2285,44 @@
 						$( "#bcr_title_prompt" ).dialog("open");
 					});
 					
+					$("#bcr_summary .quick-claim").click(function($event) {
+						$("#bcr_quick_claim_modal").dialog("open");
+												
+						
+						var $ticketField = "#bcr_quick_claim_modal input[name='ticketId']";
+						
+						var $instance = $($ticketField).autocomplete("instance");
+						if ( $instance == null ) {
+							// to make autocomplete happy, the field must be visible. If we have an autocomplete,
+							// use it. Else make a new one
+							$( $ticketField ).autocomplete({
+								//'source':"bcr/employee?",
+								'source':function(request, response) {
+									jQuery.get(
+										"bcr/ticketAutoComplete", 
+										{term:request.term, divisionId:BUDGETCONTROL.divisionId,workYear:BUDGETCONTROL.workYear,workWeeks:BUDGETCONTROL.workWeek}, 
+										function($data) {
+											response($data);
+										}
+									)
+								},
+								position:{my:"left top", at:"left bottom",collision:"none"},
+								appendTo:"#bcr_quick_claim_modal",
+								select: function( event, ui ) {
+									console.log("Selected: " + ui.item.value);
+									var $url = "ticket/" + ui.item.value;
+									ANSI_UTILS.doServerCall("GET", $url, {}, BUDGETCONTROL.quickTicketSuccess, BUDGETCONTROL.quickTicketFailure);
+		       			      	}
+		       			 	});						
+						}
+						
+						
+						
+					});
+					
+					
+					
+					
 					var $workWeeks = [];
 					$.each($data.data.workCalendar, function($index, $value) {
 						$workWeeks.push($value.weekOfYear);
@@ -2260,6 +2336,19 @@
 					console.log($url);
 					$("#bcr_summary .all-ticket-spreadsheet").attr("href",$url);
         		},
+        		
+        		
+        		quickTicketFailure : function($data) {
+        			console.log("quickTicketFailure");	
+        		},
+        		
+        		quickTicketSuccess : function($data) {
+        			console.log("quickTicketSuccess");
+        			$("#bcr_quick_claim_modal .jobId").html("Job: " + $data.data.ticketDetail.jobId);
+        			$("#bcr_quick_claim_modal .jobSite").html($data.data.ticketDetail.jobSiteAddress.name);
+        			$("#bcr_quick_claim_modal .ticketAmt").html($data.data.ticketDetail.actDlAmt);
+        		},
+        		
         		
         		
         		
@@ -2488,19 +2577,23 @@
 						$($panelId).show();
 					});
         			
-					var $select = $("#bcr_new_claim_modal select[name='claimWeek']");
-					$('option', $select).remove();
-					$select.append(new Option("",""));
-					console.log("Populating new claim week selector");
-					$.each(BUDGETCONTROL.workCalendar, function($index, $val) {
-						var $displayWeek = String($val.weekOfYear);
-						if ( $val.weekOfYear < 10 ) {
-							$displayWeek = "0" + String($val.weekOfYear);
-						}
-						var $displayValue = BUDGETCONTROL.workYear + "-" + $displayWeek;
-						console.log($displayValue);
-					    $select.append(new Option($displayValue, $displayValue));
+					
+					$.each( ['#bcr_new_claim_modal','#bcr_quick_claim_modal'], function($i, $modalId) {
+						var $select = $($modalId + " select[name='claimWeek']");
+						$('option', $select).remove();
+						$select.append(new Option("",""));
+						console.log("Populating new claim week selector");
+						$.each(BUDGETCONTROL.workCalendar, function($index, $val) {
+							var $displayWeek = String($val.weekOfYear);
+							if ( $val.weekOfYear < 10 ) {
+								$displayWeek = "0" + String($val.weekOfYear);
+							}
+							var $displayValue = BUDGETCONTROL.workYear + "-" + $displayWeek;
+							console.log($displayValue);
+						    $select.append(new Option($displayValue, $displayValue));
+						});
 					});
+					
 
 					
 					$("#bcr_panels .thinking").hide();
@@ -2794,6 +2887,102 @@
 		        	<col style="width:16%;" />
 				</colgroup>
    				<tr>
+   					<td colspan="3" style="text-align:center; width:48%;"><span class="form-label">Direct Labor</span></td>
+   					<td rowspan="5" style="width:2%;">&nbsp;</td>
+   					<td rowspan="5" style="width:2%; border-left:solid 1px #404040;">&nbsp;</td>
+   					<td colspan="3" style="text-align:center; width:48%;"><span class="form-label">Expense</span></td>
+   				</tr>
+   				<tr>
+   					<td class="form-label">Direct Labor:</td>
+   					<td><input type="text" name="dlAmt" tabindex="1" /></td>
+   					<td><span class="dlAmtErr err"></span></td>
+   					
+   					<td class="form-label">Expense Volume Claimed:</td>
+   					<td><input type="text" name="expenseVolume"  tabindex="5"/></td>
+   					<td><span class="volumeErr err"></span></td>
+   				</tr>
+   				<tr>
+   					<td class="form-label">Volume Claimed:</td>
+   					<td><input type="text" name="volumeClaimed" tabindex="2" /></td>
+   					<td><span class="volumeClaimedErr err"></span></td>
+   					
+   					<td class="form-label">Expense Type:</td>
+   					<td><select name="expenseType" tabindex="6"></select></td>
+   					<td><span class="expenseTypeErr err"></span></td>
+   				</tr>
+   				<tr>
+   					<td class="form-label">Employee:</td>
+   					<td><input type="text" name="employee" tabindex="3" /></td>
+   					<td><span class="employeeErr err"></span></td>
+   					<td>&nbsp;</td>
+   					<td>&nbsp;</td>
+   					<td>&nbsp;</td>
+   				</tr>
+   				<tr>
+   					<td class="form-label">Notes:</td>
+   					<td><input type="text" name="laborNotes" tabindex="4" /></td>
+   					<td><span class="laborNotesErr err"></span></td>
+   					
+   					<td class="form-label">Notes:</td>
+   					<td><input type="text" name="expenseNotes" tabindex="7" /></td>
+   					<td><span class="expenseNotesErr err"></span></td>
+   				</tr>
+   			</table>
+			
+			
+	    </div>
+	    
+	    
+	    
+	    
+	    
+	    
+	    <div id="bcr_quick_claim_modal">
+	    	<div style="width:100%; height:25px;">
+	    		<span class="newClaimErr err"></span>
+	    	</div>	    	
+			<table style="width:100%;border-top:solid 1px #404040;">
+				<colgroup>
+		        	<col style="width:16%;" />
+		        	<col style="width:16%;" />
+		        	<col style="width:16%;" />
+		        	<col style="width:2%;" />
+		        	<col style="width:2%;" />
+		        	<col style="width:16%;" />
+		        	<col style="width:16%;" />
+		        	<col style="width:16%;" />
+				</colgroup>
+				<tr>
+   					<td class="form-label">Ticket:</td>
+   					<td><input type="text" name="ticketId" /></td>
+   					<td colspan="2"><span class="err ticketIdErr"></span></td>
+   					<td colspan="4"><span class="jobId"></span></td>
+   				</tr>
+   				<tr>
+   					<td class="form-label">Service Type:</td>
+   					<td><span class="serviceTagId"></span><input type="hidden" name="serviceTypeId" /></td>
+   					<td colspan="2"><span class="err serviceTagIdErr"></span></td>
+   					<td colspan="4"><span class="jobSite"></span></td>
+   				</tr>
+   				<tr style="border-bottom:solid 1px #404040;">
+   					<td class="form-label">Claim Week:</td>
+   					<td><select name="claimWeek" tabindex="1"></select></td>
+   					<td colspan="2"><span class="claimWeekErr err"></span></td>
+   					<td colspan="4"><span class="ticketAmt"></span></td>
+   				</tr>
+  			</table>
+  			<table style="width:100%;border-top:solid 1px #404040;">
+				<colgroup>
+		        	<col style="width:16%;" />
+		        	<col style="width:16%;" />
+		        	<col style="width:16%;" />
+		        	<col style="width:2%;" />
+		        	<col style="width:2%;" />
+		        	<col style="width:16%;" />
+		        	<col style="width:16%;" />
+		        	<col style="width:16%;" />
+				</colgroup>
+   				<tr style="border-top:solid 1px #404040;">
    					<td colspan="3" style="text-align:center; width:48%;"><span class="form-label">Direct Labor</span></td>
    					<td rowspan="5" style="width:2%;">&nbsp;</td>
    					<td rowspan="5" style="width:2%; border-left:solid 1px #404040;">&nbsp;</td>
