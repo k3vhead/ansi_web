@@ -581,18 +581,30 @@
 	        			//BUDGETCONTROL.saveOnEnter();  
 	        			TIMESHEET_IMPORT.populateEmployeeModal($rowNumber);
 	        		},
+	        		StringToFloatString : function (NumberAsString){
+   						    value = null;
+   						    if (NumberAsString == null || NumberAsString == "") {
+   						        value="";
+   						    } else if ( isNaN(NumberAsString) ) {
+   						        value="";
+   						    } else {
+   						    	x = parseFloat(NumberAsString);
+   						        value = x.toFixed(2);
+   						    }
+   						    return value;
+   						},
 	        		populateEmployeeModal : function($rowNumber) {
 	        			console.log("populateEmployeeModal: " + $rowNumber);
 	           			console.log(TIMESHEET_IMPORT.employeeMap[$rowNumber]);
 	           			console.log(TIMESHEET_IMPORT.employeeMap[$rowNumber].employeeName);
 	           			
-	           			$('[name="row"]').val(TIMESHEET_IMPORT.employeeMap[$rowNumber].row);
-	           			$('[name="employeeName"]').val(TIMESHEET_IMPORT.employeeMap[$rowNumber].employeeName);
+	           			$('[name="row"]').val(			TIMESHEET_IMPORT.employeeMap[$rowNumber].row);
+	           			$('[name="employeeName"]').val(	TIMESHEET_IMPORT.employeeMap[$rowNumber].employeeName);
 						// status
-	           			$('[name="regularPay"]').val(TIMESHEET_IMPORT.employeeMap[$rowNumber].regularPay);
-	           			$('[name="otPay"]').val(TIMESHEET_IMPORT.employeeMap[$rowNumber].otPay);
-	           			$('[name="vacationPay"]').val(TIMESHEET_IMPORT.employeeMap[$rowNumber].vacationPay);
-	           			$('[name="holidayPay"]').val(TIMESHEET_IMPORT.employeeMap[$rowNumber].holidayPay);
+	           			$('[name="regularPay"]').val(	TIMESHEET_IMPORT.employeeMap[$rowNumber].regularPay);
+	           			$('[name="otPay"]').val(		TIMESHEET_IMPORT.employeeMap[$rowNumber].otPay);
+	           			$('[name="vacationPay"]').val(	TIMESHEET_IMPORT.employeeMap[$rowNumber].vacationPay);
+	           			$('[name="holidayPay"]').val(	TIMESHEET_IMPORT.employeeMap[$rowNumber].holidayPay);
 	           				           		 		
 	           			
 	    				<!-- <table  id="time-calcs"style="width:100%;border:1px solid;">   -->
@@ -600,26 +612,56 @@
 	           			
 	           			
 						
-						$('[name="regularHours"]').val(TIMESHEET_IMPORT.employeeMap[$rowNumber].regularHours);
-	           			$('[name="otHours"]').val(TIMESHEET_IMPORT.employeeMap[$rowNumber].otHours);
-	           			$('[name="vacationHours"]').val(TIMESHEET_IMPORT.employeeMap[$rowNumber].vacationHours);
-	           			//these columns not on grid
-	           			$('[name="holidayHours"]').val(TIMESHEET_IMPORT.employeeMap[$rowNumber].holidayHours);
+						$('[name="regularHours"]').val(	TIMESHEET_IMPORT.StringToFloatString(TIMESHEET_IMPORT.employeeMap[$rowNumber].regularHours));
+	           			$('[name="otHours"]').val(		TIMESHEET_IMPORT.StringToFloatString(TIMESHEET_IMPORT.employeeMap[$rowNumber].otHours));
+	           			$('[name="vacationHours"]').val(TIMESHEET_IMPORT.StringToFloatString(TIMESHEET_IMPORT.employeeMap[$rowNumber].vacationHours));
+	           			$('[name="holidayHours"]').val(	TIMESHEET_IMPORT.StringToFloatString(TIMESHEET_IMPORT.employeeMap[$rowNumber].holidayHours));
 	           			
-	           			console.log(TIMESHEET_IMPORT.employeeMap[$rowNumber].reglarHours);
+	           			console.log(TIMESHEET_IMPORT.employeeMap[$rowNumber].regularHours);
         				console.log(TIMESHEET_IMPORT.employeeMap[$rowNumber].otHours);
              			console.log(TIMESHEET_IMPORT.employeeMap[$rowNumber].vacationHours);
                         console.log(TIMESHEET_IMPORT.employeeMap[$rowNumber].holidayHours);
 
-	           			
-	           		 	var totHours = 
-	           		 		TIMESHEET_IMPORT.employeeMap[$rowNumber].reglarHours +
-	           		 		TIMESHEET_IMPORT.employeeMap[$rowNumber].otHours +
-	           		 		TIMESHEET_IMPORT.employeeMap[$rowNumber].vacationHours +
-	           		 		TIMESHEET_IMPORT.employeeMap[$rowNumber].holidayHours;
-	  
-	           			$('[name="totalHours"]').val(totHours);
-	           			$('[name="totalHours"]').val(37);
+           		 		fRegularHours = 0;
+           		 		fOtHours = 0;
+           		 		fVacationHours = 0;
+           		 		fHolidayHours = 0;
+           		 		fTotalHours = 0;
+
+           		 		fReglarHours		= parseFloat(TIMESHEET_IMPORT.employeeMap[$rowNumber].RegularHours);
+           		 		fOtHours		 	= parseFloat(TIMESHEET_IMPORT.employeeMap[$rowNumber].OtHours);
+           		 		fVacationHours 		= parseFloat(TIMESHEET_IMPORT.employeeMap[$rowNumber].VacationHours);
+           				fHolidayHours 		= parseFloat(TIMESHEET_IMPORT.employeeMap[$rowNumber].HolidayHours);
+
+           				fTotalHours = fRegularHours+fOtHours+fVacationHours+fHolidayHours;           			           		
+	           				  
+
+	           			console.log("============== hour calcs = String vals =");
+	           			console.log("Reg -" + TIMESHEET_IMPORT.employeeMap[$rowNumber].regularHours + "-");
+        				console.log("OT  - " + TIMESHEET_IMPORT.employeeMap[$rowNumber].otHours + "-");
+             			console.log("Vac - " + TIMESHEET_IMPORT.employeeMap[$rowNumber].vacationHours + "-");
+                        console.log("Hol - " + TIMESHEET_IMPORT.employeeMap[$rowNumber].holidayHours + "-");
+           				
+	           			console.log("============== hour calcs = numeric vals =");
+	           			console.log("Reg");
+	           			console.log(typeof fReglarHours);
+	           			console.log(fReglarHours);
+        				console.log("OT");
+        				console.log(typeof fOtHours);
+        				console.log(fOtHours);
+             			console.log("Vac");
+             			console.log(typeof fVacationHours);
+             			console.log(fVacationHours);
+                        console.log("Hol");
+                        console.log(typeof fHolidayHours);
+                        console.log(fHolidayHours);
+           				
+	           			console.log("============== hour calcs = total =");
+	           			console.log("tot - " + typeof fTotalHours);
+	           			console.log("tot - " + fTotalHours);
+                        
+           				$('[name="totalHours"]').val(fTotalHours.toFixed(2));
+	           			//$('[name="totalHours"]').val(37);
 	           			
 	           			
 	           			$('[name="directLabor"]').val(TIMESHEET_IMPORT.employeeMap[$rowNumber].directLabor);
