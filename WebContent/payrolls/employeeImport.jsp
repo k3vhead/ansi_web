@@ -429,17 +429,11 @@
                    			EMPLOYEE_IMPORT.makeEmployeeTable($data.data);
                    			
                    			
-                   			for (var i = 0; i< $data.data.employeeRecords.length; i++){                   				
+                   			for (var i = 0; i < $data.data.employeeRecords.length; i++){                   				                 				
                    				if ($data.data.employeeRecords[i].recordMatches == false){
-                   					//	console.log(i);
-                       				//	console.log($data.data.employeeRecords[i].rowId);
                    					document.getElementById($data.data.employeeRecords[i].rowId).classList.add("highlight");
                    				}
                    			}
-                   			
-                   			//highlightChangingRows();
-                   			
-                   			
                    			$.each($data.data.employeeRecords, function($index, $value) {
                    				EMPLOYEE_IMPORT.employeeDict[$value.rowId] = $value;                   				
                    			});
@@ -517,21 +511,7 @@
         	
         	EMPLOYEE_IMPORT.init();
         	});
-        		/* function highlightChangingRows() {
-        			
-        			  const changingIds = ["333c169911146ed80cc0e99a3d629fe7", "9fab5c2b256cb752af175ef31931f118"]
-        			  for (var highlightNbr = 0; highlightNbr < changingIds.length; highlightNbr++){var highlighted = document.getElementById(changingIds[highlightNbr]);
-        			  	
-       			   		highlighted.classList.add("highlight");
-       			   		
-         			 	
-      				}
-        			    
-        			
- 
-        		} */
-        	
-        </script>        
+        		       </script>        
     </tiles:put>
     
    <tiles:put name="content" type="string">
