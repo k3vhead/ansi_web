@@ -176,14 +176,15 @@
             			
                    		saveEmployee : function() {
                 			console.log("saveEmployee");
+                			
                 			$("#employee-modal .err").html("");
-                			var $selectedEmployeeCode = $("#employee-modal input[name='selectedEmployeeCode']").val();
+                			var $selectedEmployeeCode = $("#employee-modal input[name='employeeCode']").val();
                 			var $unionMember = 0;
                 			if ( $("#employee-modal input[name='unionMember']").prop("checked") == true ) {
                 				$unionMember = 1; 
                 			} 
                 			var $outbound = {
-               					'selectedEmployeeCode' : $("#employee-modal input[name='selectedEmployeeCode']").val(),
+               					
                 				'employeeCode' : $("#employee-modal input[name='employeeCode']").val(),
         	        			'companyCode' : $("#employee-modal select[name='companyCode']").val(),
         	        			'divisionId' : $("#employee-modal select[name='divisionId']").val(),
@@ -199,11 +200,13 @@
         	        			'processDate' : $("#employee-modal input[name='processDate']").val(),
         	        			'notes' : $("#employee-modal input[name='notes']").val(),
                 			}
+                			console.log($selectedEmployeeCode);
                 			var $url = "payroll/employee"
                 			if ( $selectedEmployeeCode != null && $selectedEmployeeCode != "") {
                 				$url = $url + "/" + $selectedEmployeeCode
                 			}
-                			ANSI_UTILS.makeServerCall("post", $url, JSON.stringify($outbound), {200:EMPLOYEE_IMPORT.saveEmployeeSuccess}, {});
+                			console.log($outbound);
+                			ANSI_UTILS.makeServerCall("post", $url, JSON.stringify($outbound), {200:EMPLOYEE_IMPORT.processUploadChanges}, {});
                 		},
              
                    		
@@ -380,6 +383,7 @@
                 					$("#employee-modal .unionInput").prop('disabled',true);
                 				}
                 			});
+                			
                 		},
                 		
                 		
@@ -419,7 +423,9 @@
                    			});
                    		},
                    		
-                   		
+                   		processUploadChanges : function($data){
+                   			console.log($data.data);
+                   		},
                    		processUploadSuccess : function($data) {
                    			console.log("processUploadSuccess");
                    			$("#prompt-div").hide();
@@ -429,11 +435,11 @@
                    			EMPLOYEE_IMPORT.makeEmployeeTable($data.data);
                    			
                    			
-                   			for (var i = 0; i < $data.data.employeeRecords.length; i++){                   				                 				
+                   			/* for (var i = 0; i < $data.data.employeeRecords.length; i++){                   				                 				
                    				if ($data.data.employeeRecords[i].recordMatches == false){
                    					document.getElementById($data.data.employeeRecords[i].rowId).classList.add("highlight");
                    				}
-                   			}
+                   			} */
                    			$.each($data.data.employeeRecords, function($index, $value) {
                    				EMPLOYEE_IMPORT.employeeDict[$value.rowId] = $value;                   				
                    			});
