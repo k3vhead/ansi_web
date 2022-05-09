@@ -27,6 +27,7 @@ public class BcrServlet extends AbstractServlet {
 	public static final String TICKET = "ticket";
 	public static final String TICKET_AUTOCOMPLETE = "ticketAutoComplete";
 	public static final String TICKET_CLAIM = "ticketClaim";
+	public static final String TICKET_CLAIM_DETAIL = "ticketClaimDetail";
 	public static final String TICKETLIST = "ticketList";
 	public static final String TICKET_XLS = "ticketXls";
 	public static final String TITLE = "title";
@@ -92,6 +93,9 @@ public class BcrServlet extends AbstractServlet {
 			break;
 		case TICKET_CLAIM:
 			new BcrTicketClaimServlet().doGet(request, response);
+			break;
+		case TICKET_CLAIM_DETAIL:
+			new BcrTicketClaimDetailServlet().doGet(request, response);
 			break;
 		case TICKETLIST:
 			new BcrTicketLookupServlet().doGet(request, response);
