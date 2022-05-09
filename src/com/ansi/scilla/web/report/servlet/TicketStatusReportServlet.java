@@ -9,6 +9,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.report.reportBuilder.htmlBuilder.HTMLBuilder;
 import com.ansi.scilla.report.ticket.TicketStatusReport;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
