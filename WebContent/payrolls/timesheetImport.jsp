@@ -38,13 +38,90 @@
 			#employee-modal {
 				display:none;
 			}
-			#employee-modal input.money {
+
+			/* #employee-data */
+			#employee-modal #employee-data {
+				margin-bottom : 20px;
+			}
+
+			#employee-modal #employee-data .spacer {
+				width : *;
+			}
+
+			#employee-modal #employee-data .row-number-label{
+				margin-left : 20px;
+			}
+																	/* modal hours area - time calcs*/
+			#employee-modal table #time-calcs{
+			 	width: 1000px;
+			 	/* border : solid red 1px; */
+			}			
+			#employee-modal #time-calcs td.hours {
+        		width:85px;
+			}
+			#employee-modal #time-calcs td.hours input.hours {
+				width: 100%; 
 				text-align: right; 
 			}
-			#employee-modal input.hours {
-				/* width: 100%; */
+
+			#employee-modal #time-calcs td.hoursErr {
+        		width:40px;
+			}			
+
+																	/* modal money fields area - time calcs*/
+			td.money {
+        		width:  100px;
+        		/* border: 1px black solid; */
+			}
+
+			#employee-modal #time-calcs input.money {
+			    width: 100px;
+			    text-align: right;
+			}			
+			#employee-modal #time-calcs td.moneyErr {
+        		width:40px;
+			}
+			
+			#employee-modal #time-calcs td.percentage {
+			    width: 100px;
+			    text-align: right;
+			}			
+			#employee-modal #time-calcs td.percentageErr {
+        		width:40px;
+			}					
+			#employee-modal #time-calcs input.percentage {
+			    width: 50%;
+			    text-align: right;
+			}
+						
+
+			
+			/* duplicate rule
+			#employee-modal #time-calcs td.money input.money {
+				width: 100%; 
 				text-align: right; 
 			}
+			*/
+			
+			
+			/*prod-calcs] */
+			
+			/* modal productivity and expense area */ 
+			
+			/* eliminated div 
+			#employee-modal #prod-calcs td.money {
+        		width:90px;
+			}
+			#employee-modal #prod-calcs td.money input.money {
+				width: 100%; 
+				text-align: right; 
+			}
+			#employee-modal #prod-calcs td.moneyErr {
+        		width:40px;
+			}
+			
+			*/
+			
 			#filter-container {
         		width:402px;
         		float:right;
@@ -574,11 +651,6 @@
 	        			$("#employee-modal").dialog("open");
 	        			$("#employee-model-cancel-button").button('option', 'label', 'Cancel');
 	        			$("#employee-model-save-button").button('option', 'label', 'Save');
-						//$("#pe-lookup-cancel-button").button('option', 'label', 'Done');
-	        			//$("#employee-modal").attr("tabIndex", "18");
-	        			//$("#employee-modal").attr("tabIndex", "19");
-	        			//BUDGETCONTROL.makeEmployeeAutoComplete("#bcr_new_claim_modal input[name='employee']");
-	        			//BUDGETCONTROL.saveOnEnter();  
 	        			TIMESHEET_IMPORT.populateEmployeeModal($rowNumber);
 	        		},
 	        		StringToFloatString : function (NumberAsString){
@@ -633,7 +705,8 @@
 	           			$('[name="expensesSubmitted"]').val(TIMESHEET_IMPORT.employeeMap[$rowNumber].expensesSubmitted);
 	           			$('[name="productivity"]').val(TIMESHEET_IMPORT.employeeMap[$rowNumber].productivity);
 
-	           			$('[name="state"]').val(TIMESHEET_IMPORT.employeeMap[$rowNumber].state);
+	           			$('#employee-modal .state').text($('select[name="state"]').val());
+	           			$('#employee-modal .row').text($rowNumber);
 	           			//blankRow: false
 	           			//errorsFound: null
 	           			//$rowNumber, $action
@@ -664,56 +737,13 @@
 	           			var $expensesAllowed = $("#employee-modal [name='expensesAllowed']").val();
 	           			var $expensesSubmitted  = $("#employee-modal [name='expensesSubmitted']").val();
 	           			var $productivity 	= $("#employee-modal [name='productivity']").val();
-
-//	           			$rowNumber 		= 1;	           			
-//	           			$employeeName 	= 2;
-// 	           			$regularPay  	= 3;
-// 	           			$otPay 			= 4;
-// 	           			$vacationPay  	= 5;
-// 	           			$holidayPay  	= 6;
-// 	           			$regularHours 	= 7;
-// 	           			$otHours  		= 8;
-// 	    	           	$vacationHours 	= 9;
-// 	           			$holidayHours  	= 10;
-// 	           			$directLabor  	= 11;
-// 	           			$volume  		= 12;
-// 	           			$grossPay   	= 13;
-// 	           			$expenses  		= 14;
-// 	           			$expensesAllowed = 15;
-// 	           			$expensesSubmitted  = 16;
-// 	           			$productivity 	= 17;
-	           				           			
-	           			console.log("Edit Val for rowNumber = " 	+ $rowNumber);	           			
-	    	           	console.log("Edit Val for employeeName = "   	+ $employeeName);
-	    	           	console.log("Edit Val for regularPay = " 		+ $regularPay);
-	    	           	console.log("Edit Val for otPay = " 			+ $otPay);
-	    	           	console.log("Edit Val for vacationPay = " 		+ $vacationPay);
-	    	           	console.log("Edit Val for holidayPay = " 		+ $holidayPay);
-	    	           	console.log("Edit Val for regularHours = " 	+ $regularHours);
-	    	           	console.log("Edit Val for otHours = " 			+ $otHours);
-	    	           	console.log("Edit Val for vacationHours = " 	+ $vacationHours);
-	    	           	console.log("Edit Val for holidayHours = " 	+ $holidayHours);
-	    	           	console.log("Edit Val for directLabor = " 		+ $directLabor);
-	    	           	console.log("Edit Val for volume = " 			+ $volume);
-	    	           	console.log("Edit Val for grossPay" 		+ $grossPay);
-	    	           	console.log("Edit Val for expenses" 		+ $expenses);
-	    	           	console.log("Edit Val for expensesAllowed" 	+ $expensesAllowed);
-	    	           	console.log("Edit Val for expensesSubmitted" + $expensesSubmitted);
-	    	           	console.log("Edit Val for productivity" 	+ $productivity);
-	           				    	           	
 	           			console.log("saveEmployeeModal: ");
 	           			
 	           			var $idx = $rowNumber +1;
 	           			$idx = $idx -1;
-
-	           			console.log("Using index number = " + $idx);	           			
-
 	           			
 					    var table = $("#timesheet").DataTable();
 					    
-// 	           			console.log("Removing row = " + $idx);	           			
-// 	           			table.row($idx).remove();
-	           				           			
 	           			console.log("re-adding row? = " + $idx);	           			
 	           			TIMESHEET_IMPORT.employeeMap[$idx].employeeName = $employeeName;
 	           			TIMESHEET_IMPORT.employeeMap[$idx].regularPay = $regularPay;
@@ -848,16 +878,18 @@
 			<table  id="employee-data">   
 				<tr>
 					<td class="form-label">Employee Name :</td>
-					<td class="employeeName"><input type="text" class="employeeName" name="employeeName"tabindex="1" /></td>
-					<td class="err"><span class="employeeNameErr err"></span></td>
+					<td class="employeeName">	<input type="text" class="employeeName" name="employeeName"tabindex="1" /></td>
+					<td class="err">			<span class="employeeNameErr err"></span></td>
+
+					<td class="spacer"></td>
 
 					<td class="form-label">State:</td>
-					<td class="state"><input type="text" name="state" 												tabindex="2" /></td>
-					<td class="err"><span class="stateErr err"></span></td>
+					<td class="state">			<span class="state">			</span></td>
+					<td class="err">			<span class="stateErr err">		</span></td>
 
-					<td class="form-label"><span class="form-label">Row:</span></td>
-					<td class="row"><input type="text" class="row" name="row" 							tabindex="3" /></td>
-					<td class="err"><span class="rowErr err"></span></td>						
+					<td class="form-label">		<span class="form-label row-number-label">Row:	</span></td>
+					<td class="row">			<span class="row">				</span></td>
+					<td class="err">			<span class="rowErr err">		</span></td>						
 				</tr>
 			</table>
 
@@ -866,88 +898,101 @@
 					<td class="form-label"></td>
 					<td colspan="2" class="col-heading hours ">Hours</td>
 					<td colspan="2" class="col-heading pay">Pay</td>
+					<td colspan="2" class="col-heading pay">Expenses</td>
 				</tr>
 												
 				<tr>
-					<td class="form-label">Regular:</td>
+					<td class="row-label">Regular:</td>
 					
-					<td class="hours"><input class="hours" type="text" name="regularHours" 				tabindex="4" /></td>
-					<td class="err"><span class="regularHoursErr  err"></span></td>
+					<td class="hours"><input class="hours" type="text" name="regularHours" 				tabindex="2" /></td>
+					<td class="hoursErr err"><span class="regularHoursErr  err"></span></td>
 					
-					<td class="money"><input  class="money" type="text" name="regularPay" 				tabindex="5" /></td>
-					<td class="err"><span class="regularPayErr err"></span></td>
-				</tr>
-								
-				<tr>
-					<td class="form-label">Overtime :</td>
+					<td class="money"><input  class="money" type="text" name="regularPay" 				tabindex="3" /></td>
+					<td class="moneyErr err"><span class="regularPayErr err"></span></td>
 
-					<td class="hours"><input class="hours" type="text" name="otHours" 					tabindex="6" /></td>
-					<td class="err"><span class="otHoursErr err"></span></td>
-					
-					<td class="money"><input class="money" type="text" name="otPay" 					tabindex="7" /></td>
-					<td class="err"><span class="otPayErr err"></span></td>
-				</tr>
-				<tr>
-					<td class="form-label">Vacation:</td>
+					<td class="row-label">Submitted:</td>
+					<td class="money"><input class="money" type="text" name="expensesSubmitted" 		tabindex="14" /></td>
+					<td class="moneyErr err"><span class="expensesSubmittedErr err"></span></td>
 
-					<td class="hours"><input class="hours" type="text" name="vacationHours"				tabindex="8" /></td>
-					<td class="err"><span class="vacationHoursErr"></span></td>
-
-					<td class="money"><input class="money" type="text" name="vacationPay" 				tabindex="9" /></td>
-					<td class="err"><span class="vacationPayErr err"></span></td>
-				</tr>
-								
-				<tr>
-					<td class="form-label">Holiday:</td>
-
-					<td class="hours"><input class="hours" type="text" name="holidayHours"				tabindex="10" /></td>
-					<td class="err"><span class="holidayHoursErr err"></span></td>
-
-					<td class="money"><input class="money" type="text" name="holidayPay" 				tabindex="11" /></td>
-					<td class="err"><span class="holidayPayErr err"></span></td>
 
 				</tr>
 								
 				<tr>
-					<td class="form-label">Total:</td>
-					
-					<td class="hours total"><input class="hours" type="text" name="totalHours" 				tabindex="12" /></td>
-					<td class="err"><span class="totalHoursErr err"></span></td>
+					<td class="row-label">Overtime :</td>
 
-					<td class="money total"><input class="money" type="text" name="grossPay" 					tabindex="13" /></td>
-					<td class="err"><span class="grossPayErr err"></span></td>
+					<td class="hours"><input class="hours" type="text" name="otHours" 					tabindex="4" /></td>
+					<td class="hoursErr err"><span class="otHoursErr err"></span></td>
+					
+					<td class="money"><input class="money" type="text" name="otPay" 					tabindex="5" /></td>
+					<td class="moneyErr err"><span class="otPayErr err"></span></td>
+
+					<td class="row-label">Allowed:</td>
+					<td class="money"><input class="money" type="text" name="expensesAllowed" 			tabindex="15" /></td>
+					<td class="moneyErr err"><span class="expensesAllowedErr err"></span></td>
+
+
+				</tr>
+				<tr>
+					<td class="row-label"></td>					
+					<td class="hours total"></td>
+					<td class="hoursErr err"></td>
+
+					<td class="money"></td>
+					<td class="moneyErr err"></td>
+
+					<td colspan="2" class="form-label">Productivity</td>
+
+
+				</tr>
+								
+				<tr>
+					<td class="row-label">Vacation:</td>
+
+					<td class="hours"><input class="hours" type="text" name="vacationHours"				tabindex="6" /></td>
+					<td class="hoursErr err"><span class="vacationHoursErr"></span></td>
+
+
+					<td class="money">
+						<input class="money" type="text" name="vacationPay" 							tabindex="7" />
+					</td>
+					<td class="moneyErr err">
+						<span class="vacationPayErr err"></span>
+					</td>
+					<td class="row-label">Direct Labor:</td>
+					<td class="money">	<input class="money" type="text" name="directLabor" 				tabindex="16" /></td>
+					<td class="moneyErr err">		<span class="directLaborErr err"></span></td>
+
+				</tr>
+								
+				<tr>
+					<td class="row-label">Holiday:</td>
+
+					<td class="hours">			<input	class="hours" type="text" name="holidayHours"				tabindex="8" /></td>
+					<td class="hoursErr err">	<span 	class="holidayHoursErr err"></span></td>
+
+					<td class="money">			<input	class="money" type="text" name="holidayPay" 				tabindex="9" /></td>
+					<td class="moneyErr err">	<span 	class="holidayPayErr err"></span></td>
+
+
+					<td class="row-label">Volume :</td>
+					<td class="money">			<input class="money" type="text" name="volume" 					tabindex="17" /></td>
+					<td class="moneyErr err">	<span class="volumeErr err"></span></td>
+
 				</tr>							
-			</table>
-
-			<table id="prod-calcs">   
-				<!-- <table id="prod-calcs" style="width:100%;border:1px solid;">   -->
 				<tr>
-					<td class="form-label">Direct Labor:</td>
-					<td class="money"><input class="money" type="text" name="directLabor" 					tabindex="14" /></td>
-					<td class="err"><span class="directLaborErr err"></span></td>
+					<td class="row-label">Total:</td>
+					
+					<td class="hours total">	<input class="hours" type="text" name="totalHours" 			tabindex="12" /></td>
+					<td class="hoursErr err">	<span class="totalHoursErr err"></span></td>
 
-					<td class="form-label">Volume :</td>
-					<td class="money"><input class="money" type="text" name="volume" 					tabindex="15" /></td>
-					<td class="err"><span class="volumeErr err"></span></td>
+					<td class="money">			<input class="money" type="text" name="grossPay" 			tabindex="13" /></td>
+					<td class="moneyErr err">	<span class="grossPayErr err"></span></td>
 
-					<td class="form-label">Productivity:</td>
-					<td class="percentage"><input class="percentage" type="text" name="productivity"	tabindex="16" /></td>
-					<td class="err"><span class="productivityErr err"></span></td>
-				</tr>
+					<td class="row-label">Productivity:</td>
+					<td class="percentage">		<input class="percentage" type="text" name="productivity"	tabindex="18" /></td>
+					<td class="percentageErr err">	<span class="productivityErr err"></span></td>
 
-				<tr>
-					<td class="form-label">Expenses:</td>
-					<td class="money"><input class="money" type="text" name="expenses" 					tabindex="17" /></td>
-					<td class="err"><span class="expensesErr err"></span></td>
-
-					<td class="form-label">Expenses Submitted:</td>
-					<td class="money"><input class="money" type="text" name="expensesSubmitted" 		tabindex="18" /></td>
-					<td class="err"><span class="expensesSubmittedErr err"></span></td>
-
-					<td class="form-label">Expenses Allowed:</td>
-					<td class="money"><input class="money" type="text" name="expensesAllowed" 			tabindex="19" /></td>
-					<td class="err"><span class="expensesAllowedErr err"></span></td>
-				</tr>
+				</tr>							
 			</table>
 		</div>				
     </tiles:put>
