@@ -263,8 +263,8 @@
             	        "columnDefs": [
              	            { "orderable": true, "targets": -1 },
              	            { className: "dt-head-center", "targets":[]},
-            	            { className: "dt-left", "targets": [] },
-            	            { className: "dt-center", "targets": [3,4,5,6,8,10,12,13,14,15,20,21] },
+            	            { className: "dt-left", "targets": [3] },
+            	            { className: "dt-center", "targets": [4,5,6,8,10,12,13,14,15,20,21] },
             	         	{ className: "dt-body-right", "targets": [0,1,2,7,9,11,12,13,16,17,18,19] },
             	            { "visible": false, "targets": [4,5,6,8,10,13]},
             	       		],
@@ -276,7 +276,7 @@
     			        	},
     			        columns: [
         			        	{ title: "Emp Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_code' }, 
-        			        	{ title: "Division Id", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'division_id' },
+        			        	{ title: "Div", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'div' },
         			        	{ title: "Week Ending", width:"5%", searchable:true, searchFormat: "YYYY/MM/DD", "defaultContent": "<i>N/A</i>", data:'week_ending' },
         			        	{ title: "Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_name' },
         			        	{ title: "Status", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_status' },
@@ -301,7 +301,7 @@
     			        			if ( row.union_member == 1 ) {
     			        				$value = $unknown;
     			        				if ( row.union_rate != null ) {
-    			        					$value = row.union_rate.toFixed(2);
+    			        					$value = "$" + row.union_rate.toFixed(2);
     			        				}
     			        			}
     			        			return $value;
@@ -326,7 +326,7 @@
     			        			}
     			        		},
     			        		{ title: "Minimum Hourly", width:"5%", searchFormat: "#.##", data: function ( row, type, set ) {
-       			        			if(row.minimum_hourly_pay != null){return (parseFloat(row.minimum_hourly_pay).toFixed(2));}
+       			        			if(row.minimum_hourly_pay != null){return "$" + (parseFloat(row.minimum_hourly_pay).toFixed(2));}
    		            			} },
     			        		{ title: "Under Govt Min", width:"5%", searchable:true, "defaultContent": "",
     			        		data:function(row, type, set) {
@@ -346,7 +346,7 @@
     			        			}
     			        		},
     			        		{ title: "Expense Pct", width:"5%", searchFormat: "#.##", data: function ( row, type, set ) {
-       			        			if(row.excess_expense_pct != null){return (parseFloat(row.excess_expense_pct).toFixed(2));}
+       			        			if(row.excess_expense_pct != null){return "$" + (parseFloat(row.excess_expense_pct).toFixed(2));}
    		            			} },
     			        		{ title: "Expense Pct", width:"5%", searchable:true, "defaultContent": "",
     			        		data:function(row, type, set) {
@@ -420,16 +420,16 @@
            			        			}
           			        	},
     			        		{ title: "Expenses Submitted", width:"5%", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
-    			        			if(row.expenses_submitted != null){return (parseFloat(row.expenses_submitted).toFixed(2));}
+    			        			if(row.expenses_submitted != null){return "$" + (parseFloat(row.expenses_submitted).toFixed(2));}
 		            			} },
     			        		{ title: "Volume", width:"5%", searchable:true, "defaultContent": "",  searchFormat: "#.##", data: function ( row, type, set ) {
-    			        			if(row.volume != null){return (parseFloat(row.volume).toFixed(2));}
+    			        			if(row.volume != null){return "$" + (parseFloat(row.volume).toFixed(2));}
 		            			} },
         			        	{ title: "Direct Labor", width:"5%", searchable:true,  searchFormat: "#.##", data: function ( row, type, set ) {
-    			        			if(row.direct_labor != null){return (parseFloat(row.direct_labor).toFixed(2));}
+    			        			if(row.direct_labor != null){return "$" + (parseFloat(row.direct_labor).toFixed(2));}
 		            			} },
         			        	{ title: "YTD Direct Labor", width:"5%", searchable:true,  searchFormat: "#.##", data: function ( row, type, set ) {
-    			        			if(row.ytd_direct_labor != null){return (parseFloat(row.ytd_direct_labor).toFixed(2));}
+    			        			if(row.ytd_direct_labor != null){return "$" + (parseFloat(row.ytd_direct_labor).toFixed(2));}
 		            			} },
         			        	{ title: "Non Standard Company", width:"5%", searchable:true, "defaultContent": "", 
         			        	data:function(row, type, set) {
