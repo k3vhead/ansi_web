@@ -192,9 +192,9 @@
 	           		employeeMap : {},
 
 	           		init : function() {
-	           			TIMESHEET_IMPORT.makeClickers();            			
-	           		},
-	           	           	           		
+	           			TIMESHEET_IMPORT.makeClickers();  
+	           			TIMESHEET_IMPORT.setupCityTypeAhead();	           				           			
+	           		},	           	           	           		
 	           		formatDetail : function(row) {
 	           			console.log("formatDetail");
 	           			var $table = $("<table>");
@@ -286,7 +286,35 @@
 	           				TIMESHEET_IMPORT.initializeDisplay();
 	           			});
 	           		},
-	           		           		           		
+	           		setupCityTypeAhead : function(){
+	        			var $cityField = "#file-header-data  input[name='city']";
+	        			var $stateField = "#file-header-data select[name='state']";
+	        			
+	        			var $localeComplete = $( $cityField ).autocomplete({
+		    				source: function(request,response) {
+		    					term = $($cityField).val();
+		    					localeTypeId = null; 
+		    					stateName = null; 
+		    					if ( $( $stateField ).val() != null ) {
+		    						stateName = $( $stateField ).val();	
+		    					}
+		    					$.getJSON("localeAutocomplete", {"term":term, "localeTypeId":localeTypeId, "stateId":stateName}, response);
+		    				},
+		                    minLength: 2,
+		                    //select: function( event, ui ) {
+		                    	//$("#addLocaleForm input[name='parentId']").val(ui.item.id);
+		                    //	console.log("Got it: " + ui.item.id)
+		                    //},
+		                    response: function(event, ui) {
+		                        if (ui.content.length === 0) {
+		                        	$("#file-header-data .cityErr").html("No Matching Locale");
+		                        	//$("#addLocaleForm input[name='parentId']").val("");
+		                        } else {
+		                        	$("#file-header-data .cityErr").html("");
+		                        }
+		                    }
+		              	}).data('ui-autocomplete');	            		           			
+	           		},	           		           		           		
 	           		processUploadFailure : function($data) {
 	           			console.log("processUploadFailure");
 	           			$("#prompt-div .err").html("");
