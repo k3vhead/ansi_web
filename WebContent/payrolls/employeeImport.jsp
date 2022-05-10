@@ -184,9 +184,9 @@
                 				$unionMember = 1; 
                 			} 
                 			var $outbound = {
-               					
+                				'selectedEmployeeCode' : $("#employee-modal input[name='employeeCode']").val(),
                 				'employeeCode' : $("#employee-modal input[name='employeeCode']").val(),
-        	        			'companyCode' : $("#employee-modal select[name='companyCode']").val(),
+        	        			'companyCode' : $("#employee-modal input[name='companyCode']").val(),
         	        			'divisionId' : $("#employee-modal select[name='divisionId']").val(),
         	        			'firstName' : $("#employee-modal input[name='firstName']").val(),
         	        			'lastName' : $("#employee-modal input[name='lastName']").val(),
@@ -200,11 +200,16 @@
         	        			'processDate' : $("#employee-modal input[name='processDate']").val(),
         	        			'notes' : $("#employee-modal input[name='notes']").val(),
                 			}
+                			
+                			
+                			if ($outbound.processDate == undefined){$outbound.processDate = "2021-12-13"}// need to change this to match todays date
+                			
                 			console.log($selectedEmployeeCode);
                 			var $url = "payroll/employee"
                 			if ( $selectedEmployeeCode != null && $selectedEmployeeCode != "") {
                 				$url = $url + "/" + $selectedEmployeeCode
                 			}
+                			console.log($url);
                 			console.log($outbound);
                 			ANSI_UTILS.makeServerCall("post", $url, JSON.stringify($outbound), {200:EMPLOYEE_IMPORT.processUploadChanges}, {});
                 		},
@@ -423,8 +428,8 @@
                    			});
                    		},
                    		
-                   		processUploadChanges : function($data){
-                   			console.log($data.data);
+                   		processUploadChanges : function($data, $passthru){
+                   			console.log($data);
                    		},
                    		processUploadSuccess : function($data) {
                    			console.log("processUploadSuccess");
