@@ -902,124 +902,84 @@
 			<div style="width:100%; height:0px;">
 				<span class="employeeEditErr err"></span>
 			</div>	    	
-
 			<table  id="employee-data">   
 				<tr>
-					<td class="form-label">Employee Name :</td>
-					<td class="employeeName">	<input type="text" class="employeeName" name="employeeName"tabindex="1" /></td>
-					<td class="err">			<span class="employeeNameErr err"></span></td>
-
-					<td class="spacer"></td>
-
-					<td class="form-label">State:</td>
-					<td class="state">			<span class="state">			</span></td>
-					<td class="err">			<span class="stateErr err">		</span></td>
-
-					<td class="form-label">		<span class="form-label row-number-label">Row:	</span></td>
-					<td class="row">			<span class="row">				</span></td>
-					<td class="err">			<span class="rowErr err">		</span></td>						
+					<td class="form-label">Employee Name :																					</td>
+					<td class="employeeName">	<input 	class="employeeName" 	type="text" 	name="employeeName"	tabindex="101" />		</td>
+					<td class="err">			<span 	class="employeeNameErr err">												</span>	</td>
+					<td class="spacer">																										</td>
+					<td class="form-label">		State:																						</td>
+					<td class="state">			<span 	class="state">																</span>	</td>
+					<td class="err">			<span 	class="stateErr err">														</span>	</td>
+					<td class="form-label">		<span 	class="form-label row-number-label">Row:									</span>	</td>
+					<td class="row">			<span 	class="row">																</span>	</td>
+					<td class="err">			<span 	class="rowErr err">															</span> </td>						
 				</tr>
 			</table>
-
 			<table  id="time-calcs">   
 				<tr>
-					<td class="form-label"></td>
-					<td colspan="2" class="col-heading hours ">Hours</td>
-					<td colspan="2" class="col-heading pay">Pay</td>
-					<td colspan="2" class="col-heading pay">Expenses</td>
+					<td class="form-label">																									</td>
+					<td colspan="2" class="col-heading hours">	Hours																		</td>
+					<td colspan="2" class="col-heading pay">	Pay																			</td>
+					<td colspan="2" class="col-heading pay">	Expenses																	</td>
 				</tr>
-												
 				<tr>
-					<td class="row-label">Regular:</td>
-					
-					<td class="hours"><input class="hours" type="text" name="regularHours" 				tabindex="2" /></td>
-					<td class="hoursErr err"><span class="regularHoursErr  err"></span></td>
-					
-					<td class="money"><input  class="money" type="text" name="regularPay" 				tabindex="3" /></td>
-					<td class="moneyErr err"><span class="regularPayErr err"></span></td>
-
-					<td class="row-label">Submitted:</td>
-					<td class="money"><input class="money" type="text" name="expensesSubmitted" 		tabindex="14" /></td>
-					<td class="moneyErr err"><span class="expensesSubmittedErr err"></span></td>
-
-
+					<td class="row-label">		Regular:																					</td>
+					<td class="hours">			<input 	class="hours" 	type="text" name="regularHours" 			tabindex="102" />			</td>
+					<td class="hoursErr err">	<span 	class="regularHoursErr  err">												</span>	</td>
+					<td class="money">			<input  class="money" 	type="text" name="regularPay" 				tabindex="103" />			</td>
+					<td class="moneyErr err">	<span 	class="regularPayErr err">													</span>	</td>
+					<td class="row-label">		Submitted:																					</td>
+					<td class="money">			<input 	class="money" 	type="text" name="expensesSubmitted" 		tabindex="112" />		</td>
+					<td class="moneyErr err">	<span 	class="expensesSubmittedErr err">											</span>	</td>
 				</tr>
-								
 				<tr>
-					<td class="row-label">Overtime :</td>
-
-					<td class="hours"><input class="hours" type="text" name="otHours" 					tabindex="4" /></td>
-					<td class="hoursErr err"><span class="otHoursErr err"></span></td>
-					
-					<td class="money"><input class="money" type="text" name="otPay" 					tabindex="5" /></td>
-					<td class="moneyErr err"><span class="otPayErr err"></span></td>
-
-					<td class="row-label">Allowed:</td>
-					<td class="money"><input class="money" type="text" name="expensesAllowed" 			tabindex="15" /></td>
+					<td class="row-label">		Overtime :																					</td>
+					<td class="hours">			<input 	class="hours" 	type="text" name="otHours" 					tabindex="104" />			</td>
+					<td class="hoursErr err">	<span 	class="otHoursErr err">														</span>	</td>
+					<td class="money">			<input 	class="money" 	type="text" name="otPay" 					tabindex="105" />			</td>
+					<td class="moneyErr err">	<span 	class="otPayErr err">														</span>	</td>
+					<td class="row-label">		Allowed:																					</td>
+					<td class="money">			<input 	class="money" 	type="text" name="expensesAllowed" 			tabindex="113" />		</td>
 					<td class="moneyErr err"><span class="expensesAllowedErr err"></span></td>
-
-
 				</tr>
 				<tr>
-					<td class="row-label"></td>					
-					<td class="hours total"></td>
-					<td class="hoursErr err"></td>
-
-					<td class="money"></td>
-					<td class="moneyErr err"></td>
-
-					<td colspan="2" class="form-label">Productivity</td>
-
-
+					<td class="row-label">																									</td>					
+					<td class="hours total">																								</td>
+					<td class="hoursErr err">																								</td>
+					<td class="money">																										</td>
+					<td class="moneyErr err">																								</td>
+					<td colspan="2" class="form-label">Productivity																			</td>
 				</tr>
-								
 				<tr>
-					<td class="row-label">Vacation:</td>
-
-					<td class="hours"><input class="hours" type="text" name="vacationHours"				tabindex="6" /></td>
-					<td class="hoursErr err"><span class="vacationHoursErr"></span></td>
-
-
-					<td class="money">
-						<input class="money" type="text" name="vacationPay" 							tabindex="7" />
-					</td>
-					<td class="moneyErr err">
-						<span class="vacationPayErr err"></span>
-					</td>
-					<td class="row-label">Direct Labor:</td>
-					<td class="money">	<input class="money" type="text" name="directLabor" 				tabindex="16" /></td>
-					<td class="moneyErr err">		<span class="directLaborErr err"></span></td>
-
+					<td class="row-label">		Vacation:</td>
+					<td class="hours">			<input 	class="hours" type="text" name="vacationHours"				tabindex="106" />			</td>
+					<td class="hoursErr err">	<span 	class="vacationHoursErr">													</span>	</td>
+					<td class="money"> 			<input 	class="money" type="text" name="vacationPay" 				tabindex="107" />			</td>
+					<td class="moneyErr err">	<span 	class="vacationPayErr err">													</span>	</td>
+					<td class="row-label">		Direct Labor:																				</td>
+					<td class="money">			<input 	class="money" type="text" name="directLabor" 				tabindex="114" />		</td>
+					<td class="moneyErr err">	<span 	class="directLaborErr err">													</span>	</td>
 				</tr>
-								
 				<tr>
-					<td class="row-label">Holiday:</td>
-
-					<td class="hours">			<input	class="hours" type="text" name="holidayHours"				tabindex="8" /></td>
-					<td class="hoursErr err">	<span 	class="holidayHoursErr err"></span></td>
-
-					<td class="money">			<input	class="money" type="text" name="holidayPay" 				tabindex="9" /></td>
-					<td class="moneyErr err">	<span 	class="holidayPayErr err"></span></td>
-
-
-					<td class="row-label">Volume :</td>
-					<td class="money">			<input class="money" type="text" name="volume" 					tabindex="17" /></td>
-					<td class="moneyErr err">	<span class="volumeErr err"></span></td>
-
+					<td class="row-label">		Holiday:																					</td>
+					<td class="hours">			<input	class="hours" type="text" name="holidayHours"				tabindex="108" />			</td>
+					<td class="hoursErr err">	<span 	class="holidayHoursErr err">												</span>	</td>
+					<td class="money">			<input	class="money" type="text" name="holidayPay" 				tabindex="109" />			</td>
+					<td class="moneyErr err">	<span 	class="holidayPayErr err">													</span>	</td>
+					<td class="row-label">		Volume :																					</td>
+					<td class="money">			<input 	class="money" type="text" name="volume" 					tabindex="115" />		</td>
+					<td class="moneyErr err">	<span 	class="volumeErr err">														</span>	</td>
 				</tr>							
 				<tr>
-					<td class="row-label">Total:</td>
-					
-					<td class="hours total">	<input class="hours" type="text" name="totalHours" 			tabindex="12" /></td>
-					<td class="hoursErr err">	<span class="totalHoursErr err"></span></td>
-
-					<td class="money">			<input class="money" type="text" name="grossPay" 			tabindex="13" /></td>
-					<td class="moneyErr err">	<span class="grossPayErr err"></span></td>
-
-					<td class="row-label">Productivity:</td>
-					<td class="percentage">		<input class="percentage" type="text" name="productivity"	tabindex="18" /></td>
-					<td class="percentageErr err">	<span class="productivityErr err"></span></td>
-
+					<td class="row-label">		Total:																						</td>
+					<td class="hours total">	<input 	class="hours" type="text" name="totalHours" 				tabindex="110" />		</td>
+					<td class="hoursErr err">	<span 	class="totalHoursErr err">													</span>	</td>
+					<td class="money">			<input 	class="money" type="text" name="grossPay" 					tabindex="111" />		</td>
+					<td class="moneyErr err">	<span 	class="grossPayErr err">													</span>	</td>
+					<td class="row-label">		Productivity:																				</td>
+					<td class="percentage">		<input 	class="percentage" 	type="text" name="productivity"			tabindex="116" />		</td>
+					<td class="percentageErr err">	<span class="productivityErr err">												</span>	</td>
 				</tr>							
 			</table>
 		</div>				
