@@ -176,16 +176,17 @@
             			
                    		saveEmployee : function() {
                 			console.log("saveEmployee");
+                			
                 			$("#employee-modal .err").html("");
-                			var $selectedEmployeeCode = $("#employee-modal input[name='selectedEmployeeCode']").val();
+                			var $selectedEmployeeCode = $("#employee-modal input[name='employeeCode']").val();
                 			var $unionMember = 0;
                 			if ( $("#employee-modal input[name='unionMember']").prop("checked") == true ) {
                 				$unionMember = 1; 
                 			} 
                 			var $outbound = {
-               					'selectedEmployeeCode' : $("#employee-modal input[name='selectedEmployeeCode']").val(),
+                				'selectedEmployeeCode' : $("#employee-modal input[name='employeeCode']").val(),
                 				'employeeCode' : $("#employee-modal input[name='employeeCode']").val(),
-        	        			'companyCode' : $("#employee-modal select[name='companyCode']").val(),
+        	        			'companyCode' : $("#employee-modal input[name='companyCode']").val(),
         	        			'divisionId' : $("#employee-modal select[name='divisionId']").val(),
         	        			'firstName' : $("#employee-modal input[name='firstName']").val(),
         	        			'lastName' : $("#employee-modal input[name='lastName']").val(),
@@ -199,11 +200,18 @@
         	        			'processDate' : $("#employee-modal input[name='processDate']").val(),
         	        			'notes' : $("#employee-modal input[name='notes']").val(),
                 			}
+                			
+                			
+                			if ($outbound.processDate == undefined){$outbound.processDate = "2021-12-13"}// need to change this to match todays date
+                			
+                			console.log($selectedEmployeeCode);
                 			var $url = "payroll/employee"
                 			if ( $selectedEmployeeCode != null && $selectedEmployeeCode != "") {
                 				$url = $url + "/" + $selectedEmployeeCode
                 			}
-                			ANSI_UTILS.makeServerCall("post", $url, JSON.stringify($outbound), {200:EMPLOYEE_IMPORT.saveEmployeeSuccess}, {});
+                			console.log($url);
+                			console.log($outbound);
+                			ANSI_UTILS.makeServerCall("post", $url, JSON.stringify($outbound), {200:EMPLOYEE_IMPORT.processUploadChanges}, {});
                 		},
              
                    		
@@ -380,6 +388,7 @@
                 					$("#employee-modal .unionInput").prop('disabled',true);
                 				}
                 			});
+                			
                 		},
                 		
                 		
@@ -419,7 +428,9 @@
                    			});
                    		},
                    		
-                   		
+                   		processUploadChanges : function($data, $passthru){
+                   			console.log($data);
+                   		},
                    		processUploadSuccess : function($data) {
                    			console.log("processUploadSuccess");
                    			$("#prompt-div").hide();
@@ -429,17 +440,11 @@
                    			EMPLOYEE_IMPORT.makeEmployeeTable($data.data);
                    			
                    			
-                   			for (var i = 0; i< $data.data.employeeRecords.length; i++){                   				
+                   			/* for (var i = 0; i < $data.data.employeeRecords.length; i++){                   				                 				
                    				if ($data.data.employeeRecords[i].recordMatches == false){
-                   					//	console.log(i);
-                       				//	console.log($data.data.employeeRecords[i].rowId);
                    					document.getElementById($data.data.employeeRecords[i].rowId).classList.add("highlight");
                    				}
-                   			}
-                   			
-                   			//highlightChangingRows();
-                   			
-                   			
+                   			} */
                    			$.each($data.data.employeeRecords, function($index, $value) {
                    				EMPLOYEE_IMPORT.employeeDict[$value.rowId] = $value;                   				
                    			});
@@ -517,21 +522,7 @@
         	
         	EMPLOYEE_IMPORT.init();
         	});
-        		/* function highlightChangingRows() {
-        			
-        			  const changingIds = ["333c169911146ed80cc0e99a3d629fe7", "9fab5c2b256cb752af175ef31931f118"]
-        			  for (var highlightNbr = 0; highlightNbr < changingIds.length; highlightNbr++){var highlighted = document.getElementById(changingIds[highlightNbr]);
-        			  	
-       			   		highlighted.classList.add("highlight");
-       			   		
-         			 	
-      				}
-        			    
-        			
- 
-        		} */
-        	
-        </script>        
+        		       </script>        
     </tiles:put>
     
    <tiles:put name="content" type="string">
