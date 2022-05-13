@@ -49,8 +49,8 @@ public class ExportServlet extends AbstractServlet {
 				CSVWriter writer = new CSVWriter(new OutputStreamWriter(o));
 								
 				
-				String fileName = "payroll_export_" + exportRequest.getCompanyCode() + "_" + weekEnding;
-				String dispositionHeader = "attachment; filename=" + fileName + ".csv";
+				String fileName = weekEnding + "_" + companyCode + "_import_file.csv";
+				String dispositionHeader = "attachment; filename=" + fileName;
 				response.setHeader("Content-disposition",dispositionHeader);
 				response.setStatus(HttpServletResponse.SC_OK);
                 response.setContentType("text/csv");
