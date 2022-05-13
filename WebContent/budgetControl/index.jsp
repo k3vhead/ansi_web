@@ -1919,7 +1919,7 @@
         					},{
         						id:  "bcr_quick_claim_save",
         						click: function($event) {
-        							BUDGETCONTROL.makeNewClaim();
+        							BUDGETCONTROL.makeQuickClaim();
         						}
         					}
         				]
@@ -1990,6 +1990,81 @@
         			$("#bcr_new_claim_modal").dialog("close");
         			$("#globalMsg").html("Update Successful").fadeOut(6000);
         		}, 
+        		
+        		
+        		
+        		makeQuickClaim : function() {
+        			console.log("makeQuickClaim");
+        			
+        			$("#bcr_quick_claim_modal .err").html("");
+        			
+        			var $ticketId = $("#bcr_new_claim_modal input[name='ticketId']").val();
+        			var $serviceTagId = $("#bcr_edit_modal").attr("serviceTagId");
+        			var $claimWeek = $("#bcr_quick_claim_modal input[name='claimWeek']").val();
+        			var $volume = $("#bcr_quick_claim_modal input[name='expenseVolume']").val();
+        			var $expenseType = $("#bcr_quick_claim_modal select[name='expenseType']").val();
+        			var $notes = $("#bcr_quick_claim_modal input[name='notes']").val();
+        			
+        			// these are needed to create the correct response, not to do the update
+        			var $divisionId = BUDGETCONTROL.divisionId
+        			var $workYear = BUDGETCONTROL.workYear; 
+        			var $workWeeks = BUDGETCONTROL.workWeek;
+        			
+        			var $outbound = {
+            				"divisionId":BUDGETCONTROL.divisionId,
+                    		"workYear":BUDGETCONTROL.workYear, 
+                    		"workWeeks":BUDGETCONTROL.workWeek,	
+            					
+            				"ticketId":$("#bcr_quick_claim_modal input[name='ticketId']").val(),
+            				"serviceTypeId":$("#bcr_quick_claim_modal input[name='serviceTypeId']").val(),
+            				"claimWeek":$("#bcr_quick_claim_modal select[name='claimWeek']").val(),
+            				"dlAmt":$("#bcr_quick_claim_modal input[name='dlAmt']").val().replace(/,/g,''),
+            				"expenseVolume":$("#bcr_quick_claim_modal input[name='expenseVolume']").val().replace(/,/g,''),
+            				"volumeClaimed":$("#bcr_quick_claim_modal input[name='volumeClaimed']").val().replace(/,/g,''),
+            				"expenseType":$("#bcr_quick_claim_modal select[name='expenseType']").val(),
+            				"employee":$("#bcr_quick_claim_modal input[name='employee']").val(),
+            				"laborNotes":$("#bcr_quick_claim_modal input[name='laborNotes']").val(),
+            				"expenseNotes":$("#bcr_quick_claim_modal input[name='expenseNotes']").val(), 
+            			};
+        			
+        			console.log(JSON.stringify($outbound));
+        			ANSI_UTILS.doServerCall("POST", "bcr/newClaim", JSON.stringify($outbound), BUDGETCONTROL.makeQuickClaimSuccess, BUDGETCONTROL.makeQuickClaimFail);
+
+        		},
+        		
+        		
+        		makeQuickClaimFail : function($data, $passthru) {
+        			console.log("makeQuickClaimFail");
+        			$.each($data.data.webMessages, function($index, $value) {
+        				var $loc = "#bcr_quick_claim_modal ." + $index + "Err";
+        				$($loc).html($value[0]);
+        			});
+        		},
+        		
+        		
+        		
+        		makeQuickClaimSuccess : function($data, $passthru) {
+        			console.log("makeQuickClaimSuccess");
+        			BUDGETCONTROL.refreshPanels($data);
+        			
+        			$("#bcr_quick_claim_modal .jobId").html("");
+        			$("#bcr_quick_claim_modal .jobSite").html("");
+        			$("#bcr_quick_claim_modal .ticketAmt").html("");
+        			
+        			
+        			$("#bcr_quick_claim_modal input[name='ticketId']").val(""),
+    				$("#bcr_quick_claim_modal input[name='serviceTypeId']").val(""),
+    				//$("#bcr_quick_claim_modal select[name='claimWeek']").val(),
+    				$("#bcr_quick_claim_modal input[name='dlAmt']").val(""),
+    				$("#bcr_quick_claim_modal input[name='expenseVolume']").val(''),
+    				$("#bcr_quick_claim_modal input[name='volumeClaimed']").val(''),
+    				$("#bcr_quick_claim_modal select[name='expenseType']").val(''),
+    				//$("#bcr_quick_claim_modal input[name='employee']").val(),
+    				//$("#bcr_quick_claim_modal input[name='laborNotes']").val(),
+    				//$("#bcr_quick_claim_modal input[name='expenseNotes']").val(), 
+        			
+        			$("#bcr_quick_claim_modal .newClaimErr").html("Update Successful").show().fadeOut(6000);
+        		},
         		
         		
         		
@@ -2287,7 +2362,21 @@
 					
 					$("#bcr_summary .quick-claim").click(function($event) {
 						$("#bcr_quick_claim_modal").dialog("open");
-												
+						
+						$("#bcr_quick_claim_modal .jobId").html("");
+	        			$("#bcr_quick_claim_modal .jobSite").html("");
+	        			$("#bcr_quick_claim_modal .ticketAmt").html("");
+										
+						$("#bcr_quick_claim_modal input[name='ticketId']").val("");
+	    				$("#bcr_quick_claim_modal input[name='serviceTypeId']").val("");
+	    				//$("#bcr_quick_claim_modal select[name='claimWeek']").val();
+	    				$("#bcr_quick_claim_modal input[name='dlAmt']").val("");
+	    				$("#bcr_quick_claim_modal input[name='expenseVolume']").val('');
+	    				$("#bcr_quick_claim_modal input[name='volumeClaimed']").val('');
+	    				$("#bcr_quick_claim_modal select[name='expenseType']").val('');
+	    				//$("#bcr_quick_claim_modal input[name='employee']").val();
+	    				//$("#bcr_quick_claim_modal input[name='laborNotes']").val();
+	    				//$("#bcr_quick_claim_modal input[name='expenseNotes']").val();
 						
 						var $ticketField = "#bcr_quick_claim_modal input[name='ticketId']";
 						
@@ -2361,6 +2450,7 @@
         		
         		quickTicketFailure : function($data) {
         			console.log("quickTicketFailure");	
+        			$("#globalMsg").html("Invalid").show().fadeOut(3000);
         		},
         		
         		quickTicketSuccess : function($data, $passThruData) {
@@ -2371,7 +2461,7 @@
         			
         			
         			var $ticketId = $passThruData["ticketId"];
-        			var $serviceTypeId = $data.data.claimDetail.service_tag_id;
+        			var $serviceTypeId = $data.data.claimDetail.service_type_id;
         			var $serviceTagId = $data.data.claimDetail.service_tag_id;
         			var $actDlAmt = $data.data.ticketDetail.actDlAmt.replace("$","").replace(",","");
         			var $actPricePerCleaning = $data.data.ticketDetail.actPricePerCleaning.replace("$","").replace(",","");
@@ -2385,6 +2475,7 @@
     				//$("#bcr_new_claim_modal .ticketId").html($ticketId);
     				$("#bcr_quick_claim_modal input[name='serviceTypeId']").val($serviceTypeId);
     				$("#bcr_quick_claim_modal .serviceTagId").html($serviceTagId);
+    				$("#bcr_edit_modal").attr("serviceTagId",$serviceTagId);
     				
     				if ( BUDGETCONTROL.lastEmployeeEntered != null ) {
     					$("#bcr_quick_claim_modal input[name='employee']").val(BUDGETCONTROL.lastEmployeeEntered);
