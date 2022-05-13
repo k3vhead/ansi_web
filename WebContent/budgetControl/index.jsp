@@ -2296,7 +2296,6 @@
 							// to make autocomplete happy, the field must be visible. If we have an autocomplete,
 							// use it. Else make a new one
 							$( $ticketField ).autocomplete({
-								//'source':"bcr/employee?",
 								'source':function(request, response) {
 									jQuery.get(
 										"bcr/ticketAutoComplete", 
@@ -2310,14 +2309,36 @@
 								appendTo:"#bcr_quick_claim_modal",
 								select: function( event, ui ) {
 									console.log("Selected: " + ui.item.value);
-									var $url = "ticket/" + ui.item.value;
-									ANSI_UTILS.doServerCall("GET", $url, {}, BUDGETCONTROL.quickTicketSuccess, BUDGETCONTROL.quickTicketFailure);
-		       			      	}
-		       			 	});						
+									var $url = "bcr/ticketClaimDetail/" + ui.item.value;
+									var $outbound = {
+											"divisionId":BUDGETCONTROL.divisionId,
+											"workYear":BUDGETCONTROL.workYear,
+											"workWeeks":BUDGETCONTROL.workWeek,
+									};
+									console.log($outbound);
+									ANSI_UTILS.doServerCall("GET", $url, $outbound, BUDGETCONTROL.quickTicketSuccess, BUDGETCONTROL.quickTicketFailure, BUDGETCONTROL.quickTicketFailure, {});
+								},
+				                response: function(event, ui) {
+				                    if (ui.content.length === 0) {
+				                    	$("#bcr_quick_claim_modal .newClaimErr").html("No Matching Ticket").show();
+				                    	$("#bcr_quick_claim_modal input").val("");
+				                    } else if (ui.content.length == 1) {
+				                    	$("#bcr_quick_claim_modal .newClaimErr").html("").show();
+				                    	$("#bcr_quick_claim_modal input[name='ticketId']").val(ui.content[0].value);
+				                    	var $url = "bcr/ticketClaimDetail/" + ui.content[0].value;
+										var $outbound = {
+												"divisionId":BUDGETCONTROL.divisionId,
+												"workYear":BUDGETCONTROL.workYear,
+												"workWeeks":BUDGETCONTROL.workWeek,
+										};
+										console.log($outbound);
+										ANSI_UTILS.doServerCall("GET", $url, $outbound, BUDGETCONTROL.quickTicketSuccess, BUDGETCONTROL.quickTicketFailure, BUDGETCONTROL.quickTicketFailure, {});
+				                    } else {
+				                    	$("#bcr_quick_claim_modal .newClaimErr").html("").show();
+				                    }
+				                }
+							}).data('ui-autocomplete');
 						}
-						
-						
-						
 					});
 					
 					
@@ -2342,11 +2363,51 @@
         			console.log("quickTicketFailure");	
         		},
         		
-        		quickTicketSuccess : function($data) {
+        		quickTicketSuccess : function($data, $passThruData) {
         			console.log("quickTicketSuccess");
         			$("#bcr_quick_claim_modal .jobId").html("Job: " + $data.data.ticketDetail.jobId);
         			$("#bcr_quick_claim_modal .jobSite").html($data.data.ticketDetail.jobSiteAddress.name);
         			$("#bcr_quick_claim_modal .ticketAmt").html($data.data.ticketDetail.actDlAmt);
+        			
+        			
+        			var $ticketId = $passThruData["ticketId"];
+        			var $serviceTypeId = $data.data.claimDetail.service_tag_id;
+        			var $serviceTagId = $data.data.claimDetail.service_tag_id;
+        			var $actDlAmt = $data.data.ticketDetail.actDlAmt.replace("$","").replace(",","");
+        			var $actPricePerCleaning = $data.data.ticketDetail.actPricePerCleaning.replace("$","").replace(",","");
+        			
+    				//$("#bcr_quick_claim_modal input").val("");
+    				$("#bcr_quick_claim_modal select").val("");
+    				$("#bcr_quick_claim_modal .err").html("");
+    				//$("#bcr_new_claim_modal input[name='ticketId']").val($ticketId);
+    				$("#bcr_quick_claim_modal input[name='dlAmt']").val($data.data.ticketDetail.remainingDlAmt.toFixed(2));
+    				$("#bcr_quick_claim_modal input[name='volumeClaimed']").val($data.data.ticketDetail.remainingPricePerCleaning.toFixed(2));
+    				//$("#bcr_new_claim_modal .ticketId").html($ticketId);
+    				$("#bcr_quick_claim_modal input[name='serviceTypeId']").val($serviceTypeId);
+    				$("#bcr_quick_claim_modal .serviceTagId").html($serviceTagId);
+    				
+    				if ( BUDGETCONTROL.lastEmployeeEntered != null ) {
+    					$("#bcr_quick_claim_modal input[name='employee']").val(BUDGETCONTROL.lastEmployeeEntered);
+    				}
+    				if ( BUDGETCONTROL.lastNoteEntered != null ) {
+    					$("#bcr_quick_claim_modal input[name='notes']").val(BUDGETCONTROL.lastNoteEntered);
+    				}
+    				
+    				if ( BUDGETCONTROL.lastWorkWeekEntered != null ) {
+        				var $thisMonth = false;
+        				$.each( $("#bcr_new_claim_modal select[name='claimWeek'] option"), function($index, $value) {
+        					if ( $value.value == BUDGETCONTROL.lastWorkWeekEntered ) {
+        						$thisMonth = true;
+        					}
+        				});
+        				if ( $thisMonth == true ) {
+    						$("#bcr_quick_claim_modal select[name='claimWeek']").val(BUDGETCONTROL.lastWorkWeekEntered);
+        				}
+    				}
+
+    				
+    				// this bit handles the display/hide of panels in the new claim modal    				
+    				//$("#bcr_new_claim_modal .directLaborDetail select[name='claimWeek']").focus();
         		},
         		
         		
