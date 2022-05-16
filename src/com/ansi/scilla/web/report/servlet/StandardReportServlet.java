@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.URLEncoder;
 import java.sql.Connection;
 import java.util.List;
 
@@ -16,13 +15,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.Level;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import com.ansi.scilla.report.reportBuilder.htmlBuilder.HTMLBuilder;
+import com.ansi.scilla.report.reportBuilder.htmlBuilder.HTMLSummaryBuilder;
 import com.ansi.scilla.report.reportBuilder.reportType.AbstractReport;
 import com.ansi.scilla.report.reportBuilder.reportType.AnsiReport;
 import com.ansi.scilla.report.reportBuilder.reportType.CompoundReport;
 import com.ansi.scilla.report.reportBuilder.reportType.CustomReport;
 import com.ansi.scilla.report.reportBuilder.reportType.DataDumpReport;
-import com.ansi.scilla.report.reportBuilder.htmlBuilder.HTMLBuilder;
-import com.ansi.scilla.report.reportBuilder.htmlBuilder.HTMLSummaryBuilder;
 import com.ansi.scilla.report.reportBuilder.reportType.StandardReport;
 import com.ansi.scilla.report.reportBuilder.reportType.StandardSummaryReport;
 import com.ansi.scilla.report.reportBuilder.xlsBuilder.XLSBuilder;
