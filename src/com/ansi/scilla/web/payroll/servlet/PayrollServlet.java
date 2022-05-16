@@ -31,6 +31,8 @@ public class PayrollServlet extends AbstractServlet {
 	public static final String TIMESHEET_IMPORT = "timesheetImport";
 	public static final String TIMESHEET_LOOKUP = "timesheetLookup";
 	public static final String EXCEPTION_REPORT = "exceptionReport";
+	public static final String EXPORT_PREVIEW = "exportPreview";
+	public static final String EXPORT = "export";
 	
 
 	private final Logger logger = LogManager.getLogger(PayrollServlet.class);
@@ -72,6 +74,12 @@ public class PayrollServlet extends AbstractServlet {
 			break;
 		case EXCEPTION_REPORT:
 			new ExceptionReportServlet().doGet(request, response);
+			break;
+		case EXPORT:
+			new ExportServlet().doGet(request, response);
+			break;
+		case EXPORT_PREVIEW:
+			new ExportPreviewServlet().doGet(request, response);
 			break;
 		case TIMESHEET:
 			new TimesheetServlet().doGet(request, response);

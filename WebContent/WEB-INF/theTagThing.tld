@@ -403,7 +403,14 @@
 	
 	
 	
-	
+	<tag>
+    	<name>companyCodeSelect</name>
+    	<tagclass>com.ansi.scilla.web.tags.CompanyCodeSelect</tagclass>
+	    <bodycontent>JSP</bodycontent>
+    	<info>Displays an option list of all Company Codes in the payroll_employee table</info>
+	    <attribute><name>format</name><required>true</required><rtexprvalue>true</rtexprvalue></attribute>
+	    <attribute><name>name</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+	</tag>
 	<tag>
     	<name>divisionSelect</name>
     	<tagclass>com.ansi.scilla.web.tags.DivisionSelect</tagclass>

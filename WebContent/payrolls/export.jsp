@@ -32,425 +32,190 @@
     	<script type="text/javascript" src="js/document.js"></script> 
     
         <style type="text/css">
-        	#table-container {
-        		width:100%;
-        	}
-			#filter-container {
-        		width:402px;
-        		float:right;
-        	}			
-        	#organization-display {
+        	#display-container {
+        		width:100%; 
+        		clear:both;
         		display:none;
         	}
-        	#organization-display table {
+        	#export-button {
+        		display:none;
+        	}
+        	#select-container {
         		width:100%;
-        		border:solid 1px #404040;
         	}
-        	#organization-display th {
-        		text-align:left;
+        	.form-header {
+        		font-weight:bold;
         	}
-        	#organization-edit table {
+        	.section-head {
         		width:100%;
-        		border:solid 1px #404040;
+        		background-color:#CCCCCC;
+        		cursor:pointer;
+        		border:solid 1px #000000;
+        		padding:8px;
         	}
-        	#organization-edit th {
-        		text-align:left;
-        	}
-        	.action-link {
-        		text-decoration:none;
-        	}
-			.dataTables_wrapper {
-				padding-top:10px;
-			}	
-			.form-label {
-				font-weight:bold;
-			}
-			.org-status-change {
-				display:none;
-				cursor:pointer;
-			}
-			.view-link {
-				color:#404040;
-			}		
+        
+        
+        
+        	
         </style>
         
         <script type="text/javascript">    
         
         $(document).ready(function(){
-        	;ORGMAINT = {
-        		orgType : '<c:out value="${ANSI_ORGANIZATION_TYPE}" />',
-        		orgTypeDisplay : '<c:out value="${ANSI_ORGANIZATION_TYPE_DISPLAY}" />',        		
-        		orgTable : null,
-        		icons : {
-        			"componentIsYes":'<webthing:component>Component</webthing:component>',
-					"componentIsNo":'<webthing:componentNo>Reassign</webthing:componentNo>',
-        		},
-        		
+        	;PAYROLL_EXPORT = {
         		init : function() {
-        			$("h1 .organization-type-display").html(ORGMAINT.orgTypeDisplay);
-        			ORGMAINT.getOrgs(); 
-        			ORGMAINT.makeModals();
-        			ORGMAINT.makeClickers();
-        		},
-        		
-        		
-        		getOrganizationDetail : function($action, $organizationId, $filter) {
-        			// $filter says whether to retrieve all children (false) or just the children of this org (true)
-        			console.log("getOrganizationDetail: " + $organizationId);
-        			var $url = "organization/" + ORGMAINT.orgType + "/" + $organizationId;
-        			var $callbacks = {
-        				200 : ORGMAINT.showOrgDetail,
-        				404 : ORGMAINT.getOrgsFail,
-        			}        			
-        			$outbound = {"filter":$filter};
-        			ANSI_UTILS.makeServerCall("GET", $url, $outbound, $callbacks, {"action":$action});
+        			PAYROLL_EXPORT.makeClickers();
         		},
         		
         		
         		
-        		getOrgs : function() {
-        			console.log("getOrgs");
-        			var $url = "organization/" + ORGMAINT.orgType;
-        			var $callbacks = {
-        				200 : ORGMAINT.makeOrgTable,
-        				404 : ORGMAINT.getOrgsFail,
-        			}
-        			var $passthru = {
-       					"destination":"#org-table", 
-       					"action":["view","edit"],
-       					"source":"orgList",
-        			}
-        			ANSI_UTILS.makeServerCall("GET", $url, {}, $callbacks, $passthru);
+        		doExport : function() {
+        			console.log("doExport");
+        			var $companyCode = $("#select-container select[name='companyCode']").val();
+    				var $weekEnding = $("#select-container input[name='weekEnding']").val();
+        			$("#export input[name='companyCode']").val($companyCode);
+        			$("#export input[name='weekEnding']").val($weekEnding);
+        			$("#export").submit();
         		},
         		
         		
         		
-        		getOrgsFail : function($data, $passthru) {
-        			console.log("getOrgsFail");
-        			$("#globalMsg").html("Invalid organization type");        			
+        		doPreview : function() {
+        			console.log("doPreview");
+        			var $companyCode = $("#select-container select[name='companyCode']").val();
+    				var $weekEnding = $("#select-container input[name='weekEnding']").val();
+    				var $outbound = {
+    					"companyCode":$companyCode,
+    					"weekEnding":$weekEnding,
+    				}
+    				var $callbacks = {
+           				200 : PAYROLL_EXPORT.makePreview,
+           				403 : PAYROLL_EXPORT.process403,
+           			}
+           			var $passthru = {}
+           			ANSI_UTILS.makeServerCall("GET", "payroll/exportPreview", $outbound, $callbacks, $passthru);
         		},
         		
         		
         		
         		makeClickers : function() {
-        			$("#organization-edit .org-status-change").on("click", function($event) {
-        				console.log("changing status");
-        				var $organizationId = $(this).attr("data-id");
-        				var $classList = $(this).attr('class').split(" ");
-        				var $newStatus = null;
-        				$.each($classList, function($index, $value) {
-        					if ( $value == "status-is-active") {
-        						$newStatus = false;
-        					} else if ( $value == "status-is-inactive") {
-        						$newStatus = true;
-        					} else if ( $value == "status-is-unknown") {
-        						$newStatus = true;
-        					}
-        				});
-        				var $url = "organization/" + ORGMAINT.orgType + "/" + $organizationId;
-        				var $outbound = {"status":$newStatus};
-        				var $callbacks = {
-        					200 : ORGMAINT.statusChangeSuccess,
-        				};
-        				ANSI_UTILS.makeServerCall("POST", $url, JSON.stringify($outbound), $callbacks, {});
+        			$("#select-container input[name='export']").click( function($event) {
+        				PAYROLL_EXPORT.doExport();
         			});
         			
+        			$("#select-container input[name='preview']").click( function($event) {
+        				PAYROLL_EXPORT.doPreview();
+        			});
         			
-        			$("#organization-edit input[name='name']").on("blur", function($event) {
-        				console.log("changing name");
-        				var $organizationId = $(this).attr("data-id");
-        				var $oldName = $(this).attr("data-name");
-        				var $newName = $("#organization-edit input[name='name']").val();
-        				
-        				if ( $oldName != $newName) {  
-        					$("#organization-edit input[name='name']").attr("data-name", $newName);
-	        				var $url = "organization/" + ORGMAINT.orgType + "/" + $organizationId;
-	        				var $outbound = {"name":$newName};
-	        				var $callbacks = {
-	        					200 : ORGMAINT.statusChangeSuccess,
-	        				};
-	        				ANSI_UTILS.makeServerCall("POST", $url, JSON.stringify($outbound), $callbacks, {});
+        			$("#select-container select[name='companyCode']").change( function($event) {
+        				var $companyCode = $("#select-container select[name='companyCode']").val();
+        				var $weekEnding = $("#select-container input[name='weekEnding']").val();
+        				if ( $companyCode == null || $companyCode == "" ) {
+        					$("#display-container").hide();
+        					$("#export-button").hide();
+        				} else {
+	        				if ( $weekEnding != null && $weekEnding != "" ) {
+	        					PAYROLL_EXPORT.doPreview();	
+	        				}
         				}
         			});
-        		},
-        		
-        		
-        		
-        		makeModals : function() {
-        			$( "#organization-display" ).dialog({
-        				title:'View ' + ORGMAINT.orgTypeDisplay,
-        				autoOpen: false,
-        				height: 500,
-        				width: 1200,
-        				modal: true,
-        				closeOnEscape:true,
-        				//open: function(event, ui) {
-        				//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
-        				//},
-        				buttons: [
-        					{
-        						id:  "org_display_cancel",
-        						click: function($event) {
-       								$( "#organization-display" ).dialog("close");
-        						}
-        					}
-        				]
-        			});	
-        			$("#org_display_cancel").button('option', 'label', 'Done');    
         			
-        			$( "#organization-edit" ).dialog({
-        				title:'Edit ' + ORGMAINT.orgTypeDisplay,
-        				autoOpen: false,
-        				height: 500,
-        				width: 1200,
-        				modal: true,
-        				closeOnEscape:true,
-        				//open: function(event, ui) {
-        				//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
-        				//},
-        				buttons: [
-        					{
-        						id:  "org_edit_cancel",
-        						click: function($event) {
-       								$( "#organization-edit" ).dialog("close");
-        						}
-        					}
-        				]
-        			});	
-        			$("#org_edit_cancel").button('option', 'label', 'Done');
-        		},
-        		
-        		
-        		
-        		
-        		
-        		
-        		makeOrgTable : function($data, $passthru) {
-        			console.log("makeOrgTable");  
-        			console.log($passthru);
-        			var $active = '<webthing:checkmark>Active</webthing:checkmark>';
-        			var $inactive = '<webthing:ban>Inactive</webthing:ban>';
-        			var $unknown = '<webthing:questionmark>Unknown</webthing:questionmark>';
-        			
-        			var $edit = '<webthing:edit>Edit</webthing:edit>';
-	       			var $delete = '<webthing:delete>Delete</webthing:delete></a>';
-	       			var $view = '<webthing:view>View</webthing:view>';
-	       			
-	       			
-					
-					
-					
-        			var $buttonArray = [        	        	
-        	        	'copy', 
-        	        	{extend:'csv', filename:'*_' + ORGMAINT.orgTypeDisplay}, 
-        	        	{extend:'excel', filename:'*_' + ORGMAINT.orgTypeDisplay}, 
-        	        	{extend:'pdfHtml5', orientation: 'landscape', filename:'*_' + ORGMAINT.orgTypeDisplay}, 
-        	        	'print',
-        	        	{extend:'colvis', label: function () {
-	        	        		doFunctionBinding();
-	        	        		$('#org-table').draw();
-        	        		}
-        	        	}
-        	        ];
-        			
-        			$($passthru['destination']).DataTable( {
-		    			data : $data.data[$passthru['source']],
-		    			"aaSorting":		[[1,'asc']],
-		    			paging : false,
-		    			autoWidth : false,
-	        	        deferRender : true,
-	        	        searching: false, 
-	        	        scrollX : false,
-	        	        rowId : 'organizationId',	// this sets an id for the row: <tr id="123"> ... </tr>   where 123 is the org id
-	        	        dom : 'Bfrtip',
-	        	        destroy : true,		// this lets us reinitialize the table for different tickets
-            	        buttons: $buttonArray,
-		    			columns : [
-		    				{ width:"10%", title:"ID", className:"dt-center", orderable:true, data:'organizationId' },
-		    				{ width:"25%", title:"Name", className:"dt-left", orderable:true, data:'name' },
-		    				{ width:"25%", title:"Parent", className:"dt-left", orderable:true, data:'parentName' },
-		    				{ width:"10%", title:"Parent Type", className:"dt-left", orderable:true, data:'parentType' },
-		    				{ width:"10%", title:"Status", className:"dt-center", orderable:true, 
-		    					data:function(row,type,set) {
-		    						if ( row.status == 0 ) { $status = $inactive}
-		    						else if ( row.status == 1 ) { $status = $active }
-		    						else { $status = $unknown }
-		    						return $status;
-		    					}
-		    				},
-		    				{ width:"10%", title:"Action", className:"dt-center", orderable:true, visible:$passthru['action'].length > 0,
-		    					data:function(row,type,set) {
-		    						var $viewLink = "";
-		    						var $editLink = "";
-		    						var $parentLink = "";
-		    						
-		    						$.each($passthru['action'], function($index, $value) {
-		    							if ( $value == "view" )  { $viewLink = '<a href="#" class="action-link view-link" data-id="'+row.organizationId+'"><webthing:view>View</webthing:view></a>'; }
-		    							if ( $value == "edit" )  { $editLink = '<a href="#" class="action-link edit-link" data-id="'+row.organizationId+'"><webthing:edit>Edit</webthing:edit></a>'; }
-		    							if ( $value == "parent") { 
-		    								if ( row.parentId == $data.data.organization.organizationId) {
-		    									$parentLink = ORGMAINT.icons['componentIsYes'];
-			    							} else {
-			    								$parentLink = '<a href="#" class="action-link parent-link" data-orgtype="'+row.type+'" data-id="'+row.organizationId+'">' + ORGMAINT.icons['componentIsNo'] + '</a>';
-			    							}
-		    							}
-		    						});
-	    							
-		    						return $viewLink + '<ansi:hasPermission permissionRequired="SYSADMIN_WRITE">' + $editLink + $parentLink + '</ansi:hasPermission>';
-		    					},		    					
-		    				},
-	    				],
-	    				"drawCallback": function( settings ) {
-	    					console.log("drawCallback");
-	    					$(".action-link").off("click");
-	    					$(".view-link").click(function($clickevent) {
-	    						var $organizationId = $(this).attr("data-id");
-	    						ORGMAINT.getOrganizationDetail("view", $organizationId, true);
-	    					});
-	    					$(".edit-link").click(function($clickevent) {
-	    						var $organizationId = $(this).attr("data-id");
-	    						ORGMAINT.getOrganizationDetail("edit", $organizationId, false);
-	    					});
-	    					$(".parent-link").click(function($clickevent) {	    						
-	    						ORGMAINT.parentChange($(this));
-	    					});
-	    				},
+        			$(".section-head").click( function($event) {
+        				var $displayContainer = "#" + $(this).attr("data-display");
+        				$($displayContainer).toggle();
         			});
-        			
-	       			// var myTable $($passthru['destination']).DataTable();
-					// myTable.columns(columnNumber).visible(true);
         		},
         		
         		
-
-        		parentChange : function($clickEvent) {
-        			var $organizationId = $clickEvent.attr("data-id");
-					var $organizationType = $clickEvent.attr("data-orgtype");
-					var $newParent = $("#organization-edit input[name='name']").attr("data-id");
-					console.log("changing parent: " + $organizationId + " " + $organizationType + " " + $newParent);
-					var $url = "organization/" + $organizationType + "/" + $organizationId;
-    				var $outbound = {"parentId":$newParent};
-    				var $callbacks = {
-    					200 : ORGMAINT.parentChangeSuccess,
-    				};
-    				ANSI_UTILS.makeServerCall("POST", $url, JSON.stringify($outbound), $callbacks, {"event":$clickEvent});
-
-        		},
-        		
-        		
-        		
-        		
-        		parentChangeSuccess : function($data, $passthru) {
-        			console.log("parentChangeSuccess");
+        		makePreview : function($data, $passthru) {
+        			console.log("makePreview");
         			if ( $data.responseHeader.responseCode == "SUCCESS" ) {
-        				$("#organization-edit .organization-msg").html("Update successful").show().fadeOut(3000);
-        				$passthru["event"].html(ORGMAINT.icons['componentIsYes'])
-            			//ORGMAINT.showOrgDetail($data, {"action":"edit"});
+        				$("#display-container").show();
+        				$("#export-button").show();
+        				PAYROLL_EXPORT.makeDisplayTable($data.data.regularHours, "#regularHours");
+        				PAYROLL_EXPORT.makeDisplayTable($data.data.allHours, "#allHours");
+        				PAYROLL_EXPORT.makeDisplayTable($data.data.preview, "#exportPreview");
+        			} else if ( $data.responseHeader.responseCode == "EDIT_FAILURE" ) {
+        				$("#display-container").hide();
+        				$("#export-button").hide();
+        				$("#globalMsg").html("Invalid selection").show().fadeOut(3000);
         			} else {
-        				//this happens if the data attributes on the lookup are weird.
-        				$("#organization-edit .organization-msg").html("Update error. Reload page and try again").show();
+        				$("#display-container").hide();
+        				$("#export-button").hide();
+        				$("#globalMsg").html("Invalid response status " + $data.responseHeader.responseCode + ". Contact Support").show();
         			}
         		},
         		
         		
         		
-        		
-        		showOrgDetail : function($data, $passthru) {
-        			console.log("showOrgDetail");
-        			
-        			var $organization = $data.data.organization;
-        			var $active = '<webthing:checkmark>Active</webthing:checkmark>';
-        			var $inactive = '<webthing:ban>Inactive</webthing:ban>';
-        			var $unknown = '<webthing:questionmark>Unknown</webthing:questionmark>';
-
-        			if ( $organization.status == 0 ) { 
-        				$status = $inactive;
-        			} else if ( $organization.status == 1 ) { 
-        				$status = $active;
-        			} else { 
-        				$status = $unknown; 
-       				}
-
-        			// populate the display modal
-        			$("#organization-display .organization-id").html($organization.organizationId);
-        			$("#organization-display .name").html($organization.name);
-        			$("#organization-display .status").html($status);
-        			$("#organization-display .parent-name").html($organization.parentName);
-        			$("#organization-display .parent-type").html($organization.parentType);
-        			
-        			// populate the edit modal
-        			$("#organization-edit .organization-id").html($organization.organizationId);
-        			$("#organization-edit input[name='name']").val($organization.name);
-        			$("#organization-edit input[name='name']").attr("data-id", $organization.organizationId);
-        			$("#organization-edit input[name='name']").attr("data-name", $organization.name);
-        			$("#organization-edit .org-status-change").hide();
-        			$("#organization-edit .org-status-change").attr("data-id", $organization.organizationId);
-        			if ( $organization.status == 0 ) { 
-        				$("#organization-edit .status-is-inactive").show();
-        			} else if ( $organization.status == 1 ) { 
-        				$("#organization-edit .status-is-active").show();
-        			} else { 
-        				$("#organization-edit .status-is-unknown").show();
-       				}
-        			$("#organization-edit .parent-name").html($organization.parentName);
-        			$("#organization-edit .parent-type").html($organization.parentType);
-        			
-        			var $destination = {
-           				"view" : "#organization-display",
-           				"edit" : "#organization-edit",
-           			};
-            			
-        			if ( $passthru["action"] == "view" ) {
-        				$displayDetail = {
-               				"destination":$destination[$passthru["action"]] + " .organization-children",
-               				"action":[],
-               				"source":"childList",
-               			}
-        			} else if ( $passthru["action"] == "edit" ) {
-        				$displayDetail = {
-               				"destination":$destination[$passthru["action"]] + " .organization-children",
-               				"action":["parent"],
-               				"source":"childList",
-               			}
-        			} else {
-        				$("#globalMsg").html("System Error. Invalid action. Contact Support");
-        			}
-        			// populate the child list        			
-        			ORGMAINT.makeOrgTable($data, $displayDetail)
-        			
-        			// display one of the modals
-        			$($destination[$passthru["action"]]).dialog("open");
+        		makeDisplayTable : function($data, $destination) {
+        			$($destination).DataTable( {
+            			"aaSorting":		[[0,'asc'],[1,'asc'],[2,'asc'],[3,'asc'],[4,'asc']],
+            			"processing": 		true,
+            	        "autoWidth": 		false,
+            	        "deferRender": 		true,
+            	        "scrollCollapse": 	true,
+            	        "scrollX": 			true,
+            	        rowId: 				'rowId',
+            	        destroy : 			true,		// this lets us reinitialize the table
+            	        dom: 				'Bfrtip',
+            	        "searching": 		true,
+            	        "searchDelay":		800,
+            	        buttons: [
+           	        		'copy', 
+           	        		'csv', 
+           	        		'excel', 
+           	        		{extend: 'pdfHtml5', orientation: 'landscape'}, 
+           	        		'print',{extend: 'colvis',	label: function () {doFunctionBinding();$('#employeeImport').draw();}},
+           	        	],
+            	        "columnDefs": [
+             	            { "orderable": true, "targets": -1 },
+             	            { className: "dt-head-center", "targets":[]},
+            	            { className: "dt-left", "targets": [0,1,2,3,4,5,8] },
+            	            { className: "dt-center", "targets": [7] },
+            	            { className: "dt-right", "targets": [6]}
+						],
+            	        "paging": false,
+						data: $data,
+    			        columns: [
+    			        	{ title: "Company", width:"5%", searchable:true, "defaultContent": "", data:'company_code' },
+    			        	{ title: "Week Ending", width:"10%", searchable:true, "defaultContent": "", data:'week_ending' },
+    			        	{ title: "Employee Code", width:"5%", searchable:true, "defaultContent": "", data:'employee_code' },
+    			        	{ title: "Last Name", width:"15%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_last_name' },
+    			        	{ title: "First Name", width:"15%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_first_name' },
+    			        	{ title: "Division", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'division' }, 
+    			        	{ title: "Hours", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", 
+    			        		data: function ( row, type, set ) { 
+    			            		return row.amount.toFixed(2);
+    			            	}
+    			        	}, 
+    			        	{ title: "Type", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'type' },
+    			        	{ title: "Message", width:"30%", searchable:true, "defaultContent": "", data:'error'},
+   			      		],
+   			      		"initComplete": function(settings, json) {
+							var myTable = this;
+    			           	//LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#employeeImport", EMPLOYEE_IMPORT.makeEmployeeTable);
+						},
+						drawCallback : function() {
+						}    
+    			    } );
         		},
         		
         		
         		
         		
-            	
-        		statusChangeSuccess : function($data, $passthru) {
-        			console.log("statusChangeSuccess");
-        			if ( $data.responseHeader.responseCode == "SUCCESS" ) {
-        				$("#organization-edit .organization-msg").html("Update Successful").show().fadeOut(3000);
-        				$("#organization-edit .org-status-change").hide();
-            			if ( $data.data.organization.status == 0 ) { 
-            				$("#organization-edit .status-is-inactive").show();
-            			} else if ( $data.data.organization.status == 1 ) { 
-            				$("#organization-edit .status-is-active").show();
-            			} else { 
-            				$("#organization-edit .status-is-unknown").show();
-           				}            			
-            			ORGMAINT.getOrgs();
-        			} else {
-        				$("#organization-edit .organization-msg").html("System Error. Reload the page and try again").show();
-        			}
-        			
-        			
+        		
+        		
+        		
+        		
+        		process403 : function($data, $passthru) {
+        			console.log("process403");
+        			$("#globalMsg").html("Session has expired. Please login and try again").show();
         		},
-            	
-            	
-            	
+        		
         	};
         	
-        	ORGMAINT.init();
+        	PAYROLL_EXPORT.init();
         	
         	
         });
@@ -460,10 +225,54 @@
     
    <tiles:put name="content" type="string">
     	<h1>Payroll Export</h1> 
-
+		<div id="select-container">
+			<span class="form-header">Company: </span> 
+			<select name="companyCode">
+				<option value=""></option>
+				<ansi:companyCodeSelect format="select" />
+			</select>
+			&nbsp;
+			<span class="form-header">Week Ending: </span>
+			<input type="date" name="weekEnding" />
+			&nbsp;
+			<input type="button" name="preview" value="Preview" />
+			<input type="button" name="export" value="Export" id="export-button" />
+		</div>
     	
-
+		<div id="display-container">
 		
+			<div id="regularHoursHead" class="section-head" data-display="regularHoursDisplay">
+				<span class="form-header">Excess Regular Hours</span>
+			</div>
+			<div id="regularHoursDisplay" class="sectionDisplay">
+				<table id="regularHours">
+				</table>
+			</div>
+			
+			<div id="allHoursHead" class="section-head" data-display="allHoursDisplay">
+				<span class="form-header">Excess Combined Hours (Regular, Holiday, Vacation hours)</span>
+			</div>
+			<div id="allHoursDisplay" class="sectionDisplay">
+				<table id="allHours">
+				</table>
+			</div>
+			
+			<div id="previewHead" class="section-head" data-display="previewDisplay">
+				<span class="form-header">Export Preview</span>
+			</div>
+			<div id="previewDisplay" class="sectionDisplay">
+				<table id="exportPreview">
+				</table>
+			</div>
+		
+		</div>
+		
+		<div id="export-container">
+			<form id="export" method="get" action="payroll/export">
+				<input type="hidden" name="companyCode" />
+				<input type="hidden" name="weekEnding" />
+			</form>
+		</div>
     </tiles:put>
 		
 </tiles:insert>
