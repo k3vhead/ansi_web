@@ -51,6 +51,7 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 
 	public static final String ACTION_IS_ADD = "ADD";
 	public static final String ACTION_IS_UPDATE = "UPDATE";
+	public static final String ACTION_IS_VALIDATE = "VALIDATE";
 	
 	
 	public static final String ACTION = "action";

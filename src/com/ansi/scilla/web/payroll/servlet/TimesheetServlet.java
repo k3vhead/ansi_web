@@ -85,6 +85,7 @@ public class TimesheetServlet extends AbstractServlet {
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		Connection conn = null;
+		logger.log(Level.DEBUG, "entering timesheetServlet.doPost() ");
 		WebMessages webMessages = new WebMessages();
 		TimesheetResponse data = new TimesheetResponse ();
 		try {
@@ -95,13 +96,17 @@ public class TimesheetServlet extends AbstractServlet {
 				conn.setAutoCommit(false);
 				TimesheetRequest timesheetRequest = new TimesheetRequest();
 				String jsonString = super.makeJsonString(request);
-				logger.log(Level.DEBUG, jsonString);
 				AppUtils.json2object(jsonString, timesheetRequest);
-				
-				
+								
+				logger.log(Level.DEBUG, "Action sent was -> " + timesheetRequest.getAction());				
 				switch ( timesheetRequest.getAction() ) {
 				case TimesheetRequest.ACTION_IS_ADD:
+					logger.log(Level.DEBUG, "msg from the TimesheetServlet - TimesheetRequest.ACTION_IS_ADD");
 					processAdd(conn, response, timesheetRequest, sessionData);
+					break;
+				case TimesheetRequest.ACTION_IS_VALIDATE:
+					logger.log(Level.DEBUG, "msg from the TimesheetServlet - TimesheetRequest.ACTION_IS_VALIDATE");
+					processValidate(conn, response, timesheetRequest, sessionData);
 					break;
 				case TimesheetRequest.ACTION_IS_UPDATE:
 					processUpdate(conn, response, timesheetRequest, sessionData);
@@ -110,23 +115,29 @@ public class TimesheetServlet extends AbstractServlet {
 					throw new com.ansi.scilla.web.common.exception.InvalidFormatException(TimesheetRequest.EMPLOYEE_CODE);
 				}
 			} catch ( RecordNotFoundException e) {
+				logger.log(Level.DEBUG, "RecordNotFoundException");
 				super.sendNotFound(response);
 			} catch (com.ansi.scilla.web.common.exception.InvalidFormatException e) {
 				String fieldName = super.findBadField(e.getMessage());
+				logger.log(Level.DEBUG, "Invalid Format");
 				webMessages.addMessage(fieldName, "Invalid Format");
 				data.setWebMessages(webMessages);
 				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
 			} catch (com.fasterxml.jackson.databind.exc.InvalidFormatException e) {
 				String fieldName = super.findBadField(e.getMessage());
+				logger.log(Level.DEBUG, "Invalid Format 2");
 				webMessages.addMessage(fieldName, "Invalid Format");
 				data.setWebMessages(webMessages);
 				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
 			} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
+				logger.log(Level.DEBUG, "Forbidden");
 				super.sendForbidden(response);
 			} finally {
+				logger.log(Level.DEBUG, "CloseQuiet");
 				AppUtils.closeQuiet(conn);
 			}
 		} catch ( Exception e) {
+			logger.log(Level.DEBUG, "ServerException");
 			throw new ServletException(e);
 		} 
 		
@@ -175,14 +186,26 @@ public class TimesheetServlet extends AbstractServlet {
 		} 
 	}
 
-
-
+	private void processValidate(Connection conn, HttpServletResponse response, TimesheetRequest timesheetRequest, SessionData sessionData) throws Exception {
+		TimesheetResponse data = new TimesheetResponse();
+		PayrollValidationResponse validationResponse = timesheetRequest.validateAdd(conn);
+		
+		/*
+		if (validationResponse.getResponseCode().equals(ResponseCode.EDIT_FAILURE) ) {
+			
+		}
+		*/
+		data.setWebMessages(validationResponse.getWebMessages());
+		super.sendResponse(conn, response, validationResponse.getResponseCode(), data);
+	}
+	
 	private void processAdd(Connection conn, HttpServletResponse response, TimesheetRequest timesheetRequest, SessionData sessionData) throws Exception {
 		TimesheetResponse data = new TimesheetResponse();
 		PayrollValidationResponse validationResponse = timesheetRequest.validateAdd(conn);
 		
 		// do the update for success and warning, but not for failure.
 		if ( ! validationResponse.getResponseCode().equals(ResponseCode.EDIT_FAILURE) ) {
+			
 			Calendar today = AppUtils.getToday();
 			PayrollWorksheet timesheet = new PayrollWorksheet();		
 			populateTimesheetKeys(conn, timesheet, timesheetRequest);
@@ -195,15 +218,13 @@ public class TimesheetServlet extends AbstractServlet {
 			timesheet.insertWithNoKey(conn);	
 			
 			conn.commit();
+			
 		} 
 
 		data.setWebMessages(validationResponse.getWebMessages());
 		super.sendResponse(conn, response, validationResponse.getResponseCode(), data);
 
 	}
-	
-	
-	
 
 	private void processUpdate(Connection conn, HttpServletResponse response, TimesheetRequest timesheetRequest, SessionData sessionData) throws RecordNotFoundException, Exception {
 		TimesheetResponse data = new TimesheetResponse();
