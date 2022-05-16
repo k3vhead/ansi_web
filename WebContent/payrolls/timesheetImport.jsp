@@ -765,7 +765,8 @@
 	           		closeEmployeeModal : function() {
 	           			//$rowNumber, $action
 	           		},	           		
-	           		validateEmployeeModal : function($data) {
+	           		//validateEmployeeModal : function($data) {
+	           		validateEmployeeModal : function() {
 	           			console.log("validate employee timesheet");
 	           			$("#employee-modal .err").html("").show();
 	           			var $outbound = {};
@@ -781,20 +782,28 @@
 	           			});
 	           			$outbound["action"]="VALIDATE";
 	           			var $callbacks = {
-	        				200:TIMESHEET_IMPORT.processEmployeeValidationSuccess($data),
+	        				200:TIMESHEET_IMPORT.processEmployeeValidationSuccess,
+	        				//200:TIMESHEET_IMPORT.processEmployeeValidationSuccess($data),
 	        				403:TIMESHEET_IMPORT.processEmployeeValidationErrors,
 	           				404:TIMESHEET_IMPORT.processEmployeeValidationErrors,
 	           				405:TIMESHEET_IMPORT.processEmployeeValidationErrors,
 	           				500:TIMESHEET_IMPORT.processEmployeeValidationErrors,
 	        			};
+	           			//makeServerCall : function($type, $url,              $outbound,                  $callbacks,        $passThruData) 
 	           			ANSI_UTILS.makeServerCall("POST", "payroll/timesheet", JSON.stringify($outbound), $callbacks, {});
 	           		},
-	           		// processEmployeeValidationSuccess : function($data, $passthru) {
-	           		processEmployeeValidationSuccess : function($data) {
+	           		processEmployeeValidationSuccess : function($data, $passthru) {
+	           		//processEmployeeValidationSuccess : function($data) {
+		           	//	processEmployeeValidationSuccess : function() {
 	           			console.log("processEmployeeValidationSuccess");
+	           			console.log("This is the data object");
+	           			console.log($data);
+	           			console.log("This is the response code");
+	           			console.log($data.responseHeader.responseCode);
 	           			if ( $data.responseHeader.responseCode == 'EDIT_FAILURE' ) {
 	           				$.each($data.data.webMessages, function($index, $value) {
-	           					var $selector = "#edit-modal ." + $index + "Err";
+	           					console.log($index + 'value is ' + $value);	           				
+	           					var $selector = "#employee-modal ." + $index + "Err";
 	           					$($selector).html($value[0]);
 	           				});
 	           			} else if ( $data.responseHeader.responseCode == 'SUCCESS' || $data.responseHeader.responseCode == 'EDIT_WARNING') {
@@ -818,6 +827,7 @@
 	           			}
 	           		},
 	           		
+	           		//processEmployeeValidationErrors : function($data, $passthru) {
 	           		processEmployeeValidationErrors : function($data, $passthru) {
 	           			console.log("processEmployeeValidationErrors kevin");
 	           			if ( $data.responseHeader.responseCode == 'EDIT_FAILURE' ) {
@@ -1035,8 +1045,8 @@
 					<td class="money">			<input 	class="money" 	type="text" name="expensesSubmitted" 		tabindex="112" />		</td>
 				</tr>
 				<tr>
-					<td colspan="2" class="hoursErr err">	<span 	class="regularHoursErr  err">												</span>	</td>
-					<td colspan="1" class="moneyErr err">	<span 	class="regularPayErr err">													</span>	</td>
+					<td colspan="2" class="hoursErr err">	<span 	class="regularHoursErr  err">	test value									</span>	</td>
+					<td colspan="1" class="moneyErr err">	<span 	class="regularPayErr err">		test error									</span>	</td>
 					<td class="spacer"></td>
 					<td colspan="2" class="moneyErr err">	<span 	class="expensesSubmittedErr err">											</span>	</td>
 				</tr>
