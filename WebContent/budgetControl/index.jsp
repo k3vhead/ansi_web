@@ -2410,7 +2410,7 @@
 				                response: function(event, ui) {
 				                    if (ui.content.length === 0) {
 				                    	$("#bcr_quick_claim_modal .newClaimErr").html("No Matching Ticket").show();
-				                    	$("#bcr_quick_claim_modal input").val("");
+				                    	//$("#bcr_quick_claim_modal input").val("");
 				                    } else if (ui.content.length == 1) {
 				                    	$("#bcr_quick_claim_modal .newClaimErr").html("").show();
 				                    	$("#bcr_quick_claim_modal input[name='ticketId']").val(ui.content[0].value);
@@ -2427,6 +2427,22 @@
 				                    }
 				                }
 							}).data('ui-autocomplete');
+							
+							
+							$("#bcr_quick_claim_modal input").keydown(function($event) {
+								if ( $event.which == 13 ) {
+									// when you hit "enter" on an input, click the go button
+			 						$event.preventDefault();
+			 						$("#bcr_quick_claim_save").click();
+								}
+							});
+			    			$("#bcr_quick_claim_modal select").keydown(function($event) {
+								if ( $event.which == 13 ) {
+									// when you hit "enter" on an input, click the go button
+			 						$event.preventDefault();
+			 						$("#bcr_quick_claim_save").click();
+								}
+							});
 						}
 					});
 					
