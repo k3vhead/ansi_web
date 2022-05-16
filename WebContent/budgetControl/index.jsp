@@ -2467,7 +2467,8 @@
         			var $actPricePerCleaning = $data.data.ticketDetail.actPricePerCleaning.replace("$","").replace(",","");
         			
     				//$("#bcr_quick_claim_modal input").val("");
-    				$("#bcr_quick_claim_modal select").val("");
+    				//$("#bcr_quick_claim_modal select").val("");
+    				$("#bcr_quick_claim_modal select[name='expenseType']").val("");
     				$("#bcr_quick_claim_modal .err").html("");
     				//$("#bcr_new_claim_modal input[name='ticketId']").val($ticketId);
     				$("#bcr_quick_claim_modal input[name='dlAmt']").val($data.data.ticketDetail.remainingDlAmt.toFixed(2));
