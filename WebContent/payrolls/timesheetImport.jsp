@@ -802,8 +802,9 @@
 	           			console.log($data.responseHeader.responseCode);
 	           			if ( $data.responseHeader.responseCode == 'EDIT_FAILURE' ) {
 	           				$.each($data.data.webMessages, function($index, $value) {
-	           					console.log($index + 'value is ' + $value);	           				
+	           					console.log($index + ' value is ' + $value);	           				
 	           					var $selector = "#employee-modal ." + $index + "Err";
+	           					console.log("selector is " + $selector);	           					           					
 	           					$($selector).html($value[0]);
 	           				});
 	           			} else if ( $data.responseHeader.responseCode == 'SUCCESS' || $data.responseHeader.responseCode == 'EDIT_WARNING') {
