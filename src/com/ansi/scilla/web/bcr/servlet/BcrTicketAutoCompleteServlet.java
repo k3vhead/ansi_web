@@ -93,7 +93,9 @@ public class BcrTicketAutoCompleteServlet extends AbstractAutoCompleteServlet {
 		@Override
 		protected void make(ResultSet rs) throws Exception {
 			this.id = rs.getInt("ticket_id");
-			this.label = rs.getInt("ticket_id") + " (" + rs.getString("service_tag_id") + ")";
+			this.label = rs.getInt("ticket_id") + " (" + rs.getString("service_tag_id") + ") " 
+					+ rs.getString("job_site_name") + ":TV " + rs.getBigDecimal("total_volume") 
+					+ ":VR " + rs.getBigDecimal("volume_remaining");
 			this.value = String.valueOf(rs.getInt("ticket_id"));			
 		}
 		
