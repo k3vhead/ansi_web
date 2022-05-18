@@ -104,6 +104,7 @@
                    		saveButton : '<webthing:save>Save</webthing:save>',
                    		view : '<webthing:view styleClass="details-control">Details</webthing:view>',
                    		employeeDict : {},
+                   		pageVars : {},
                    			
                    			
                    		init : function() {
@@ -139,6 +140,7 @@
                    				$("#employee-display").hide();
                    				$("#workingtag").hide();
                    				$("#employee-file").val(null);
+                   				
                    			});
                    		},
                    		
@@ -147,8 +149,8 @@
                    			$( "#employee-modal" ).dialog({
                 				title:'Edit Employee',
                 				autoOpen: false,
-                				height: 450,
-                				width: 600,
+                				height: 600,
+                				width: 800,
                 				modal: true,
                 				closeOnEscape:true,
                 				//open: function(event, ui) {
@@ -165,6 +167,7 @@
                 						id:  "confirm-save",
                 						click: function($event) {
                 							EMPLOYEE_IMPORT.saveEmployee();
+                							$( "#employee-modal" ).dialog("close");
                 						}
                 					}
                 				]
@@ -175,6 +178,7 @@
             			
             			
                    		saveEmployee : function() {
+                   		
                 			console.log("saveEmployee");
                 			
                 			$("#employee-modal .err").html("");
@@ -184,6 +188,7 @@
                 				$unionMember = 1; 
                 			} 
                 			var $outbound = {
+                				//validatOnly : "true"
                 				'selectedEmployeeCode' : $("#employee-modal input[name='employeeCode']").val(),
                 				'employeeCode' : $("#employee-modal input[name='employeeCode']").val(),
         	        			'companyCode' : $("#employee-modal input[name='companyCode']").val(),
@@ -201,28 +206,32 @@
         	        			'notes' : $("#employee-modal input[name='notes']").val(),
                 			}
                 			
+                			var $passThruData = {};
+                			$passThruData['rowId'] = "test"; 
                 			
-                			if ($outbound.processDate == undefined){$outbound.processDate = "2021-12-13"}// need to change this to match todays date
+                			var today = new Date();
+                			var dateToday = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
                 			
-                			console.log($selectedEmployeeCode);
+                			if ($outbound.processDate == undefined){$outbound.processDate = dateToday}
                 			var $url = "payroll/employee"
                 			if ( $selectedEmployeeCode != null && $selectedEmployeeCode != "") {
                 				$url = $url + "/" + $selectedEmployeeCode
                 			}
                 			console.log($url);
                 			console.log($outbound);
-                			ANSI_UTILS.makeServerCall("post", $url, JSON.stringify($outbound), {200:EMPLOYEE_IMPORT.processUploadChanges}, {});
+                			ANSI_UTILS.makeServerCall("post", $url, JSON.stringify($outbound),{200:EMPLOYEE_IMPORT.processUploadChanges},  $passThruData);
                 		},
              
                    		
-                   		
+                		
                    		makeEmployeeTable : function($data) {
+                   			
                    			$("#workingtag").hide();
                    			
                 			var $yes = '<webthing:checkmark>Yes</webthing:checkmark>';
                 			var $no = '<webthing:ban>No</webthing:ban>';
                 			var $unknown = '<webthing:questionmark>Invalid</webthing:questionmark>';
-                			
+                		
                 			console.log($data.employeeRecords);
                 			
                 			$("#employeeImport").DataTable( {
@@ -347,7 +356,8 @@
                 		
                 		displayEditModal : function($rowId) {
                 			var $row = EMPLOYEE_IMPORT.employeeDict[$rowId];
-                			console.log($row);
+                			
+                			EMPLOYEE_IMPORT.localVars = $rowId;
                 			
                 			var terminationDisplay = $row['terminationDate'];
                 			if (terminationDisplay !== ""){
@@ -355,7 +365,6 @@
                 				terminationDisplay = b.toISOString().substring(0,10);
                 			} 
                 		
-                			
                 			
                 			$("#employee-modal input[name='employeeCode']").val($row['employeeCode']);
                 			$("#employee-modal input[name='companyCode']").val($row['companyCode']);
@@ -394,6 +403,7 @@
                 		
                 		
                 		 doConfirm : function() {
+                			 console.log("doConfirm")
                 			var $function = $("#confirm-save").attr("data-function");
                 			if ( $function == "deleteAlias" ) {
                 				var $employeeCode = $("#confirm-save").attr("data-id");
@@ -428,23 +438,89 @@
                    			});
                    		},
                    		
-                   		processUploadChanges : function($data, $passthru){
+                   		processUploadChanges : function($data, $passThruData){
+                   			console.log($data.data.employeeCode);
                    			console.log($data);
+                   			
+                   			// create a dictionary for this empoloyee
+                   			var $thisEmployee = {};
+                   			$.each( $data.data.employee, function($empFieldName, $empValue) {
+                   				$thisEmplyee[$empFieldName] = $empValue;
+                   			});
+                   			
+                   			// put this employee into the global employee dictionary
+                   			EMPLOYEE_IMPORT.employeeDict[$passThruData['rowId']] = $thisEmployee
+                   			
+                   			// update the table display
+                   			var $reportData = []
+                   			$.each( EMPLOYEE_IMPORT.employeeDict, function($index, $value) {
+                   				$reportData.push($value);
+                   			});
+                   			EMPLOYEE_IMPORT.makeEmployeeTable($reportData);
+                   			
+                   			
+                   			// none of this stuff VVVVV 
+                   			console.log(EMPLOYEE_IMPORT.employeeDict[EMPLOYEE_IMPORT.localVars]);
+                   			
+                   			EMPLOYEE_IMPORT.employeeDict[EMPLOYEE_IMPORT.localVars].companyCode = $data.data.employee.companyCode;
+                   			EMPLOYEE_IMPORT.employeeDict[EMPLOYEE_IMPORT.localVars].departmentDescription = $data.data.employee.departmentDescription;
+                   			EMPLOYEE_IMPORT.employeeDict[EMPLOYEE_IMPORT.localVars].divisionId = ""+$data.data.employee.divisionId+"";
+                   			
+                   			EMPLOYEE_IMPORT.employeeDict[EMPLOYEE_IMPORT.localVars].employeeCode = ""+$data.data.employee.employeeCode+"";
+                   			
+                   			console.log(EMPLOYEE_IMPORT.employeeDict[EMPLOYEE_IMPORT.localVars].employeeCode);
+                   			EMPLOYEE_IMPORT.employeeDict[EMPLOYEE_IMPORT.localVars].firstName = $data.data.employee.firstName;
+                   			EMPLOYEE_IMPORT.employeeDict[EMPLOYEE_IMPORT.localVars].lastName = $data.data.employee.lastName;
+                   			EMPLOYEE_IMPORT.employeeDict[EMPLOYEE_IMPORT.localVars].middleInitial = $data.data.employee.middleInitial;
+                   			EMPLOYEE_IMPORT.employeeDict[EMPLOYEE_IMPORT.localVars].notes = $data.data.employee.notes;
+                   			EMPLOYEE_IMPORT.employeeDict[EMPLOYEE_IMPORT.localVars].processDate = $data.data.employee.processDate;
+                   			EMPLOYEE_IMPORT.employeeDict[EMPLOYEE_IMPORT.localVars].status = $data.data.employee.status;
+                   			EMPLOYEE_IMPORT.employeeDict[EMPLOYEE_IMPORT.localVars].terminationDate = $data.data.employee.terminationDate;
+                   			EMPLOYEE_IMPORT.employeeDict[EMPLOYEE_IMPORT.localVars].unionCode = $data.data.employee.unionCode;
+                   			EMPLOYEE_IMPORT.employeeDict[EMPLOYEE_IMPORT.localVars].unionMember = $data.data.employee.unionMember;
+                   			EMPLOYEE_IMPORT.employeeDict[EMPLOYEE_IMPORT.localVars].unionRate = $data.data.employee.unionRate;
+                   			EMPLOYEE_IMPORT.employeeDict[EMPLOYEE_IMPORT.localVars].rowId = $data.data.employee.rowId;
+                   			
+                   			console.log(EMPLOYEE_IMPORT.employeeDict[EMPLOYEE_IMPORT.localVars]);
+                   			$data = {};
+                   			var $syncData = Object.keys(EMPLOYEE_IMPORT.employeeDict)
+                   			console.log($syncData);
+                   			console.log($syncData[0]);
+                   			console.log($syncData.length);
+                   			
+                   			
+                   			/* for (i = 0; i < $syncData.length; i++){
+                   				console.log($syncData[i]);
+                   				console.log(EMPLOYEE_IMPORT.employeeDict[$syncData[i]]);
+                   				$data.employeeRecords.push(EMPLOYEE_IMPORT.employeeDict[$syncData[i]]);
+                   				console.log(i);
+                   				console.log($data.employeeRecords[i]);
+                   				} */
+                   				
+                   			
+                   			$data.fileName = $("#display-div .employeeFile").html();
+                   			EMPLOYEE_IMPORT.makeEmployeeTable($data);
+                   			
+                   			console.log($data);
+                   			//EMPLOYEE_IMPORT.processUploadSuccess($data);
+                   			
                    		},
                    		processUploadSuccess : function($data) {
                    			console.log("processUploadSuccess");
+                   			
                    			$("#prompt-div").hide();
                    			$("#display-div").show();
                    			$("#employee-display").show();
                    			$("#display-div .employeeFile").html($data.data.fileName);
                    			EMPLOYEE_IMPORT.makeEmployeeTable($data.data);
+                   			console.log($data.data);
                    			
                    			
-                   			/* for (var i = 0; i < $data.data.employeeRecords.length; i++){                   				                 				
+                   			 for (var i = 0; i < $data.data.employeeRecords.length; i++){                   				                 				
                    				if ($data.data.employeeRecords[i].recordMatches == false){
                    					document.getElementById($data.data.employeeRecords[i].rowId).classList.add("highlight");
                    				}
-                   			} */
+                   			} 
                    			$.each($data.data.employeeRecords, function($index, $value) {
                    				EMPLOYEE_IMPORT.employeeDict[$value.rowId] = $value;                   				
                    			});
@@ -491,11 +567,14 @@
                 		},
              
         		saveFile : function($event) {
+        			console.log('saveFile');
+        			console.log($($event));
         			var results = $event.target.result;
         			var fileName = document.getElementById('employee-file').files[0].name;
         			var formData = new FormData();
         			var file = document.getElementById('employee-file').files[0];
         			formData.append('employeeFile',file, fileName);
+        			
         			
         			
         			var xhr = new XMLHttpRequest();
@@ -570,7 +649,9 @@
 		</div>
 		
 		<div id="employee-modal">
+			<input type="hidden" name="rowId"/>
 			<table>
+			
 				<tr>
 					<td><span class="formLabel">Employee Code</span></td>
 					<td><input name="employeeCode" /></td>

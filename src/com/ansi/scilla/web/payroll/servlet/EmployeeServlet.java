@@ -159,6 +159,7 @@ public class EmployeeServlet extends AbstractServlet {
 		EmployeeResponse data = new EmployeeResponse();
 		WebMessages webMessages = employeeRequest.validateAdd(conn);
 		if ( webMessages.isEmpty() ) {
+			// add review meeting if emplyeeRequest 
 			doAdd(conn, employeeRequest, sessionData.getUser(), today);
 			conn.commit();
 			responseCode = ResponseCode.SUCCESS;
@@ -177,6 +178,7 @@ public class EmployeeServlet extends AbstractServlet {
 		WebMessages webMessages = employeeRequest.validateUpdate(conn);
 
 		if ( webMessages.isEmpty() ) {
+			// add 
 			doUpdate(conn, employeeCode, employeeRequest, userId, today);
 			conn.commit();
 			responseCode = ResponseCode.SUCCESS;

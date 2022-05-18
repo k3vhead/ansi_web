@@ -14,7 +14,7 @@ import com.ansi.scilla.web.common.response.WebMessages;
 public class EmployeeRequest extends AbstractRequest {
 
 	private static final long serialVersionUID = 1L;
-
+	//put validateOnly here 
 	public static final String SELECTED_EMPLOYEE_CODE = "selectedEmployeeCode";
 	public static final String EMPLOYEE_CODE = "employeeCode";
 	public static final String COMPANY_CODE ="companyCode";
