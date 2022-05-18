@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -17,10 +16,12 @@ import java.util.List;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang3.time.DateUtils;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.ApplicationObject;
+import com.ansi.scilla.common.db.ApplicationProperties;
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.Locale;
 import com.ansi.scilla.common.exceptions.InvalidValueException;
@@ -28,16 +29,19 @@ import com.ansi.scilla.common.payroll.common.PayrollUtils;
 import com.ansi.scilla.common.payroll.parser.NotATimesheetException;
 import com.ansi.scilla.common.payroll.parser.PayrollWorksheetEmployee;
 import com.ansi.scilla.common.payroll.parser.PayrollWorksheetParser;
+import com.ansi.scilla.common.payroll.validator.PayrollErrorType;
+import com.ansi.scilla.common.payroll.validator.PayrollMessage;
+import com.ansi.scilla.common.utils.ApplicationProperty;
 import com.ansi.scilla.common.utils.LocaleType;
 import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.MessageResponse;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.response.WebMessagesStatus;
+import com.ansi.scilla.web.payroll.common.TimesheetValidator;
 import com.ansi.scilla.web.payroll.request.TimesheetImportRequest;
-import com.thewebthing.commons.lang.StringUtils;
 
-public class TimesheetImportResponse extends MessageResponse {
+public class TimesheetImportResponse extends MessageResponse  {
 	
 	public static final String CITY = "city";
 	public static final String DIVISION = "division";
@@ -86,18 +90,63 @@ public class TimesheetImportResponse extends MessageResponse {
 		this(conn, new PayrollWorksheetParser(file.getName(), file.getInputStream()));
 	}
 	
-	private TimesheetImportResponse(Connection conn, PayrollWorksheetParser parser ) {
+	private TimesheetImportResponse(Connection conn, PayrollWorksheetParser parser ) throws Exception {
 		this();
 		this.city = parser.getCity();
-		this.setDivision(division);  division = parser.getDivision();
+		division = parser.getDivision();
 		this.operationsManagerName = parser.getOperationsManagerName();
 		this.state = parser.getState();
 		this.timesheetRecords = parser.getTimesheetRecords();
 		this.weekEnding = parser.getWeekEnding();
 		this.fileName = parser.getFileName();
+		
+		validateRows(conn);
 	}
 	
-	
+	/**
+	 * Set "errorsFound" field in each of the employee rows
+	 * Make sure this stays in sync with TimesheetRequest.validateAdd()
+	 * @param conn
+	 * @throws Exception 
+	 */
+	private void validateRows(Connection conn) throws Exception {
+		Division division = new Division();
+		division.setDivisionNbr(Integer.valueOf(this.division));
+		division.selectOne(conn);
+			
+		ApplicationProperties maxExpenseProperty = ApplicationProperty.get(conn, ApplicationProperty.EXPENSE_MAX);
+		Double maxExpenseRate = maxExpenseProperty.getValueFloat().doubleValue();
+
+		PayrollMessage payrollMessage = null;
+		for ( PayrollWorksheetEmployee row : this.getEmployeeRecordList() ) {
+			if ( ! row.isBlankRow() ) {
+				payrollMessage = TimesheetValidator.validateMinimumGovtPay(
+						division, 
+						Double.valueOf(row.getGrossPay()), 
+						Double.valueOf(row.getExpenses()),
+						Double.valueOf(row.getRegularHours()), 
+						Double.valueOf(row.getVacationHours()), 
+						Double.valueOf(row.getHolidayHours()));
+				logger.log(Level.DEBUG, "MinGovtPay: " +  row.getRow() + ":" + payrollMessage.getErrorType() + ": " + payrollMessage.getErrorMessage().getMessage());
+				if ( payrollMessage.getErrorType().equals(PayrollErrorType.OK)) {
+					payrollMessage = TimesheetValidator.validateExcessExpense(maxExpenseRate, Double.valueOf(row.getExpensesSubmitted()), Double.valueOf(row.getGrossPay()));
+					logger.log(Level.DEBUG, "ExcessExpense: "  +  row.getRow() + ":" +  payrollMessage.getErrorType() + ": " + payrollMessage.getErrorMessage().getMessage());
+				}
+				
+				Boolean errorFound = ! payrollMessage.getErrorType().equals(PayrollErrorType.OK);
+				
+				// we'll figure out aliases later; if this isn't a legit name, a human needs to review it
+				if ( ! TimesheetValidator.isEmployeeName(conn, row.getEmployeeName())) {
+					errorFound = true;
+					logger.log(Level.DEBUG, "Bad Name"  +  row.getRow());
+				}
+				
+				row.setErrorsFound(errorFound);
+			}
+		}
+		
+	}
+
 	public List<PayrollWorksheetEmployee> getEmployeeRecordList() {
 		return timesheetRecords;
 	}

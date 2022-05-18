@@ -1,7 +1,7 @@
 package com.ansi.scilla.web.payroll.common;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,9 +10,14 @@ import java.util.Calendar;
 import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.db.ApplicationProperties;
-import com.ansi.scilla.web.common.utils.AppUtils;
+import com.ansi.scilla.common.db.Division;
+import com.ansi.scilla.common.payroll.validator.PayrollErrorType;
+import com.ansi.scilla.common.payroll.validator.PayrollMessage;
+import com.ansi.scilla.common.payroll.validator.ValidatorUtils;
 import com.ansi.scilla.common.utils.ApplicationProperty;
+import com.ansi.scilla.common.utils.ErrorLevel;
 import com.ansi.scilla.web.common.response.WebMessages;
+import com.ansi.scilla.web.common.utils.AppUtils;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 /**
@@ -67,25 +72,10 @@ public class TimesheetValidator {
 			webMessages.addMessage(fieldName, message);
 			isValid = false;
 		} else {
-			PreparedStatement psEmployee = conn.prepareStatement(EMPLOYEE_SQL);
-			psEmployee.setString(1, value.toLowerCase());
-			ResultSet rsEmployee = psEmployee.executeQuery();
-			if ( rsEmployee.next() ) {
-				isValid = rsEmployee.getInt("record_count") > 0;
-			} else {
-				throw new RecordNotFoundException();
-			}
-			rsEmployee.close();
+			isValid = isEmployeeName(conn, value);
 			
 			if ( isValid == false ) {
-				PreparedStatement psAlias = conn.prepareStatement(EMPLOYEE_ALIAS_SQL);
-				psAlias.setString(1, value.toLowerCase());
-				ResultSet rsAlias = psAlias.executeQuery();
-				if ( rsAlias.next() ) {
-					isValid = rsAlias.getInt("record_count") > 0;
-				} else {
-					throw new RecordNotFoundException();
-				}
+				isValid = isEmployeeAlias(conn, value);				
 			}
 			
 			if ( isValid == false ) {
@@ -98,6 +88,35 @@ public class TimesheetValidator {
 	}
 	
 	
+	public static boolean isEmployeeName(Connection conn, String value) throws SQLException, RecordNotFoundException {
+		boolean isValid;
+		PreparedStatement psEmployee = conn.prepareStatement(EMPLOYEE_SQL);
+		psEmployee.setString(1, value.toLowerCase());
+		ResultSet rsEmployee = psEmployee.executeQuery();
+		if ( rsEmployee.next() ) {
+			isValid = rsEmployee.getInt("record_count") > 0;
+		} else {
+			throw new RecordNotFoundException();
+		}
+		rsEmployee.close();
+		return isValid;
+	}
+
+
+	public static boolean isEmployeeAlias(Connection conn, String value) throws SQLException, RecordNotFoundException {
+		boolean isValid;
+		PreparedStatement psAlias = conn.prepareStatement(EMPLOYEE_ALIAS_SQL);
+		psAlias.setString(1, value.toLowerCase());
+		ResultSet rsAlias = psAlias.executeQuery();
+		if ( rsAlias.next() ) {
+			isValid = rsAlias.getInt("record_count") > 0;
+		} else {
+			throw new RecordNotFoundException();
+		}
+		return isValid;
+	}
+
+
 	/**
 	 * Payroll worksheet has "Expenses", "Expenses Submitted", "Expenses Allowed". 
 	 * In the examples on hand, "Expenses" and "Submitted" match.
@@ -147,4 +166,23 @@ public class TimesheetValidator {
 		rs.close();
 		return isValid;
 	}
+	
+	
+	public static PayrollMessage validateMinimumGovtPay(Division division, Double grossPay, Double expenses, Double regularHours, Double vacationHours, Double holidayHours) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+		Double minimumPay = division.getMinimumHourlyPay() == null ? 0.0D : division.getMinimumHourlyPay().doubleValue();
+		PayrollMessage payrollErrorMessage = ValidatorUtils.validateMinimumGovtPay(division, grossPay, expenses, minimumPay, regularHours, vacationHours, holidayHours);
+		return payrollErrorMessage;
+	}
+	
+	
+	
+	public static PayrollMessage validateExcessExpense(Double maxExpenseRate, Double expensesSubmitted, Double grossPay) {
+		PayrollMessage payrollMessage = new PayrollMessage(ErrorLevel.OK, "Expense pct is OK", PayrollErrorType.OK);
+		if ( expensesSubmitted > (maxExpenseRate * grossPay)) {
+			payrollMessage = new PayrollMessage(ErrorLevel.WARNING, "Expenses submitted exceed " + maxExpenseRate, PayrollErrorType.EXPENSES_EXCEED_ALLOWED);
+		}
+		return payrollMessage;
+	}
+	
+	
 }
