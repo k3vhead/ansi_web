@@ -14,7 +14,8 @@ import com.ansi.scilla.web.common.response.WebMessages;
 public class EmployeeRequest extends AbstractRequest {
 
 	private static final long serialVersionUID = 1L;
-	//put validateOnly here 
+
+	public static final String VALIDATE_ONLYE = "validateOnly";
 	public static final String SELECTED_EMPLOYEE_CODE = "selectedEmployeeCode";
 	public static final String EMPLOYEE_CODE = "employeeCode";
 	public static final String COMPANY_CODE ="companyCode";
@@ -31,6 +32,7 @@ public class EmployeeRequest extends AbstractRequest {
 	public static final String PROCESS_DATE = "processDate";
 	public static final String NOTES="notes";
 	
+	private Boolean validateOnly;
 	private Integer selectedEmployeeCode;
 	private Integer employeeCode;
 	private String companyCode;
@@ -48,6 +50,12 @@ public class EmployeeRequest extends AbstractRequest {
 	private String notes;
 
 	
+	public Boolean getValidateOnly() {
+		return validateOnly;
+	}
+	public void setValidateOnly(Boolean validateOnly) {
+		this.validateOnly = validateOnly;
+	}
 	public Integer getSelectedEmployeeCode() {
 		return selectedEmployeeCode;
 	}

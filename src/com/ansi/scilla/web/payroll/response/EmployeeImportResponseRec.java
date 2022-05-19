@@ -1,10 +1,7 @@
 package com.ansi.scilla.web.payroll.response;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -24,7 +21,7 @@ public	class EmployeeImportResponseRec extends EmployeeImportRecord implements A
 	private static final long serialVersionUID = 1L;
 		private Boolean recordMatches;
 		
-		private EmployeeImportResponseRec() {
+		public EmployeeImportResponseRec() {
 			super();
 		}
 		

@@ -33,6 +33,7 @@ import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.payroll.request.EmployeeRequest;
 import com.ansi.scilla.web.payroll.response.EmployeeResponse;
+import com.ansi.scilla.web.payroll.response.EmployeeValidateResponse;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
@@ -53,11 +54,11 @@ public class EmployeeServlet extends AbstractServlet {
 				String uri = request.getRequestURI();
 				String[] uriPath = uri.split("/");
 				Integer employeeCode = StringUtils.isNumeric(uriPath[uriPath.length - 1]) ? Integer.valueOf(uriPath[uriPath.length - 1]) : null;
-				Calendar today = Calendar.getInstance(new AnsiTime());
+//				Calendar today = Calendar.getInstance(new AnsiTime());
 				
 //				String jsonString = super.makeJsonString(request);
 //				logger.log(Level.DEBUG, jsonString);
-				SessionData sessionData = AppUtils.validateSession(request, Permission.PAYROLL_WRITE);
+				AppUtils.validateSession(request, Permission.PAYROLL_WRITE);
 //				EmployeeRequest employeeRequest = new EmployeeRequest();
 //				AppUtils.json2object(jsonString, employeeRequest);
 				
@@ -155,39 +156,44 @@ public class EmployeeServlet extends AbstractServlet {
 	
 	
 	private void processAddRequest(Connection conn, HttpServletResponse response, EmployeeRequest employeeRequest, SessionData sessionData, Calendar today) throws Exception {
-		ResponseCode responseCode = null;
-		EmployeeResponse data = new EmployeeResponse();
 		WebMessages webMessages = employeeRequest.validateAdd(conn);
-		if ( webMessages.isEmpty() ) {
-			// add review meeting if emplyeeRequest 
-			doAdd(conn, employeeRequest, sessionData.getUser(), today);
-			conn.commit();
-			responseCode = ResponseCode.SUCCESS;
-			data = new EmployeeResponse(conn, employeeRequest.getEmployeeCode());
+		ResponseCode responseCode = webMessages.isEmpty() ? ResponseCode.SUCCESS : ResponseCode.EDIT_FAILURE;
+
+		if ( employeeRequest.getValidateOnly() != null && employeeRequest.getValidateOnly() ) {
+			EmployeeValidateResponse data = new EmployeeValidateResponse(conn, employeeRequest.getEmployeeCode(), employeeRequest);
+			data.setWebMessages(webMessages);
+			super.sendResponse(conn, response, responseCode, data);
 		} else {
-			responseCode = ResponseCode.EDIT_FAILURE;
-		}
-		data.setWebMessages(webMessages);
-		super.sendResponse(conn, response, responseCode, data);		
+			EmployeeResponse data = new EmployeeResponse();
+			if ( responseCode.equals(ResponseCode.SUCCESS)) {
+				doAdd(conn, employeeRequest, sessionData.getUser(), today);
+				conn.commit();
+				data = new EmployeeResponse(conn, employeeRequest.getEmployeeCode());
+			} 
+			data.setWebMessages(webMessages);
+			super.sendResponse(conn, response, responseCode, data);
+		}	
 	}
 
 	
 	private void processUpdateRequest(Connection conn, HttpServletResponse response, Integer employeeCode, EmployeeRequest employeeRequest, Integer userId, Calendar today) throws RecordNotFoundException, Exception {
-		ResponseCode responseCode = null;
-		EmployeeResponse data = new EmployeeResponse();
 		WebMessages webMessages = employeeRequest.validateUpdate(conn);
+		ResponseCode responseCode = webMessages.isEmpty() ? ResponseCode.SUCCESS : ResponseCode.EDIT_FAILURE;
 
-		if ( webMessages.isEmpty() ) {
-			// add 
-			doUpdate(conn, employeeCode, employeeRequest, userId, today);
-			conn.commit();
-			responseCode = ResponseCode.SUCCESS;
-			data = new EmployeeResponse(conn, employeeRequest.getEmployeeCode());
+		if ( employeeRequest.getValidateOnly() != null && employeeRequest.getValidateOnly() ) {
+			EmployeeValidateResponse data = new EmployeeValidateResponse(conn, employeeRequest.getEmployeeCode(), employeeRequest);
+			data.setWebMessages(webMessages);
+			super.sendResponse(conn, response, responseCode, data);
 		} else {
-			responseCode = ResponseCode.EDIT_FAILURE;
-		}
-		data.setWebMessages(webMessages);
-		super.sendResponse(conn, response, responseCode, data);	
+			EmployeeResponse data = new EmployeeResponse();
+			if ( responseCode.equals(ResponseCode.SUCCESS)) {
+				doUpdate(conn, employeeCode, employeeRequest, userId, today);
+				conn.commit();
+				data = new EmployeeResponse(conn, employeeRequest.getEmployeeCode());
+			} 
+			data.setWebMessages(webMessages);
+			super.sendResponse(conn, response, responseCode, data);
+		}		
 	}
 
 	

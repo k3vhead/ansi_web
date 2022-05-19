@@ -188,7 +188,7 @@
                 				$unionMember = 1; 
                 			} 
                 			var $outbound = {
-                				//validatOnly : "true"
+                				'validateOnly' : true,
                 				'selectedEmployeeCode' : $("#employee-modal input[name='employeeCode']").val(),
                 				'employeeCode' : $("#employee-modal input[name='employeeCode']").val(),
         	        			'companyCode' : $("#employee-modal input[name='companyCode']").val(),
