@@ -206,8 +206,7 @@
         	        			'notes' : $("#employee-modal input[name='notes']").val(),
                 			}
                 			
-                			var $passThruData = {};
-                			$passThruData['rowId'] = "test"; 
+                			var $passThruData = {'rowId':$("#employee-modal input[name='rowId']").val()};
                 			
                 			var today = new Date();
                 			var dateToday = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
@@ -365,7 +364,7 @@
                 				terminationDisplay = b.toISOString().substring(0,10);
                 			} 
                 		
-                			
+                			$("#employee-modal input[name='rowId']").val($rowId);
                 			$("#employee-modal input[name='employeeCode']").val($row['employeeCode']);
                 			$("#employee-modal input[name='companyCode']").val($row['companyCode']);
                 			$("#employee-modal select[name='divisionId']").val($row['divisionId']);
@@ -439,14 +438,18 @@
                    		},
                    		
                    		processUploadChanges : function($data, $passThruData){
-                   			console.log($data.data.employeeCode);
+                   			console.log("processUploadChanges");
+                   			console.log($passThruData);
                    			console.log($data);
                    			
                    			// create a dictionary for this empoloyee
                    			var $thisEmployee = {};
                    			$.each( $data.data.employee, function($empFieldName, $empValue) {
-                   				$thisEmplyee[$empFieldName] = $empValue;
+                   				$thisEmployee[$empFieldName] = $empValue;
                    			});
+                   			
+                   			console.log("updated employee:")
+							console.log($thisEmployee);
                    			
                    			// put this employee into the global employee dictionary
                    			EMPLOYEE_IMPORT.employeeDict[$passThruData['rowId']] = $thisEmployee
@@ -456,55 +459,15 @@
                    			$.each( EMPLOYEE_IMPORT.employeeDict, function($index, $value) {
                    				$reportData.push($value);
                    			});
+                   			console.log("old employee:");
+                   			console.log($reportData[4]);
+
                    			EMPLOYEE_IMPORT.makeEmployeeTable($reportData);
-                   			
-                   			
-                   			// none of this stuff VVVVV 
-                   			console.log(EMPLOYEE_IMPORT.employeeDict[EMPLOYEE_IMPORT.localVars]);
-                   			
-                   			EMPLOYEE_IMPORT.employeeDict[EMPLOYEE_IMPORT.localVars].companyCode = $data.data.employee.companyCode;
-                   			EMPLOYEE_IMPORT.employeeDict[EMPLOYEE_IMPORT.localVars].departmentDescription = $data.data.employee.departmentDescription;
-                   			EMPLOYEE_IMPORT.employeeDict[EMPLOYEE_IMPORT.localVars].divisionId = ""+$data.data.employee.divisionId+"";
-                   			
-                   			EMPLOYEE_IMPORT.employeeDict[EMPLOYEE_IMPORT.localVars].employeeCode = ""+$data.data.employee.employeeCode+"";
-                   			
-                   			console.log(EMPLOYEE_IMPORT.employeeDict[EMPLOYEE_IMPORT.localVars].employeeCode);
-                   			EMPLOYEE_IMPORT.employeeDict[EMPLOYEE_IMPORT.localVars].firstName = $data.data.employee.firstName;
-                   			EMPLOYEE_IMPORT.employeeDict[EMPLOYEE_IMPORT.localVars].lastName = $data.data.employee.lastName;
-                   			EMPLOYEE_IMPORT.employeeDict[EMPLOYEE_IMPORT.localVars].middleInitial = $data.data.employee.middleInitial;
-                   			EMPLOYEE_IMPORT.employeeDict[EMPLOYEE_IMPORT.localVars].notes = $data.data.employee.notes;
-                   			EMPLOYEE_IMPORT.employeeDict[EMPLOYEE_IMPORT.localVars].processDate = $data.data.employee.processDate;
-                   			EMPLOYEE_IMPORT.employeeDict[EMPLOYEE_IMPORT.localVars].status = $data.data.employee.status;
-                   			EMPLOYEE_IMPORT.employeeDict[EMPLOYEE_IMPORT.localVars].terminationDate = $data.data.employee.terminationDate;
-                   			EMPLOYEE_IMPORT.employeeDict[EMPLOYEE_IMPORT.localVars].unionCode = $data.data.employee.unionCode;
-                   			EMPLOYEE_IMPORT.employeeDict[EMPLOYEE_IMPORT.localVars].unionMember = $data.data.employee.unionMember;
-                   			EMPLOYEE_IMPORT.employeeDict[EMPLOYEE_IMPORT.localVars].unionRate = $data.data.employee.unionRate;
-                   			EMPLOYEE_IMPORT.employeeDict[EMPLOYEE_IMPORT.localVars].rowId = $data.data.employee.rowId;
-                   			
-                   			console.log(EMPLOYEE_IMPORT.employeeDict[EMPLOYEE_IMPORT.localVars]);
-                   			$data = {};
-                   			var $syncData = Object.keys(EMPLOYEE_IMPORT.employeeDict)
-                   			console.log($syncData);
-                   			console.log($syncData[0]);
-                   			console.log($syncData.length);
-                   			
-                   			
-                   			/* for (i = 0; i < $syncData.length; i++){
-                   				console.log($syncData[i]);
-                   				console.log(EMPLOYEE_IMPORT.employeeDict[$syncData[i]]);
-                   				$data.employeeRecords.push(EMPLOYEE_IMPORT.employeeDict[$syncData[i]]);
-                   				console.log(i);
-                   				console.log($data.employeeRecords[i]);
-                   				} */
-                   				
-                   			
-                   			$data.fileName = $("#display-div .employeeFile").html();
-                   			EMPLOYEE_IMPORT.makeEmployeeTable($data);
-                   			
-                   			console.log($data);
-                   			//EMPLOYEE_IMPORT.processUploadSuccess($data);
-                   			
                    		},
+                   		
+                   		
+                   		
+                   		
                    		processUploadSuccess : function($data) {
                    			console.log("processUploadSuccess");
                    			
