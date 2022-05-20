@@ -39,6 +39,18 @@
 				display:none;
 			}
 
+			#employee-modal #employee-data .employeeCode {
+				width : 40px;
+			}
+ 
+			#employee-modal .productivity{
+				text-aligh : right;
+			}
+
+			#employee-modal .total-hours{
+				text-aligh : right;
+			}
+
 			/* #employee-data */
 			#employee-modal #employee-data {
 				margin-bottom : 20px;
@@ -49,26 +61,36 @@
 				width : *;
 			}
 
+			#employee-modal #employee-data .employeeCodeSpacer {
+				width : 45px;
+			}
+
 			#employee-modal #employee-data .row-number-label{
 				margin-left : 20px;
 			}
 												
-			#employee-modal table #time-calcs .row-label{
-			   Width = 100px;
+			#employee-modal #time-calcs .row-label{
+			   width : 40px;
+			   /* border : dashed red 3px; */  
+			}
+			
+			#employee-modal #time-calcs .err{
+			   
+			   /* border : dashed blue 1px; */  
 			}
 			
 			#employee-modal .row-label-col-2{
-			   Width : 110px;
-			   /* border : dotted red 3px; */ 
+			   width : 100px;
+			   /* border : dashed red 3px;*/  
 			}
 																				
-			#employee-modal #time-calcs .spacer{
-				width : 5px;
+			#employee-modal #time-calcs .spacer-mid{
+				width : 15px;
 			 	/* border : dashed red 3px; */ 
 			}
 																	/* modal hours area - time calcs*/
 			#employee-modal #time-calcs{
-			 	width: 485px;			 	
+			 	width: 585px;			 	
 			 	/* border : solid red 1px; */ 
 			}		
 			#employee-modal #time-calcs td.hours {
@@ -99,20 +121,35 @@
 			}
 			*/
 			
-			#employee-modal #time-calcs td.percentage {
+			#employee-modal #time-calcs .percentage {
 			    /* width: 120px; */
-			    /* text-align: right; */ 
+			    text-align: right; 
+			    padding-right: 20px;
 			    /* padding-right: 20px;*/			    
 			}			
 			/*
 			#employee-modal #time-calcs td.percentageErr {
         		width:40px;
 			}
+			
 			*/					
 			#employee-modal #time-calcs input.percentage {
 			    width: 80px;
 			    text-align: right;
+			    padding-right: 20px;
 			}
+			#employee-modal #time-calcs span.productivity {
+			    text-align: right;
+			    padding-right: 20px;
+			}
+			
+			#employee-modal #time-calcs td.totalHours {
+			    /* width: 120px; */
+			    text-align: right; 
+			    padding-right: 20px;			    
+			}			
+
+			
 						
 
 			
@@ -675,8 +712,8 @@
 	        			$("#employee-modal").dialog({
 	        				title:'Employee Timesheet',
 	        				autoOpen: false,
-	        				height: 350,
-	        				width: 500,
+	        				height: 450,
+	        				width: 600,
 	        				modal: true,
 	        				closeOnEscape:true,
 	        				open: function(event, ui) {
@@ -1020,19 +1057,26 @@
 				<tr>
 					<td class="form-label">Employee Name :																					</td>
 					<td class="employeeName">	<input 	class="employeeName" 	type="text" 	name="employeeName"	tabindex="101" />		</td>
-					<td class="err">			<span 	class="employeeNameErr err">												</span>	</td>
-					<td class="spacer">																										</td>
+					<td class="employeeNameSpacer">																										</td>
+					<td class="form-label">Code :																					</td>
+					<td class="employeeName">	<input 	class="employeeCode" 	type="text" 	name="employeeCode"	tabindex="102" />		</td>
+					<td class="employeeCodeSpacer">																										</td>
 					<td class="form-label">		State:																						</td>
 					<td class="state">			<span 	class="state">																</span>	</td>
-					<td class="err">			<span 	class="stateErr err">														</span>	</td>
+					<td class="stateSpacer">																										</td>
 					<td class="form-label">		<span 	class="form-label row-number-label">Row:									</span>	</td>
 					<td class="row">			<span 	class="row">																</span>	</td>
-					<td class="err">			<span 	class="rowErr err">															</span> </td>						
+				</tr>
+				<tr>
+					<td colspan="3" class="err">			<span 	class="employeeNameErr err">												</span>	</td>
+					<td colspan="3" class="err">			<span 	class="employeeNameCodeErr err">											</span>	</td>
+					<td colspan="3" class="err">			<span 	class="stateErr err">														</span>	</td>
+					<td colspan="2" class="err">			<span 	class="rowErr err">															</span> </td>						
 				</tr>
 			</table>
 			<table  id="time-calcs">   
 				<tr>
-					<td class="form-label">																									</td>
+					<td class="row-label">																									</td>
 					<td colspan="1" class="col-heading hours">	Hours																		</td>
 					<td colspan="2" class="col-heading pay">	Pay																			</td>
 					<td colspan="2" class="col-heading pay">	Expenses																	</td>
@@ -1041,76 +1085,76 @@
 					<td class="row-label">		Regular:																					</td>
 					<td class="hours">			<input 	class="hours" 	type="text" name="regularHours" 			tabindex="102" />			</td>
 					<td class="money">			<input  class="money" 	type="text" name="regularPay" 				tabindex="103" />			</td>
-					<td class="spacer"></td>
+					<td class="spacer-mid"></td>
 					<td class="row-label-col-2">		Submitted:																					</td>
 					<td class="money">			<input 	class="money" 	type="text" name="expensesSubmitted" 		tabindex="112" />		</td>
 				</tr>
 				<tr>
 					<td colspan="2" class="hoursErr err">	<span 	class="regularHoursErr  err">	test value									</span>	</td>
 					<td colspan="1" class="moneyErr err">	<span 	class="regularPayErr err">		test error									</span>	</td>
-					<td class="spacer"></td>
+					<td class="spacer-mid"></td>
 					<td colspan="2" class="moneyErr err">	<span 	class="expensesSubmittedErr err">											</span>	</td>
 				</tr>
 				<tr>
 					<td class="row-label">		Overtime:																					</td>
 					<td class="hours">			<input 	class="hours" 	type="text" name="otHours" 					tabindex="104" />			</td>
 					<td class="money">			<input 	class="money" 	type="text" name="otPay" 					tabindex="105" />			</td>
-					<td class="spacer"></td>
-					<td class="row-label-col-2">		Allowed:																					</td>
+					<td class="spacer-mid"></td>
+					<td class="row-label-col-2">Allowed:																					</td>
 					<td class="money">			<input 	class="money" 	type="text" name="expensesAllowed" 			tabindex="113" />		</td>
 				</tr>
 				<tr>
 					<td colspan="2" class="hoursErr err">	<span 	class="otHoursErr err">														</span>	</td>
 					<td colspan="1" class="moneyErr err">	<span 	class="otPayErr err">														</span>	</td>
-					<td class="spacer"></td>
+					<td class="spacer-mid"></td>
 					<td colspan="2" class="moneyErr err">	<span 	class="expensesAllowedErr err">												</span></td>
 				</tr>
 				<tr>
 					<td class="row-label">																									</td>					
 					<td class="hours total">																								</td>
 					<td class="money">																										</td>
-					<td class="spacer"></td>
+					<td class="spacer-mid"></td>
 					<td colspan="2" class="form-label">Productivity																			</td>
 				</tr>
 				<tr>
 					<td colspan="2" class="hoursErr err">																								</td>
 					<td class="moneyErr err">																								</td>
-					<td class="spacer"></td>
+					<td class="spacer-mid"></td>
 				</tr>
 				<tr>
 					<td class="row-label">		Vacation:</td>
 					<td class="hours">			<input 	class="hours" type="text" name="vacationHours"				tabindex="106" />		</td>
 					<td class="money"> 			<input 	class="money" type="text" name="vacationPay" 				tabindex="107" />		</td>
-					<td class="spacer"></td>
+					<td class="spacer-mid"></td>
 					<td class="row-label-col-2">Direct Labor:																				</td>
 					<td class="money">			<input 	class="money" type="text" name="directLabor" 				tabindex="114" />		</td>
 				</tr>
 				<tr>
 					<td colspan="2" class="hoursErr err">	<span 	class="vacationHoursErr">													</span>	</td>
 					<td colspan="1" class="moneyErr err">	<span 	class="vacationPayErr err">													</span>	</td>
-					<td class="spacer"></td>
+					<td class="spacer-mid"></td>
 					<td colspan="2" class="moneyErr err">	<span 	class="directLaborErr err">													</span>	</td>
 				</tr>
 				<tr>
 					<td class="row-label">		Holiday:																					</td>
 					<td class="hours">			<input	class="hours" type="text" name="holidayHours"				tabindex="108" />		</td>
 					<td class="money">			<input	class="money" type="text" name="holidayPay" 				tabindex="109" />		</td>
-					<td class="spacer"></td>
+					<td class="spacer-mid"></td>
 					<td class="row-label-col-2">		Volume :																					</td>
 					<td class="money">			<input 	class="money" type="text" name="volume" 					tabindex="115" />		</td>
 				</tr>							
 				<tr>
 					<td colspan="2" class="hoursErr err">	<span 	class="holidayHoursErr err">												</span>	</td>
 					<td colspan="1" class="moneyErr err">	<span 	class="holidayPayErr err">													</span>	</td>
-					<td class="spacer"></td>
+					<td class="spacer-mid"></td>
 					<td colspan="2" class="moneyErr err">	<span 	class="volumeErr err">														</span>	</td>
 				</tr>
 				<tr>
 					<td class="row-label">		Total:																						</td>
 					<!-- <td class="hours total">	<input 	class="hours" type="text" name="totalHours" 				tabindex="110" />		</td> -->
-					<td class="hours total">	<span 	class="totalHours">											</span>		</td>
+					<td class="totalHours">	<span 	class="totalHours">											</span>		</td>
 					<td class="money">			<input 	class="money" type="text" name="grossPay" 					tabindex="111" />		</td>
-					<td class="spacer"></td>
+					<td class="spacer-mid"></td>
 					<td class="row-label-col-2">Productivity:																				</td>
 					<!--  <td class="percentage">		<input 	class="percentage" 	type="text" name="productivity"			tabindex="116" />		</td>  -->
 					<td class="percentage">		<span 	class="productivity">											</span>		</td>
@@ -1118,7 +1162,7 @@
 				<tr>							
 					<td colspan="2" class="hoursErr err">		<span 	class="totalHoursErr err">													</span>	</td>
 					<td colspan="1" class="moneyErr err">		<span 	class="grossPayErr err">													</span>	</td>
-					<td class="spacer"></td>
+					<td class="spacer-mid"></td>
 					<td colspan="2" class="percentageErr err">	<span 	class="productivityErr err">												</span>	</td>
 				</tr>							
 			</table>
