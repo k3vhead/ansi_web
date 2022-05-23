@@ -1,32 +1,31 @@
 package com.ansi.scilla.web.bcr.servlet;
 
 import java.io.IOException;
-import java.net.URLDecoder;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.StringUtils;
-
+import com.ansi.scilla.web.bcr.query.BcrTicketLookupQuery;
+import com.ansi.scilla.web.common.query.LookupQuery;
 import com.ansi.scilla.web.common.response.AbstractAutoCompleteItem;
 import com.ansi.scilla.web.common.servlet.AbstractAutoCompleteServlet;
+import com.ansi.scilla.web.common.struts.SessionData;
+import com.ansi.scilla.web.common.struts.SessionDivision;
+import com.ansi.scilla.web.common.utils.ColumnFilter;
 import com.ansi.scilla.web.common.utils.Permission;
 
-public class BcrEmployeeAutoComplete extends AbstractAutoCompleteServlet {
+public class BcrTicketAutoCompleteServlet extends AbstractAutoCompleteServlet {
 
 	private static final long serialVersionUID = 1L;
 
-	public BcrEmployeeAutoComplete() {
+	public BcrTicketAutoCompleteServlet() {
 		super(Permission.CLAIMS_READ);
 	}
 	
@@ -43,30 +42,25 @@ public class BcrEmployeeAutoComplete extends AbstractAutoCompleteServlet {
 	@Override
 	protected List<AbstractAutoCompleteItem> makeResultList(Connection conn, HttpServletRequest request) throws Exception {
 
-		HashMap<String, String> parameterMap = new HashMap<String, String>();
-		Enumeration<String> parameterNames = request.getParameterNames();
-		while ( parameterNames.hasMoreElements() ) {
-			String parameter = parameterNames.nextElement();
-			String value = request.getParameter(parameter);
-			parameterMap.put( parameter, StringUtils.trimToNull(URLDecoder.decode(value, "UTF-8")));
-		}
+		SessionData sessionData = (SessionData)request.getSession().getAttribute(SessionData.KEY);
+		Integer userId = sessionData.getUser().getUserId();
+		Integer divisionId = Integer.valueOf(request.getParameter("divisionId"));
+		Integer workYear = Integer.valueOf(request.getParameter("workYear"));
+		String workWeeks = request.getParameter("workWeeks");
+		String term = request.getParameter("term").toLowerCase();
+		Boolean monthlyFilter = false;
 		
+		List<SessionDivision> divisionList = sessionData.getDivisionList();
 		
 		List<AbstractAutoCompleteItem> itemList = new ArrayList<AbstractAutoCompleteItem>();
 		
-		String term = parameterMap.get("term").toLowerCase();
-		String divisionId = parameterMap.get("divisionId");
-		String sql = "select distinct employee_name \n" + 
-				"from ticket_claim \n" + 
-				"inner join ticket on ticket.ticket_id = ticket_claim.ticket_id\n" + 
-				"inner join division on division.division_id = ticket.act_division_id and ticket.act_division_id = ?\n" + 
-				"where lower(employee_name) like ?";
-		PreparedStatement ps = conn.prepareStatement(sql);
-		ps.setInt(1, Integer.valueOf(divisionId));
-		ps.setString(2, "%" + term.toLowerCase() + "%");
-		ResultSet rs = ps.executeQuery();
+		LookupQuery lookupQuery = new BcrTicketLookupQuery(userId, divisionList, divisionId, workYear, workWeeks, monthlyFilter);
+		lookupQuery.setSearchTerm("");
+		ColumnFilter cf = new ColumnFilter("ticket.ticket_id", term);
+		lookupQuery.addColumnFilter(cf);
+		ResultSet rs = lookupQuery.select(conn, 0, 50);
 		while ( rs.next() ) {
-			itemList.add(new EmployeeName(rs) );
+			itemList.add(new BcrTicket(rs));
 		}
 		rs.close();
 		
@@ -79,23 +73,28 @@ public class BcrEmployeeAutoComplete extends AbstractAutoCompleteServlet {
 				return o1.getValue().compareTo(o2.getValue());
 			}
 		});
+		
+		
 		return itemList;
 	}
 
 	
 	
-	public class EmployeeName extends AbstractAutoCompleteItem {
+	public class BcrTicket extends AbstractAutoCompleteItem {
 
 		private static final long serialVersionUID = 1L;
 
-		public EmployeeName(ResultSet rs) throws Exception {
+		public BcrTicket(ResultSet rs) throws Exception {
 			super(rs);
 		}
 
 		@Override
 		protected void make(ResultSet rs) throws Exception {
-			this.label = rs.getString("employee_name");
-			this.value = rs.getString("employee_name");			
+			this.id = rs.getInt("ticket_id");
+			this.label = rs.getInt("ticket_id") + " (" + rs.getString("service_tag_id") + ") " 
+					+ rs.getString("job_site_name") + ":TV " + rs.getBigDecimal("total_volume") 
+					+ ":VR " + rs.getBigDecimal("volume_remaining");
+			this.value = String.valueOf(rs.getInt("ticket_id"));			
 		}
 		
 	}
