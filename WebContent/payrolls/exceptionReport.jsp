@@ -280,7 +280,7 @@
         			        	{ title: "Week Ending", width:"5%", searchable:true, searchFormat: "YYYY/MM/DD", "defaultContent": "<i>N/A</i>", data:'week_ending' },
         			        	{ title: "Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_name' },
         			        	{ title: "Status", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_status' },
-        			        	{ title: "Union", width:"5%", searchable:true, "defaultContent":$unknown,
+        			        	{ title: "Union Flag", width:"5%", searchable:true, "defaultContent":$unknown,
 	        			        	data:function(row, type, set) {
 	    			        			var $value = $unknown;
 	    			        			if ( row.union_member != null ) {
@@ -295,7 +295,7 @@
 	    			        		}
 	    			        	},
         			        	{ title: "Union Code", width:"10%", searchable:true, "defaultContent": "", data:'union_code' },
-        			        	{ title: "Union Rate", width:"10%", searchable:true, searchFormat: "#.##", "defaultContent": "",
+        			        	{ title: "Union Rate Flag", width:"10%", searchable:true, searchFormat: "#.##", "defaultContent": "",
         			        	data:function(row, type, set) {
     			        			var $value = "";
     			        			if ( row.union_member == 1 ) {
@@ -308,7 +308,7 @@
     			        		}
     			        		},
     			        		
-        			        	{ title: "Under Union Min", width:"5%", searchable:true, "defaultContent": "",
+        			        	{ title: "Under Union Min Flag", width:"5%", searchable:true, "defaultContent": "",
     			        		data:function(row, type, set) {
     			        			var $value = $unknown;
     			        			if ( row.under_union_min_pay != null ) {
@@ -328,7 +328,7 @@
     			        		{ title: "Minimum Hourly", width:"5%", searchFormat: "#.##", data: function ( row, type, set ) {
        			        			if(row.minimum_hourly_pay != null){return "$" + (parseFloat(row.minimum_hourly_pay).toFixed(2));}
    		            			} },
-    			        		{ title: "Under Govt Min", width:"5%", searchable:true, "defaultContent": "",
+    			        		{ title: "Under Govt Min Flag", width:"5%", searchable:true, "defaultContent": "",
     			        		data:function(row, type, set) {
     			        			var $value = $unknown;
     			        			if ( row.under_govt_min_pay != null ) {
@@ -345,10 +345,10 @@
     			        			return $value;
     			        			}
     			        		},
-    			        		{ title: "Expense Pct", width:"5%", searchFormat: "#.##", data: function ( row, type, set ) {
-       			        			if(row.excess_expense_pct != null){return "$" + (parseFloat(row.excess_expense_pct).toFixed(2));}
-   		            			} },
-    			        		{ title: "Expense Pct", width:"5%", searchable:true, "defaultContent": "",
+    			        		{ title: "Expense Pct", width:"5%", searchFormat: "%", "defaultContent": "", data:'excess_expense_pct' 
+       			        			//if(row.excess_expense_pct != null){return "$" + (parseFloat(row.excess_expense_pct).toFixed(2));}
+   		            			 },
+    			        		{ title: "Expense Pct Flag", width:"5%", searchable:true, "defaultContent": "",
     			        		data:function(row, type, set) {
     			        			var $value = $unknown;
     			        			if ( row.excess_expense_pct != null ) {
@@ -385,7 +385,7 @@
     			        			return $value;
     			        			}
     			        		},
-    			        		{ title: "YTD Expense Pct", width:"5%", searchable:true, "defaultContent": "",
+    			        		{ title: "YTD Expense Pct Flag", width:"5%", searchable:true, "defaultContent": "",
         			        		data:function(row, type, set) {
         			        			var $value = $unknown;
         			        			if ( row.ytd_excess_expense_pct != null ) {
@@ -402,7 +402,7 @@
         			        			return $value;
        			        			}
        			        		},
-       			        		{ title: "YTD Expense Claim", width:"5%", searchable:true, "defaultContent": "",
+       			        		{ title: "YTD Expense Claim Flag", width:"5%", searchable:true, "defaultContent": "",
            			        		data:function(row, type, set) {
            			        			var $value = $unknown;
            			        			if ( row.ytd_excess_expense_claim != null ) {
@@ -431,7 +431,7 @@
         			        	{ title: "YTD Direct Labor", width:"5%", searchable:true,  searchFormat: "#.##", data: function ( row, type, set ) {
     			        			if(row.ytd_direct_labor != null){return "$" + (parseFloat(row.ytd_direct_labor).toFixed(2));}
 		            			} },
-        			        	{ title: "Non Standard Company", width:"5%", searchable:true, "defaultContent": "", 
+        			        	{ title: "Non Standard Company Flag", width:"5%", searchable:true, "defaultContent": "", 
         			        	data:function(row, type, set) {
     			        			var $value = $unknown;
     			        			if ( row.foreign_company != null ) {
@@ -448,7 +448,7 @@
     			        			return $value;
     			        			}
     			        		},
-        			        	{ title: "Non Standard Division", width:"5%", searchable:true, "defaultContent": "",
+        			        	{ title: "Non Standard Division Flag", width:"5%", searchable:true, "defaultContent": "",
         			        	data:function(row, type, set) {
     			        			var $value = $unknown;
     			        			if ( row.foreign_division != null ) {
