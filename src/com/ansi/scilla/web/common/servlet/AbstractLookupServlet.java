@@ -301,7 +301,7 @@ public abstract class AbstractLookupServlet extends AbstractServlet {
 		}
 	}
 
-	private HashMap<String, Object> makeDataItem(ResultSet rs, ResultSetMetaData rsmd) throws SQLException {
+	protected HashMap<String, Object> makeDataItem(ResultSet rs, ResultSetMetaData rsmd) throws SQLException {
 		HashMap<String, Object> dataItem = new HashMap<String, Object>();
 		for ( int i = 0; i < rsmd.getColumnCount(); i++ ) {
 			int idx = i + 1;

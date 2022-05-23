@@ -6,14 +6,15 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.web.common.response.AbstractAutoCompleteItem;
 import com.ansi.scilla.web.common.servlet.AbstractAutoCompleteServlet;
-import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.Permission;
 
 public class EmployeeCodeCompleteServlet extends AbstractAutoCompleteServlet {
@@ -24,11 +25,12 @@ public class EmployeeCodeCompleteServlet extends AbstractAutoCompleteServlet {
 		super(Permission.PAYROLL_READ);
 	}
 	@Override
-	protected List<AbstractAutoCompleteItem> makeResultList(Connection conn, SessionUser user, HashMap<String, String> parameterMap) throws Exception {
-		
+	protected List<AbstractAutoCompleteItem> makeResultList(Connection conn, HttpServletRequest request)
+			throws Exception {
+		Map<String, String[]> parameterMap = request.getParameterMap();
 		List<AbstractAutoCompleteItem> itemList = new ArrayList<AbstractAutoCompleteItem>();
 		
-		String term = parameterMap.get("term").toLowerCase();
+		String term = parameterMap.get("term")[0].toLowerCase();
 		String sql = "select employee_code, division_id, employee_first_name, employee_last_name, employee_mi \n" + 
 				"from payroll_employee\n" + 
 				"where  employee_code like ?";

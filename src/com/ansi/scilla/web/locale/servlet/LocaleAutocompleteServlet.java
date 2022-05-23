@@ -5,9 +5,10 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Transformer;
@@ -18,7 +19,6 @@ import com.ansi.scilla.common.db.Locale;
 import com.ansi.scilla.common.utils.LocaleType;
 import com.ansi.scilla.web.common.response.AbstractAutoCompleteItem;
 import com.ansi.scilla.web.common.servlet.AbstractAutoCompleteServlet;
-import com.ansi.scilla.web.common.struts.SessionUser;
 
 
 public class LocaleAutocompleteServlet extends AbstractAutoCompleteServlet {
@@ -30,12 +30,10 @@ public class LocaleAutocompleteServlet extends AbstractAutoCompleteServlet {
 	protected final String STATE_ID = "stateId";
 	
 	
-	
 	@Override
-	protected List<AbstractAutoCompleteItem> makeResultList(Connection conn, SessionUser user,
-			HashMap<String, String> parameterMap) throws Exception {
-		
-		String sql = makeSql(parameterMap);
+	protected List<AbstractAutoCompleteItem> makeResultList(Connection conn, HttpServletRequest request) throws Exception {
+		Map<String, String[]> parmMap = request.getParameterMap();
+		String sql = makeSql(parmMap);
 		
 		logger.log(Level.DEBUG, sql);
 		Statement s = conn.createStatement();
@@ -48,28 +46,31 @@ public class LocaleAutocompleteServlet extends AbstractAutoCompleteServlet {
 				
 		return resultList;
 	}
+	
+	
 
-	private String makeSql(Map<String, String> map) {
-		String term = map.get("term");
+	private String makeSql(Map<String, String[]> parmMap) {
+		String term = parmMap.get("term")[0];
+		
 		String sqlTemplate = "select top(50) locale_id, name, state_name, locale_type_id from locale\n" + 
 				"where lower(name) like '%" + term.toLowerCase() + "%'";
 		
-		if ( map.containsKey(STATE_NAME)) {
-			String stateName = map.get(STATE_NAME);
+		if ( parmMap.containsKey(STATE_NAME) ) {
+			String stateName = parmMap.get(STATE_NAME)[0];
 			if ( ! StringUtils.isEmpty(stateName) ) {		
 				sqlTemplate = sqlTemplate + "\n and lower(state_name)='"+ stateName.toLowerCase() +"'";
 			}
 		}
 		
-		if ( map.containsKey(STATE_ID) ) {
-			String stateId = map.get(STATE_ID);
+		if ( parmMap.containsKey(STATE_ID) ) {
+			String stateId = parmMap.get(STATE_ID)[0];
 			if ( ! StringUtils.isEmpty(stateId) && StringUtils.isNumeric(stateId)) {		
 				sqlTemplate = sqlTemplate + "\n and parent_locale_id="+ stateId;
 			}
 		}
 		
-		if ( map.containsKey(LOCALE_TYPE_ID) ) {
-			String localeTypeId = map.get(LOCALE_TYPE_ID);
+		if ( parmMap.containsKey(LOCALE_TYPE_ID) ) {
+			String localeTypeId = parmMap.get(LOCALE_TYPE_ID)[0];
 			if ( ! StringUtils.isEmpty(localeTypeId) ) {
 				List<String> localeTypeList = new ArrayList<String>();
 				LocaleType localeType = LocaleType.valueOf(localeTypeId);

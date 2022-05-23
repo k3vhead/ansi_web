@@ -2,10 +2,7 @@ package com.ansi.scilla.web.common.servlet;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.net.URLDecoder;
 import java.sql.Connection;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -21,7 +18,6 @@ import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
-import com.thewebthing.commons.lang.StringUtils;
 
 
 public abstract class AbstractAutoCompleteServlet extends AbstractServlet {
@@ -80,15 +76,15 @@ public abstract class AbstractAutoCompleteServlet extends AbstractServlet {
 	
 	private void processRequest(Connection conn, SessionUser user, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-		HashMap<String, String> parameterMap = new HashMap<String, String>();
-		Enumeration<String> parameterNames = request.getParameterNames();
-		while ( parameterNames.hasMoreElements() ) {
-			String parameter = parameterNames.nextElement();
-			String value = request.getParameter(parameter);
-			parameterMap.put( parameter, StringUtils.trimToNull(URLDecoder.decode(value, "UTF-8")));
-		}
+//		HashMap<String, String> parameterMap = new HashMap<String, String>();
+//		Enumeration<String> parameterNames = request.getParameterNames();
+//		while ( parameterNames.hasMoreElements() ) {
+//			String parameter = parameterNames.nextElement();
+//			String value = request.getParameter(parameter);
+//			parameterMap.put( parameter, StringUtils.trimToNull(URLDecoder.decode(value, "UTF-8")));
+//		}
 
-		List<AbstractAutoCompleteItem> resultList = makeResultList(conn, user, parameterMap);
+		List<AbstractAutoCompleteItem> resultList = makeResultList(conn, request);
 
 		response.setStatus(HttpServletResponse.SC_OK);
 		response.setContentType("application/json");
@@ -102,8 +98,7 @@ public abstract class AbstractAutoCompleteServlet extends AbstractServlet {
 	}
 
 	
-	protected abstract List<AbstractAutoCompleteItem> makeResultList(Connection conn, SessionUser user, HashMap<String, String> parameterMap) throws Exception;
-
+	protected abstract List<AbstractAutoCompleteItem> makeResultList(Connection conn, HttpServletRequest request) throws Exception;
 
 	
 }
