@@ -1,12 +1,14 @@
 package com.ansi.scilla.web.bcr.servlet;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 
@@ -14,9 +16,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.ansi.scilla.web.common.servlet.AbstractAutoCompleteItem;
 import com.ansi.scilla.web.common.servlet.AbstractAutoCompleteServlet;
-import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.Permission;
 
 public class BcrEmployeeAutoComplete extends AbstractAutoCompleteServlet {
@@ -38,9 +41,17 @@ public class BcrEmployeeAutoComplete extends AbstractAutoCompleteServlet {
 
 
 	@Override
-	protected List<AbstractAutoCompleteItem> makeResultList(Connection conn, SessionUser user,
-			HashMap<String, String> parameterMap) throws Exception {
+	protected List<AbstractAutoCompleteItem> makeResultList(Connection conn, HttpServletRequest request) throws Exception {
 
+		HashMap<String, String> parameterMap = new HashMap<String, String>();
+		Enumeration<String> parameterNames = request.getParameterNames();
+		while ( parameterNames.hasMoreElements() ) {
+			String parameter = parameterNames.nextElement();
+			String value = request.getParameter(parameter);
+			parameterMap.put( parameter, StringUtils.trimToNull(URLDecoder.decode(value, "UTF-8")));
+		}
+		
+		
 		List<AbstractAutoCompleteItem> itemList = new ArrayList<AbstractAutoCompleteItem>();
 		
 		String term = parameterMap.get("term").toLowerCase();
