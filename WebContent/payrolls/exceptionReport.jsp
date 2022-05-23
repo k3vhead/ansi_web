@@ -295,7 +295,7 @@
 	    			        		}
 	    			        	},
         			        	{ title: "Union Code", width:"10%", searchable:true, "defaultContent": "", data:'union_code' },
-        			        	{ title: "Union Rate Flag", width:"10%", searchable:true, searchFormat: "#.##", "defaultContent": "",
+        			        	{ title: "Union Rate", width:"10%", searchable:true, searchFormat: "#.##", "defaultContent": "",
         			        	data:function(row, type, set) {
     			        			var $value = "";
     			        			if ( row.union_member == 1 ) {
@@ -325,7 +325,7 @@
     			        			return $value;
     			        			}
     			        		},
-    			        		{ title: "Minimum Hourly", width:"5%", searchFormat: "#.##", data: function ( row, type, set ) {
+    			        		{ title: "Minimum Hourly", width:"5%", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
        			        			if(row.minimum_hourly_pay != null){return "$" + (parseFloat(row.minimum_hourly_pay).toFixed(2));}
    		            			} },
     			        		{ title: "Under Govt Min Flag", width:"5%", searchable:true, "defaultContent": "",
@@ -345,9 +345,9 @@
     			        			return $value;
     			        			}
     			        		},
-    			        		{ title: "Expense Pct", width:"5%", searchFormat: "%", "defaultContent": "", data:'excess_expense_pct' 
-       			        			//if(row.excess_expense_pct != null){return "$" + (parseFloat(row.excess_expense_pct).toFixed(2));}
-   		            			 },
+    			        		{ title: "Expense Pct", width:"5%", searchable: true, searchFormat: "#.##%", data: function ( row, type, set ) {
+       			        			if(row.excess_expense_pct != null){return (parseFloat(row.excess_expense_pct).toFixed(2)) + "%";}
+   		            			} },
     			        		{ title: "Expense Pct Flag", width:"5%", searchable:true, "defaultContent": "",
     			        		data:function(row, type, set) {
     			        			var $value = $unknown;
