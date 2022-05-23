@@ -1,18 +1,21 @@
 package com.ansi.scilla.web.quote.servlet;
 
+import java.net.URLDecoder;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.web.common.servlet.AbstractAutoCompleteItem;
 import com.ansi.scilla.web.common.servlet.AbstractAutoCompleteServlet;
-import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.quote.response.QuoteAutoCompleteItem;
 
@@ -28,8 +31,18 @@ public class QuoteAutoComplete extends AbstractAutoCompleteServlet {
 	}
 
 	@Override
-	protected List<AbstractAutoCompleteItem> makeResultList(Connection conn, SessionUser user, HashMap<String, String> parameterMap)
-			throws Exception {
+	protected List<AbstractAutoCompleteItem> makeResultList(Connection conn, HttpServletRequest request ) throws Exception {
+		//SessionUser user, HashMap<String, String> parameterMap)
+		
+		HashMap<String, String> parameterMap = new HashMap<String, String>();
+		Enumeration<String> parameterNames = request.getParameterNames();
+		while ( parameterNames.hasMoreElements() ) {
+			String parameter = parameterNames.nextElement();
+			String value = request.getParameter(parameter);
+			parameterMap.put( parameter, StringUtils.trimToNull(URLDecoder.decode(value, "UTF-8")));
+		}
+		
+		
 		String term = parameterMap.get("term").toLowerCase();
 		String sql1 = "select quote.quote_id, concat(quote.quote_number, quote.revision) as quote_revision,\n" + 
 				"	job_site.name as job_site_name, job_site.address1 as job_site_address, bill_to.name as bill_to_name, bill_to.address1 as bill_to_address\n" + 

@@ -28,10 +28,12 @@
 		<td><span class="form-label">Year:</span></td>
 		<td><span class="workYear"></span></td>
 		<td></td>
-		<td rowspan="4" style="text-align:center;">
+		<td rowspan="4" colspan="2" style="text-align:left;">
 			<webthing:view styleClass="new-bcr fa-3x green">New BCR</webthing:view>
 			&nbsp;&nbsp;
 			<a href="#" target="_new" class="all-ticket-spreadsheet"><webthing:excel styleClass="fa-3x blue">All Tickets</webthing:excel></a>
+			&nbsp;&nbsp;
+			<webthing:quick styleClass="quick-claim fa-3x red">Quick Claim</webthing:quick>
 		</td>
 	</tr>
 	<tr>

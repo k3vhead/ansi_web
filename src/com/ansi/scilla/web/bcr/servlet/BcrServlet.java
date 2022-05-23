@@ -25,11 +25,14 @@ public class BcrServlet extends AbstractServlet {
 	public static final String KEEP_ALIVE = "keepAlive";
 	public static final String NEW_CLAIM = "newClaim";
 	public static final String TICKET = "ticket";
+	public static final String TICKET_AUTOCOMPLETE = "ticketAutoComplete";
 	public static final String TICKET_CLAIM = "ticketClaim";
+	public static final String TICKET_CLAIM_DETAIL = "ticketClaimDetail";
 	public static final String TICKETLIST = "ticketList";
 	public static final String TICKET_XLS = "ticketXls";
 	public static final String TITLE = "title";
 	public static final String WEEKLY_TICKETLIST = "weeklyTicketList";
+	
 	
 	
 	private static final long serialVersionUID = 1L;
@@ -85,8 +88,14 @@ public class BcrServlet extends AbstractServlet {
 		case KEEP_ALIVE:
 			new BcrKeepAliveServlet().doGet(request, response);
 			break;
+		case TICKET_AUTOCOMPLETE:
+			new BcrTicketAutoCompleteServlet().doGet(request, response);
+			break;
 		case TICKET_CLAIM:
 			new BcrTicketClaimServlet().doGet(request, response);
+			break;
+		case TICKET_CLAIM_DETAIL:
+			new BcrTicketClaimDetailServlet().doGet(request, response);
 			break;
 		case TICKETLIST:
 			new BcrTicketLookupServlet().doGet(request, response);
