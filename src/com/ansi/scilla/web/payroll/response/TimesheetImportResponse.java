@@ -90,7 +90,7 @@ public class TimesheetImportResponse extends MessageResponse  {
 		this(conn, new PayrollWorksheetParser(file.getName(), file.getInputStream()));
 	}
 	
-	private TimesheetImportResponse(Connection conn, PayrollWorksheetParser parser ) throws Exception {
+	public TimesheetImportResponse(Connection conn, PayrollWorksheetParser parser ) throws Exception {
 		this();
 		this.city = parser.getCity();
 		division = parser.getDivision();
@@ -138,7 +138,7 @@ public class TimesheetImportResponse extends MessageResponse  {
 				// we'll figure out aliases later; if this isn't a legit name, a human needs to review it
 				if ( ! TimesheetValidator.isEmployeeName(conn, row.getEmployeeName())) {
 					errorFound = true;
-					logger.log(Level.DEBUG, "Bad Name"  +  row.getRow());
+					logger.log(Level.DEBUG, "Bad Name "  +  row.getRow());
 				}
 				
 				row.setErrorsFound(errorFound);
