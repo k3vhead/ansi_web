@@ -757,6 +757,7 @@
 	           			
 	           			$('[name="row"]').val(			TIMESHEET_IMPORT.employeeMap[$rowNumber].row);
 	           			$('[name="employeeName"]').val(	TIMESHEET_IMPORT.employeeMap[$rowNumber].employeeName);
+	           			$('[name="employeeCode"]').val(	TIMESHEET_IMPORT.employeeMap[$rowNumber].employeeCode);
 						// status
 
 						$('[name="regularHours"]').val(	TIMESHEET_IMPORT.StringToFloatString(TIMESHEET_IMPORT.employeeMap[$rowNumber].regularHours));
