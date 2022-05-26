@@ -23,6 +23,7 @@ import org.apache.logging.log4j.Logger;
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.ApplicationProperties;
 import com.ansi.scilla.common.db.Division;
+import com.ansi.scilla.common.db.EmployeeAlias;
 import com.ansi.scilla.common.db.Locale;
 import com.ansi.scilla.common.exceptions.InvalidValueException;
 import com.ansi.scilla.common.payroll.common.PayrollUtils;
@@ -113,13 +114,31 @@ public class TimesheetImportResponse extends MessageResponse  {
 		Division division = new Division();
 		division.setDivisionNbr(Integer.valueOf(this.division));
 		division.selectOne(conn);
+		
+		
 			
 		ApplicationProperties maxExpenseProperty = ApplicationProperty.get(conn, ApplicationProperty.EXPENSE_MAX);
 		Double maxExpenseRate = maxExpenseProperty.getValueFloat().doubleValue();
-
 		PayrollMessage payrollMessage = null;
+		
+		EmployeeAlias employeeAlias = new EmployeeAlias();
+		
 		for ( PayrollWorksheetEmployee row : this.getEmployeeRecordList() ) {
 			if ( ! row.isBlankRow() ) {
+				
+				try {
+					employeeAlias.setEmployeeName(row.getEmployeeName());
+					employeeAlias.selectOne(conn);
+					
+					if(employeeAlias.getEmployeeCode() !=null) {
+						logger.log(Level.DEBUG, "validateRows : Employee Name: " + row.getEmployeeName() + " Employee Code = " + employeeAlias.getEmployeeCode().toString());					
+					} else {
+						logger.log(Level.DEBUG, "validateRows : Couldn't find employee Code");					
+					}
+				} catch ( Exception e ) {
+					webMessages.addMessage("employeeCode", "Employee Code Not Found");
+				}
+							
 				payrollMessage = TimesheetValidator.validateMinimumGovtPay(
 						division, 
 						Double.valueOf(row.getGrossPay()), 
