@@ -216,8 +216,10 @@
                 			if ( $selectedEmployeeCode != null && $selectedEmployeeCode != "") {
                 				$url = $url + "/" + $selectedEmployeeCode
                 			}
+                			$outbound.unionRate = $outbound.unionRate.replace('$', '');
                 			console.log($url);
                 			console.log($outbound);
+           					
                 			ANSI_UTILS.makeServerCall("post", $url, JSON.stringify($outbound),{200:EMPLOYEE_IMPORT.processUploadChanges},  $passThruData);
                 		},
              
@@ -230,7 +232,7 @@
                 			var $yes = '<webthing:checkmark>Yes</webthing:checkmark>';
                 			var $no = '<webthing:ban>No</webthing:ban>';
                 			var $unknown = '<webthing:questionmark>Invalid</webthing:questionmark>';
-                		
+                			console.log($data);
                 			console.log($data.employeeRecords);
                 			
                 			$("#employeeImport").DataTable( {
@@ -346,9 +348,14 @@
              			              		EMPLOYEE_IMPORT.displayEditModal($id);
              			              		//alert("it worked! " + $id);
              			          		});
-             			            	
+             			            	for (var i = 0; i < $data.employeeRecords.length; i++){                   				                 				
+                               				if ($data.employeeRecords[i].recordMatches == false){
+                               					document.getElementById($data.employeeRecords[i].rowId).classList.add("highlight");
+                               				}
+                               			} 
              			            
-            			            }    
+            			            }
+             			            
             			    } );
                 		},
                 		
@@ -442,6 +449,21 @@
                    			console.log($passThruData);
                    			console.log($data);
                    			
+                   			var fixedNum = $data.data.employee.unionRate;
+                   			console.log("fixedNum");
+                   			console.log($data.data.employee.unionRate);
+                   			fixedNum = Number(fixedNum).toFixed(2);
+                   			if ($data.data.employee.unionRate == null ){
+                   				$data.data.employee.unionRate = "";
+                   			}
+                   			else {
+                   				$data.data.employee.unionRate = "$" + fixedNum.toString();
+                   			}
+                   			  if ($data.data.employee.unionMember == "0"){
+               				$data.data.employee.unionMember = "";
+               				}
+               			else {$data.data.employee.unionMember = "Yes";
+               			}  
                    			// create a dictionary for this empoloyee
                    			var $thisEmployee = {};
                    			$.each( $data.data.employee, function($empFieldName, $empValue) {
@@ -455,14 +477,18 @@
                    			EMPLOYEE_IMPORT.employeeDict[$passThruData['rowId']] = $thisEmployee
                    			
                    			// update the table display
-                   			var $reportData = []
+                   			var $reportData = [];
                    			$.each( EMPLOYEE_IMPORT.employeeDict, function($index, $value) {
                    				$reportData.push($value);
                    			});
+                   			
+                   			var $importData = {};
+                   			$importData.employeeRecords = $reportData
                    			console.log("old employee:");
-                   			console.log($reportData[4]);
-
-                   			EMPLOYEE_IMPORT.makeEmployeeTable($reportData);
+                   			console.log($reportData);
+                   			console.log($importData);
+                   			
+                   			EMPLOYEE_IMPORT.makeEmployeeTable($importData);
                    		},
                    		
                    		
@@ -479,11 +505,7 @@
                    			console.log($data.data);
                    			
                    			
-                   			 for (var i = 0; i < $data.data.employeeRecords.length; i++){                   				                 				
-                   				if ($data.data.employeeRecords[i].recordMatches == false){
-                   					document.getElementById($data.data.employeeRecords[i].rowId).classList.add("highlight");
-                   				}
-                   			} 
+                   			 
                    			$.each($data.data.employeeRecords, function($index, $value) {
                    				EMPLOYEE_IMPORT.employeeDict[$value.rowId] = $value;                   				
                    			});
