@@ -206,7 +206,10 @@
         	        			'notes' : $("#employee-modal input[name='notes']").val(),
                 			}
                 			
-                			var $passThruData = {'rowId':$("#employee-modal input[name='rowId']").val()};
+                			var $passThruData = {
+                					'rowId':$("#employee-modal input[name='rowId']").val(),
+                					
+                			};
                 			
                 			var today = new Date();
                 			var dateToday = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
@@ -219,6 +222,8 @@
                 			$outbound.unionRate = $outbound.unionRate.replace('$', '');
                 			console.log($url);
                 			console.log($outbound);
+                			console.log('passthrough');
+                			console.log($passThruData);
            					
                 			ANSI_UTILS.makeServerCall("post", $url, JSON.stringify($outbound),{200:EMPLOYEE_IMPORT.processUploadChanges},  $passThruData);
                 		},
@@ -446,12 +451,9 @@
                    		
                    		processUploadChanges : function($data, $passThruData){
                    			console.log("processUploadChanges");
-                   			console.log($passThruData);
-                   			console.log($data);
                    			
-                   			var fixedNum = $data.data.employee.unionRate;
-                   			console.log("fixedNum");
-                   			console.log($data.data.employee.unionRate);
+                   			
+                   			var fixedNum = $data.data.employee.unionRate;                   			
                    			fixedNum = Number(fixedNum).toFixed(2);
                    			if ($data.data.employee.unionRate == null ){
                    				$data.data.employee.unionRate = "";
@@ -459,11 +461,13 @@
                    			else {
                    				$data.data.employee.unionRate = "$" + fixedNum.toString();
                    			}
-                   			  if ($data.data.employee.unionMember == "0"){
-               				$data.data.employee.unionMember = "";
+                   			
+                   			if ($data.data.employee.unionMember == "0"){
+               					$data.data.employee.unionMember = "";
                				}
-               			else {$data.data.employee.unionMember = "Yes";
-               			}  
+               				else {
+               					$data.data.employee.unionMember = "Yes";
+               				}  
                    			// create a dictionary for this empoloyee
                    			var $thisEmployee = {};
                    			$.each( $data.data.employee, function($empFieldName, $empValue) {
