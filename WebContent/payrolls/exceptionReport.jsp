@@ -84,6 +84,12 @@
 				color:#404040;
 				cursor:pointer;
 			}		
+			td.highlight {
+    			background-color: whitesmoke !important;
+			}
+			.background {
+				background-color: yellow;
+			}
         </style>
         
         <script type="text/javascript">    
@@ -189,6 +195,13 @@
         			console.log($errorsOnly);
         			var $outbound = {"errorFilter":$errorsOnly};
         			
+        			$('#exceptionReportTable tbody').on('mouseenter', 'td', function () {
+        		        var colIdx = table.cell(this).index().column;
+        		 
+        		        $(table.cells().nodes()).removeClass('highlight');
+        		        $(table.column(colIdx).nodes()).addClass('highlight');
+        		    });
+        			
         			
         			var $yes = '<webthing:checkmark>Yes</webthing:checkmark>';
         			var $no = '<webthing:ban>No</webthing:ban>';
@@ -197,6 +210,21 @@
         			var $unknown = '<webthing:questionmark>Invalid</webthing:questionmark>';
         			
         			$("#exceptionReportTable").DataTable( {
+
+
+            			'rowCallback': function(row, data, index){
+            			  	if(data[6]= $no){
+            			    //	$(row).find('td:eq(1)').css('color', 'red');
+            			    	$(row).find('td:eq(4)').css('background-color', 'red');
+            			    }
+            			  	if(data[14]= 0){
+            			    //	$(row).find('td:eq(1)').css('color', 'red');
+            			    	$(row).find('td:eq(14)').css('background-color', 'red');
+            			    }
+            			  //  if(data[2].toUpperCase() == 'EE'){
+            			  //  	$(row).find('td:eq(2)').css('color', 'blue');
+            			   // }
+            			  },
             			"aaSorting":		[[3,'asc']],
             			"processing": 		true,
             	        "serverSide": 		true,
@@ -289,6 +317,7 @@
 	    			        				}
 	    			        				if ( row.union_member == 0 ) {
 	    			        					$value = $no;
+	    			        					$($no).addClass("background");
 	    			        				}
 	    			        			}
 	    			        			return $value;
@@ -315,8 +344,8 @@
     			        				if ( row.under_union_min_pay == 1 ) {
     			        					$value = $errorFound;
     			        					//row.under_union_min_pay.style.backgroundColor = "yellow";
-    			        					//$(this).css('background-color','yellow');
-        			        				//	$(this).find('td').css('background-color', 'red');
+    			        					//$(row.under_union_min_pay).css('background-color','yellow');
+        			        				//	$(row.under_union_min_pay).find('td').css('background-color', 'red');
     			        				}
     			        				if ( row.under_union_min_pay == 0 ) {
     			        					$value = $noErrorFound;
@@ -334,9 +363,9 @@
     			        			if ( row.under_govt_min_pay != null ) {
     			        				if ( row.under_govt_min_pay == 1 ) {
     			        					$value = $errorFound;
-    			        					//row.under_govt_min_pay.style.backgroundColor = "yellow";
-    			        					//$(this).css('background-color','yellow');
-        			        				//	$(this).find('td').css('background-color', 'red');
+    			        					row.under_govt_min_pay.style.backgroundColor = "yellow";
+    			        					$(this).css('background-color','yellow');
+        			        					$(this).find('td').css('background-color', 'red');
     			        				}
     			        				if ( row.under_govt_min_pay == 0 ) {
     			        					$value = $noErrorFound;
@@ -540,7 +569,7 @@
 			<div style="clear:both; width:100%;font-size:1px;">&nbsp;</div>	
     		<webthing:lookupFilter filterContainer="filter-container" />
 			<h3 id="report-label"></h3>			
-			<table id="exceptionReportTable">
+			<table id="exceptionReportTable" class="row-border hover order-column">
 			</table>
 		</div>
 		<div id="exception-display" class="modal-window">
