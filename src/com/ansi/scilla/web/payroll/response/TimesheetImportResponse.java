@@ -23,15 +23,17 @@ import org.apache.logging.log4j.Logger;
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.ApplicationProperties;
 import com.ansi.scilla.common.db.Division;
-import com.ansi.scilla.common.db.EmployeeAlias;
 import com.ansi.scilla.common.db.Locale;
 import com.ansi.scilla.common.exceptions.InvalidValueException;
+import com.ansi.scilla.common.exceptions.PayrollException;
 import com.ansi.scilla.common.payroll.common.PayrollUtils;
 import com.ansi.scilla.common.payroll.parser.NotATimesheetException;
 import com.ansi.scilla.common.payroll.parser.PayrollWorksheetEmployee;
 import com.ansi.scilla.common.payroll.parser.PayrollWorksheetParser;
+import com.ansi.scilla.common.payroll.validator.PayrollEmployeeValidator;
 import com.ansi.scilla.common.payroll.validator.PayrollErrorType;
 import com.ansi.scilla.common.payroll.validator.PayrollMessage;
+import com.ansi.scilla.common.payroll.validator.PayrollWorksheetValidator;
 import com.ansi.scilla.common.utils.ApplicationProperty;
 import com.ansi.scilla.common.utils.LocaleType;
 import com.ansi.scilla.web.common.request.RequestValidator;
@@ -121,21 +123,29 @@ public class TimesheetImportResponse extends MessageResponse  {
 		Double maxExpenseRate = maxExpenseProperty.getValueFloat().doubleValue();
 		PayrollMessage payrollMessage = null;
 		
-		EmployeeAlias employeeAlias = new EmployeeAlias();
+		//EmployeeAlias employeeAlias = new EmployeeAlias();
 		
-		for ( PayrollWorksheetEmployee row : this.getEmployeeRecordList() ) {
-			if ( ! row.isBlankRow() ) {
-				
+		PayrollWorksheetParser parser = new PayrollWorksheetParser(fileName);
+		PayrollWorksheetValidator worksheetValidator = new PayrollWorksheetValidator(parser);
+		worksheetValidator.validate(conn);
+		
+		 
+		
+		for ( PayrollWorksheetEmployee row : parser.getEmployeeRecordList() ) {
+			if ( ! row.isBlankRow() ) {		
 				try {
-					employeeAlias.setEmployeeName(row.getEmployeeName());
-					employeeAlias.selectOne(conn);
 					
-					if(employeeAlias.getEmployeeCode() !=null) {
-						logger.log(Level.DEBUG, "validateRows : Employee Name: " + row.getEmployeeName() + " Employee Code = " + employeeAlias.getEmployeeCode().toString());					
-					} else {
-						logger.log(Level.DEBUG, "validateRows : Couldn't find employee Code");					
-					}
-				} catch ( Exception e ) {
+					PayrollEmployeeValidator employeeValidator = new PayrollEmployeeValidator(row,worksheetValidator.getDivisionId(), 0.20);
+					employeeValidator.validate(conn);
+					
+					System.out.println(employeeValidator);
+//					System.out.println(employeeValidator.validateMinimumGovtPay(conn, worksheetValidator.getDivisionId()));					
+										
+//					logger.log(Level.DEBUG, "validateRows : Couldn't find employee Code");					
+				} catch ( PayrollException pe) {
+					webMessages.addMessage("employee", "Employee Validation Error");
+				}
+				catch ( Exception e ) {
 					webMessages.addMessage("employeeCode", "Employee Code Not Found");
 				}
 							
