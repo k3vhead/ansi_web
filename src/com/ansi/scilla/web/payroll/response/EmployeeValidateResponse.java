@@ -2,6 +2,7 @@ package com.ansi.scilla.web.payroll.response;
 
 import java.sql.Connection;
 
+import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.PayrollEmployee;
 import com.ansi.scilla.common.payroll.parser.EmployeeImportRecord;
 import com.ansi.scilla.web.common.response.MessageResponse;
@@ -20,6 +21,10 @@ public class EmployeeValidateResponse extends MessageResponse {
 	public EmployeeValidateResponse(Connection conn, Integer employeeCode, EmployeeRequest employeeRequest) throws Exception {
 		this();
 		PayrollEmployee payrollEmployee = new PayrollEmployee();
+		Division division = new Division();
+		division.setDivisionId(employeeRequest.getDivisionId());
+		division.selectOne(conn);
+
 		try {			
 			payrollEmployee.setEmployeeCode(employeeCode);
 			payrollEmployee.selectOne(conn);
@@ -29,12 +34,13 @@ public class EmployeeValidateResponse extends MessageResponse {
 			this.employee = new EmployeeImportResponseRec(employeeImportRecord);
 			
 			// override with validated data from request
-			makeEmployee(employeeRequest);			
-			
+			makeEmployee(employeeRequest, division);			
+			employee.setRecordMatches( employee.ansiEquals(payrollEmployee) );
 		} catch (RecordNotFoundException e) {
 			this.employee = new EmployeeImportResponseRec();			
 			// override with validated data from request
-			makeEmployee(employeeRequest);
+			makeEmployee(employeeRequest, division);
+			employee.setRecordMatches( false );
 		}
 	}
 
@@ -45,7 +51,7 @@ public class EmployeeValidateResponse extends MessageResponse {
 	public void setEmployee(EmployeeImportResponseRec employee) {
 		this.employee = employee;
 	}
-	private void makeEmployee(EmployeeRequest employeeRequest) {
+	private void makeEmployee(EmployeeRequest employeeRequest, Division division) {
 			Integer unionMember = employeeRequest.getUnionMember();
 			Double unionRate = employeeRequest.getUnionRate();
 			
@@ -62,6 +68,7 @@ public class EmployeeValidateResponse extends MessageResponse {
 			this.employee.setUnionCode( employeeRequest.getUnionCode() );
 			this.employee.setUnionRate( unionRate == null ? null : String.valueOf(unionRate) );
 	//		this.employee.setProcessDate( employeeRequest.getProcessDate() );
+			this.employee.setDiv(division.getDivisionDisplay());
 		}
 	
 	

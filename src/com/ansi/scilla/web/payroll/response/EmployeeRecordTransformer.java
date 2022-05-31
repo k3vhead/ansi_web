@@ -28,6 +28,7 @@ public class EmployeeRecordTransformer implements Transformer<EmployeeImportReco
 
 	@Override
 	public EmployeeImportResponseRec transform(EmployeeImportRecord arg0) {
+//		Logger logger = LogManager.getLogger(EmployeeRecordTransformer.class);
 		try {
 			EmployeeImportResponseRec rec = new EmployeeImportResponseRec(arg0);
 			if ( StringUtils.isNumeric(arg0.getDivisionNbr())) {
@@ -47,8 +48,12 @@ public class EmployeeRecordTransformer implements Transformer<EmployeeImportReco
 			}
 			
 			Integer employeeCode = Integer.valueOf( arg0.getEmployeeCode() );
-			PayrollEmployee employee = employeeMap.get(employeeCode);
-			rec.setRecordMatches( rec.ansiEquals(employee) );
+			if ( employeeMap.containsKey(employeeCode) ) {
+				PayrollEmployee employee = employeeMap.get(employeeCode);
+				rec.setRecordMatches( rec.ansiEquals(employee) );
+			} else {
+				rec.setRecordMatches( false );
+			}
 			return rec;
 		} catch ( Exception e) {
 			throw new RuntimeException(e);

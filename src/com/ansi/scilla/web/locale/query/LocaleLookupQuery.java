@@ -38,12 +38,17 @@ public class LocaleLookupQuery extends LookupQuery {
 	public static final String sqlSelect = 
 			"select locale.locale_id, locale.state_name, locale.name, locale.locale_type_id, locale.abbreviation,\n" + 
 			"		parent.name as parent_name, parent.state_name as parent_state, parent.locale_type_id as parent_type_id,\n"
-			+ "		ptp.profile_desc ";
+			+ "		ptp.profile_desc,\n"
+			+ "		case\n"
+			+ "			when isnull(locale_count.worksheet_count,0)=0 then 1\n"
+			+ "			else 0\n"
+			+ "		end as can_delete ";
 
 	public static final String sqlFromClause = 
 			"\n FROM locale  " +
 			"\n left outer join locale parent on parent.locale_id=locale.parent_locale_id" +
-			"\n left outer join payroll_tax_profile ptp on locale.payroll_tax_profile = ptp.profile_id";
+			"\n left outer join payroll_tax_profile ptp on locale.payroll_tax_profile = ptp.profile_id\n" +
+			"\n left outer join (select locale_id, count(*) as worksheet_count from payroll_worksheet group by locale_id) locale_count on locale_count.locale_id=locale.locale_id";
 	
 	public static final String sqlWhereClause = "";
 	
