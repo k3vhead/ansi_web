@@ -103,16 +103,17 @@ public class TimesheetImportResponse extends MessageResponse  {
 		this.weekEnding = parser.getWeekEnding();
 		this.fileName = parser.getFileName();
 		
-		validateRows(conn);
+		validateRows(conn, parser);
 	}
 	
 	/**
 	 * Set "errorsFound" field in each of the employee rows
 	 * Make sure this stays in sync with TimesheetRequest.validateAdd()
 	 * @param conn
+	 * @param parser 
 	 * @throws Exception 
 	 */
-	private void validateRows(Connection conn) throws Exception {
+	private void validateRows(Connection conn, PayrollWorksheetParser parser) throws Exception {
 		Division division = new Division();
 		division.setDivisionNbr(Integer.valueOf(this.division));
 		division.selectOne(conn);
@@ -125,7 +126,6 @@ public class TimesheetImportResponse extends MessageResponse  {
 		
 		//EmployeeAlias employeeAlias = new EmployeeAlias();
 		
-		PayrollWorksheetParser parser = new PayrollWorksheetParser(fileName);
 		PayrollWorksheetValidator worksheetValidator = new PayrollWorksheetValidator(parser);
 		worksheetValidator.validate(conn);
 		

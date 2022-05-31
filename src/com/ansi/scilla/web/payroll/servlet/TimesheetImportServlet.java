@@ -1,6 +1,7 @@
 package com.ansi.scilla.web.payroll.servlet;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.util.Enumeration;
 
@@ -8,6 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.fileupload.FileItem;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.payroll.parser.NotATimesheetException;
