@@ -113,7 +113,7 @@ public class TimesheetImportResponse extends MessageResponse  {
 	 * @param parser 
 	 * @throws Exception 
 	 */
-	private void validateRows(Connection conn, PayrollWorksheetParser parser) throws Exception {
+	private void validateRows(Connection conn, PayrollWorksheetParser parser) throws PayrollException, Exception {
 		Division division = new Division();
 		division.setDivisionNbr(Integer.valueOf(this.division));
 		division.selectOne(conn);
@@ -128,8 +128,6 @@ public class TimesheetImportResponse extends MessageResponse  {
 		
 		PayrollWorksheetValidator worksheetValidator = new PayrollWorksheetValidator(parser);
 		worksheetValidator.validate(conn);
-		
-		 
 		
 		for ( PayrollWorksheetEmployee row : parser.getEmployeeRecordList() ) {
 			if ( ! row.isBlankRow() ) {		
