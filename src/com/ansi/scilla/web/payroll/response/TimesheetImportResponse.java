@@ -131,6 +131,7 @@ public class TimesheetImportResponse extends MessageResponse  {
 		
 		for ( PayrollWorksheetEmployee row : parser.getEmployeeRecordList() ) {
 			if ( ! row.isBlankRow() ) {		
+				/*
 				try {
 					
 					PayrollEmployeeValidator employeeValidator = new PayrollEmployeeValidator(row,worksheetValidator.getDivisionId(), 0.20);
@@ -146,6 +147,7 @@ public class TimesheetImportResponse extends MessageResponse  {
 				catch ( Exception e ) {
 					webMessages.addMessage("employeeCode", "Employee Code Not Found");
 				}
+				*/
 							
 				payrollMessage = TimesheetValidator.validateMinimumGovtPay(
 						division, 

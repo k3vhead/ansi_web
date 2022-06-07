@@ -120,6 +120,10 @@
         		 width:40px; 
 			}
 			*/
+
+			.highlight {
+  				background-color: yellow !important;
+			}
 			
 			#employee-modal #time-calcs .percentage {
 			    /* width: 120px; */
@@ -376,7 +380,8 @@
 	           			console.log("processUploadFailure");
 	           			$("#prompt-div .err").html("");
 	           			var fName = document.getElementById('timesheet-file').files[0].name;
-	           			$(".thinking").hide();		           				
+	           			$(".thinking").hide();		
+	           			$("#timesheet_processing").hide();
            				$("#prompt-div").show();
            				
        					$("#data-header .err").html("");
@@ -619,6 +624,13 @@
 	           						var $rowNumber = $(this).attr('data-id');
 	           						TIMESHEET_IMPORT.showEmployeeModal($rowNumber, "edit");
 	           					});
+	           					//added 2022-06-07
+//      			            	for (var i = 0; i < $data.employeeRecordList.length; i++){                   				                 				
+//                        				if ($data.employeeRecordList[i].errorsFound){
+//                        					document.getElementById($data.employeeRecordList[i].rowId).classList.add("highlight");
+//                        				}
+//                        			} 
+	           					
 	           				}
 	           			});
 	           			$("#data-detail").show();
