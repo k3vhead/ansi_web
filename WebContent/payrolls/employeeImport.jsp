@@ -146,6 +146,10 @@
                    			});
                    			$("#display-div input[name='saveAllButton']").click(function($event){
                    				alert("This will save and display Saved");
+                   				console.log("save all event");
+                   				$.each( EMPLOYEE_IMPORT.employeeDict , function($employeeIndex, $employeeValue) {
+                   					if ($employeeValue.recordMatches == false){ console.log($employeeIndex);}
+                   				});
                    			});
                    			
                    		},
