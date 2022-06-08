@@ -73,6 +73,7 @@
         	}
         	.action-link {
         		text-decoration:none;
+        		cursor: pointer;
         	}
 			.dataTables_wrapper {
 				padding-top:10px;
@@ -105,6 +106,7 @@
                    		view : '<webthing:view styleClass="details-control">Details</webthing:view>',
                    		employeeDict : {},
                    		pageVars : {},
+                   		savedEditEmployee : {},
                    			
                    			
                    		init : function() {
@@ -142,6 +144,10 @@
                    				$("#employee-file").val(null);
                    				
                    			});
+                   			$("#display-div input[name='saveAllButton']").click(function($event){
+                   				alert("This will save and display Saved");
+                   			});
+                   			
                    		},
                    		
                    		
@@ -333,8 +339,9 @@
             			            		if ( row.timesheet_count == 0 ) {
             			            			$deleteLink = '<ansi:hasPermission permissionRequired="PAYROLL_WRITE"><span class="action-link delete-link" data-id="'+row.rowID+'"><webthing:delete>Delete</webthing:delete></span></ansi:hasPermission>';
             			            		}
-            			            		var $actionLink = $viewLink + $editLink + $deleteLink;
-            			            		return $actionLink; */
+            			            		*/
+            			            		var $actionLink = $editLink;
+            			            		return $actionLink; 
             			            		
             			            	}
             			        	
@@ -369,6 +376,9 @@
                 			var $row = EMPLOYEE_IMPORT.employeeDict[$rowId];
                 			
                 			EMPLOYEE_IMPORT.localVars = $rowId;
+                			
+                			EMPLOYEE_IMPORT.savedEditEmployee = $row
+                			console.log(EMPLOYEE_IMPORT.savedEditEmployee);
                 			
                 			var terminationDisplay = $row['terminationDate'];
                 			if (terminationDisplay !== ""){
@@ -474,9 +484,11 @@
                    				$thisEmployee[$empFieldName] = $empValue;
                    			});
                    			
-                   			console.log("updated employee:")
-							console.log($thisEmployee);
                    			
+                   			
+                   			console.log("updated employee:")
+                   		
+                   		
                    			// put this employee into the global employee dictionary
                    			EMPLOYEE_IMPORT.employeeDict[$passThruData['rowId']] = $thisEmployee
                    			
@@ -627,6 +639,7 @@
    				<td><span class="form-label">Paycom Import File:</span></td>
    				<td><span class="employeeFile"></span></td>
    				<td rowspan="2"><input type="button" value="Cancel" name="cancelButton" class="action-button" /></td>
+   				<td rowspan="2"><input type="button" value="Save All" name="saveAllButton" class="action-button" /></td>
    				
     		</tr>
     	</table>
