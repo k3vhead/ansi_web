@@ -13,6 +13,8 @@ import java.util.Calendar;
 //import java.util.Arrays;
 //import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang3.time.DateUtils;
@@ -30,10 +32,14 @@ import com.ansi.scilla.common.payroll.common.PayrollUtils;
 import com.ansi.scilla.common.payroll.parser.NotATimesheetException;
 import com.ansi.scilla.common.payroll.parser.PayrollWorksheetEmployee;
 import com.ansi.scilla.common.payroll.parser.PayrollWorksheetParser;
+
+import com.ansi.scilla.common.payroll.common.PayrollWorksheetHeader;
+
 import com.ansi.scilla.common.payroll.validator.PayrollEmployeeValidator;
 import com.ansi.scilla.common.payroll.validator.PayrollErrorType;
 import com.ansi.scilla.common.payroll.validator.PayrollMessage;
 import com.ansi.scilla.common.payroll.validator.PayrollWorksheetValidator;
+
 import com.ansi.scilla.common.utils.ApplicationProperty;
 import com.ansi.scilla.common.utils.LocaleType;
 import com.ansi.scilla.web.common.request.RequestValidator;
@@ -69,6 +75,7 @@ public class TimesheetImportResponse extends MessageResponse  {
 	private String fileName;
 	private WebMessages webMessages = new WebMessages();
 	private NormalizedValues normal = new NormalizedValues();
+	private Map<String, HashMap<String, List<PayrollMessage>>> employeeValidationMessages;	
 	
 	
 		
@@ -117,38 +124,28 @@ public class TimesheetImportResponse extends MessageResponse  {
 		Division division = new Division();
 		division.setDivisionNbr(Integer.valueOf(this.division));
 		division.selectOne(conn);
-		
-		
-			
+					
 		ApplicationProperties maxExpenseProperty = ApplicationProperty.get(conn, ApplicationProperty.EXPENSE_MAX);
 		Double maxExpenseRate = maxExpenseProperty.getValueFloat().doubleValue();
 		PayrollMessage payrollMessage = null;
+
+		PayrollWorksheetHeader header = PayrollWorksheetValidator.validateHeader(conn, parser);
+		this.employeeValidationMessages = PayrollWorksheetValidator.validatePayrollEmployees(conn, header, parser);
 		
-		//EmployeeAlias employeeAlias = new EmployeeAlias();
+		for ( String key1 : this.employeeValidationMessages.keySet() ) {
+			System.out.println("Emp: " + key1);
+			HashMap<String, List<PayrollMessage>> rowMsgList = this.employeeValidationMessages.get(key1);					
+			for ( String key2 : rowMsgList.keySet() ) {
+				System.out.println("\tField " + key2);
+				for ( PayrollMessage msg : rowMsgList.get(key2)) {
+					System.out.println("\t\t" + msg.getErrorMessage().getErrorLevel().name() + "\t" + msg.getErrorMessage().getMessage());
+				}
+			}
+		}
 		
-		PayrollWorksheetValidator worksheetValidator = new PayrollWorksheetValidator(parser);
-		worksheetValidator.validate(conn);
-		
-		for ( PayrollWorksheetEmployee row : parser.getEmployeeRecordList() ) {
+		/*
+		for ( PayrollWorksheetEmployee row : employee ) {
 			if ( ! row.isBlankRow() ) {		
-				/*
-				try {
-					
-					PayrollEmployeeValidator employeeValidator = new PayrollEmployeeValidator(row,worksheetValidator.getDivisionId(), 0.20);
-					employeeValidator.validate(conn);
-					
-					System.out.println(employeeValidator);
-//					System.out.println(employeeValidator.validateMinimumGovtPay(conn, worksheetValidator.getDivisionId()));					
-										
-//					logger.log(Level.DEBUG, "validateRows : Couldn't find employee Code");					
-				} catch ( PayrollException pe) {
-					webMessages.addMessage("employee", "Employee Validation Error");
-				}
-				catch ( Exception e ) {
-					webMessages.addMessage("employeeCode", "Employee Code Not Found");
-				}
-				*/
-							
 				payrollMessage = TimesheetValidator.validateMinimumGovtPay(
 						division, 
 						Double.valueOf(row.getGrossPay()), 
@@ -173,6 +170,7 @@ public class TimesheetImportResponse extends MessageResponse  {
 				row.setErrorsFound(errorFound);
 			}
 		}
+			*/
 		
 	}
 
@@ -265,6 +263,10 @@ public class TimesheetImportResponse extends MessageResponse  {
 			
 		}			
 		return webMessagesStatus;		
+	}
+
+	public Map<String, HashMap<String, List<PayrollMessage>>> getEmployeeValidationMessages(){
+		return this.employeeValidationMessages;
 	}
 	
 	public String getCity() {
@@ -390,6 +392,7 @@ public class TimesheetImportResponse extends MessageResponse  {
 		public String getWeekEndingDisplay() {
 			return weekEndingDisplay;
 		}
+		
 		
 		
 	}
