@@ -1,26 +1,19 @@
-package com.ansi.scilla.web.payroll.servlet;
+package com.ansi.scilla.web.test.payroll.saveThisCode;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Enumeration;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.fileupload.FileItem;
 import org.apache.logging.log4j.Level;
 
-import com.ansi.scilla.common.payroll.common.PayrollWorksheetHeader;
 import com.ansi.scilla.common.payroll.parser.NotATimesheetException;
-import com.ansi.scilla.common.payroll.parser.PayrollWorksheetParser;
-import com.ansi.scilla.common.payroll.validator.PayrollMessage;
-import com.ansi.scilla.common.payroll.validator.PayrollWorksheetValidator;
-import com.ansi.scilla.common.utils.ErrorLevel;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
+import com.ansi.scilla.web.common.response.WebMessagesStatus;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
 //import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.utils.AppUtils;
@@ -50,43 +43,27 @@ public class TimesheetImportServlet extends AbstractServlet {
 			WebMessages webMessages = uploadRequest.validate(conn);
 			TimesheetImportResponse data = new TimesheetImportResponse();
 			
-			
+			data.setWebMessages(webMessages);
 			
 			if ( webMessages.isEmpty() ) {
 				try {
-					Map<String,HashMap<String,List<PayrollMessage>>> employeeMsgs = null;
-										
-					FileItem requestFile = uploadRequest.getTimesheetFile();
-					PayrollWorksheetParser parser = new PayrollWorksheetParser(requestFile.getName(), requestFile.getInputStream());
-					
-					PayrollWorksheetHeader header = PayrollWorksheetValidator.validateHeader(conn, parser);
-					if ( ! header.maxErrorLevel().equals(ErrorLevel.ERROR)) {
-						employeeMsgs = PayrollWorksheetValidator.validatePayrollEmployees(conn, header, parser);
-					}
-
-					data = new TimesheetImportResponse(conn, header, parser, employeeMsgs);
-					switch ( header.maxErrorLevel() ) {
-					case ERROR:
-						responseCode = ResponseCode.EDIT_FAILURE;
-						break;
-					case OK:
-						responseCode = ResponseCode.SUCCESS;
-						break;
-					case WARNING:
-						responseCode = ResponseCode.EDIT_WARNING;
-						break;
-					default:
-						throw new ServletException("Invalid validation error level: " + header.maxErrorLevel().name());
-					}
+					data = new TimesheetImportResponse(conn, uploadRequest);
+					// document isn't parsed until the response item is created 
+					// so validation must occur there. 
+					logger.log(Level.DEBUG, "TimesheetImportServlet: doPost - no error creating request");
+					WebMessagesStatus responseStatus = data.validate(conn);
+					responseCode = responseStatus.getResponseCode();
+					data.setWebMessages(responseStatus.getWebMessages());
 				} catch ( NotATimesheetException e) {
 					responseCode = ResponseCode.EDIT_FAILURE;
+					//String fName = new String(uploadRequest.getTimesheetFile().toString()); 
+//					String fName = new String(uploadRequest.getTimesheetFile().getName()); 
 					webMessages.addMessage(TimesheetImportRequest.TIMESHEET_FILE, "Not a Timesheet Worksheet");
 				}
 			} else {
 				responseCode = ResponseCode.EDIT_FAILURE;
 			}
 
-			data.setWebMessages(webMessages);
 			super.sendResponse(conn, response, responseCode, data);
 
 			conn.close();
@@ -95,6 +72,13 @@ public class TimesheetImportServlet extends AbstractServlet {
 		} catch (Exception e) {
 			throw new ServletException(e);
 		}		
+		
+		
+		Enumeration<String> parmNames =  request.getParameterNames();
+		while ( parmNames.hasMoreElements() ) {
+			String parmName = parmNames.nextElement();
+			logger.log(Level.DEBUG, parmName);
+		}
 	}
 
 }
