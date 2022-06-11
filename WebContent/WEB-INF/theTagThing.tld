@@ -326,6 +326,18 @@
 		<attribute><name>styleClass</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
 		<attribute><name>id</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
 	</tag>
+	
+	
+	<tag>
+		<name>ticketType</name>
+		<tagclass>com.ansi.scilla.web.tags.TicketTypeSelect</tagclass>
+		<bodycontent>empty</bodycontent>
+		<info>
+			Options for a select tag to choose a ticket type
+		</info>
+	</tag>
+	
+	
 </taglib>
 
 

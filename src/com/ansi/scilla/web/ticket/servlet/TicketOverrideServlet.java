@@ -30,6 +30,7 @@ import com.ansi.scilla.common.db.TaxRate;
 import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.common.invoice.InvoiceUtils;
 import com.ansi.scilla.common.jobticket.JobUtils;
+import com.ansi.scilla.common.jobticket.TicketType;
 import com.ansi.scilla.common.jobticket.TicketUtils;
 import com.ansi.scilla.common.utils.PropertyNames;
 import com.ansi.scilla.web.common.response.ResponseCode;
@@ -65,6 +66,7 @@ public class TicketOverrideServlet extends TicketServlet {
 	public static final String FIELDNAME_ACT_PRICE_PER_CLEANING = "actPricePerCleaning";
 	public static final String FIELDNAME_ACT_PO_NUMBER = "actPoNumber";
 	public static final String FIELDNAME_DIVISION_ID = "divisionId";
+	public static final String FIELDNAME_TICKET_TYPE = "ticketType";
 	
 	private final String MESSAGE_SUCCESS = "Success";
 	private final String MESSAGE_NOT_PROCESSED = "Not Processed";
@@ -82,6 +84,7 @@ public class TicketOverrideServlet extends TicketServlet {
 	private final String MESSAGE_MISSING_START_DATE = "Missing required value: start date";
 	private final String MESSAGE_MISSING_VALUE_PPC = "Missing required value: Actual Price Per Cleaning";
 	private final String MESSAGE_MISSING_VALUE_PO = "Missing required value: PO Number";
+	private final String MESSAGE_MISSING_TICKET_TYPE = "Missing required value: Ticket Type";
 	
 	
 	
@@ -437,6 +440,26 @@ public class TicketOverrideServlet extends TicketServlet {
 	}
 	
 	
+	public OverrideResult doTicketType(Connection conn, Ticket ticket, HashMap<String, String> values, SessionUser sessionUser) throws Exception {
+		logger.log(Level.DEBUG, "processing TicketType");
+		Boolean success = null;
+		String message = null;
+		
+		if ( values.containsKey(FIELDNAME_TICKET_TYPE) && ! StringUtils.isBlank(values.get(FIELDNAME_TICKET_TYPE))) {
+			String value = values.get(FIELDNAME_TICKET_TYPE);
+			TicketType ticketType = TicketType.valueOf(value);
+			ticket.setTicketType(ticketType.code());
+			success = true;
+			message = MESSAGE_SUCCESS;
+		} else {
+			success = false;
+			message = MESSAGE_MISSING_TICKET_TYPE;
+		}
+		
+		return new OverrideResult(success, message, ticket, true);
+	}
+	
+	
 	
 	private boolean isSameBillTo(Connection conn, Integer ticketId, Integer newInvoiceId) throws Exception {
 		try {
@@ -480,6 +503,7 @@ public class TicketOverrideServlet extends TicketServlet {
 		ACT_PRICE_PER_CLEANING("actPricePerCleaning","doPricePerCleaning", Permission.TICKET_OVERRIDE),
 		ACT_PO_NUMBER("actPoNumber","doPoNumber", Permission.TICKET),
 		DIVISION_ID("divisionId","doDivisionId",Permission.TICKET_OVERRIDE),
+		TICKET_TYPE("ticketType","doTicketType", Permission.TICKET_OVERRIDE),
 		;
 		
 		private final String id;
