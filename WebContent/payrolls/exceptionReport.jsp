@@ -87,6 +87,10 @@
 			td.highlight {
     			background-color: whitesmoke !important;
 			}
+			.red {
+  				color:#FF0000;
+  				font-weight:bold;
+			}
 			.background {
 				background-color: yellow;
 			}
@@ -116,6 +120,9 @@
         			$("#errorsOnlyCheckbox").click(function($event) {
         				$("#prompt-div select[name='companyCode']").change(); //if the checkbox is clicked, act as if company has been selected
         			});
+        			
+        			$redText = EXCEPTION_REPORT.makeItRed("test text", ["test help 1","test help 2"]);
+        			$("#testred").html($redText);
         		},
         		
         		
@@ -210,21 +217,6 @@
         			var $unknown = '<webthing:questionmark>Invalid</webthing:questionmark>';
         			
         			$("#exceptionReportTable").DataTable( {
-
-
-            			'rowCallback': function(row, data, index){
-            			  	if(data[6]= $no){
-            			    //	$(row).find('td:eq(1)').css('color', 'red');
-            			    	$(row).find('td:eq(4)').css('background-color', 'red');
-            			    }
-            			  	if(data[14]= 0){
-            			    //	$(row).find('td:eq(1)').css('color', 'red');
-            			    	$(row).find('td:eq(14)').css('background-color', 'red');
-            			    }
-            			  //  if(data[2].toUpperCase() == 'EE'){
-            			  //  	$(row).find('td:eq(2)').css('color', 'blue');
-            			   // }
-            			  },
             			"aaSorting":		[[3,'asc']],
             			"processing": 		true,
             	        "serverSide": 		true,
@@ -317,7 +309,6 @@
 	    			        				}
 	    			        				if ( row.union_member == 0 ) {
 	    			        					$value = $no;
-	    			        					$($no).addClass("background");
 	    			        				}
 	    			        			}
 	    			        			return $value;
@@ -343,6 +334,7 @@
     			        			if ( row.under_union_min_pay != null ) {
     			        				if ( row.under_union_min_pay == 1 ) {
     			        					$value = $errorFound;
+    			        					$(row.under_union_min_pay).addClass("background");
     			        					//row.under_union_min_pay.style.backgroundColor = "yellow";
     			        					//$(row.under_union_min_pay).css('background-color','yellow');
         			        				//	$(row.under_union_min_pay).find('td').css('background-color', 'red');
@@ -363,9 +355,6 @@
     			        			if ( row.under_govt_min_pay != null ) {
     			        				if ( row.under_govt_min_pay == 1 ) {
     			        					$value = $errorFound;
-    			        					row.under_govt_min_pay.style.backgroundColor = "yellow";
-    			        					$(this).css('background-color','yellow');
-        			        					$(this).find('td').css('background-color', 'red');
     			        				}
     			        				if ( row.under_govt_min_pay == 0 ) {
     			        					$value = $noErrorFound;
@@ -383,6 +372,7 @@
     			        			if ( row.excess_expense_pct != null ) {
     			        				if ( row.excess_expense_pct == 1 ) {
     			        					$value = $errorFound;
+    			        					$($errorFound).addClass("background");
     			        					//row.excess_expense_pct.style.backgroundColor = "yellow";
     			        					//$("excess_expense_pct").style.backgroundColor = "#90ee90";
         			        				//	$(this).find('td').css('background-color', 'red');
@@ -403,6 +393,7 @@
     			        			if ( row.excess_expense_claim != null ) {
     			        				if ( row.excess_expense_claim == 1 ) {
     			        					$value = $errorFound;
+    			        					$($errorFound).addClass("background");
     			        					//row.excess_expense_claim.style.backgroundColor = "yellow";
     			        					//$("excess_expense_claim").style.backgroundColor = "#90ee90";
         			        				//	$(this).find('td').css('background-color', 'red');
@@ -420,6 +411,7 @@
         			        			if ( row.ytd_excess_expense_pct != null ) {
         			        				if ( row.ytd_excess_expense_pct == 1 ) {
         			        					$value = $errorFound;
+	    			        					$($errorFound).addClass("background");
         			        					//row.ytd_excess_expense_pct.style.backgroundColor = "yellow";
     			        						//$(this).css('background-color','yellow');
             			        				//	$(this).find('td').css('background-color', 'red');
@@ -437,6 +429,7 @@
            			        			if ( row.ytd_excess_expense_claim != null ) {
            			        				if ( row.ytd_excess_expense_claim == 1 ) {
            			        					$value = $errorFound;
+	    			        					$($errorFound).addClass("background");
         			        					//row.ytd_excess_expense_claim.style.backgroundColor = "yellow";
         			        					//$(this).css('background-color','yellow');
             			        				//	$(this).find('td').css('background-color', 'red');
@@ -455,7 +448,21 @@
     			        			if(row.volume != null){return "$" + (parseFloat(row.volume).toFixed(2));}
 		            			} },
         			        	{ title: "Direct Labor", width:"5%", searchable:true,  searchFormat: "#.##", data: function ( row, type, set ) {
-    			        			if(row.direct_labor != null){return "$" + (parseFloat(row.direct_labor).toFixed(2));}
+    			        			if(row.direct_labor != null){
+    			        				var $value = "$" + (parseFloat(row.direct_labor).toFixed(2));
+    			        				var $bubbleHelp = []
+    			        				if ( row.under_union_min_pay != null && row.under_union_min_pay == 1 ) {
+    			        					$bubbleHelp.push("Under Union Min");
+    			        				}
+    			        				if ( row.under_govt_min_pay != null && row.under_govt_min_pay == 1 ) {
+    			        					$bubbleHelp.push("Under Government Min");
+    			        				}
+    			        				if ( $bubbleHelp.length > 0 ) {
+			        						$value = EXCEPTION_REPORT.makeItRed($value, $bubbleHelp);
+    			        				}
+
+    			        				return $value;
+    			        			}
 		            			} },
         			        	{ title: "YTD Direct Labor", width:"5%", searchable:true,  searchFormat: "#.##", data: function ( row, type, set ) {
     			        			if(row.ytd_direct_labor != null){return "$" + (parseFloat(row.ytd_direct_labor).toFixed(2));}
@@ -539,6 +546,13 @@
         			//} else {
         			//	$("#prompt-div .companyCodeErr").html($data.data.webMessages['companyCode'][0]);
         			//}
+        		},
+        		
+        		
+        		
+        		makeItRed : function($value, $bubbleHelp) {
+        			var $helptext = $bubbleHelp.join("<br />");
+        			return '<span class="red tooltip"><span class="tooltiptext">' + $helptext + '</span>' + $value + '</span>';
         		}
 
         		
@@ -558,6 +572,7 @@
    <tiles:put name="content" type="string">
     	<h1>Payroll Exception Report</h1> 
     	
+    	<div id="testred">xxx</div>
 		<div id="prompt-div">
 			<span class="err companyCodeErr"></span><br />
 	    	<select name="companyCode">
