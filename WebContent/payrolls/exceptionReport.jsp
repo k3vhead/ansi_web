@@ -87,6 +87,9 @@
 			td.highlight {
     			background-color: whitesmoke !important;
 			}
+			.red {
+  				background-color: red !important;
+			}
 			.background {
 				background-color: yellow;
 			}
@@ -210,16 +213,25 @@
         			var $unknown = '<webthing:questionmark>Invalid</webthing:questionmark>';
         			
         			$("#exceptionReportTable").DataTable( {
+					
+        				
+        				    "makeItRed": function( row, data, dataIndex ) {
+        				             if ( data[3] = "Aaron" ) {        
+        				         		$(row).addClass('red');
+        				     
+        				       }
+        				      
 
+        				    },
 
             			'rowCallback': function(row, data, index){
             			  	if(data[6]= $no){
             			    //	$(row).find('td:eq(1)').css('color', 'red');
-            			    	$(row).find('td:eq(4)').css('background-color', 'red');
+            			    //	$(row).find('td:eq(4)').css('background-color', 'red');
             			    }
             			  	if(data[14]= 0){
             			    //	$(row).find('td:eq(1)').css('color', 'red');
-            			    	$(row).find('td:eq(14)').css('background-color', 'red');
+            			    //	$(row).find('td:eq(14)').css('background-color', 'red');
             			    }
             			  //  if(data[2].toUpperCase() == 'EE'){
             			  //  	$(row).find('td:eq(2)').css('color', 'blue');
@@ -317,7 +329,7 @@
 	    			        				}
 	    			        				if ( row.union_member == 0 ) {
 	    			        					$value = $no;
-	    			        					$($no).addClass("background");
+	    			        					$(row.union_member).addClass("background");
 	    			        				}
 	    			        			}
 	    			        			return $value;
@@ -343,6 +355,7 @@
     			        			if ( row.under_union_min_pay != null ) {
     			        				if ( row.under_union_min_pay == 1 ) {
     			        					$value = $errorFound;
+    			        					$(row.under_union_min_pay).addClass("background");
     			        					//row.under_union_min_pay.style.backgroundColor = "yellow";
     			        					//$(row.under_union_min_pay).css('background-color','yellow');
         			        				//	$(row.under_union_min_pay).find('td').css('background-color', 'red');
@@ -363,9 +376,7 @@
     			        			if ( row.under_govt_min_pay != null ) {
     			        				if ( row.under_govt_min_pay == 1 ) {
     			        					$value = $errorFound;
-    			        					row.under_govt_min_pay.style.backgroundColor = "yellow";
-    			        					$(this).css('background-color','yellow');
-        			        					$(this).find('td').css('background-color', 'red');
+    			        					$($errorFound).addClass("background");
     			        				}
     			        				if ( row.under_govt_min_pay == 0 ) {
     			        					$value = $noErrorFound;
@@ -383,6 +394,7 @@
     			        			if ( row.excess_expense_pct != null ) {
     			        				if ( row.excess_expense_pct == 1 ) {
     			        					$value = $errorFound;
+    			        					$($errorFound).addClass("background");
     			        					//row.excess_expense_pct.style.backgroundColor = "yellow";
     			        					//$("excess_expense_pct").style.backgroundColor = "#90ee90";
         			        				//	$(this).find('td').css('background-color', 'red');
@@ -403,6 +415,7 @@
     			        			if ( row.excess_expense_claim != null ) {
     			        				if ( row.excess_expense_claim == 1 ) {
     			        					$value = $errorFound;
+    			        					$($errorFound).addClass("background");
     			        					//row.excess_expense_claim.style.backgroundColor = "yellow";
     			        					//$("excess_expense_claim").style.backgroundColor = "#90ee90";
         			        				//	$(this).find('td').css('background-color', 'red');
@@ -420,6 +433,7 @@
         			        			if ( row.ytd_excess_expense_pct != null ) {
         			        				if ( row.ytd_excess_expense_pct == 1 ) {
         			        					$value = $errorFound;
+	    			        					$($errorFound).addClass("background");
         			        					//row.ytd_excess_expense_pct.style.backgroundColor = "yellow";
     			        						//$(this).css('background-color','yellow');
             			        				//	$(this).find('td').css('background-color', 'red');
@@ -437,6 +451,7 @@
            			        			if ( row.ytd_excess_expense_claim != null ) {
            			        				if ( row.ytd_excess_expense_claim == 1 ) {
            			        					$value = $errorFound;
+	    			        					$($errorFound).addClass("background");
         			        					//row.ytd_excess_expense_claim.style.backgroundColor = "yellow";
         			        					//$(this).css('background-color','yellow');
             			        				//	$(this).find('td').css('background-color', 'red');
