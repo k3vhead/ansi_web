@@ -25,11 +25,16 @@ import com.ansi.scilla.web.payroll.request.TimesheetImportRequest;
 import com.ansi.scilla.web.payroll.response.TimesheetImportResponse;
 
 
+/**
+ * Previous version of this module. Moved here to save on git work if we need to bring something back.
+ * All is commented out because the syntax errors offend my sense of propriety
+ *
+ */
 public class TimesheetImportServlet extends AbstractServlet {
 
 	private static final long serialVersionUID = 1L;
 	public static final String REALM = "payroll/timesheetImport";
-		
+/*		
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		logger.log(Level.DEBUG, "TimesheetImportServlet: doPost");
@@ -80,5 +85,5 @@ public class TimesheetImportServlet extends AbstractServlet {
 			logger.log(Level.DEBUG, parmName);
 		}
 	}
-
+*/
 }
