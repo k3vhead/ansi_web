@@ -142,8 +142,8 @@
             	        
             	        "columnDefs": [
              	            { "orderable": false, "targets": -1 },
-            	            { className: "dt-head-left", "targets": [0,1,4,5,6] },
-            	            { className: "dt-body-center", "targets": [2,3,7] },
+            	            { className: "dt-head-left", "targets": [1,4,5] },
+            	            { className: "dt-body-center", "targets": [0,2,3,6] },
             	            { className: "dt-right", "targets": []}
             	         ],
             	        "paging": true,
@@ -162,9 +162,10 @@
     			            { width:"5%", title: "<bean:message key="field.label.state" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.state_name != null){return (row.state_name+"");}
     			            } },
-    			            { width:"5%", title: "<bean:message key="field.label.abbreviation" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
-    			            	if(row.abbreviation != null){return (row.abbreviation);}
-    			            } },
+    			            // Removing abbreviation because we'll do the same thing better with alias
+    			            //{ width:"5%", title: "<bean:message key="field.label.abbreviation" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            //	if(row.abbreviation != null){return (row.abbreviation);}
+    			            //} },
     			            { width:"10%", title: "<bean:message key="field.label.localeType" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
     			            	if(row.locale_type_id != null){return (row.locale_type_id+"");}
     			            } },
@@ -179,12 +180,16 @@
     				            	var $editLink = '<ansi:hasPermission permissionRequired="TAX_WRITE"><a href="#" class="editAction" data-id="'+row.locale_id+'" data-name="'+row.locale_id+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>&nbsp;';
     				            	var $aliasLink = '<span class="action-link alias-link" data-id="'+row.locale_id+'"><webthing:view>Alias</webthing:view></span>';
 									var $taxLink = '' //'<ansi:hasPermission permissionRequired="TAX_WRITE"><a href="taxRateLookup.html?id='+row.locale_id+'"><webthing:taxes>Taxes</webthing:taxes></a></ansi:hasPermission>&nbsp;';
+									var $deleteLink = '';
+									if ( row.can_delete == 1 ) {
+    				            		var $deleteLink = '<ansi:hasPermission permissionRequired="TAX_WRITE"><a href="#" class="deleteAction" data-id="'+row.locale_id+'" data-name="'+row.locale_id+'"><webthing:delete>Delete</webthing:delete></a></ansi:hasPermission>&nbsp;';
+									}
 
 //    		            			var $ticketData = 'data-id="' + row.locale_id + '"';
 //    			            		$printLink = '<ansi:hasPermission permissionRequired="TAX_READ"><i class="print-link fa fa-print" aria-hidden="true" ' + $localeData + '></i></ansi:hasPermission>'
 //    			            		var $claimLink = '';
 //    			            		
-    				            	$actionData = $editLink + $aliasLink + $taxLink;
+    				            	$actionData = $editLink + $aliasLink + $taxLink + $deleteLink;
     			            	}
     			            	return $actionData;
     			            } }],
@@ -201,6 +206,14 @@
     			            		var $localeId = $(this).attr("data-id");
     			            		LOCALELOOKUP.showAliasTable($localeId);
     			            	});
+    			            	$(".deleteAction").off("click");
+    			            	$(".deleteAction").click(function($clickevent) {
+    			            		var $localeId = $(this).attr("data-id");
+    			            		$("#confirm-save").attr("data-function","deleteLocale");
+    			            		$("#confirm-save").attr("data-id",$localeId);
+									$("#confirm-modal").dialog("open");
+
+    			            	});
     			            }
     			    } );
             	},
@@ -216,7 +229,7 @@
         				ANSI_UTILS.makeServerCall("DELETE", $url, {}, {200:LOCALELOOKUP.doConfirmAliasSuccess}, {});
         			} else if ( $function == "deleteLocale") {
         				var $localeId = $("#confirm-save").attr("data-id");
-        				var $url = "locale/" + $employeeCode;
+        				var $url = "locale/" + $localeId;
         				ANSI_UTILS.makeServerCall("DELETE", $url, {}, {200:LOCALELOOKUP.doConfirmLocaleSuccess}, {});
         			} else {
         				$("#confirm-modal").dialog("close");
@@ -240,7 +253,11 @@
         			$("#globalMsg").html("Success").show().fadeOut(3000);
         		},
         		
-        		
+        		doConfirmLocaleSuccess : function($data, $passthru) {
+        			$("#localeTable").DataTable().ajax.reload();
+        			$("#confirm-modal").dialog("close");
+        			$("#globalMsg").html("Success").show().fadeOut(3000);
+        		},
             	
 	            doFunctionBinding : function() {
 	    			$( ".editAction" ).on( "click", function($clickevent) {
@@ -733,6 +750,7 @@
     
 	    
     <div id="addLocaleForm">
+    	<input type="hidden" name="abbreviation" value="" />
     	<table class="ui-front">
     		<tr>
     			<td><span class="formHdr">ID</span></td>
@@ -747,12 +765,15 @@
     			<td><span class="formHdr">State Name</span></td>
     			<td><select name="stateName" id="stateName"><webthing:states /></select></td>
     			<td><span class="err" id="stateNameErr"></span></td>
-    		</tr>
+    		</tr>    		
+    		<%--
+    		Removing abbreviation because we'll do the same thing better with alias
     		<tr>
     			<td><span class="formHdr">Abbreviation</span></td>
     			<td><input type="text" name="abbreviation" /></td>
     			<td><span class="err" id="abbreviationErr"></span></td>
     		</tr>
+    		--%>
     		<tr>
     			<td><span class="formHdr">Locale Type</span></td>
     			<td><select name="localeTypeId" id="localeTypeId"></select></td>

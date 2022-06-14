@@ -120,6 +120,10 @@
         		 width:40px; 
 			}
 			*/
+
+			.highlight {
+  				background-color: yellow !important;
+			}
 			
 			#employee-modal #time-calcs .percentage {
 			    /* width: 120px; */
@@ -376,7 +380,8 @@
 	           			console.log("processUploadFailure");
 	           			$("#prompt-div .err").html("");
 	           			var fName = document.getElementById('timesheet-file').files[0].name;
-	           			$(".thinking").hide();		           				
+	           			$(".thinking").hide();		
+	           			$("#timesheet_processing").hide();
            				$("#prompt-div").show();
            				
        					$("#data-header .err").html("");
@@ -448,34 +453,34 @@
 	           			var $disp_state="";
 	           			var $disp_city="";
 
-	           			if(($data.data.normal.divisionId == null) && ($data.data.divisionId != null)){
+	           			if(($data.data.header.divisionId == null) && ($data.data.divisionId != null)){
 	           				$disp_divisionId= $data.data.divisionId;
 	           			} else {
-	           				$disp_divisionId= $data.data.normal.divisionId;
+	           				$disp_divisionId= $data.data.header.divisionId;
 	           			}
 	           			
-	           			if(($data.data.normal.operationsManagerName == null) && ($data.data.operationsManagerName != null)){
+	           			if(($data.data.header.operationsManagerName == null) && ($data.data.operationsManagerName != null)){
 	           				$disp_operationsManagerName= $data.data.operationsManagerName;
 	           			} else {
-	           				$disp_operationsManagerName= $data.data.normal.operationsManagerName;
+	           				$disp_operationsManagerName= $data.data.header.operationsManagerName;
 	           			}
 	           			
-	           			if(($data.data.normal.weekEnding == null) && ($data.data.weekEnding != null)){
+	           			if(($data.data.header.weekEnding == null) && ($data.data.weekEnding != null)){
 	           				$disp_weekEnding= $data.data.weekEnding;
 	           			} else {
-	           				$disp_weekEnding= $data.data.normal.weekEnding;
+	           				$disp_weekEnding= $data.data.header.weekEnding;
 	           			}
 	           			
-	           			if(($data.data.normal.state == null) && ($data.data.state != null)){
+	           			if(($data.data.header.state == null) && ($data.data.state != null)){
 	           				$disp_state= $data.data.state;
 	           			} else {
-	           				$disp_state= $data.data.normal.state;
+	           				$disp_state= $data.data.header.state;
 	           			}
 	           			
-	           			if(($data.data.normal.city == null) && ($data.data.city != null)){
+	           			if(($data.data.header.city == null) && ($data.data.city != null)){
 	           				$disp_city= $data.data.city;
 	           			} else {
-	           				$disp_city= $data.data.normal.city;
+	           				$disp_city= $data.data.header.city;
 	           			}
 	           				 
 	           			
@@ -619,6 +624,13 @@
 	           						var $rowNumber = $(this).attr('data-id');
 	           						TIMESHEET_IMPORT.showEmployeeModal($rowNumber, "edit");
 	           					});
+	           					//added 2022-06-07
+//      			            	for (var i = 0; i < $data.employeeRecordList.length; i++){                   				                 				
+//                        				if ($data.employeeRecordList[i].errorsFound){
+//                        					document.getElementById($data.employeeRecordList[i].rowId).classList.add("highlight");
+//                        				}
+//                        			} 
+	           					
 	           				}
 	           			});
 	           			$("#data-detail").show();
@@ -638,15 +650,15 @@
            				TIMESHEET_IMPORT.populateDataGrid($data);
 
            				/*
-           				$('select[name="divisionId"]').val($data.data.normal.divisionId);
+           				$('select[name="divisionId"]').val($data.data.header.divisionId);
 	           			$('input[name="operationsManagerName"]').val($data.data.operationsManagerName);           			
-	           			$('input[name="payrollDate"]').val($data.data.normal.weekEndingDisplay);
-	           			$('select[name="state"]').val($data.data.normal.state);
-	           			$('input[name="city"]').val($data.data.normal.city);
+	           			$('input[name="payrollDate"]').val($data.data.header.weekEndingDisplay);
+	           			$('select[name="state"]').val($data.data.header.state);
+	           			$('input[name="city"]').val($data.data.header.city);
 	           			$("#data-header .timesheetFile").html($data.data.fileName);
 	           			*/
 
-           				console.log($data.data.normal.divisionId);
+           				console.log($data.data.header.divisionId);
 	           			
 	           			
 	           			/*

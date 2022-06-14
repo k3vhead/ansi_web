@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.db.Locale;
+import com.ansi.scilla.common.db.LocaleAlias;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
@@ -93,6 +94,7 @@ public class LocaleDetailServlet extends AbstractServlet {
 				LocaleRequest localeRequest = new LocaleRequest();
 				AppUtils.json2object(jsonString, localeRequest);
 								
+				logger.log(Level.DEBUG, localeRequest);
 				if(ansiURL.getId() == null) {
 					//this is add
 					webMessages = localeRequest.validateAdd(conn);
@@ -187,7 +189,46 @@ public class LocaleDetailServlet extends AbstractServlet {
 	protected void doDelete(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		
-		super.sendNotAllowed(response);
+		AnsiURL ansiURL = null;
+		try {
+			ansiURL = new AnsiURL(request, REALM, (String[])null); 
+			AppUtils.validateSession(request, Permission.TAX_WRITE);
+			Connection conn = null;
+			LocaleResponse localeResponseResponse = null;
+			try {
+				conn = AppUtils.getDBCPConn();
+				
+				try {
+					LocaleAlias localeAlias = new LocaleAlias();
+					localeAlias.setLocaleId(ansiURL.getId());
+					localeAlias.delete(conn);
+				} catch  ( RecordNotFoundException e ) {
+					// we don't care
+				}
+				
+				try {
+					Locale locale = new Locale();
+					locale.setLocaleId(ansiURL.getId());
+					locale.delete(conn);
+				} catch ( RecordNotFoundException e) {
+					// we don't care here either
+				}
+				
+				localeResponseResponse = new LocaleResponse();
+				super.sendResponse(conn, response, ResponseCode.SUCCESS, localeResponseResponse); 
+				
+			} catch ( Exception e) {
+				AppUtils.logException(e);
+				throw new ServletException(e);
+			} finally {
+				AppUtils.closeQuiet(conn);
+			}
+		} catch (ResourceNotFoundException e1) {
+			AppUtils.logException(e1);
+			super.sendNotFound(response);
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
+			super.sendForbidden(response);
+		}		
 		
 	}
 	

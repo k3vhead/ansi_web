@@ -73,6 +73,7 @@
         	}
         	.action-link {
         		text-decoration:none;
+        		cursor: pointer;
         	}
 			.dataTables_wrapper {
 				padding-top:10px;
@@ -105,6 +106,7 @@
                    		view : '<webthing:view styleClass="details-control">Details</webthing:view>',
                    		employeeDict : {},
                    		pageVars : {},
+                   		savedEditEmployee : {},
                    			
                    			
                    		init : function() {
@@ -142,6 +144,14 @@
                    				$("#employee-file").val(null);
                    				
                    			});
+                   			$("#display-div input[name='saveAllButton']").click(function($event){
+                   				alert("This will save and display Saved");
+                   				console.log("save all event");
+                   				$.each( EMPLOYEE_IMPORT.employeeDict , function($employeeIndex, $employeeValue) {
+                   					if ($employeeValue.recordMatches == false){ console.log($employeeIndex);}
+                   				});
+                   			});
+                   			
                    		},
                    		
                    		
@@ -206,7 +216,10 @@
         	        			'notes' : $("#employee-modal input[name='notes']").val(),
                 			}
                 			
-                			var $passThruData = {'rowId':$("#employee-modal input[name='rowId']").val()};
+                			var $passThruData = {
+                					'rowId':$("#employee-modal input[name='rowId']").val(),
+                					
+                			};
                 			
                 			var today = new Date();
                 			var dateToday = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
@@ -219,6 +232,8 @@
                 			$outbound.unionRate = $outbound.unionRate.replace('$', '');
                 			console.log($url);
                 			console.log($outbound);
+                			console.log('passthrough');
+                			console.log($passThruData);
            					
                 			ANSI_UTILS.makeServerCall("post", $url, JSON.stringify($outbound),{200:EMPLOYEE_IMPORT.processUploadChanges},  $passThruData);
                 		},
@@ -328,8 +343,9 @@
             			            		if ( row.timesheet_count == 0 ) {
             			            			$deleteLink = '<ansi:hasPermission permissionRequired="PAYROLL_WRITE"><span class="action-link delete-link" data-id="'+row.rowID+'"><webthing:delete>Delete</webthing:delete></span></ansi:hasPermission>';
             			            		}
-            			            		var $actionLink = $viewLink + $editLink + $deleteLink;
-            			            		return $actionLink; */
+            			            		*/
+            			            		var $actionLink = $editLink;
+            			            		return $actionLink; 
             			            		
             			            	}
             			        	
@@ -364,6 +380,9 @@
                 			var $row = EMPLOYEE_IMPORT.employeeDict[$rowId];
                 			
                 			EMPLOYEE_IMPORT.localVars = $rowId;
+                			
+                			EMPLOYEE_IMPORT.savedEditEmployee = $row
+                			console.log(EMPLOYEE_IMPORT.savedEditEmployee);
                 			
                 			var terminationDisplay = $row['terminationDate'];
                 			if (terminationDisplay !== ""){
@@ -446,12 +465,9 @@
                    		
                    		processUploadChanges : function($data, $passThruData){
                    			console.log("processUploadChanges");
-                   			console.log($passThruData);
-                   			console.log($data);
                    			
-                   			var fixedNum = $data.data.employee.unionRate;
-                   			console.log("fixedNum");
-                   			console.log($data.data.employee.unionRate);
+                   			
+                   			var fixedNum = $data.data.employee.unionRate;                   			
                    			fixedNum = Number(fixedNum).toFixed(2);
                    			if ($data.data.employee.unionRate == null ){
                    				$data.data.employee.unionRate = "";
@@ -459,20 +475,24 @@
                    			else {
                    				$data.data.employee.unionRate = "$" + fixedNum.toString();
                    			}
-                   			  if ($data.data.employee.unionMember == "0"){
-               				$data.data.employee.unionMember = "";
+                   			
+                   			if ($data.data.employee.unionMember == "0"){
+               					$data.data.employee.unionMember = "";
                				}
-               			else {$data.data.employee.unionMember = "Yes";
-               			}  
+               				else {
+               					$data.data.employee.unionMember = "Yes";
+               				}  
                    			// create a dictionary for this empoloyee
                    			var $thisEmployee = {};
                    			$.each( $data.data.employee, function($empFieldName, $empValue) {
                    				$thisEmployee[$empFieldName] = $empValue;
                    			});
                    			
-                   			console.log("updated employee:")
-							console.log($thisEmployee);
                    			
+                   			
+                   			console.log("updated employee:")
+                   		
+                   		
                    			// put this employee into the global employee dictionary
                    			EMPLOYEE_IMPORT.employeeDict[$passThruData['rowId']] = $thisEmployee
                    			
@@ -623,6 +643,7 @@
    				<td><span class="form-label">Paycom Import File:</span></td>
    				<td><span class="employeeFile"></span></td>
    				<td rowspan="2"><input type="button" value="Cancel" name="cancelButton" class="action-button" /></td>
+   				<td rowspan="2"><input type="button" value="Save All" name="saveAllButton" class="action-button" /></td>
    				
     		</tr>
     	</table>
