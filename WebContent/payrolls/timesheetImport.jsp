@@ -1,175 +1,174 @@
 <%@ page contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"%>
+	pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
-<%@ taglib uri="/WEB-INF/c.tld" prefix="c" %>
-<%@ taglib uri="/WEB-INF/sql.tld" prefix="sql" %>
-<%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt" %>
-<%@ taglib uri="/WEB-INF/struts-html.tld"  prefix="html"  %>
-<%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic" %>
-<%@ taglib uri="/WEB-INF/struts-bean.tld"  prefix="bean"  %>
-<%@ taglib uri="/WEB-INF/struts-tiles.tld" prefix="tiles" %>
-<%@ taglib tagdir="/WEB-INF/tags/webthing" prefix="webthing" %>
-<%@ taglib uri="/WEB-INF/theTagThing.tld" prefix="ansi" %>
+<%@ taglib uri="/WEB-INF/c.tld" prefix="c"%>
+<%@ taglib uri="/WEB-INF/sql.tld" prefix="sql"%>
+<%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt"%>
+<%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
+<%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic"%>
+<%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
+<%@ taglib uri="/WEB-INF/struts-tiles.tld" prefix="tiles"%>
+<%@ taglib tagdir="/WEB-INF/tags/webthing" prefix="webthing"%>
+<%@ taglib uri="/WEB-INF/theTagThing.tld" prefix="ansi"%>
 
 <tiles:insert page="../layout.jsp" flush="true">
 
-    <tiles:put name="title" type="string">
+	<tiles:put name="title" type="string">
 		Payroll Timesheet Import
     </tiles:put>
-        
-    <tiles:put name="headextra" type="string">
-       	<link rel="stylesheet" href="css/lookup.css" />
-    	<link rel="stylesheet" href="css/ticket.css" />
-    	<link rel="stylesheet" href="css/document.css" />
-    	<script type="text/javascript" src="js/ansi_utils.js"></script>
-    	<script type="text/javascript" src="js/addressUtils.js"></script>
-    	<script type="text/javascript" src="js/lookup.js"></script> 
-    	<script type="text/javascript" src="js/document.js"></script> 
-    
-        <style type="text/css">
-	        #data-file{
-	        	/* margin-bottom : 20px; */
-	        	display:none;
-	        }
-			#data-header {
-				display:none;
-			}		
-			#employee-modal {
-				display:none;
-			}
 
-			#employee-modal #employee-data .employeeCode {
-				width : 40px;
-			}
- 
-			#employee-modal .productivity{
-				text-aligh : right;
-			}
+	<tiles:put name="headextra" type="string">
+		<link rel="stylesheet" href="css/lookup.css" />
+		<link rel="stylesheet" href="css/ticket.css" />
+		<link rel="stylesheet" href="css/document.css" />
+		<script type="text/javascript" src="js/ansi_utils.js"></script>
+		<script type="text/javascript" src="js/addressUtils.js"></script>
+		<script type="text/javascript" src="js/lookup.js"></script>
+		<script type="text/javascript" src="js/document.js"></script>
 
-			#employee-modal .total-hours{
-				text-aligh : right;
-			}
+		<style type="text/css">
+#data-file {
+	/* margin-bottom : 20px; */
+	display: none;
+}
 
-			/* #employee-data */
-			#employee-modal #employee-data {
-				margin-bottom : 20px;
-			 	 /* border : solid red 3px; */ 
-			}
+#data-header {
+	display: none;
+}
 
-			#employee-modal #employee-data .spacer {
-				width : *;
-			}
+#employee-modal {
+	display: none;
+}
 
-			#employee-modal #employee-data .employeeCodeSpacer {
-				width : 45px;
-			}
+#employee-modal #employee-data .employeeCode {
+	width: 40px;
+}
 
-			#employee-modal #employee-data .row-number-label{
-				margin-left : 20px;
-			}
-												
-			#employee-modal #time-calcs .row-label{
-			   width : 40px;
-			   /* border : dashed red 3px; */  
-			}
-			
-			#employee-modal #time-calcs .err{
-			   
-			   /* border : dashed blue 1px; */  
-			}
-			
-			#employee-modal .row-label-col-2{
-			   width : 100px;
-			   /* border : dashed red 3px;*/  
-			}
-																				
-			#employee-modal #time-calcs .spacer-mid{
-				width : 15px;
-			 	/* border : dashed red 3px; */ 
-			}
-																	/* modal hours area - time calcs*/
-			#employee-modal #time-calcs{
-			 	width: 585px;			 	
-			 	/* border : solid red 1px; */ 
-			}		
-			#employee-modal #time-calcs td.hours {
-        		width:85px;
-			}
-			#employee-modal #time-calcs td.hours input.hours {
-				width: 75px; 
-				text-align: right; 
-			}
+#employee-modal .productivity {
+	text-aligh: right;
+}
 
-			#employee-modal #time-calcs td.hoursErr {
-        		width:40px;
-			}			
+#employee-modal .total-hours {
+	text-aligh: right;
+}
 
-																	/* modal money fields area - time calcs*/
-			td.money {
-        		width:  100px;
-        		/* border: 1px black solid; */
-			}
+/* #employee-data */
+#employee-modal #employee-data {
+	margin-bottom: 20px;
+	/* border : solid red 3px; */
+}
 
-			#employee-modal #time-calcs input.money {
-			    width: 80px;
-			    text-align: right;
-			}
-			/*
+#employee-modal #employee-data .spacer {
+	width: *;
+}
+
+#employee-modal #employee-data .employeeCodeSpacer {
+	width: 45px;
+}
+
+#employee-modal #employee-data .row-number-label {
+	margin-left: 20px;
+}
+
+#employee-modal #time-calcs .row-label {
+	width: 40px;
+	/* border : dashed red 3px; */
+}
+
+#employee-modal #time-calcs .err {
+	/* border : dashed blue 1px; */
+	
+}
+
+#employee-modal .row-label-col-2 {
+	width: 100px;
+	/* border : dashed red 3px;*/
+}
+
+#employee-modal #time-calcs .spacer-mid {
+	width: 15px;
+	/* border : dashed red 3px; */
+}
+/* modal hours area - time calcs*/
+#employee-modal #time-calcs {
+	width: 585px;
+	/* border : solid red 1px; */
+}
+
+#employee-modal #time-calcs td.hours {
+	width: 85px;
+}
+
+#employee-modal #time-calcs td.hours input.hours {
+	width: 75px;
+	text-align: right;
+}
+
+#employee-modal #time-calcs td.hoursErr {
+	width: 40px;
+}
+
+/* modal money fields area - time calcs*/
+td.money {
+	width: 100px;
+	/* border: 1px black solid; */
+}
+
+#employee-modal #time-calcs input.money {
+	width: 80px;
+	text-align: right;
+}
+/*
 			#employee-modal #time-calcs td.moneyErr {
         		 width:40px; 
 			}
 			*/
+.highlight {
+	background-color: yellow !important;
+}
 
-			.highlight {
-  				background-color: yellow !important;
-			}
-			
-			#employee-modal #time-calcs .percentage {
-			    /* width: 120px; */
-			    text-align: right; 
-			    padding-right: 20px;
-			    /* padding-right: 20px;*/			    
-			}			
-			/*
+#employee-modal #time-calcs .percentage {
+	/* width: 120px; */
+	text-align: right;
+	padding-right: 20px;
+	/* padding-right: 20px;*/
+}
+/*
 			#employee-modal #time-calcs td.percentageErr {
         		width:40px;
 			}
 			
-			*/					
-			#employee-modal #time-calcs input.percentage {
-			    width: 80px;
-			    text-align: right;
-			    padding-right: 20px;
-			}
-			#employee-modal #time-calcs span.productivity {
-			    text-align: right;
-			    padding-right: 20px;
-			}
-			
-			#employee-modal #time-calcs td.totalHours {
-			    /* width: 120px; */
-			    text-align: right; 
-			    padding-right: 20px;			    
-			}			
+			*/
+#employee-modal #time-calcs input.percentage {
+	width: 80px;
+	text-align: right;
+	padding-right: 20px;
+}
 
-			
-						
+#employee-modal #time-calcs span.productivity {
+	text-align: right;
+	padding-right: 20px;
+}
 
-			
-			/* duplicate rule
+#employee-modal #time-calcs td.totalHours {
+	/* width: 120px; */
+	text-align: right;
+	padding-right: 20px;
+}
+
+/* duplicate rule
 			#employee-modal #time-calcs td.money input.money {
 				width: 100%; 
 				text-align: right; 
 			}
 			*/
-			
-			
-			/*prod-calcs] */
-			
-			/* modal productivity and expense area */ 
-			
-			/* eliminated div 
+
+/*prod-calcs] */
+
+/* modal productivity and expense area */
+
+/* eliminated div 
 			#employee-modal #prod-calcs td.money {
         		width:90px;
 			}
@@ -182,67 +181,79 @@
 			}
 			
 			*/
-			
-			#filter-container {
-        		width:402px;
-        		float:right;
-        	}
-			
-			.col-heading{
-				text-align: left;
-				font-weight: bold;
-			}
-			#organization-display {
-				display:none;
-			}
-			#organization-display table {
-				width:100%;
-				border:solid 1px #404040;
-			}
-				#organization-display th {
-					text-align:left;
-				}
-			#organization-edit table {
-				width:100%;
-				border:solid 1px #404040;
-			}
-			#organization-edit th {
-				text-align:left;
-			}
-			.action-link {
-				text-decoration:none;
-				cursor:pointer;
-			}
-			.dataTables_wrapper {
-				padding-top:10px;
-			}	
-			.details-control {
-				cursor:pointer;
-			}
-			.form-label {
-				font-weight:bold;
-				white-space: nowrap;
-			}
-			.org-status-change {
-				display:none;
-				cursor:pointer;
-			}
-			.view-link {
-				color:#404040;
-			}
-			.workingBox {
-				width:20px;
-				display:inline-block;
-			}
-			.working {
-				display:none;
-			}
-			.thinking {
-				display:none;
-			}
-				
-        </style>
-        <script type="text/javascript">    
+#filter-container {
+	width: 402px;
+	float: right;
+}
+
+.col-heading {
+	text-align: left;
+	font-weight: bold;
+}
+
+#organization-display {
+	display: none;
+}
+
+#organization-display table {
+	width: 100%;
+	border: solid 1px #404040;
+}
+
+#organization-display th {
+	text-align: left;
+}
+
+#organization-edit table {
+	width: 100%;
+	border: solid 1px #404040;
+}
+
+#organization-edit th {
+	text-align: left;
+}
+
+.action-link {
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.dataTables_wrapper {
+	padding-top: 10px;
+}
+
+.details-control {
+	cursor: pointer;
+}
+
+.form-label {
+	font-weight: bold;
+	white-space: nowrap;
+}
+
+.org-status-change {
+	display: none;
+	cursor: pointer;
+}
+
+.view-link {
+	color: #404040;
+}
+
+.workingBox {
+	width: 20px;
+	display: inline-block;
+}
+
+.working {
+	display: none;
+}
+
+.thinking {
+	display: none;
+}
+</style>
+		<script type="text/javascript">    
 	       	$(document).ready(function(){
 	           	;TIMESHEET_IMPORT = {
 	           		statusIsGood : '<webthing:checkmark>No Errors</webthing:checkmark>',
@@ -376,8 +387,10 @@
 		                    }
 		              	}).data('ui-autocomplete');	            		           			
 	           		},	           		           		           		
-	           		processUploadFailure : function($data) {
-	           			console.log("processUploadFailure");
+	           		DisplayHeaderAndHeaderMessages : function($data) {
+						// this displays globally scoped warming 
+						// regarding the file selected to be uploaded]	           			
+						console.log("DisplayHeaderAndHeaderMessages");
 	           			$("#prompt-div .err").html("");
 	           			var fName = document.getElementById('timesheet-file').files[0].name;
 	           			$(".thinking").hide();		
@@ -388,30 +401,15 @@
            				var $fileMessages = $data.data.webMessages.timesheetFile;
            				if ( $fileMessages == null ) {
            					$("#prompt-div").hide();
-           					TIMESHEET_IMPORT.processUploadWarning($data);
-           					TIMESHEET_IMPORT.displayHeaderData($data);
+           					// this was a recursive call.. 
+           					// TIMESHEET_IMPORT.processUploadWarning($data);
+           					TIMESHEET_IMPORT.displayHeaderData($data);	           					
            					TIMESHEET_IMPORT.populateDataGrid($data);           					
            				} else {           					
            					$("#prompt-div .timesheetFileErr").html($fileMessages[0]).show().fadeOut(10000);
-	   	           			 //var $el = $('#timesheet-file');
-	   	                     //$el.wrap('<form>').closest('form').get(0).reset();
-	   	                     //$el.unwrap();	   	                     
-           				}
-           				
-						           				           				
-	           		},
-	           		
+           				}           										           				           				
+	           		},	           		
 	           		processUploadWarning : function($data) {
-	           			console.log("processUploadWarning");
-	           			
-	           			$("#data-header").show();
-	           			$("#file-header-data .err").html("");
-	           			$.each($data.data.webMessages, function($index, $value) {
-	           				var $destination = "#file-header-data ." + $index + "Err";
-	           				var $message = $value[0];
-	           				console.log($destination + " " + $message);
-	           				$($destination).html($message);
-	           			});	           			      				           				
 	           		},
 	           		           
 	           		initializeDisplay: function(){
@@ -446,18 +444,21 @@
            
 	           		},	      
 	           		displayHeaderData : function($data) {
-	           			console.log("displayHeaderData");
+	           			console.log("function : displayHeaderData");
 	           			var $disp_divisionId="";
 	           			var $disp_operationsManagerName="";
 	           			var $disp_weekEnding="";
 	           			var $disp_state="";
 	           			var $disp_city="";
 
-	           			if(($data.data.header.divisionId == null) && ($data.data.divisionId != null)){
-	           				$disp_divisionId= $data.data.divisionId;
+           				$disp_divisionId = $data.data.header.division.divisionDisplay;
+
+           				/*
+           				if(($data.data.header.division.divisionDisplayDivision == null) && ($data.data.division != null)){
 	           			} else {
 	           				$disp_divisionId= $data.data.header.divisionId;
 	           			}
+           				*/
 	           			
 	           			if(($data.data.header.operationsManagerName == null) && ($data.data.operationsManagerName != null)){
 	           				$disp_operationsManagerName= $data.data.operationsManagerName;
@@ -492,12 +493,29 @@
            				+	"\n disp_state=" +  $disp_state 
            				+	"\n disp_city=" +  $disp_city);
 	           				           		
-	           			$('select[name="divisionId"]').val($disp_divisionId)
+	           			// Dave, I don't know why this doesn't work.. 
+	           			$('select[name="divisionId"]').text($disp_divisionId);
+	           			$('select[name="divisionId"]').val("Test");
+	           				           			
+	           			
 	           			$('input[name="operationsManagerName"]').val($disp_operationsManagerName);           			
 	           			$('input[name="payrollDate"]').val($formattedWeekendingDate);
 	           			$('select[name="state"]').val($disp_state);
 	           			$('input[name="city"]').val($disp_city);
-	           			$("#data-header .timesheetFile").html($data.data.fileName);	           				           		
+	           			$("#data-header .timesheetFile").html($data.data.fileName);	       
+	           			
+	           			// Display File Header Errors
+	           			console.log("function : displayHeaderData : Displaying Header Errors");	           			
+	           			//$("#data-header").show();
+
+	           			$("#file-header-data .err").html("");
+	           			
+	           			$.each($data.data.webMessages, function($index, $value) {
+	           				var $destination = "#file-header-data ." + $index + "Err";
+	           				var $message = $value[0];
+	           				console.log($destination + " " + $message);
+	           				$($destination).html($message);
+	           			});	           			      				           				
 	           		},
 	           		
 	           		
@@ -679,8 +697,9 @@
 	           			var formData = new FormData();
 	           			
 	           			formData.append('timesheetFile',file, fileName);
-						console.log("openFile kjw Selected File was : " + file);
-	           			console.log("openFile kjw Selected File was : " + fileName);
+						console.log("function : openFile : Selected File was : " + file);
+	           			console.log("function : openFile : Selected fileName was : " + fileName);
+	           			
 	           			//formData.append('divisionId', $("#prompt-div select[name='divisionId']").val());
 	           			//formData.append('payrollDate', $("#prompt-div input[name='payrollDate']").val());
 	           			//formData.append('state', $("#prompt-div select[name='state']").val());
@@ -692,16 +711,20 @@
 	           			xhr.onload = function() {
 	           				if ( xhr.status == 200 ) {
 	           					var $data = JSON.parse(this.response);
+	           					console.log("Data response data returned looks like this.");
+	           					console.log($data);
 	           					$("#data-header .err").html("");
-	           					if ( $data.responseHeader.responseCode == "EDIT_FAILURE") {
-	           						TIMESHEET_IMPORT.processUploadFailure($data);
-	           					} else if ( $data.responseHeader.responseCode == "EDIT_WARNING" ) {
-		           						TIMESHEET_IMPORT.processUploadWarning($data);
-		           						TIMESHEET_IMPORT.processUploadSuccess($data); 
-		           						console.log($data.data.Division);  
-	           					} else if ( $data.responseHeader.responseCode == "SUCCESS" ) {
+	           					console.log("function : openFile : $data.responseHeader.responseCode --> " + $data.responseHeader.responseCode)
+	           					if ( $data.responseHeader.responseCode != "SUCCESS") {
+	           						if(($data.data.webMessages==null) || ($data.data.webMessages.length == 0)){
+	           							// process header messages
+	           							TIMESHEET_IMPORT.DisplayHeaderAndHeaderMessages($data);
+	           						} else {
+	           							// process web messages
+	    	               				ANSI_UTILS.showWarnings("timesheet_warnings", $data.data.webMessages);
+	           						}
+	           					} else if ( $data.responseHeader.responseCode == "SUCCESS" ) {	           						
 	           						TIMESHEET_IMPORT.processUploadSuccess($data);
-	           						console.log($data.data.Division);           						
 	           					} else {
 	           						$("#globalMsg").html("Invalid response code " + $data.responseHeader.responseCode + ". Contact Support");
 	           					}
@@ -731,7 +754,7 @@
 	        				open: function(event, ui) {
 	        					$(".ui-dialog-titlebar-close", ui.dialog | ui).show();
 	        				},
-	        				buttons: [
+	        				buttons: [ 
 	        					{
 	        						id:  "employee-model-cancel-button",
 	        						click: function($event) {
@@ -744,7 +767,7 @@
 	        						}
 	        					}
 	        				]
-	        			});
+	        				});
 	        			$("#employee-modal").dialog("open");
 	        			$("#employee-model-cancel-button").button('option', 'label', 'Cancel');
 	        			$("#employee-model-continue-button").button('option', 'label', 'Continue');
@@ -975,85 +998,97 @@
 	           	TIMESHEET_IMPORT.init();
 	            	
 	        });        		
-        </script>        
-    </tiles:put>
-    
-    <tiles:put name="content" type="string">
-    	<h1>Payroll Timesheet Import</h1> 
-    	<div id="prompt-div">
-    		<!-- <form id="file-selection" > -->
-    		<form id="file-selection" method="post" enctype="multipart/form-data" >
-	    		<table class="prompt">
-	    			<tr>
-	    				<td class="col1" id="file-picker-label"> 	<span 	class="form-label">Payroll File:						</span>		</td>
-	    				<td class="col2" id="file-picker"> 			<input 	type="file" 	id="timesheet-file" name="files[]" />				</td>
-	    				<td class="col3" id="open-button-cell"> 	<input 	type="button" 	id="open-button"	value="Open"  /> 				</td>    				
-	    				<td class="col4" id="file-picker-err">		<span 	class="timesheetFileErr err">							</span> 	</td>
-	    			</tr>
-	    		</table>
-	    	</form>
-    	</div>
- 		<div class="thinking"><webthing:thinking style="width:100%" /></div>
+        </script>
+	</tiles:put>
+
+	<tiles:put name="content" type="string">
+		<h1>Payroll Timesheet Import</h1>
+		<div id="prompt-div">
+			<!-- <form id="file-selection" > -->
+			<form id="file-selection" method="post" enctype="multipart/form-data">
+				<table class="prompt">
+					<tr>
+						<td class="col1" id="file-picker-label"><span
+							class="form-label">Payroll File: </span></td>
+						<td class="col2" id="file-picker"><input type="file"
+							id="timesheet-file" name="files[]" /></td>
+						<td class="col3" id="open-button-cell"><input type="button"
+							id="open-button" value="Open" /></td>
+						<td class="col4" id="file-picker-err"><span
+							class="timesheetFileErr err"> </span></td>
+					</tr>
+				</table>
+			</form>
+		</div>
+		<div class="thinking">
+			<webthing:thinking style="width:100%" />
+		</div>
 
 
-  		<div id="data-header">
+		<div id="data-header">
 			<table id="data-file">
-    			<tr>			
-	  				<td id="payroll-file-label" >		
-	  					<span class="form-label">Currently Viewing Payroll File :</span>
-	  					<span class="timesheetFile"></span>
-	  				</td>
-    			</tr>  	
-    		</table>
+				<tr>
+					<td id="payroll-file-label"><span class="form-label">Currently
+							Viewing Payroll File :</span> <span class="timesheetFile"></span></td>
+				</tr>
+			</table>
 			<table id="file-header-data">
-    			<tr class="label-row">
-    				<td class="col1" id="division-label" >  			<span class="form-label">Division			</span>   	</td>
-    				<td class="col2" id="operations-manager-label" > 	<span class="form-label">Operations Manager	</span>		</td>
-    				<td class="col3" id="week-ending-label" >			<span class="form-label">Week Ending		</span> 	</td>
-    				<td class="col4" id="state-label" > 				<span class="form-label">State				</span>		</td>
-    				<td class="col5" id="city-label" >					<span class="form-label">City/Jurisdiction	</span> 	</td>
-    				<td class="col6" id="payroll-file-label" >			<span class="form-label">Payroll File		</span> 	</td>
-    				<td class="col7">									<span class="form-label">					</span>		</td>
-    			</tr>
-			    <tr>
-    				<td class="col1">
-    					<span class="divisionId">
-    						<select name="divisionId">
+				<tr class="label-row">
+					<td class="col1" id="division-label"><span class="form-label">Division
+					</span></td>
+					<td class="col2" id="operations-manager-label"><span
+						class="form-label">Operations Manager </span></td>
+					<td class="col3" id="week-ending-label"><span
+						class="form-label">Week Ending </span></td>
+					<td class="col4" id="state-label"><span class="form-label">State
+					</span></td>
+					<td class="col5" id="city-label"><span class="form-label">City/Jurisdiction
+					</span></td>
+					<td class="col6" id="payroll-file-label"><span
+						class="form-label">Payroll File </span></td>
+					<td class="col7"><span class="form-label"> </span></td>
+				</tr>
+				<tr>
+					<td class="col1"><span class="divisionId"> <select
+							name="divisionId">
 								<option value=""></option>
-								<ansi:divisionSelect format="select"/>
-							</select>
-    					</span>
-    				</td>
-						<!--								
+								<ansi:divisionSelect format="select" />
+						</select>
+					</span></td>
+					<!--								
     					<input type="text" class="division" 				name="divisionId"				tabindex="1" />
-    					-->								
-    				<td class="col2"><span class="operationsManagerName">	<input type="text" class="operationsManagerName" 	name="operationsManagerName"	tabindex="2" />					</span></td>
-    				<td class="col3"><span class="payrollDate">				<input type="date" class="payrollDate" 				name="payrollDate"				tabindex="3" />							</span></td>
+    					-->
+					<td class="col2"><span class="operationsManagerName"> <input
+							type="text" class="operationsManagerName"
+							name="operationsManagerName" tabindex="2" />
+					</span></td>
+					<td class="col3"><span class="payrollDate"> <input
+							type="date" class="payrollDate" name="payrollDate" tabindex="3" />
+					</span></td>
 					<!-- 
    					<td class="col4"><span class="ansi:states">				<input type="text" class="state" 					name="state"					tabindex="4" />									</span></td>
 					 -->
-   					<td class="col4">
-	   					<select id="state" name="state">
-	   						<option value=""></option>
-	   						<webthing:states /> 
-						</select>
-   					</td>
-    				<td class="col5"><span class="city">			<input type="text" class="city" 					name="city"						tabindex="5" />							</span></td>
-    				<td class="col6"><span class="timesheetFile"></span></td>
-    				<td class="col7" id="cancel-save-buttons">
-    					<input type="button" value="Cancel" name="cancelButton" class="action-button" />
-    					<input type="button" value="Save" id="open-button" />
-    				</td>
-    			</tr>
+					<td class="col4"><select id="state" name="state">
+							<option value=""></option>
+							<webthing:states />
+					</select></td>
+					<td class="col5"><span class="city"> <input type="text"
+							class="city" name="city" tabindex="5" />
+					</span></td>
+					<td class="col6"><span class="timesheetFile"></span></td>
+					<td class="col7" id="cancel-save-buttons"><input type="button"
+						value="Cancel" name="cancelButton" class="action-button" /> <input
+						type="button" value="Save" id="open-button" /></td>
+				</tr>
 				<tr class="message-row">
-    				<td class="col1"><span class="divisionErr err"></span></td>
-    				<td class="col2"><span class="operationsManagerNameErr err"></span></td>
-    				<td class="col3"><span class="weekEndingErr err"></span></td>
-    				<td class="col4"><span class="stateErr err"></span></td>
-    				<td class="col5"><span class="cityErr err"></span></td>
-    				<td class="col6" colspan="2"><span class="fileNameErr err"></span></td>
-    			</tr>
-    		</table>
+					<td class="col1"><span class="divisionErr err"></span></td>
+					<td class="col2"><span class="operationsManagerNameErr err"></span></td>
+					<td class="col3"><span class="weekEndingErr err"></span></td>
+					<td class="col4"><span class="stateErr err"></span></td>
+					<td class="col5"><span class="cityErr err"></span></td>
+					<td class="col6" colspan="2"><span class="fileNameErr err"></span></td>
+				</tr>
+			</table>
 		</div>
 
 		<div id="data-detail">
@@ -1061,126 +1096,161 @@
 			<table id="timesheet">
 			</table>
 		</div>
-		
+
 		<div id="employee-modal">
-			<div style="width:100%; height:0px;">
+			<div style="width: 100%; height: 0px;">
 				<span class="employeeEditErr err"></span>
-			</div>	    	
-			<table  id="employee-data">   
+			</div>
+			<table id="employee-data">
 				<tr>
-					<td class="form-label">Employee Name :																					</td>
-					<td class="employeeName">	<input 	class="employeeName" 	type="text" 	name="employeeName"	tabindex="101" />		</td>
-					<td class="employeeNameSpacer">																										</td>
-					<td class="form-label">Code :																					</td>
-					<td class="employeeName">	<input 	class="employeeCode" 	type="text" 	name="employeeCode"	tabindex="102" />		</td>
-					<td class="employeeCodeSpacer">																										</td>
-					<td class="form-label">		State:																						</td>
-					<td class="state">			<span 	class="state">																</span>	</td>
-					<td class="stateSpacer">																										</td>
-					<td class="form-label">		<span 	class="form-label row-number-label">Row:									</span>	</td>
-					<td class="row">			<span 	class="row">																</span>	</td>
+					<td class="form-label">Employee Name :</td>
+					<td class="employeeName"><input class="employeeName"
+						type="text" name="employeeName" tabindex="101" /></td>
+					<td class="employeeNameSpacer"></td>
+					<td class="form-label">Code :</td>
+					<td class="employeeName"><input class="employeeCode"
+						type="text" name="employeeCode" tabindex="102" /></td>
+					<td class="employeeCodeSpacer"></td>
+					<td class="form-label">State:</td>
+					<td class="state"><span class="state"> </span></td>
+					<td class="stateSpacer"></td>
+					<td class="form-label"><span
+						class="form-label row-number-label">Row: </span></td>
+					<td class="row"><span class="row"> </span></td>
 				</tr>
 				<tr>
-					<td colspan="3" class="err">			<span 	class="employeeNameErr err">												</span>	</td>
-					<td colspan="3" class="err">			<span 	class="employeeNameCodeErr err">											</span>	</td>
-					<td colspan="3" class="err">			<span 	class="stateErr err">														</span>	</td>
-					<td colspan="2" class="err">			<span 	class="rowErr err">															</span> </td>						
+					<td colspan="3" class="err"><span class="employeeNameErr err">
+					</span></td>
+					<td colspan="3" class="err"><span
+						class="employeeNameCodeErr err"> </span></td>
+					<td colspan="3" class="err"><span class="stateErr err">
+					</span></td>
+					<td colspan="2" class="err"><span class="rowErr err"> </span>
+					</td>
 				</tr>
 			</table>
-			<table  id="time-calcs">   
+			<table id="time-calcs">
 				<tr>
-					<td class="row-label">																									</td>
-					<td colspan="1" class="col-heading hours">	Hours																		</td>
-					<td colspan="2" class="col-heading pay">	Pay																			</td>
-					<td colspan="2" class="col-heading pay">	Expenses																	</td>
+					<td class="row-label"></td>
+					<td colspan="1" class="col-heading hours">Hours</td>
+					<td colspan="2" class="col-heading pay">Pay</td>
+					<td colspan="2" class="col-heading pay">Expenses</td>
 				</tr>
 				<tr>
-					<td class="row-label">		Regular:																					</td>
-					<td class="hours">			<input 	class="hours" 	type="text" name="regularHours" 			tabindex="102" />			</td>
-					<td class="money">			<input  class="money" 	type="text" name="regularPay" 				tabindex="103" />			</td>
+					<td class="row-label">Regular:</td>
+					<td class="hours"><input class="hours" type="text"
+						name="regularHours" tabindex="102" /></td>
+					<td class="money"><input class="money" type="text"
+						name="regularPay" tabindex="103" /></td>
 					<td class="spacer-mid"></td>
-					<td class="row-label-col-2">		Submitted:																					</td>
-					<td class="money">			<input 	class="money" 	type="text" name="expensesSubmitted" 		tabindex="112" />		</td>
+					<td class="row-label-col-2">Submitted:</td>
+					<td class="money"><input class="money" type="text"
+						name="expensesSubmitted" tabindex="112" /></td>
 				</tr>
 				<tr>
-					<td colspan="2" class="hoursErr err">	<span 	class="regularHoursErr  err">	test value									</span>	</td>
-					<td colspan="1" class="moneyErr err">	<span 	class="regularPayErr err">		test error									</span>	</td>
+					<td colspan="2" class="hoursErr err"><span
+						class="regularHoursErr  err"> test value </span></td>
+					<td colspan="1" class="moneyErr err"><span
+						class="regularPayErr err"> test error </span></td>
 					<td class="spacer-mid"></td>
-					<td colspan="2" class="moneyErr err">	<span 	class="expensesSubmittedErr err">											</span>	</td>
+					<td colspan="2" class="moneyErr err"><span
+						class="expensesSubmittedErr err"> </span></td>
 				</tr>
 				<tr>
-					<td class="row-label">		Overtime:																					</td>
-					<td class="hours">			<input 	class="hours" 	type="text" name="otHours" 					tabindex="104" />			</td>
-					<td class="money">			<input 	class="money" 	type="text" name="otPay" 					tabindex="105" />			</td>
+					<td class="row-label">Overtime:</td>
+					<td class="hours"><input class="hours" type="text"
+						name="otHours" tabindex="104" /></td>
+					<td class="money"><input class="money" type="text"
+						name="otPay" tabindex="105" /></td>
 					<td class="spacer-mid"></td>
-					<td class="row-label-col-2">Allowed:																					</td>
-					<td class="money">			<input 	class="money" 	type="text" name="expensesAllowed" 			tabindex="113" />		</td>
+					<td class="row-label-col-2">Allowed:</td>
+					<td class="money"><input class="money" type="text"
+						name="expensesAllowed" tabindex="113" /></td>
 				</tr>
 				<tr>
-					<td colspan="2" class="hoursErr err">	<span 	class="otHoursErr err">														</span>	</td>
-					<td colspan="1" class="moneyErr err">	<span 	class="otPayErr err">														</span>	</td>
+					<td colspan="2" class="hoursErr err"><span
+						class="otHoursErr err"> </span></td>
+					<td colspan="1" class="moneyErr err"><span
+						class="otPayErr err"> </span></td>
 					<td class="spacer-mid"></td>
-					<td colspan="2" class="moneyErr err">	<span 	class="expensesAllowedErr err">												</span></td>
+					<td colspan="2" class="moneyErr err"><span
+						class="expensesAllowedErr err"> </span></td>
 				</tr>
 				<tr>
-					<td class="row-label">																									</td>					
-					<td class="hours total">																								</td>
-					<td class="money">																										</td>
+					<td class="row-label"></td>
+					<td class="hours total"></td>
+					<td class="money"></td>
 					<td class="spacer-mid"></td>
-					<td colspan="2" class="form-label">Productivity																			</td>
+					<td colspan="2" class="form-label">Productivity</td>
 				</tr>
 				<tr>
-					<td colspan="2" class="hoursErr err">																								</td>
-					<td class="moneyErr err">																								</td>
+					<td colspan="2" class="hoursErr err"></td>
+					<td class="moneyErr err"></td>
 					<td class="spacer-mid"></td>
 				</tr>
 				<tr>
-					<td class="row-label">		Vacation:</td>
-					<td class="hours">			<input 	class="hours" type="text" name="vacationHours"				tabindex="106" />		</td>
-					<td class="money"> 			<input 	class="money" type="text" name="vacationPay" 				tabindex="107" />		</td>
+					<td class="row-label">Vacation:</td>
+					<td class="hours"><input class="hours" type="text"
+						name="vacationHours" tabindex="106" /></td>
+					<td class="money"><input class="money" type="text"
+						name="vacationPay" tabindex="107" /></td>
 					<td class="spacer-mid"></td>
-					<td class="row-label-col-2">Direct Labor:																				</td>
-					<td class="money">			<input 	class="money" type="text" name="directLabor" 				tabindex="114" />		</td>
+					<td class="row-label-col-2">Direct Labor:</td>
+					<td class="money"><input class="money" type="text"
+						name="directLabor" tabindex="114" /></td>
 				</tr>
 				<tr>
-					<td colspan="2" class="hoursErr err">	<span 	class="vacationHoursErr">													</span>	</td>
-					<td colspan="1" class="moneyErr err">	<span 	class="vacationPayErr err">													</span>	</td>
+					<td colspan="2" class="hoursErr err"><span
+						class="vacationHoursErr"> </span></td>
+					<td colspan="1" class="moneyErr err"><span
+						class="vacationPayErr err"> </span></td>
 					<td class="spacer-mid"></td>
-					<td colspan="2" class="moneyErr err">	<span 	class="directLaborErr err">													</span>	</td>
+					<td colspan="2" class="moneyErr err"><span
+						class="directLaborErr err"> </span></td>
 				</tr>
 				<tr>
-					<td class="row-label">		Holiday:																					</td>
-					<td class="hours">			<input	class="hours" type="text" name="holidayHours"				tabindex="108" />		</td>
-					<td class="money">			<input	class="money" type="text" name="holidayPay" 				tabindex="109" />		</td>
+					<td class="row-label">Holiday:</td>
+					<td class="hours"><input class="hours" type="text"
+						name="holidayHours" tabindex="108" /></td>
+					<td class="money"><input class="money" type="text"
+						name="holidayPay" tabindex="109" /></td>
 					<td class="spacer-mid"></td>
-					<td class="row-label-col-2">		Volume :																					</td>
-					<td class="money">			<input 	class="money" type="text" name="volume" 					tabindex="115" />		</td>
-				</tr>							
-				<tr>
-					<td colspan="2" class="hoursErr err">	<span 	class="holidayHoursErr err">												</span>	</td>
-					<td colspan="1" class="moneyErr err">	<span 	class="holidayPayErr err">													</span>	</td>
-					<td class="spacer-mid"></td>
-					<td colspan="2" class="moneyErr err">	<span 	class="volumeErr err">														</span>	</td>
+					<td class="row-label-col-2">Volume :</td>
+					<td class="money"><input class="money" type="text"
+						name="volume" tabindex="115" /></td>
 				</tr>
 				<tr>
-					<td class="row-label">		Total:																						</td>
+					<td colspan="2" class="hoursErr err"><span
+						class="holidayHoursErr err"> </span></td>
+					<td colspan="1" class="moneyErr err"><span
+						class="holidayPayErr err"> </span></td>
+					<td class="spacer-mid"></td>
+					<td colspan="2" class="moneyErr err"><span
+						class="volumeErr err"> </span></td>
+				</tr>
+				<tr>
+					<td class="row-label">Total:</td>
 					<!-- <td class="hours total">	<input 	class="hours" type="text" name="totalHours" 				tabindex="110" />		</td> -->
-					<td class="totalHours">	<span 	class="totalHours">											</span>		</td>
-					<td class="money">			<input 	class="money" type="text" name="grossPay" 					tabindex="111" />		</td>
+					<td class="totalHours"><span class="totalHours"> </span></td>
+					<td class="money"><input class="money" type="text"
+						name="grossPay" tabindex="111" /></td>
 					<td class="spacer-mid"></td>
-					<td class="row-label-col-2">Productivity:																				</td>
+					<td class="row-label-col-2">Productivity:</td>
 					<!--  <td class="percentage">		<input 	class="percentage" 	type="text" name="productivity"			tabindex="116" />		</td>  -->
-					<td class="percentage">		<span 	class="productivity">											</span>		</td>
-				</tr>							
-				<tr>							
-					<td colspan="2" class="hoursErr err">		<span 	class="totalHoursErr err">													</span>	</td>
-					<td colspan="1" class="moneyErr err">		<span 	class="grossPayErr err">													</span>	</td>
+					<td class="percentage"><span class="productivity"> </span></td>
+				</tr>
+				<tr>
+					<td colspan="2" class="hoursErr err"><span
+						class="totalHoursErr err"> </span></td>
+					<td colspan="1" class="moneyErr err"><span
+						class="grossPayErr err"> </span></td>
 					<td class="spacer-mid"></td>
-					<td colspan="2" class="percentageErr err">	<span 	class="productivityErr err">												</span>	</td>
-				</tr>							
+					<td colspan="2" class="percentageErr err"><span
+						class="productivityErr err"> </span></td>
+				</tr>
 			</table>
-		</div>				
-    </tiles:put>
+		</div>
+	</tiles:put>
 </tiles:insert>
 
 
