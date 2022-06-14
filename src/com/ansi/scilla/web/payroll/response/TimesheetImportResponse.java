@@ -14,6 +14,7 @@ import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.collections4.Transformer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.payroll.common.PayrollUtils;
 import com.ansi.scilla.common.payroll.common.PayrollWorksheetHeader;
@@ -34,7 +35,6 @@ public class TimesheetImportResponse extends MessageResponse  {
 	public static final String FILENAME = "fileName";
 
 	
-	final Logger logger = LogManager.getLogger(TimesheetImportResponse.class);	
 
 	private String city;
 	private String division;
@@ -52,7 +52,7 @@ public class TimesheetImportResponse extends MessageResponse  {
 	}
 
 	public TimesheetImportResponse(Connection conn, PayrollWorksheetHeader header, PayrollWorksheetParser parser,
-			Map<String, HashMap<String, List<PayrollMessage>>> employeeMsgs) {
+		Map<String, HashMap<String, List<PayrollMessage>>> employeeMsgs) {
 		this();
 		this.city = parser.getCity();
 		this.division = parser.getDivision();
@@ -149,6 +149,7 @@ public class TimesheetImportResponse extends MessageResponse  {
 
 		private static final long serialVersionUID = 1L;
 		private HashMap<String, List<PayrollMessage>> messages;
+		private Map<String, HashMap<String, List<PayrollMessage>>> employeeMsgs;
 		
 		public ValidatedEmployee(PayrollWorksheetEmployee employee)  {
 			super();
@@ -199,7 +200,15 @@ public class TimesheetImportResponse extends MessageResponse  {
 		public ValidatedEmployee transform(PayrollWorksheetEmployee arg0) {
 			ValidatedEmployee validatedEmployee = null;
 			ErrorLevel maxErrorLevel = ErrorLevel.OK;
-						
+			
+			Logger logger = LogManager.getLogger(TimesheetImportResponse.class);			
+			//logger.log(Level.DEBUG, "TimesheetImportResponse: ");
+			logger.log(Level.DEBUG, "TimesheetImportResponse : employeeMsgs " + employeeMsgs);
+			
+			if(employeeMsgs == null) {
+				
+			}
+			
 			if ( employeeMsgs.containsKey(arg0.getRow())) {
 				validatedEmployee = new ValidatedEmployee(arg0, employeeMsgs.get(arg0.getRow()));
 				

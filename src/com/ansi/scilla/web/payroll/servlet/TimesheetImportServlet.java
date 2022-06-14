@@ -62,7 +62,10 @@ public class TimesheetImportServlet extends AbstractServlet {
 					PayrollWorksheetHeader header = PayrollWorksheetValidator.validateHeader(conn, parser);
 					if ( ! header.maxErrorLevel().equals(ErrorLevel.ERROR)) {
 						employeeMsgs = PayrollWorksheetValidator.validatePayrollEmployees(conn, header, parser);
+					} else {
+						employeeMsgs =  new HashMap<String, HashMap<String, List<PayrollMessage>>>();
 					}
+					logger.log(Level.DEBUG, "TimesheetImportServlet: employeeMsgs = " + employeeMsgs);
 
 					data = new TimesheetImportResponse(conn, header, parser, employeeMsgs);
 					switch ( header.maxErrorLevel() ) {
