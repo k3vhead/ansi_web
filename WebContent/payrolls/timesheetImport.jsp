@@ -451,7 +451,7 @@ td.money {
 	           			var $disp_state="";
 	           			var $disp_city="";
 
-           				$disp_divisionId = $data.data.header.division.divisionDisplay;
+           				$disp_divisionId = $data.data.header.division.divisionId;
 
            				/*
            				if(($data.data.header.division.divisionDisplayDivision == null) && ($data.data.division != null)){
@@ -494,8 +494,7 @@ td.money {
            				+	"\n disp_city=" +  $disp_city);
 	           				           		
 	           			// Dave, I don't know why this doesn't work.. 
-	           			$('select[name="divisionId"]').text($disp_divisionId);
-	           			$('select[name="divisionId"]').val("Test");
+	           			$('select[name="divisionId"]').val($disp_divisionId);
 	           				           			
 	           			
 	           			$('input[name="operationsManagerName"]').val($disp_operationsManagerName);           			
