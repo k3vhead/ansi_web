@@ -1,4 +1,6 @@
 <%@ taglib uri="/WEB-INF/theTagThing.tld" prefix="ansi" %>
+<%@ taglib tagdir="/WEB-INF/tags/webthing" prefix="webthing" %>
+
 <div id="${param.id}" class="modal-window">
 			<table>
 				<tr>
@@ -47,9 +49,8 @@
 					<td class="form-label">Status</td>
 					<td>
 						<select name="status">
-							<option value=""></option>
-							<option value="ACTIVE">Active</option>
-							<option value="TERMINATED">Terminated</option>
+							
+							<webthing:employeeStatus />
 						</select>
 					</td>
 					<td><span class="err statusErr"></span></td>
@@ -74,11 +75,11 @@
 					<td><input name="unionRate" style="height:12px;" class="unionInput" type="text"  placeholder="0.00"  /></td>
 					<td><span class="err unionRateErr"></span></td>
 				</tr>
-				<tr>
+				<!-- <tr>
 					<td class="form-label">Process Date:</td>
 					<td><input name="processDate" type="date" /></td>
 					<td><span class="err processDateErr"></span></td>
-				</tr>
+				</tr> -->
 				<tr>
 					<td class="form-label">Notes:</td>
 					<td><input name="notes" type="text" /></td>
