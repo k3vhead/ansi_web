@@ -341,8 +341,13 @@
         				var $serviceTypeId = $(this).attr("data-servicetypeid");
         				var $serviceTagId = $(this).attr("data-servicetagid");
         				console.log("New claim: " + $ticketId + " " + $serviceTypeId + " " + $serviceTagId); 
-        				var $url = "ticket/" + $ticketId;
-        				ANSI_UTILS.doServerCall("GET", $url, $outbound, BUDGETCONTROL.getClaimPrefillSuccess, BUDGETCONTROL.getClaimPrefillFail, null, {"ticketId":$ticketId, "serviceTypeId":$serviceTypeId, "serviceTagId":$serviceTagId});
+						var $claimParms = {
+							divisionId:BUDGETCONTROL.divisionId,
+							workYear:BUDGETCONTROL.workYear,
+							workWeeks:BUDGETCONTROL.workWeek
+						};
+        				var $url = "bcr/ticketClaimDetail/" + $ticketId;
+        				ANSI_UTILS.doServerCall("GET", $url, $claimParms, BUDGETCONTROL.getClaimPrefillSuccess, BUDGETCONTROL.getClaimPrefillFail, null, {"ticketId":$ticketId, "serviceTypeId":$serviceTypeId, "serviceTagId":$serviceTagId});
         			});
 
         			$(".zeroClaimButton").on("click", function($clickevent) {
@@ -638,7 +643,7 @@
     				$("#bcr_new_claim_modal .err").html("");
     				$("#bcr_new_claim_modal input[name='ticketId']").val($ticketId);
     				$("#bcr_new_claim_modal input[name='dlAmt']").val($data.data.ticketDetail.remainingDlAmt.toFixed(2));
-    				$("#bcr_new_claim_modal input[name='volumeClaimed']").val($data.data.ticketDetail.remainingPricePerCleaning.toFixed(2));
+    				$("#bcr_new_claim_modal input[name='volumeClaimed']").val($data.data.claimDetail.volume_remaining.toFixed(2));
     				$("#bcr_new_claim_modal .ticketId").html($ticketId);
     				$("#bcr_new_claim_modal input[name='serviceTypeId']").val($serviceTypeId);
     				$("#bcr_new_claim_modal .serviceTagId").html($serviceTagId);
