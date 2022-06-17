@@ -229,7 +229,7 @@
                 				'validateOnly' : true,
                 				'selectedEmployeeCode' : $("#employee-modal input[name='employeeCode']").val(),
                 				'employeeCode' : $("#employee-modal input[name='employeeCode']").val(),
-        	        			'companyCode' : $("#employee-modal input[name='companyCode']").val(),
+        	        			'companyCode' : $("#employee-modal select[name='companyCode']").val(),
         	        			'divisionId' : $("#employee-modal select[name='divisionId']").val(),
         	        			'firstName' : $("#employee-modal input[name='firstName']").val(),
         	        			'lastName' : $("#employee-modal input[name='lastName']").val(),
@@ -248,6 +248,9 @@
                 					'rowId':$("#employee-modal input[name='rowId']").val(),
                 					
                 			};
+                			console.log("passthru");
+                			console.log($passThruData);
+                			//console.log('rowId':$("#employee-modal input[name='rowId']").val());
                 			
                 			var today = new Date();
                 			var dateToday = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
@@ -410,14 +413,14 @@
                 			EMPLOYEE_IMPORT.localVars = $rowId;
                 			
                 			EMPLOYEE_IMPORT.savedEditEmployee = $row
-                			console.log(EMPLOYEE_IMPORT.savedEditEmployee);
+                			
                 			
                 			var terminationDisplay = $row['terminationDate'];
                 			if (terminationDisplay !== ""){
                 				const b = new Date(terminationDisplay);
                 				terminationDisplay = b.toISOString().substring(0,10);
                 			} 
-                		
+                			
                 			$("#employee-modal input[name='rowId']").val($rowId);
                 			$("#employee-modal input[name='employeeCode']").val($row['employeeCode']);
                 			$("#employee-modal input[name='employeeCode']").prop('disabled',true);
@@ -440,11 +443,11 @@
                 			$("#employee-modal input[name='unionRate']").val($row['unionRate']);
                 			$("#employee-modal input[name='notes']").val($row['notes']);
                 			
-                			if ( $row.status == "TERMINATED"){
-                				$("#employee-modal input[name='terminationDate']").prop('disabled',false);
+                			if ( $row.status == "ACTIVE"){
+                				$("#employee-modal input[name='terminationDate']").prop('disabled',true);
                 			} else {
         						
-                				$("#employee-modal input[name='terminationDate']").prop('disabled',true);
+                				$("#employee-modal input[name='terminationDate']").prop('disabled',false);
         					}
                 			$("#employee-modal input[name='terminationDate']").val(terminationDisplay);
                 			$("#employee-modal").dialog("open");
@@ -457,15 +460,18 @@
                 				}
                 			});
                 			$("#employee-modal select[name='status']").change(function() {
+                				
                 				 if ( $("#employee-modal select[name='status'] option:selected").text() == "Active"  ) {
-                					
+                					$("#employee-modal input[name='terminationDate']").val('');
                 					$("#employee-modal input[name='terminationDate']").prop('disabled',true);
                 				} else {
                 					
+                					$("#employee-modal input[name='terminationDate']").val(terminationDisplay);
                 					$("#employee-modal input[name='terminationDate']").prop('disabled',false);
                 				} 
                 				
                 			});
+                			
                 		},
                 		
                 		
@@ -531,10 +537,17 @@
                        			});
                        			console.log("updated employee:")
                        			// put this employee into the global employee dictionary
+                       			console.log(EMPLOYEE_IMPORT.employeeDict);
+                       			console.log(EMPLOYEE_IMPORT.employeeDict[$passThruData['rowId']]);
+                       			console.log($passThruData);
                        			EMPLOYEE_IMPORT.employeeDict[$passThruData['rowId']] = $thisEmployee
+                       			console.log(EMPLOYEE_IMPORT.employeeDict);
+                       			console.log($thisEmployee);
                        			// update the table display
                        			var $reportData = [];
                        			$.each( EMPLOYEE_IMPORT.employeeDict, function($index, $value) {
+                       			//	console.log($index);
+                       			//	console.log($value);
                        				$reportData.push($value);
                        			});
                        			
