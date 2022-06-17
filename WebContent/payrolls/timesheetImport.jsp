@@ -388,18 +388,26 @@ td.money {
 		              	}).data('ui-autocomplete');	            		           			
 	           		},	           		           		           		
 	           		DisplayHeaderAndHeaderMessages : function($data) {
-						// this displays globally scoped warming 
-						// regarding the file selected to be uploaded]	           			
+						// this displays the header data 
+						// this displays the header error msgs 
+						// 	           			
 						console.log("DisplayHeaderAndHeaderMessages");
+						
+						// Clears the prompt div error messages, hides everything else and displays the file prompt box
 	           			$("#prompt-div .err").html("");
 	           			var fName = document.getElementById('timesheet-file').files[0].name;
 	           			$(".thinking").hide();		
 	           			$("#timesheet_processing").hide();
-           				$("#prompt-div").show();
+
+	           			$("#prompt-div").show();          				
+
+	           			$("#data-header .err").html("");
            				
-       					$("#data-header .err").html("");
-           				var $fileMessages = $data.data.webMessages.timesheetFile;
-           				if ( $fileMessages == null ) {
+       					var $fileMessages = $data.data.webMessages.timesheetFile;
+
+       					// tests to see if a there was any error with the file selected 
+       					// if no errors witrh the file it displays the header and detail sections.
+       					if ( $fileMessages == null ) {
            					$("#prompt-div").hide();
            					// this was a recursive call.. 
            					// TIMESHEET_IMPORT.processUploadWarning($data);
@@ -444,7 +452,7 @@ td.money {
            
 	           		},	      
 	           		displayHeaderData : function($data) {
-	           			console.log("function : displayHeaderData");
+	           			console.log("function : displayHeaderData : kjw");
 	           			var $disp_divisionId="";
 	           			var $disp_operationsManagerName="";
 	           			var $disp_weekEnding="";
@@ -452,13 +460,6 @@ td.money {
 	           			var $disp_city="";
 
            				$disp_divisionId = $data.data.header.division.divisionId;
-
-           				/*
-           				if(($data.data.header.division.divisionDisplayDivision == null) && ($data.data.division != null)){
-	           			} else {
-	           				$disp_divisionId= $data.data.header.divisionId;
-	           			}
-           				*/
 	           			
 	           			if(($data.data.header.operationsManagerName == null) && ($data.data.operationsManagerName != null)){
 	           				$disp_operationsManagerName= $data.data.operationsManagerName;
@@ -493,28 +494,34 @@ td.money {
            				+	"\n disp_state=" +  $disp_state 
            				+	"\n disp_city=" +  $disp_city);
 	           				           		
-	           			// Dave, I don't know why this doesn't work.. 
-	           			$('select[name="divisionId"]').val($disp_divisionId);
-	           				           			
+	           			//$('select[name="divisionId"]').val($disp_divisionId);
+	           			$("input[name='divisionId']").val(     $data.data.header.division.divisionId);    
+	           			$("#file-header-data .divisionId").html($data.data.header.division.divisionDisplay);	           			
 	           			
 	           			$('input[name="operationsManagerName"]').val($disp_operationsManagerName);           			
 	           			$('input[name="payrollDate"]').val($formattedWeekendingDate);
-	           			$('select[name="state"]').val($disp_state);
-	           			$('input[name="city"]').val($disp_city);
+	           			
+	           			//$('select[name="state"]').val($disp_state.toUpperCase());
+	           			$("#file-header-data .state").html($disp_state);	           			
+	           			//$('input[name="city"]').val($disp_city);
+	           			$("#file-header-data .city").html($disp_city);	           			
 	           			$("#data-header .timesheetFile").html($data.data.fileName);	       
 	           			
 	           			// Display File Header Errors
-	           			console.log("function : displayHeaderData : Displaying Header Errors");	           			
-	           			//$("#data-header").show();
-
-	           			$("#file-header-data .err").html("");
 	           			
-	           			$.each($data.data.webMessages, function($index, $value) {
-	           				var $destination = "#file-header-data ." + $index + "Err";
-	           				var $message = $value[0];
-	           				console.log($destination + " " + $message);
-	           				$($destination).html($message);
-	           			});	           			      				           				
+	           			
+	           			////console.log("function : displayHeaderData : Displaying Header Errors");	           			
+
+	           			$("#data-header").show();
+
+	           			//$("#file-header-data .err").html("");
+	           			
+	           			//$.each($data.data.webMessages, function($index, $value) {
+	           			//	var $destination = "#file-header-data ." + $index + "Err";
+	           			//	var $message = $value[0];
+	           			//	console.log($destination + " " + $message);
+	           			//	$($destination).html($message);
+	           			//});	           			      				           				
 	           		},
 	           		
 	           		
@@ -712,27 +719,86 @@ td.money {
 	           					var $data = JSON.parse(this.response);
 	           					console.log("Data response data returned looks like this.");
 	           					console.log($data);
+
 	           					$("#data-header .err").html("");
-	           					console.log("function : openFile : $data.responseHeader.responseCode --> " + $data.responseHeader.responseCode)
-	           					if ( $data.responseHeader.responseCode != "SUCCESS") {
-	           						if(($data.data.webMessages==null) || ($data.data.webMessages.length == 0)){
+	           					var $headerMessages = $data.data.header.messages;	           					
+	           					var $headerMessageCount = Object.keys($headerMessages).length;
+	           					
+	           					console.log("function : openFile :  $headerMessages " +  $headerMessages);
+	           					console.log("function : openFile :  $headerMessages count " + $headerMessageCount); 
+
+	           					console.log($headerMessages);
+	           					
+	           					var $headerDataValid = true;
+	           					var $errorLevel;
+	           					var $errorMessage;
+	           					var $errorType;
+	           					var $isValid;
+	           					var $fieldName;
+           						           						           					
+           						if ( $data.responseHeader.responseCode != "SUCCESS") {
+	           						if($headerMessageCount > 0){
 	           							// process header messages
-	           							TIMESHEET_IMPORT.DisplayHeaderAndHeaderMessages($data);
-	           						} else {
+	        	           				$.each($headerMessages, function($validatedField, $validationMessage) {
+	        	           					$fieldName = $validatedField
+	        	           					$errorLevel = $validationMessage[0].errorMessage.errorLevel
+	        	           					$errorMessage = $validationMessage[0].errorMessage.message;
+	        	           					$errorType = $validationMessage[0].errorType;
+	        	           					$isValid = $validationMessage[0].ok;
+				           					console.log($fieldName);	           				
+				           					console.log("    errorMessage.errorLevel field is " + $errorLevel);	           				
+				           					console.log("    errorMessage.message is " + $errorMessage);	           				
+				           					console.log("    Error Type is : " + $errorType);
+				           					console.log("    ok = " + $isValid);
+				           					
+				           					if($isValid == false){
+				           						$headerDataValid = false;
+				           						
+				           						switch($fieldName){
+				           							case "WEEK_ENDING":
+				           								$(".weekEndingErr").html($errorMessage);
+				           								break;
+				           							case "LOCALE" :
+				           								$(".cityErr").html($errorMessage);
+				           								break;
+				           							case "DIVISION" :
+				           								$(".divisionErr").html($errorMessage);
+				           								break;
+				           							case "OPERATIONS_MANAGER" :
+				           								$(".operationsManagerNameErr").html($errorMessage);
+				           								break;		
+				           						default:
+				           							break;
+				           						}
+				           					}
+		        	           					//var $selector = "#file-header-data ." + $index + "Err";
+		        	           					//console.log("selector is " + $selector);	           					           					
+		        	           					//$($selector).html($value[0]);
+			           							//console.log("function : openFile : calling DisplayHeaderAndHeaderMessages($data)");
+			           							//TIMESHEET_IMPORT.DisplayHeaderAndHeaderMessages($data);
+        	           					});
+	        	           				$(".thinking").hide();		           				
+	                   					TIMESHEET_IMPORT.displayHeaderData($data);
+	                   					$("#globalMsg").html("Modify the spreadsheet and try again").show().fadeOut(5000);	                   					
+	        	           			} else {
 	           							// process web messages
-	    	               				ANSI_UTILS.showWarnings("timesheet_warnings", $data.data.webMessages);
+	           							console.log("function : openFile : calling ANSI_UTILS.showWarnings()");
+	        							ANSI_UTILS.showWarnings("timesheet_warnings", $data.data.webMessages);
 	           						}
-	           					} else if ( $data.responseHeader.responseCode == "SUCCESS" ) {	           						
-	           						TIMESHEET_IMPORT.processUploadSuccess($data);
-	           					} else {
-	           						$("#globalMsg").html("Invalid response code " + $data.responseHeader.responseCode + ". Contact Support");
-	           					}
-	           				} else {
-	           					$("#globalMsg").html("Response Code " + xhr.status + ". Contact Support");
-	           				}
-	           			};
-	           			console.log("kjw - openFile :  FormData is : " + formData);
-	           			xhr.send(formData);
+           						} else if ( $data.responseHeader.responseCode == "SUCCESS" ) {	           						
+          							console.log("function : openFile : calling processUploadSuccess($data)");
+           							TIMESHEET_IMPORT.processUploadSuccess($data);
+           						} else {
+          							console.log("function : openFile : showing Invalid response code");
+           							$("#globalMsg").html("Invalid response code " + $data.responseHeader.responseCode + ". Contact Support");
+           						} 
+           				} else {
+   							console.log("function : openFile : Contact Support");
+           					$("#globalMsg").html("Response Code " + xhr.status + ". Contact Support");
+           				}
+           			};
+           			console.log("kjw - openFile :  FormData is : " + formData);
+           			xhr.send(formData);
 	           		},	           		
 	           		showEmployeeModal : function($rowNumber, $action) {
 	           			console.log("showEmployeeModal: " + $rowNumber + " " + $action);
@@ -872,13 +938,19 @@ td.money {
 	           			console.log($data);
 	           			console.log("This is the response code");
 	           			console.log($data.responseHeader.responseCode);
+	           				           			
 	           			if ( $data.responseHeader.responseCode == 'EDIT_FAILURE' ) {
-	           				$.each($data.data.webMessages, function($index, $value) {
-	           					console.log($index + ' value is ' + $value);	           				
-	           					var $selector = "#employee-modal ." + $index + "Err";
-	           					console.log("selector is " + $selector);	           					           					
-	           					$($selector).html($value[0]);
-	           				});
+           					console.log("processEmployeeValidationSuccess - EDIT_FAILURE");
+           					// check for header error messages first
+           					console.log("processEmployeeValidationSuccess : display header errors");
+           					if($data.header.messages){
+    	           				$.each($data.data.webMessages, function($index, $value) {
+    	           					console.log($index + ' value is ' + $value);	           				
+    	           					var $selector = "#file-header-data ." + $index + "Err";
+    	           					console.log("selector is " + $selector);	           					           					
+    	           					$($selector).html($value[0]);
+    	           				});
+           					}
 	           			} else if ( $data.responseHeader.responseCode == 'SUCCESS' || $data.responseHeader.responseCode == 'EDIT_WARNING') {
 	           				updateDataTableFromModal();
 	           				//$("#timesheetLookup").DataTable().ajax.reload();
@@ -886,14 +958,15 @@ td.money {
 	               			
 							// 	               			if ( $("#edit-modal").hasClass("ui-dialog-content")) {
 							// 	               				$("#edit-modal").dialog("close");
-							// 	               			}
+							// 	               	showWarnings		}
 							// 	               			if ( $("#confirmation-modal").hasClass("ui-dialog-content")) {
 							// 	               				$("#confirmation-modal").dialog("close");
 							// 	               			}
 	               			if ($data.responseHeader.responseCode == 'SUCCESS') {
 	               				$("#globalMsg").html("Success").show().fadeOut(3000);
 	               			} else {
-	               				ANSI_UTILS.showWarnings("timesheet_warnings", $data.data.webMessages);
+	               				//ANSI_UTILS.showWarnings("timesheet_warnings", $data.data.webMessages);
+	               				ANSI_UTILS.showWarnings("timesheet_warnings", $data.header.messages);
 	               			}
 	           			} else {
 	           				$("#employee-modal .timesheet-err").html("Unexpected response code: " + $data.responseHeader.responseCode + ". Contact Support").show();
@@ -1048,31 +1121,51 @@ td.money {
 					<td class="col7"><span class="form-label"> </span></td>
 				</tr>
 				<tr>
-					<td class="col1"><span class="divisionId"> <select
+					<td class="col1">
+						<input type="hidden" name="divisionId"/> 
+						<span class="divisionId"></span>
+					    <!--  
+						<select
 							name="divisionId">
 								<option value=""></option>
 								<ansi:divisionSelect format="select" />
 						</select>
-					</span></td>
+						 -->
+					</td>
 					<!--								
     					<input type="text" class="division" 				name="divisionId"				tabindex="1" />
     					-->
-					<td class="col2"><span class="operationsManagerName"> <input
-							type="text" class="operationsManagerName"
+					<td class="col2">
+						<span class="operationsManagerName">
+							  
+							<input type="text" class="operationsManagerName"
 							name="operationsManagerName" tabindex="2" />
+							
 					</span></td>
-					<td class="col3"><span class="payrollDate"> <input
+					<td class="col3"><span class="payrollDate"> 
+						 
+						<input
 							type="date" class="payrollDate" name="payrollDate" tabindex="3" />
+						
 					</span></td>
 					<!-- 
    					<td class="col4"><span class="ansi:states">				<input type="text" class="state" 					name="state"					tabindex="4" />									</span></td>
 					 -->
-					<td class="col4"><select id="state" name="state">
+					<td class="col4">
+							<span class="state"></span>
+							<!-- 
+							<select id="state" name="state">
 							<option value=""></option>
 							<webthing:states />
-					</select></td>
-					<td class="col5"><span class="city"> <input type="text"
+							 
+							</select>
+							-->
+					</td>
+					<td class="col5"><span class="city">
+							<!-- 							 
+							<input type="text"
 							class="city" name="city" tabindex="5" />
+							 -->
 					</span></td>
 					<td class="col6"><span class="timesheetFile"></span></td>
 					<td class="col7" id="cancel-save-buttons"><input type="button"
