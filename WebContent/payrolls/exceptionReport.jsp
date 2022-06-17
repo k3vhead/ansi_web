@@ -347,8 +347,26 @@
     			        			}
     			        		},
     			        		{ title: "Minimum Hourly", width:"5%", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
-       			        			if(row.minimum_hourly_pay != null){return "$" + (parseFloat(row.minimum_hourly_pay).toFixed(2));}
-   		            			} },
+       			        			if(row.minimum_hourly_pay != null){
+       			        			//{return "$" + (parseFloat(row.minimum_hourly_pay).toFixed(2));}
+       			        			
+        			        			//{return "$" + (parseFloat(row.expenses_submitted).toFixed(2));}
+        			        			//if(row.direct_labor != null){
+        			        				var $value = "$" + (parseFloat(row.minimum_hourly_pay).toFixed(2));
+        			        				var $bubbleHelp = []
+        			        				if ( row.under_union_min_pay != null && row.under_union_min_pay == 1 ) {
+        			        					$bubbleHelp.push("Under Union Min");
+        			        				}
+        			        				if ( row.under_govt_min_pay != null && row.under_govt_min_pay == 1 ) {
+        			        					$bubbleHelp.push("Under Govt Min");
+        			        				}
+        			        				if ( $bubbleHelp.length > 0 ) {
+    			        						$value = EXCEPTION_REPORT.makeItRed($value, $bubbleHelp);
+        			        				}
+
+        			        				return $value;
+        			        			}
+    			        		} },
     			        		{ title: "Under Govt Min Flag", width:"5%", searchable:true, "defaultContent": "",
     			        		data:function(row, type, set) {
     			        			var $value = $unknown;
@@ -364,8 +382,27 @@
     			        			}
     			        		},
     			        		{ title: "Expense Pct", width:"5%", searchable: true, searchFormat: "#.##%", data: function ( row, type, set ) {
-       			        			if(row.excess_expense_pct != null){return (parseFloat(row.excess_expense_pct).toFixed(2)) + "%";}
-   		            			} },
+       			        			if(row.excess_expense_pct != null){
+       			        			//{return (parseFloat(row.excess_expense_pct).toFixed(2)) + "%";}
+       			        			
+        			        			//{return "$" + (parseFloat(row.expenses_submitted).toFixed(2));}
+        			        			//if(row.direct_labor != null){
+        			        				var $value = "$" + (parseFloat(row.expenses_submitted).toFixed(2));
+        			        				var $bubbleHelp = []
+        			        				if ( row.excess_expense_pct != null && row.excess_expense_pct == 1 ) {
+        			        					$bubbleHelp.push("Expense Pct");
+        			        				}
+        			        				if ( row.ytd_excess_expense_pct != null && row.ytd_excess_expense_pct == 1 ) {
+        			        					$bubbleHelp.push("YTD Expense Pct");
+        			        				}
+        			        				if ( $bubbleHelp.length > 0 ) {
+    			        						$value = EXCEPTION_REPORT.makeItRed($value, $bubbleHelp);
+        			        				}
+
+        			        				return $value;
+        			        			}
+    			        		
+    			        		} },
     			        		{ title: "Expense Pct Flag", width:"5%", searchable:true, "defaultContent": "",
     			        		data:function(row, type, set) {
     			        			var $value = $unknown;
@@ -442,8 +479,24 @@
            			        			}
           			        	},
     			        		{ title: "Expenses Submitted", width:"5%", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
-    			        			if(row.expenses_submitted != null){return "$" + (parseFloat(row.expenses_submitted).toFixed(2));}
-		            			} },
+    			        			if(row.expenses_submitted != null){
+    			        			//{return "$" + (parseFloat(row.expenses_submitted).toFixed(2));}
+    			        			//if(row.direct_labor != null){
+    			        				var $value = "$" + (parseFloat(row.expenses_submitted).toFixed(2));
+    			        				var $bubbleHelp = []
+    			        				if ( row.ytd_excess_expense_claim != null && row.ytd_excess_expense_claim == 1 ) {
+    			        					$bubbleHelp.push("YTD Expense Claim");
+    			        				}
+    			        				//if ( row.ytd_excess_expense_pct != null && row.ytd_excess_expense_pct == 1 ) {
+    			        				//	$bubbleHelp.push("YTD Expense Pct");
+    			        				//}
+    			        				if ( $bubbleHelp.length > 0 ) {
+			        						$value = EXCEPTION_REPORT.makeItRed($value, $bubbleHelp);
+    			        				}
+
+    			        				return $value;
+    			        			}
+    			        		} },
     			        		{ title: "Volume", width:"5%", searchable:true, "defaultContent": "",  searchFormat: "#.##", data: function ( row, type, set ) {
     			        			if(row.volume != null){return "$" + (parseFloat(row.volume).toFixed(2));}
 		            			} },

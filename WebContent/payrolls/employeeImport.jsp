@@ -177,13 +177,41 @@
                 						id:  "confirm-save",
                 						click: function($event) {
                 							EMPLOYEE_IMPORT.saveEmployee();
-                							$( "#employee-modal" ).dialog("close");
+                							
                 						}
                 					}
                 				]
                 			});	
                 			$("#confirm-cancel").button('option', 'label', 'Cancel');  
                 			$("#confirm-save").button('option', 'label', 'Confirm');
+                			
+                			$( "#confirm-modal" ).dialog({
+                				title:'Confirm Delete',
+                				autoOpen: false,
+                				height: 200,
+                				width: 300,
+                				modal: true,
+                				closeOnEscape:true,
+                				//open: function(event, ui) {
+                				//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+                				//},
+                				buttons: [
+                					{
+                						id:  "confirm-cancel",
+                						click: function($event) {
+               								$( "#confirm-modal" ).dialog("close");
+                						}
+                					},{
+                						id:  "confirm-save",
+                						click: function($event) {
+               								EMPLOYEELOOKUP.doConfirm();
+                						}
+                					}
+                				]
+                			});	
+                			$("#confirm-cancel").button('option', 'label', 'Cancel');  
+                			$("#confirm-save").button('option', 'label', 'Confirm');
+                		
                    		},
             			
             			
@@ -392,7 +420,8 @@
                 		
                 			$("#employee-modal input[name='rowId']").val($rowId);
                 			$("#employee-modal input[name='employeeCode']").val($row['employeeCode']);
-                			$("#employee-modal input[name='companyCode']").val($row['companyCode']);
+                			$("#employee-modal input[name='employeeCode']").prop('disabled',true);
+                			$("#employee-modal select[name='companyCode']").val($row['companyCode']);
                 			$("#employee-modal select[name='divisionId']").val($row['divisionId']);
                 			$("#employee-modal input[name='firstName']").val($row['firstName']);
                 			$("#employee-modal input[name='lastName']").val($row['lastName']);
@@ -411,7 +440,12 @@
                 			$("#employee-modal input[name='unionRate']").val($row['unionRate']);
                 			$("#employee-modal input[name='notes']").val($row['notes']);
                 			
-                			
+                			if ( $row.status == "TERMINATED"){
+                				$("#employee-modal input[name='terminationDate']").prop('disabled',false);
+                			} else {
+        						
+                				$("#employee-modal input[name='terminationDate']").prop('disabled',true);
+        					}
                 			$("#employee-modal input[name='terminationDate']").val(terminationDisplay);
                 			$("#employee-modal").dialog("open");
                 			
@@ -422,7 +456,16 @@
                 					$("#employee-modal .unionInput").prop('disabled',true);
                 				}
                 			});
-                			
+                			$("#employee-modal select[name='status']").change(function() {
+                				 if ( $("#employee-modal select[name='status'] option:selected").text() == "Active"  ) {
+                					
+                					$("#employee-modal input[name='terminationDate']").prop('disabled',true);
+                				} else {
+                					
+                					$("#employee-modal input[name='terminationDate']").prop('disabled',false);
+                				} 
+                				
+                			});
                 		},
                 		
                 		
@@ -467,48 +510,53 @@
                    			console.log("processUploadChanges");
                    			
                    			
-                   			var fixedNum = $data.data.employee.unionRate;                   			
-                   			fixedNum = Number(fixedNum).toFixed(2);
-                   			if ($data.data.employee.unionRate == null ){
-                   				$data.data.employee.unionRate = "";
-                   			}
-                   			else {
-                   				$data.data.employee.unionRate = "$" + fixedNum.toString();
-                   			}
+                   			if ( $data.responseHeader.responseCode == 'SUCCESS' ) {        	        			
+        	        			$( "#employee-modal" ).dialog("close");
+        	        			var fixedNum = $data.data.employee.unionRate;                   			
+                       			fixedNum = Number(fixedNum).toFixed(2);
+                       			if ($data.data.employee.unionRate == null ){
+                       				$data.data.employee.unionRate = "";
+                       			} else {
+                       				$data.data.employee.unionRate = "$" + fixedNum.toString();
+                       			}
+                       			if ($data.data.employee.unionMember == "0"){
+                   					$data.data.employee.unionMember = "";
+                   				} else {
+                   					$data.data.employee.unionMember = "Yes";
+                   				}  
+                       			// create a dictionary for this empoloyee
+                       			var $thisEmployee = {};
+                       			$.each( $data.data.employee, function($empFieldName, $empValue) {
+                       				$thisEmployee[$empFieldName] = $empValue;
+                       			});
+                       			console.log("updated employee:")
+                       			// put this employee into the global employee dictionary
+                       			EMPLOYEE_IMPORT.employeeDict[$passThruData['rowId']] = $thisEmployee
+                       			// update the table display
+                       			var $reportData = [];
+                       			$.each( EMPLOYEE_IMPORT.employeeDict, function($index, $value) {
+                       				$reportData.push($value);
+                       			});
+                       			
+                       			var $importData = {};
+                       			$importData.employeeRecords = $reportData
+                       			console.log("old employee:");
+                       			console.log($reportData);
+                       			console.log($importData);
+                       			
+                       			EMPLOYEE_IMPORT.makeEmployeeTable($importData);
+        	        			$("#globalMsg").html("Success").show().fadeOut(3000);
+                			} else if ($data.responseHeader.responseCode == 'EDIT_FAILURE' ) {
+        						$.each($data.data.webMessages, function($index, $value) {
+        							console.log($data.data.webMessages);
+        							var $selector = "#employee-modal ." + $index + "Err";
+        							console.log($selector);
+        							$($selector).html($value[0]);
+        						});
+                			} else {
+        	        			$("#globalMsg").html("Invalid response code: " + $data.responseHeader.responseCode + ". Cntact Support").show();
+                			}
                    			
-                   			if ($data.data.employee.unionMember == "0"){
-               					$data.data.employee.unionMember = "";
-               				}
-               				else {
-               					$data.data.employee.unionMember = "Yes";
-               				}  
-                   			// create a dictionary for this empoloyee
-                   			var $thisEmployee = {};
-                   			$.each( $data.data.employee, function($empFieldName, $empValue) {
-                   				$thisEmployee[$empFieldName] = $empValue;
-                   			});
-                   			
-                   			
-                   			
-                   			console.log("updated employee:")
-                   		
-                   		
-                   			// put this employee into the global employee dictionary
-                   			EMPLOYEE_IMPORT.employeeDict[$passThruData['rowId']] = $thisEmployee
-                   			
-                   			// update the table display
-                   			var $reportData = [];
-                   			$.each( EMPLOYEE_IMPORT.employeeDict, function($index, $value) {
-                   				$reportData.push($value);
-                   			});
-                   			
-                   			var $importData = {};
-                   			$importData.employeeRecords = $reportData
-                   			console.log("old employee:");
-                   			console.log($reportData);
-                   			console.log($importData);
-                   			
-                   			EMPLOYEE_IMPORT.makeEmployeeTable($importData);
                    		},
                    		
                    		
@@ -654,22 +702,22 @@
 			</table>			
 		</div>
 		
-		<div id="employee-modal">
+<%-- 		 <div id="employee-modal">
 			<input type="hidden" name="rowId"/>
 			<table>
 			
 				<tr>
-					<td><span class="formLabel">Employee Code</span></td>
-					<td><input name="employeeCode" /></td>
+					<td><span class="formLabel" >Employee Code:</span></td>
+					<td><input name="employeeCode" disabled="" /></td>
 					<td><span class="err employeeCodeErr"></span></td>
 				</tr>
 					<tr>
-					<td><span class="formLabel">Company Code</span></td>
+					<td><span class="formLabel">Company Code:</span></td>
 					<td><input name="companyCode" /></td>
 					<td><span class="err companyCodeErr"></span></td>
 				</tr>
 				<tr>
-					<td class="form-label">Division</td>
+					<td class="form-label">Division:</td>
 					<td>
 						<select name="divisionId">
 							<option value=""></option>
@@ -680,23 +728,23 @@
 					<td><span class="divisionIdErr err"></span></td>
 				</tr>
 					<tr>
-					<td><span class="formLabel">First Name</span></td>
+					<td><span class="formLabel">First Name:</span></td>
 					<td><input name="firstName" /></td>
 					<td><span class="err firstNameErr"></span></td>
 				</tr>
 			
 				<tr>
-					<td><span class="formLabel">Last Name</span></td>
+					<td><span class="formLabel">Last Name:</span></td>
 					<td><input name="lastName" /></td>
 					<td><span class="err lastNameErr"></span></td>
 				</tr>
 					<tr>
-					<td><span class="formLabel">Department Description</span></td>
+					<td><span class="formLabel">Department Description:</span></td>
 					<td><input name="departmentDescription" /></td>
 					<td><span class="err departmentDescriptionErr"></span></td>
 				</tr>		
 				<tr>
-					<td><span class="formLabel">Status</span></td>
+					<td><span class="formLabel">Status:</span></td>
 					<td>
 						<select name="status">
 							
@@ -706,7 +754,7 @@
 					<td><span class="err statusErr"></span></td>
 				</tr>
 				<tr>
-					<td><span class="formLabel">Termination</span></td>
+					<td><span class="formLabel">Termination Date:</span></td>
 					<td><input type="date" name="terminationDate" /></td>
 					<td><span class="err terminationErr"></span></td>
 				</tr>
@@ -715,32 +763,32 @@
 					<td class="form-label">Union Member:</td>
 					<td><input name="unionMember"  type="checkbox" value="1" /></td>
 					<td><span class="err unionMemberErr"></span></td>
-				<!--  	<td><span class="formLabel">Union</span></td>
-					
-					<td><select name="unionMember">
-						
-						<option value="Yes">Yes</option>
-						<option value=""></option>
-						</select></td>
-					<td><span class="err unionErr"></span></td> -->
+			
 				</tr>
 				<tr>
-					<td><span class="formLabel">Union Code</span></td>
+					<td><span class="formLabel">Union Code:</span></td>
 					<td><input name="unionCode" class="unionInput" type="text" /></td>
 					<td><span class="err unionCodeErr"></span></td>
 				</tr>
 				<tr>
-					<td><span class="formLabel">Union Rate</span></td>
+					<td><span class="formLabel">Union Rate:</span></td>
 					<td><input name="unionRate" class="unionInput" type="text"/></td>
 					<td><span class="err unionRateErr"></span></td>
 				</tr>
 				<tr>
-					<td><span class="formLabel">Notes</span></td>
+					<td><span class="formLabel">Notes:</span></td>
 					<td><input name="notes" /></td>
 					<td><span class="err notesErr"></span></td>
 				</tr>
 			</table>
 			
+		</div> --%> 
+		<jsp:include page="employeeCrudForm.jsp">
+			<jsp:param name="id" value="employee-modal" />
+		</jsp:include>
+	
+		<div id="confirm-modal">			
+			<h2>Are you sure?</h2>
 		</div>
 		
     </tiles:put>
