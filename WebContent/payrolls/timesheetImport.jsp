@@ -124,8 +124,9 @@ td.money {
         		 width:40px; 
 			}
 			*/
-.highlight {
+.errorsFoundHighlight {
 	background-color: yellow !important;
+	border: 3px black solid; 
 }
 
 #employee-modal #time-calcs .percentage {
@@ -424,7 +425,7 @@ td.money {
 	           			console.log("TIMESHEET_IMPORT.initializeDisplay: function - begin");	           			
 
            				$("#prompt-div").show();
-           				$("#prompt-div .timesheet-file").val('');
+           				$("#prompt-div .timesheet-file").val("");
 
            				$("#data-header").hide();
 	           			//$("#data-header .divisionId").html("");
@@ -435,7 +436,7 @@ td.money {
 	           			//$("#data-header .timesheetFile").html("");
 
 	           			$("#open-button").on("click");
-           				$("#data-detail").hide();
+	           			$("#data-detail").hide();
            				$("#timesheet").hide();
 
            				$("#timesheet").DataTable().clear();
@@ -542,14 +543,18 @@ td.money {
 	            	        paging: false,
 	            	        destroy: true,
 	            	        autoWidth: false,
+	            	        "rowCallback": function(row, data, index){
+	            	            if(row.children[17].children[0].children[0].childNodes[0].textContent=="Error"){
+	            	                $(row).addClass('errorsFoundHighlight');
+	            	            }
+	            	          },
 	           				columnDefs : [
 	             	            //{ className : "dt-head-center", "targets":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]},
 	            	            { className : "dt-left", "targets": [1] },
 	            	            { className : "dt-center", "targets": [17,18] },
 	            	            //{ className : "dt-right", "targets": [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]}
-	            	            { className : "dt-right", "targets": [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]}
-	            	            
-	            	            	            	      	            	             
+	            	            { className : "dt-right", "targets": [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]},
+	            	            //{target: 17, visible: false}	            	                
 	            	         ],
 	           				columns : [
 	           					{ title : "Row", searchable:true, "defaultContent": "", data:'row' },
@@ -619,9 +624,14 @@ td.money {
 	           					{ title : "Prod %", searchable:true, "defaultContent": "", data:'productivity' },
 	           					{ title : "Status", "defaultContent":"", 
 	           						data : function(row, type, set) {
-										var $tag = TIMESHEET_IMPORT.statusIsGood;          							
-	           							if ( row.errorsFound == true ) { $tag = TIMESHEET_IMPORT.statusIsBad; }
+										var $tag = TIMESHEET_IMPORT.statusIsGood;
+										
+	           							if ( row.errorsFound == true ) { 
+	           								$tag = TIMESHEET_IMPORT.statusIsBad; 
+	           								//$('td', row).css('background-color', 'Yellow');
+	           								}
 	           							return $tag;
+	           							
 	           						}
 	           					},
 	           					{ title : "Action", 
@@ -648,6 +658,17 @@ td.money {
 	           						var $rowNumber = $(this).attr('data-id');
 	           						TIMESHEET_IMPORT.showEmployeeModal($rowNumber, "edit");
 	           					});
+	           					/*
+     			            	for (var i = 0; i < $data.data.employeeRecordList.length-1; i++){                   				                 				
+                       				if ($data.data.employeeRecordList[i].errorsFound == true){
+                       					//document.getElementById(.classList.add("errorsFoundHighlight");
+                       					//        $(table.column(colIdx).nodes()).addClass('highlight');
+
+                       					$($table.rows($data.data.employeeRecordList[i].rowId).nodes()).addClass('errorsFoundHighlight');
+                       				}
+                       			} 
+	           					*/
+	           					
 	           					//added 2022-06-07
 //      			            	for (var i = 0; i < $data.employeeRecordList.length; i++){                   				                 				
 //                        				if ($data.employeeRecordList[i].errorsFound){
@@ -657,6 +678,7 @@ td.money {
 	           					
 	           				}
 	           			});
+	           			$table.column(17).visible(false);
 	           			$("#data-detail").show();
 	           			$("#timesheet").show();
 	           		},
@@ -777,8 +799,10 @@ td.money {
 			           							//console.log("function : openFile : calling DisplayHeaderAndHeaderMessages($data)");
 			           							//TIMESHEET_IMPORT.DisplayHeaderAndHeaderMessages($data);
         	           					});
-	        	           				$(".thinking").hide();		           				
+	        	           				$(".thinking").hide();
+	        	           				$("#save-button").hide();
 	                   					TIMESHEET_IMPORT.displayHeaderData($data);
+	                   					
 	                   					$("#globalMsg").html("Modify the spreadsheet and try again").show().fadeOut(5000);	                   					
 	        	           			} else {
 	           							// process web messages
@@ -1170,7 +1194,7 @@ td.money {
 					<td class="col6"><span class="timesheetFile"></span></td>
 					<td class="col7" id="cancel-save-buttons"><input type="button"
 						value="Cancel" name="cancelButton" class="action-button" /> <input
-						type="button" value="Save" id="open-button" /></td>
+						type="button" value="Save" id="save-button" /></td>
 				</tr>
 				<tr class="message-row">
 					<td class="col1"><span class="divisionErr err"></span></td>
