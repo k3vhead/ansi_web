@@ -184,11 +184,8 @@ public class EmployeeRequest extends AbstractRequest {
 				if ( terminationDate != null ) {
 					webMessages.addMessage(TERMINATION_DATE, "Employee is active");
 				}
-			} else if ( employeeStatus.equals(EmployeeStatus.TERMINATED) ){
-				RequestValidator.validateDate(webMessages, TERMINATION_DATE, terminationDate, true, null, null);
 			} else {
-				//this should never happen, because we already validated status
-				throw new RuntimeException("Invalid employee status was not caught");
+				RequestValidator.validateDate(webMessages, TERMINATION_DATE, terminationDate, true, null, null);
 			}
 			
 		}		
