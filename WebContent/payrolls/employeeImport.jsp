@@ -245,12 +245,8 @@
                 			}
                 			
                 			var $passThruData = {
-                					'rowId':$("#employee-modal input[name='rowId']").val(),
-                					
+               					'rowId':$("#employee-modal input[name='rowId']").val(),
                 			};
-                			console.log("passthru");
-                			console.log($passThruData);
-                			//console.log('rowId':$("#employee-modal input[name='rowId']").val());
                 			
                 			var today = new Date();
                 			var dateToday = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
@@ -261,10 +257,6 @@
                 				$url = $url + "/" + $selectedEmployeeCode
                 			}
                 			$outbound.unionRate = $outbound.unionRate.replace('$', '');
-                			console.log($url);
-                			console.log($outbound);
-                			console.log('passthrough');
-                			console.log($passThruData);
            					
                 			ANSI_UTILS.makeServerCall("post", $url, JSON.stringify($outbound),{200:EMPLOYEE_IMPORT.processUploadChanges},  $passThruData);
                 		},
@@ -278,8 +270,6 @@
                 			var $yes = '<webthing:checkmark>Yes</webthing:checkmark>';
                 			var $no = '<webthing:ban>No</webthing:ban>';
                 			var $unknown = '<webthing:questionmark>Invalid</webthing:questionmark>';
-                			console.log($data);
-                			console.log($data.employeeRecords);
                 			
                 			$("#employeeImport").DataTable( {
                     			"aaSorting":		[[4,'asc'],[3,'asc']],
@@ -535,35 +525,23 @@
                        			$.each( $data.data.employee, function($empFieldName, $empValue) {
                        				$thisEmployee[$empFieldName] = $empValue;
                        			});
-                       			console.log("updated employee:")
                        			// put this employee into the global employee dictionary
                        			console.log(EMPLOYEE_IMPORT.employeeDict);
-                       			console.log(EMPLOYEE_IMPORT.employeeDict[$passThruData['rowId']]);
-                       			console.log($passThruData);
                        			EMPLOYEE_IMPORT.employeeDict[$passThruData['rowId']] = $thisEmployee
-                       			console.log(EMPLOYEE_IMPORT.employeeDict);
-                       			console.log($thisEmployee);
                        			// update the table display
                        			var $reportData = [];
                        			$.each( EMPLOYEE_IMPORT.employeeDict, function($index, $value) {
-                       			//	console.log($index);
-                       			//	console.log($value);
                        				$reportData.push($value);
                        			});
                        			
                        			var $importData = {};
                        			$importData.employeeRecords = $reportData
-                       			console.log("old employee:");
-                       			console.log($reportData);
-                       			console.log($importData);
                        			
                        			EMPLOYEE_IMPORT.makeEmployeeTable($importData);
         	        			$("#globalMsg").html("Success").show().fadeOut(3000);
                 			} else if ($data.responseHeader.responseCode == 'EDIT_FAILURE' ) {
         						$.each($data.data.webMessages, function($index, $value) {
-        							console.log($data.data.webMessages);
         							var $selector = "#employee-modal ." + $index + "Err";
-        							console.log($selector);
         							$($selector).html($value[0]);
         						});
                 			} else {
@@ -583,7 +561,6 @@
                    			$("#employee-display").show();
                    			$("#display-div .employeeFile").html($data.data.fileName);
                    			EMPLOYEE_IMPORT.makeEmployeeTable($data.data);
-                   			console.log($data.data);
                    			
                    			
                    			 

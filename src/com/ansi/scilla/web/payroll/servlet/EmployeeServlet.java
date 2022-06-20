@@ -129,7 +129,12 @@ public class EmployeeServlet extends AbstractServlet {
 				if ( employeeCode == null ) {
 					processAddRequest(conn, response, employeeRequest, sessionData, today);
 				} else {
-					processUpdateRequest(conn, response, employeeCode, employeeRequest, sessionData.getUser().getUserId(), today);
+					if ( employeeRequest.getValidateOnly() != null && employeeRequest.getValidateOnly() ) {
+						processValidateRequest(conn, response, employeeCode, employeeRequest);
+					} else {
+						processUpdateRequest(conn, response, employeeCode, employeeRequest, sessionData.getUser().getUserId(), today);
+					}
+					
 				}		
 			} catch ( InvalidFormatException e) {
 				String badField = super.findBadField(e.toString());
@@ -155,45 +160,43 @@ public class EmployeeServlet extends AbstractServlet {
 	
 	
 	
+	private void processValidateRequest(Connection conn, HttpServletResponse response, Integer employeeCode, EmployeeRequest employeeRequest) throws Exception {
+		WebMessages webMessages = employeeRequest.validateUpdate(conn);
+		EmployeeValidateResponse data = new EmployeeValidateResponse(conn, employeeCode, employeeRequest, webMessages);		
+		ResponseCode responseCode = webMessages.isEmpty() ? ResponseCode.SUCCESS : ResponseCode.EDIT_FAILURE;
+		super.sendResponse(conn, response, responseCode, data);		
+	}
+
+
+
+
 	private void processAddRequest(Connection conn, HttpServletResponse response, EmployeeRequest employeeRequest, SessionData sessionData, Calendar today) throws Exception {
 		WebMessages webMessages = employeeRequest.validateAdd(conn);
 		ResponseCode responseCode = webMessages.isEmpty() ? ResponseCode.SUCCESS : ResponseCode.EDIT_FAILURE;
 
-		if ( employeeRequest.getValidateOnly() != null && employeeRequest.getValidateOnly() ) {
-			EmployeeValidateResponse data = new EmployeeValidateResponse(conn, employeeRequest.getEmployeeCode(), employeeRequest);
-			data.setWebMessages(webMessages);
-			super.sendResponse(conn, response, responseCode, data);
-		} else {
-			EmployeeResponse data = new EmployeeResponse();
-			if ( responseCode.equals(ResponseCode.SUCCESS)) {
-				doAdd(conn, employeeRequest, sessionData.getUser(), today);
-				conn.commit();
-				data = new EmployeeResponse(conn, employeeRequest.getEmployeeCode());
-			} 
-			data.setWebMessages(webMessages);
-			super.sendResponse(conn, response, responseCode, data);
-		}	
+		EmployeeResponse data = new EmployeeResponse();
+		if ( responseCode.equals(ResponseCode.SUCCESS)) {
+			doAdd(conn, employeeRequest, sessionData.getUser(), today);
+			conn.commit();
+			data = new EmployeeResponse(conn, employeeRequest.getEmployeeCode());
+		} 
+		data.setWebMessages(webMessages);
+		super.sendResponse(conn, response, responseCode, data);
 	}
 
 	
 	private void processUpdateRequest(Connection conn, HttpServletResponse response, Integer employeeCode, EmployeeRequest employeeRequest, Integer userId, Calendar today) throws RecordNotFoundException, Exception {
 		WebMessages webMessages = employeeRequest.validateUpdate(conn);
+		EmployeeResponse data = new EmployeeResponse();
 		ResponseCode responseCode = webMessages.isEmpty() ? ResponseCode.SUCCESS : ResponseCode.EDIT_FAILURE;
 
-		if ( employeeRequest.getValidateOnly() != null && employeeRequest.getValidateOnly() ) {
-			EmployeeValidateResponse data = new EmployeeValidateResponse(conn, employeeRequest.getEmployeeCode(), employeeRequest);
-			data.setWebMessages(webMessages);
-			super.sendResponse(conn, response, responseCode, data);
-		} else {
-			EmployeeResponse data = new EmployeeResponse();
-			if ( responseCode.equals(ResponseCode.SUCCESS)) {
-				doUpdate(conn, employeeCode, employeeRequest, userId, today);
-				conn.commit();
-				data = new EmployeeResponse(conn, employeeRequest.getEmployeeCode());
-			} 
-			data.setWebMessages(webMessages);
-			super.sendResponse(conn, response, responseCode, data);
-		}		
+		if ( responseCode.equals(ResponseCode.SUCCESS)) {
+			doUpdate(conn, employeeCode, employeeRequest, userId, today);
+			conn.commit();
+			data = new EmployeeResponse(conn, employeeRequest.getEmployeeCode());
+		} 
+		data.setWebMessages(webMessages);
+		super.sendResponse(conn, response, responseCode, data);
 	}
 
 	

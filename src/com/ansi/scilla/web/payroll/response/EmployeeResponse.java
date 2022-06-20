@@ -1,8 +1,12 @@
 package com.ansi.scilla.web.payroll.response;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 
+import org.apache.commons.beanutils.BeanUtils;
+
 import com.ansi.scilla.web.common.response.MessageResponse;
+import com.ansi.scilla.web.payroll.request.EmployeeRequest;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class EmployeeResponse extends MessageResponse {
@@ -16,7 +20,7 @@ public class EmployeeResponse extends MessageResponse {
 	}
 
 	public EmployeeResponse(Connection conn, Integer employeeCode) throws RecordNotFoundException, Exception {
-		super();
+		this();
 		this.employee = new EmployeeResponseRecord(conn, employeeCode);
 	}
 

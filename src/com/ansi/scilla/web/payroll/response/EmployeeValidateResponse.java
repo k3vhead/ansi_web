@@ -1,11 +1,13 @@
 package com.ansi.scilla.web.payroll.response;
 
 import java.sql.Connection;
+import java.text.SimpleDateFormat;
 
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.PayrollEmployee;
 import com.ansi.scilla.common.payroll.parser.EmployeeImportRecord;
 import com.ansi.scilla.web.common.response.MessageResponse;
+import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.payroll.request.EmployeeRequest;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
@@ -18,12 +20,20 @@ public class EmployeeValidateResponse extends MessageResponse {
 	private EmployeeValidateResponse() {
 		super();
 	}
-	public EmployeeValidateResponse(Connection conn, Integer employeeCode, EmployeeRequest employeeRequest) throws Exception {
+	
+	public EmployeeValidateResponse(Connection conn, Integer employeeCode, EmployeeRequest employeeRequest, WebMessages webMessages) throws Exception {
 		this();
+		super.setWebMessages(webMessages);
+		
 		PayrollEmployee payrollEmployee = new PayrollEmployee();
-		Division division = new Division();
-		division.setDivisionId(employeeRequest.getDivisionId());
-		division.selectOne(conn);
+		Division division = null;
+		
+		// only get a division if we have a good id
+		if ( ! webMessages.containsKey(EmployeeRequest.DIVISION_ID)) {
+			division = new Division();
+			division.setDivisionId(employeeRequest.getDivisionId());
+			division.selectOne(conn);
+		}
 
 		try {			
 			payrollEmployee.setEmployeeCode(employeeCode);
@@ -63,12 +73,19 @@ public class EmployeeValidateResponse extends MessageResponse {
 	//		this.employee.setMiddleInitial( ( employeeRequest.getMiddleInitial() ):    private String middleInitial;
 			this.employee.setDepartmentDescription( employeeRequest.getDepartmentDescription() );
 			this.employee.setStatus( employeeRequest.getStatus() );
-	//		this.employee.setTerminationDate( employeeRequest.getTerminationDate() );
+			if ( employeeRequest.getTerminationDate() == null ) {
+				this.employee.setTerminationDate( null );
+			} else {
+				SimpleDateFormat sdf = new SimpleDateFormat(EmployeeImportRecord.EMPLOYEE_RECORD_DATE_FORMAT);
+				this.employee.setTerminationDate( sdf.format(employeeRequest.getTerminationDate().getTime() ));
+			}
 			this.employee.setUnionMember( unionMember != null && unionMember.intValue()==1 ? "1" : "0" );
 			this.employee.setUnionCode( employeeRequest.getUnionCode() );
 			this.employee.setUnionRate( unionRate == null ? null : String.valueOf(unionRate) );
 	//		this.employee.setProcessDate( employeeRequest.getProcessDate() );
-			this.employee.setDiv(division.getDivisionDisplay());
+			if ( division != null ) {
+				this.employee.setDiv(division.getDivisionDisplay());
+			}
 		}
 	
 	
