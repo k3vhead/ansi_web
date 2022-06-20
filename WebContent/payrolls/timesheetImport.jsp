@@ -651,6 +651,9 @@ td.money {
        			            	$.each($data.data.employeeRecordList, function($index, $value) {
        			            		TIMESHEET_IMPORT.employeeMap[$value.row] = $value;
        			            	});
+       			            	
+       			                console.log("employeeMap looks like");
+       			                console.log(TIMESHEET_IMPORT.employeeMap);
        			            },
 	           				drawCallback : function( settings ) {
 	           					$(".edit-link").off("click");
@@ -845,12 +848,12 @@ td.money {
 	        				},
 	        				buttons: [ 
 	        					{
-	        						id:  "employee-model-cancel-button",
+	        						id:  "employee-modal-cancel-button",
 	        						click: function($event) {
 	        							$("#employee-modal").dialog("close");      							
 	        						}
 	        					},{
-	        						id:  "employee-model-continue-button",
+	        						id:  "employee-modal-continue-button",
 	        						click: function($event) {
 	        							TIMESHEET_IMPORT.validateEmployeeModal();
 	        						}
@@ -858,8 +861,8 @@ td.money {
 	        				]
 	        				});
 	        			$("#employee-modal").dialog("open");
-	        			$("#employee-model-cancel-button").button('option', 'label', 'Cancel');
-	        			$("#employee-model-continue-button").button('option', 'label', 'Continue');
+	        			$("#employee-modal-cancel-button").button('option', 'label', 'Cancel');
+	        			$("#employee-modal-continue-button").button('option', 'label', 'Continue');
 	        			TIMESHEET_IMPORT.populateEmployeeModal($rowNumber);
 	        		},
 	        		StringToFloatString : function (NumberAsString){
@@ -898,7 +901,7 @@ td.money {
 						
 	           			
            		 		var $totalHours = 
-           		 			parseFloat(TIMESHEET_IMPORT.employeeMap[$rowNumber].regularHours)
+           		 			parseFloat(  TIMESHEET_IMPORT.employeeMap[$rowNumber].regularHours)
            		 			+ parseFloat(TIMESHEET_IMPORT.employeeMap[$rowNumber].otHours)
            		 			+ parseFloat(TIMESHEET_IMPORT.employeeMap[$rowNumber].vacationHours)
            		 			+ parseFloat(TIMESHEET_IMPORT.employeeMap[$rowNumber].holidayHours)
@@ -907,23 +910,82 @@ td.money {
            				//$('[name="totalHours"]').val($totalHours.toFixed(2));
 	           			$('#employee-modal .totalHours').text($totalHours.toFixed(2));
 	           			
-	           			$('[name="directLabor"]').val(TIMESHEET_IMPORT.employeeMap[$rowNumber].directLabor);
-	           			$('[name="volume"]').val(TIMESHEET_IMPORT.employeeMap[$rowNumber].volume);
-	           			$('[name="grossPay"]').val(TIMESHEET_IMPORT.employeeMap[$rowNumber].grossPay);
+	           			$('[name="directLabor"]').val(          TIMESHEET_IMPORT.employeeMap[$rowNumber].directLabor);
+	           			$('[name="volume"]').val(               TIMESHEET_IMPORT.employeeMap[$rowNumber].volume);
+	           			$('[name="grossPay"]').val(             TIMESHEET_IMPORT.employeeMap[$rowNumber].grossPay);
 
-	           			$('[name="expenses"]').val(TIMESHEET_IMPORT.employeeMap[$rowNumber].expenses);
-	           			$('[name="expensesAllowed"]').val(TIMESHEET_IMPORT.employeeMap[$rowNumber].expensesAllowed);
-	           			$('[name="expensesSubmitted"]').val(TIMESHEET_IMPORT.employeeMap[$rowNumber].expensesSubmitted);	           			
+	           			$('[name="expenses"]').val(             TIMESHEET_IMPORT.employeeMap[$rowNumber].expenses);
+	           			$('[name="expensesAllowed"]').val(      TIMESHEET_IMPORT.employeeMap[$rowNumber].expensesAllowed);
+	           			$('[name="expensesSubmitted"]').val(    TIMESHEET_IMPORT.employeeMap[$rowNumber].expensesSubmitted);	           			
 	           			//$('[name="productivity"]').val(TIMESHEET_IMPORT.employeeMap[$rowNumber].productivity);
 	           			$('#employee-modal .productivity').text(TIMESHEET_IMPORT.employeeMap[$rowNumber].productivity);
 
 	           			$('#employee-modal .state').text($('select[name="state"]').val());
-	           			$('#employee-modal .row').text($rowNumber);
+	           			$('#employee-modal .state').text($('select[name="state"]').val());
+	           			$('#employee-modal .row'  ).text($rowNumber);
 	           			//blankRow: false
 	           			//errorsFound: null
 	           			//$rowNumber, $action
+	           			TIMESHEET_IMPORT.displayEmployeeModalErrors($rowNumber);
 	           		},
-	        		
+	           		displayEmployeeModalErrors : function($rowNumber) {
+						var $employeeErrors = TIMESHEET_IMPORT.employeeMap[$rowNumber].messages;
+	    				var $selector="";
+	    				var $errMsg="";
+       					console.log("$employeeErrors looks like ");
+       					console.log("========================== ");
+       					console.log($employeeErrors);
+       					       		
+           				$.each(TIMESHEET_IMPORT.employeeMap[$rowNumber].messages, function($index, $value) {
+           					console.log("TIMESHEET_IMPORT.employeeMap[$rowNumber].messages - fieldname  -->   " + $index);
+           					console.log("=====================================================================================");
+           					console.log("TIMESHEET_IMPORT.employeeMap[$rowNumber].messages - errorMessage.errorLevel   --> " + $value[0].errorMessage.errorLevel);
+           					console.log("TIMESHEET_IMPORT.employeeMap[$rowNumber].messages - errorMessage.errorMessage --> " + $value[0].errorMessage.message);
+           					console.log("TIMESHEET_IMPORT.employeeMap[$rowNumber].messages - errorType       --> " + $value[0].errorType);
+           					console.log("TIMESHEET_IMPORT.employeeMap[$rowNumber].messages - errorMessage.ok --> " + $value[0].ok);
+           					console.log("=====================================================================================");
+           					           					
+           					if(!$value[0].ok){
+               					console.log("set " +     $index + "Err to display '" + $value[0].errorMessage.message);
+               					
+               					$selector="#employee-modal ." + $index + "Err";
+               					$errMsg=$value[0].errorMessage.errorLevel + ":" + $value[0].errorMessage.message;
+               					$($selector).html($errMsg);               					
+               					console.log("setvars - selector =  " + selector + "  Value is '" + $errMsg);           					
+               				}
+           					
+           					//console.log("selector is " + $selector);	           					           					
+           					//$($selector).html($value[0]);
+           				});
+       					
+
+	           			
+	           			// 	    				employeeEditErr
+// 	    				employeeNameErr
+// 	    				employeeNameCodeErr
+// 	    				stateErr
+// 	    				rowErr
+// 	    				hoursErr
+// 	    				regularHoursErr
+// 	    				regularPayErr
+// 	    				expensesSubmittedErr
+// 	    				otHoursErr
+// 	    				otPayErr
+// 	    				expensesAllowedErr
+// 	    				vacationHoursErr
+// 	    				vacationPayErr
+// 	    				directLaborErr
+// 	    				holidayHoursErr
+// 	    				holidayPayErr
+// 	    				volumeErr
+// 	    				totalHoursErr
+// 	    				grossPayErr
+// 	    				productivityErr
+	    				
+	    				
+
+	    				
+	           		},
 	           		closeEmployeeModal : function() {
 	           			//$rowNumber, $action
 	           		},	           		
