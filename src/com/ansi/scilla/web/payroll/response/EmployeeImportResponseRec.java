@@ -40,7 +40,7 @@ public	class EmployeeImportResponseRec extends EmployeeImportRecord implements A
 			this.unionMember = record.getUnionMember();
 			this.unionCode = record.getUnionCode();
 			this.unionRate = record.getUnionRate();
-			this.processDate = record.getProcessDate();
+//			this.processDate = record.getProcessDate();
 			this.recordStatus = record.getRecordStatus();
 			this.fieldList = record.getFieldList();
 			this.rowId = record.getRowId();

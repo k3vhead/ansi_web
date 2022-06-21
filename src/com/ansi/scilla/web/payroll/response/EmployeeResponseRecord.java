@@ -27,7 +27,7 @@ public class EmployeeResponseRecord extends ApplicationObject {
 	private Integer unionMember;
 	private String unionCode;
 	private Double unionRate;
-	private Calendar processDate;
+//	private Calendar processDate;
 	private String notes;
 	
 	public EmployeeResponseRecord() {
@@ -54,7 +54,7 @@ public class EmployeeResponseRecord extends ApplicationObject {
 		this.unionMember = employee.getUnionMember() != null && employee.getUnionMember().intValue() == 1 ? 1 : 0;
 		this.unionCode = employee.getUnionCode();
 		this.unionRate = employee.getUnionRate() == null ? null : employee.getUnionRate().doubleValue();
-		this.processDate = DateUtils.toCalendar(employee.getProcessDate());
+//		this.processDate = DateUtils.toCalendar(employee.getProcessDate());
 		
 	}
 
@@ -156,15 +156,15 @@ public class EmployeeResponseRecord extends ApplicationObject {
 		this.unionRate = unionRate;
 	}
 
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="America/Chicago")
-	public Calendar getProcessDate() {
-		return processDate;
-	}
+//	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="America/Chicago")
+//	public Calendar getProcessDate() {
+//		return processDate;
+//	}
 
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="America/Chicago")
-	public void setProcessDate(Calendar processDate) {
-		this.processDate = processDate;
-	}
+//	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="America/Chicago")
+//	public void setProcessDate(Calendar processDate) {
+//		this.processDate = processDate;
+//	}
 
 	public String getNotes() {
 		return notes;

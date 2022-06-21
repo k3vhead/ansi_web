@@ -249,95 +249,12 @@ public class EmployeeServlet extends AbstractServlet {
 		java.sql.Date updateTime = new java.sql.Date(today.getTime().getTime());
 		java.sql.Date terminationDate = employeeRequest.getTerminationDate() == null ? null : new java.sql.Date(employeeRequest.getTerminationDate().getTime().getTime());
 		
-		if ( employeeRequest.getSelectedEmployeeCode() != null && employeeRequest.getSelectedEmployeeCode().equals(employeeRequest.getEmployeeCode())) {
-			processStandardUpdate(conn, employeeCode, employeeRequest, userId, division, today, updateTime, terminationDate);
-		} else {
-			processChangedEmployeeCode(conn, employeeCode, employeeRequest, userId, division, today, updateTime, terminationDate);
-		}
+		processStandardUpdate(conn, employeeCode, employeeRequest, userId, division, today, updateTime, terminationDate);
 	
 		
 	}
 
-	/**
-	 * We need to handle this special case because employee code is a foreign key from alias to employee. If the employee changes
-	 * code, then the alias also needs to change employee code. So, here's the process:
-	 * 
-	 * Insert a employee record with the new employee code
-	 * Update alias records to point to the new employee record
-	 * Delete the old employee record
-	 * 
-	 * @param conn
-	 * @param employeeCode
-	 * @param employeeRequest
-	 * @param userId
-	 * @param today
-	 * @param updateTime
-	 * @param terminationDate
-	 * @throws SQLException 
-	 */
-	private void processChangedEmployeeCode(Connection conn, Integer employeeCode, EmployeeRequest employeeRequest,
-			Integer userId, Division division, Calendar today, Date updateTime, Date terminationDate) throws SQLException {
-		// Insert employee record with new employee code:
-		String insertSql = "insert into payroll_employee(\n" + 
-				"	employee_code,\n" + 
-				"	company_code,\n" + 
-				"	division,\n" + 
-				"	division_id,\n" + 
-				"	employee_first_name,\n" + 
-				"	employee_last_name,\n" + 
-				"	employee_mi,\n" + 
-				"	dept_description,\n" + 
-				"	employee_status,\n" + 
-				"	employee_termination_date,\n" + 
-				"	notes,\n" + 
-				"	union_member,\n" + 
-				"	union_code,\n" + 
-				"	union_rate,\n" + 
-				"	process_date,\n" + 
-				"	added_by,\n" + 
-				"	added_date,\n" + 
-				"	updated_by,\n" + 
-				"	updated_date)\n" + 
-				"select ? as employee_code,\n" + 
-				"	company_code,\n" + 
-				"	division,\n" + 
-				"	division_id,\n" + 
-				"	employee_first_name,\n" + 
-				"	employee_last_name,\n" + 
-				"	employee_mi,\n" + 
-				"	dept_description,\n" + 
-				"	employee_status,\n" + 
-				"	employee_termination_date,\n" + 
-				"	notes,\n" + 
-				"	union_member,\n" + 
-				"	union_code,\n" + 
-				"	union_rate,\n" + 
-				"	process_date,\n" + 
-				"	added_by,\n" + 
-				"	added_date,\n" + 
-				"	updated_by,\n" + 
-				"	updated_date from payroll_employee where payroll_employee.employee_code=?";
-		PreparedStatement insertPs = conn.prepareStatement(insertSql);
-		insertPs.setInt(1, employeeRequest.getEmployeeCode());
-		insertPs.setInt(2, employeeRequest.getSelectedEmployeeCode());
-		insertPs.executeUpdate();
-		
-		// update alias records
-		PreparedStatement updatePs = conn.prepareStatement("update employee_alias set employee_code=? where employee_code=?");
-		updatePs.setInt(1, employeeRequest.getEmployeeCode());
-		updatePs.setInt(2, employeeRequest.getSelectedEmployeeCode());
-		updatePs.executeUpdate();
-		
-		// delete the obsolete payroll employee
-		PreparedStatement deletePs = conn.prepareStatement("delete payroll_employee where employee_code=?");
-		deletePs.setInt(1, employeeRequest.getSelectedEmployeeCode());
-		deletePs.executeUpdate();
-		
-		// update the rest of the fields
-		processStandardUpdate(conn, employeeRequest.getEmployeeCode(), employeeRequest, userId, division, today, updateTime, terminationDate);
-		
-		
-	}
+	
 
 	private void processStandardUpdate(Connection conn, Integer employeeCode, EmployeeRequest employeeRequest,
 			Integer userId, Division division, Calendar today, Date updateTime, Date terminationDate) throws SQLException {
@@ -423,7 +340,7 @@ public class EmployeeServlet extends AbstractServlet {
 			employee.setUnionCode(employeeRequest.getUnionCode());
 			employee.setUnionRate(new BigDecimal(employeeRequest.getUnionRate()).round(MathContext.DECIMAL32));
 		}
-		employee.setProcessDate(employeeRequest.getProcessDate().getTime());
+//		employee.setProcessDate(employeeRequest.getProcessDate().getTime());
 		employee.setNotes(StringUtils.trimToNull(employeeRequest.getNotes()));
 		employee.setUpdatedBy(sessionUser.getUserId());
 		employee.setUpdatedDate(today.getTime());

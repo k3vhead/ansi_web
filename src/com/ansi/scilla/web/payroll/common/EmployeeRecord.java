@@ -36,7 +36,7 @@ public class EmployeeRecord extends ApplicationObject {
 	private static final Integer COL_UNION_MEMBER= 8;
 	private static final Integer COL_UNION_CODE = 9;
 	private static final Integer COL_UNION_RATE = 10;
-	private static final Integer COL_PROCESS_DATE = 11;
+//	private static final Integer COL_PROCESS_DATE = 11;
 	
 	
 	// If you change this list of fields, make sure you modify the "equals()" method as well.
@@ -51,7 +51,7 @@ public class EmployeeRecord extends ApplicationObject {
 	private String unionMember;
 	private String unionCode;
 	private String unionRate;
-	private String processDate;
+//	private String processDate;
 	private String recordStatus;
 	private List<String> fieldList = new ArrayList<String>();
 	private String rowId;
@@ -78,7 +78,7 @@ public class EmployeeRecord extends ApplicationObject {
 		this.unionMember = spreadSheetRow[COL_UNION_MEMBER];
 		this.unionCode = spreadSheetRow[COL_UNION_CODE];
 		this.unionRate = spreadSheetRow[COL_UNION_RATE];
-		this.processDate = spreadSheetRow[COL_PROCESS_DATE];
+//		this.processDate = spreadSheetRow[COL_PROCESS_DATE];
 		this.rowId = makeRowId();
 	}
 	
@@ -91,7 +91,7 @@ public class EmployeeRecord extends ApplicationObject {
 		Object terminationDate = rs.getObject(PayrollEmployee.EMPLOYEE_TERMINATION_DATE);
 		Object unionMember = rs.getObject(PayrollEmployee.UNION_MEMBER);
 		Object unionRate = rs.getObject(PayrollEmployee.UNION_RATE);
-		Object processDate = rs.getObject(PayrollEmployee.PROCESS_DATE);
+//		Object processDate = rs.getObject(PayrollEmployee.PROCESS_DATE);
 		
 		this.employeeCode = String.valueOf(rs.getInt(PayrollEmployee.EMPLOYEE_CODE));
 		this.companyCode = rs.getString(PayrollEmployee.COMPANY_CODE);
@@ -104,7 +104,7 @@ public class EmployeeRecord extends ApplicationObject {
 		this.unionMember = unionMember == null ? null : "Yes";
 		this.unionCode = rs.getString(PayrollEmployee.UNION_CODE);
 		this.unionRate = unionRate == null ? null : String.valueOf(unionRate);
-		this.processDate = processDate == null ? null : sdf.format((java.sql.Date)processDate);
+//		this.processDate = processDate == null ? null : sdf.format((java.sql.Date)processDate);
 		this.rowId = makeRowId();
 	}
 
@@ -196,13 +196,13 @@ public class EmployeeRecord extends ApplicationObject {
 		this.unionRate = unionRate;
 	}
 
-	public String getProcessDate() {
-		return processDate;
-	}
+//	public String getProcessDate() {
+//		return processDate;
+//	}
 
-	public void setProcessDate(String processDate) {
-		this.processDate = processDate;
-	}
+//	public void setProcessDate(String processDate) {
+//		this.processDate = processDate;
+//	}
 
 	public String getRecordStatus() {
 		return recordStatus;
@@ -245,12 +245,12 @@ public class EmployeeRecord extends ApplicationObject {
 			matches = compareBoolean("unionMember", this.unionMember, rec.getUnionMember()) ? matches : false;
 			matches = compareString("unionCode", this.unionCode, rec.getUnionCode()) ? matches : false;
 			matches = compareDollar("unionRate", this.unionRate, rec.getUnionRate()) ? matches : false;
-			try {
-				matches = compareDate("processDate", this.processDate, rec.getProcessDate(), "MM/dd/yy") ? matches : false;
-			} catch ( ParseException e) {
-				fieldList.add("processDate");
-				matches = false;
-			}
+//			try {
+//				matches = compareDate("processDate", this.processDate, rec.getProcessDate(), "MM/dd/yy") ? matches : false;
+//			} catch ( ParseException e) {
+//				fieldList.add("processDate");
+//				matches = false;
+//			}
 		} else {
 			fieldList.add("classname");
 			matches = false;

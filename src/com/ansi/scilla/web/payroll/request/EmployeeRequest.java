@@ -16,7 +16,6 @@ public class EmployeeRequest extends AbstractRequest {
 	private static final long serialVersionUID = 1L;
 
 	public static final String VALIDATE_ONLYE = "validateOnly";
-	public static final String SELECTED_EMPLOYEE_CODE = "selectedEmployeeCode";
 	public static final String EMPLOYEE_CODE = "employeeCode";
 	public static final String COMPANY_CODE ="companyCode";
 	public static final String DIVISION_ID="divisionId";
@@ -29,11 +28,10 @@ public class EmployeeRequest extends AbstractRequest {
 	public static final String UNION_MEMBER = "unionMember";
 	public static final String UNION_CODE = "unionCode";
 	public static final String UNION_RATE = "unionRate";
-	public static final String PROCESS_DATE = "processDate";
+//	public static final String PROCESS_DATE = "processDate";
 	public static final String NOTES="notes";
 	
 	private Boolean validateOnly;
-	private Integer selectedEmployeeCode;
 	private Integer employeeCode;
 	private String companyCode;
 	private Integer divisionId;
@@ -46,7 +44,7 @@ public class EmployeeRequest extends AbstractRequest {
 	private Integer unionMember;
 	private String unionCode;
 	private Double unionRate;
-	private Calendar processDate;
+//	private Calendar processDate;
 	private String notes;
 
 	
@@ -55,12 +53,6 @@ public class EmployeeRequest extends AbstractRequest {
 	}
 	public void setValidateOnly(Boolean validateOnly) {
 		this.validateOnly = validateOnly;
-	}
-	public Integer getSelectedEmployeeCode() {
-		return selectedEmployeeCode;
-	}
-	public void setSelectedEmployeeCode(Integer selectedEmployeeCode) {
-		this.selectedEmployeeCode = selectedEmployeeCode;
 	}
 	public Integer getEmployeeCode() {
 		return employeeCode;
@@ -134,12 +126,12 @@ public class EmployeeRequest extends AbstractRequest {
 	public void setUnionRate(Double unionRate) {
 		this.unionRate = unionRate;
 	}
-	public Calendar getProcessDate() {
-		return processDate;
-	}
-	public void setProcessDate(Calendar processDate) {
-		this.processDate = processDate;
-	}
+//	public Calendar getProcessDate() {
+//		return processDate;
+//	}
+//	public void setProcessDate(Calendar processDate) {
+//		this.processDate = processDate;
+//	}
 	public String getNotes() {
 		return notes;
 	}
@@ -170,7 +162,7 @@ public class EmployeeRequest extends AbstractRequest {
 			RequestValidator.validateString(webMessages, UNION_CODE, unionCode, 45, true, null);
 			RequestValidator.validateNumber(webMessages, UNION_RATE, unionRate, 0.01D, null, true, null);			
 		}
-		RequestValidator.validateDate(webMessages, PROCESS_DATE, processDate, true, null, null);
+//		RequestValidator.validateDate(webMessages, PROCESS_DATE, processDate, true, null, null);
 		validateTerminationDate(webMessages);
 
 		return webMessages;

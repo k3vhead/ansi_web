@@ -8,7 +8,6 @@
 			<td class="form-label">Employee Code:</td>
 			<td>
 				<input type="text" name="employeeCode" />
-				<input type="hidden" name="selectedEmployeeCode" />
 			</td>
 			<td><span class="err employeeCodeErr"></span></td>
 		</tr>

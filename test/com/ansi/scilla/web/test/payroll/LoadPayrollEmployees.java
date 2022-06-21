@@ -59,7 +59,7 @@ public class LoadPayrollEmployees extends Loader {
 					emp.setEmployeeLastName(rec.getLastName());
 					emp.setEmployeeTerminationDate( StringUtils.isBlank(rec.getTerminationDate()) ? null : sdf.parse(rec.getTerminationDate()));
 					emp.setEmployeeStatus(status);
-					emp.setProcessDate(sdf.parse(rec.getProcessDate()));
+//					emp.setProcessDate(sdf.parse(rec.getProcessDate()));
 					emp.setUnionCode(StringUtils.isBlank(rec.getUnionCode()) ? null : rec.getUnionCode() );
 					emp.setUnionMember( StringUtils.isBlank(rec.getUnionMember()) ? 0 : 1);
 					emp.setUnionRate( StringUtils.isBlank(rec.getUnionRate()) ? null : makeBD(rec.getUnionRate()));

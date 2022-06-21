@@ -65,7 +65,7 @@ public class EmployeeValidateResponse extends MessageResponse {
 			Integer unionMember = employeeRequest.getUnionMember();
 			Double unionRate = employeeRequest.getUnionRate();
 			
-			this.employee.setEmployeeCode( String.valueOf(employeeRequest.getSelectedEmployeeCode()) );
+			this.employee.setEmployeeCode( String.valueOf(employeeRequest.getEmployeeCode()) );
 			this.employee.setCompanyCode( employeeRequest.getCompanyCode() );
 			this.employee.setDivisionId( employeeRequest.getDivisionId() );
 			this.employee.setFirstName( employeeRequest.getFirstName() );
