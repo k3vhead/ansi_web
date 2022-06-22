@@ -4,9 +4,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.Calendar;
 
 import javax.servlet.ServletException;
@@ -54,13 +51,7 @@ public class EmployeeServlet extends AbstractServlet {
 				String uri = request.getRequestURI();
 				String[] uriPath = uri.split("/");
 				Integer employeeCode = StringUtils.isNumeric(uriPath[uriPath.length - 1]) ? Integer.valueOf(uriPath[uriPath.length - 1]) : null;
-//				Calendar today = Calendar.getInstance(new AnsiTime());
-				
-//				String jsonString = super.makeJsonString(request);
-//				logger.log(Level.DEBUG, jsonString);
 				AppUtils.validateSession(request, Permission.PAYROLL_WRITE);
-//				EmployeeRequest employeeRequest = new EmployeeRequest();
-//				AppUtils.json2object(jsonString, employeeRequest);
 				
 				processDeleteRequest(conn, response, employeeCode);
 			} finally {
@@ -132,7 +123,7 @@ public class EmployeeServlet extends AbstractServlet {
 					if ( employeeRequest.getValidateOnly() != null && employeeRequest.getValidateOnly() ) {
 						processValidateRequest(conn, response, employeeCode, employeeRequest);
 					} else {
-						processUpdateRequest(conn, response, employeeCode, employeeRequest, sessionData.getUser().getUserId(), today);
+						processUpdateRequest(conn, response, employeeCode, employeeRequest, sessionData.getUser(), today);
 					}
 					
 				}		
@@ -185,13 +176,13 @@ public class EmployeeServlet extends AbstractServlet {
 	}
 
 	
-	private void processUpdateRequest(Connection conn, HttpServletResponse response, Integer employeeCode, EmployeeRequest employeeRequest, Integer userId, Calendar today) throws RecordNotFoundException, Exception {
+	private void processUpdateRequest(Connection conn, HttpServletResponse response, Integer employeeCode, EmployeeRequest employeeRequest, SessionUser sessionUser, Calendar today) throws RecordNotFoundException, Exception {
 		WebMessages webMessages = employeeRequest.validateUpdate(conn);
 		EmployeeResponse data = new EmployeeResponse();
 		ResponseCode responseCode = webMessages.isEmpty() ? ResponseCode.SUCCESS : ResponseCode.EDIT_FAILURE;
 
 		if ( responseCode.equals(ResponseCode.SUCCESS)) {
-			doUpdate(conn, employeeCode, employeeRequest, userId, today);
+			doUpdate(conn, employeeCode, employeeRequest, sessionUser, today);
 			conn.commit();
 			data = new EmployeeResponse(conn, employeeRequest.getEmployeeCode());
 		} 
@@ -241,78 +232,25 @@ public class EmployeeServlet extends AbstractServlet {
 	}
 
 
-	private void doUpdate(Connection conn, Integer employeeCode, EmployeeRequest employeeRequest, Integer userId, Calendar today) throws RecordNotFoundException, Exception {
+	private void doUpdate(Connection conn, Integer employeeCode, EmployeeRequest employeeRequest, SessionUser sessionUser, Calendar today) throws RecordNotFoundException, Exception {
 		Division division = new Division();
 		division.setDivisionId(employeeRequest.getDivisionId());
 		division.selectOne(conn);
 		
-		java.sql.Date updateTime = new java.sql.Date(today.getTime().getTime());
-		java.sql.Date terminationDate = employeeRequest.getTerminationDate() == null ? null : new java.sql.Date(employeeRequest.getTerminationDate().getTime().getTime());
+		PayrollEmployee employee = new PayrollEmployee();
+		employee.setEmployeeCode(employeeCode);
+		employee.selectOne(conn);
+		populateEmployee(conn, employee, employeeRequest, sessionUser, today);
 		
-		processStandardUpdate(conn, employeeCode, employeeRequest, userId, division, today, updateTime, terminationDate);
-	
+		PayrollEmployee key = new PayrollEmployee();
+		key.setEmployeeCode(employeeCode);
 		
+		employee.update(conn, key);
 	}
 
 	
 
-	private void processStandardUpdate(Connection conn, Integer employeeCode, EmployeeRequest employeeRequest,
-			Integer userId, Division division, Calendar today, Date updateTime, Date terminationDate) throws SQLException {
-		String sql =
-				  "UPDATE payroll_employee "
-				+ "SET employee_code=?, \n"
-				+ "    company_code=?, \n"
-				+ "    division=?, \n"
-				+ "    division_id=?, \n"
-				+ "    employee_first_name=?, \n"
-				+ "    employee_last_name=?, \n "
-				+ "    employee_mi=?, \n"
-				+ "    dept_description=?, \n"
-				+ "    employee_status=?, \n"
-				+ "    employee_termination_date=?, \n"
-				+ "    notes=?, \n"
-				+ "    updated_by=?, \n"
-				+ "    updated_date=? \n"
-				+ "WHERE employee_code=?";
-		
-		
-
-		PreparedStatement ps = conn.prepareStatement(sql);
-		int n = 1;
-		ps.setInt(n, employeeRequest.getEmployeeCode());
-		n++;
-		ps.setString(n, StringUtils.trimToNull(employeeRequest.getCompanyCode()));
-		n++;
-		ps.setString(n, String.valueOf(division.getDivisionNbr()));
-		n++;
-		ps.setInt(n, employeeRequest.getDivisionId());
-		n++;
-		ps.setString(n, StringUtils.trimToNull(employeeRequest.getFirstName()));
-		n++;
-		ps.setString(n, StringUtils.trimToNull(employeeRequest.getLastName()));
-		n++;
-		ps.setString(n, StringUtils.trimToNull(employeeRequest.getMiddleInitial()));
-		n++;
-		ps.setString(n, StringUtils.trimToNull(employeeRequest.getDepartmentDescription()));
-		n++;
-		ps.setString(n, StringUtils.trimToNull(employeeRequest.getStatus()));
-		n++;
-		ps.setDate(n, terminationDate);
-		n++;
-		ps.setString(n, StringUtils.trimToNull(employeeRequest.getNotes()));
-		n++;
-		ps.setInt(n, userId);
-		n++;
-		ps.setDate(n, updateTime);
-		n++;
-		ps.setInt(n, employeeCode);
-		
-		
-//		n++;
-//		ps.setInt(n, employeeCode);
-
-		ps.executeUpdate();		
-	}
+	
 
 	private void populateEmployee(Connection conn, PayrollEmployee employee, EmployeeRequest employeeRequest, SessionUser sessionUser, Calendar today) throws Exception {
 		Division division = new Division();

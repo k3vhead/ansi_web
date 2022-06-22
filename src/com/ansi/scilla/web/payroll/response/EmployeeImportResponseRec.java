@@ -19,56 +19,65 @@ import com.ansi.scilla.common.utils.compare.StringComparison;
 public	class EmployeeImportResponseRec extends EmployeeImportRecord implements AnsiComparable {
 	private final Logger logger = LogManager.getLogger(EmployeeImportResponseRec.class);
 	private static final long serialVersionUID = 1L;
-		private Boolean recordMatches;
-		
-		public EmployeeImportResponseRec() {
-			super();
-		}
-		
-		public EmployeeImportResponseRec(EmployeeImportRecord record) throws IllegalAccessException, InvocationTargetException {
-			this();
-//			BeanUtils.copyProperties(this, record);
-			this.employeeCode = record.getEmployeeCode();
-			this.companyCode = record.getCompanyCode();
-			this.divisionNbr = record.getDivisionNbr();
-			
-			this.firstName = record.getFirstName();
-			this.lastName = record.getLastName();
-			this.departmentDescription = record.getDepartmentDescription();
-			this.status = record.getStatus();
-			this.terminationDate = record.getTerminationDate();
-			this.unionMember = record.getUnionMember();
-			this.unionCode = record.getUnionCode();
-			this.unionRate = record.getUnionRate();
-//			this.processDate = record.getProcessDate();
-			this.recordStatus = record.getRecordStatus();
-			this.fieldList = record.getFieldList();
-			this.rowId = record.getRowId();
-			this.divisionId = record.getDivisionId();
-			this.div = record.getDiv();
-			logger.log(Level.DEBUG, record.getEmployeeCode() + "\t" + record.getRowId() + "\t" + this.getRowId());
-			this.recordMatches = null;
-		}
+	private String notes;
+	private Boolean recordMatches;
 
-		public Boolean getRecordMatches() {
-			return recordMatches;
-		}
+	public EmployeeImportResponseRec() {
+		super();
+	}
 
-		public void setRecordMatches(Boolean recordMatches) {
-			this.recordMatches = recordMatches;
-		}
+	public EmployeeImportResponseRec(EmployeeImportRecord record) throws IllegalAccessException, InvocationTargetException {
+		this();
+		//			BeanUtils.copyProperties(this, record);
+		this.employeeCode = record.getEmployeeCode();
+		this.companyCode = record.getCompanyCode();
+		this.divisionNbr = record.getDivisionNbr();
 
-		@Override
-		public AnsiComparison[] makeFieldNameList(String className) throws Exception {
-			if (className.equals( PayrollEmployee.class.getName() )) {
-				return new AnsiComparison[] {
-						new AnsiComparison("firstName", "employeeFirstName", new StringComparison(false)),	
-						new AnsiComparison("lastName", "employeeLastName", new StringComparison(false)),
-						new AnsiComparison("status", "employeeStatus", new StringComparison(false)),
-						new AnsiComparison("unionMember", "unionMember", new BooleanIshComparison()),
+		this.firstName = record.getFirstName();
+		this.lastName = record.getLastName();
+		this.departmentDescription = record.getDepartmentDescription();
+		this.status = record.getStatus();
+		this.terminationDate = record.getTerminationDate();
+		this.unionMember = record.getUnionMember();
+		this.unionCode = record.getUnionCode();
+		this.unionRate = record.getUnionRate();
+		//			this.processDate = record.getProcessDate();
+		this.recordStatus = record.getRecordStatus();
+		this.fieldList = record.getFieldList();
+		this.rowId = record.getRowId();
+		this.divisionId = record.getDivisionId();
+		this.div = record.getDiv();
+		logger.log(Level.DEBUG, record.getEmployeeCode() + "\t" + record.getRowId() + "\t" + this.getRowId());
+		this.recordMatches = null;
+	}
+
+	public String getNotes() {
+		return notes;
+	}
+
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
+
+	public Boolean getRecordMatches() {
+		return recordMatches;
+	}
+
+	public void setRecordMatches(Boolean recordMatches) {
+		this.recordMatches = recordMatches;
+	}
+
+	@Override
+	public AnsiComparison[] makeFieldNameList(String className) throws Exception {
+		if (className.equals( PayrollEmployee.class.getName() )) {
+			return new AnsiComparison[] {
+					new AnsiComparison("firstName", "employeeFirstName", new StringComparison(false)),	
+					new AnsiComparison("lastName", "employeeLastName", new StringComparison(false)),
+					new AnsiComparison("status", "employeeStatus", new StringComparison(false)),
+					new AnsiComparison("unionMember", "unionMember", new BooleanIshComparison()),
 
 
-						/*
+					/*
 						private String companyCode;
 						private String divisionNbr;
 
@@ -104,61 +113,61 @@ public	class EmployeeImportResponseRec extends EmployeeImportRecord implements A
 						private String unionCode;
 						private BigDecimal unionRate;
 						private Date processDate;
-						 */
-				};
-			} else {
-				throw new InvalidValueException("Don't know how to compare to " + className);
-			}
+					 */
+			};
+		} else {
+			throw new InvalidValueException("Don't know how to compare to " + className);
 		}
-		
-		
-		
-		
-		public class BooleanIshComparison implements AnsiComparator {
-
-			@Override
-			public boolean fieldsAreEqual(Object obj1, Object obj2) throws Exception {
-				Boolean value1 = null;
-				if ( obj1 instanceof String ) {
-					value1 = string2boolean( (String)obj1 );
-				} else if ( obj1 instanceof Integer ) {
-					value1 = int2boolean( (Integer)obj1 );
-				} else if ( obj1 instanceof Boolean) {
-					value1 = (Boolean)obj1;
-				} else {
-					throw new InvalidValueException("Unexpected Type: " + obj1.getClass().getName());
-				}
-				
-				Boolean value2 = null;
-				if ( obj2 instanceof String ) {
-					value2 = string2boolean( (String)obj2 );
-				} else if ( obj2 instanceof Integer ) {
-					value2 = int2boolean( (Integer)obj2 );
-				} else if ( obj1 instanceof Boolean) {
-					value2 = (Boolean)obj2;
-				} else {
-					throw new InvalidValueException("Unexpected Type: " + obj2.getClass().getName());
-				}
-				
-				return value1.equals(value2);
-			}
-			
-			private boolean string2boolean(String value) {
-				boolean b = false;
-				if ( ! StringUtils.isBlank(value) ) {
-					b = value.equals("1") || value.equalsIgnoreCase("yes") || value.equalsIgnoreCase("true");
-				}
-				return b;
-			}
-			private boolean int2boolean(Integer value) {
-				boolean b = false;
-				if ( value != null ) {
-					b = value.intValue() == 1;
-				}
-				return b;
-			}
-		}
-		
-		
 	}
+
+
+
+
+	public class BooleanIshComparison implements AnsiComparator {
+
+		@Override
+		public boolean fieldsAreEqual(Object obj1, Object obj2) throws Exception {
+			Boolean value1 = null;
+			if ( obj1 instanceof String ) {
+				value1 = string2boolean( (String)obj1 );
+			} else if ( obj1 instanceof Integer ) {
+				value1 = int2boolean( (Integer)obj1 );
+			} else if ( obj1 instanceof Boolean) {
+				value1 = (Boolean)obj1;
+			} else {
+				throw new InvalidValueException("Unexpected Type: " + obj1.getClass().getName());
+			}
+
+			Boolean value2 = null;
+			if ( obj2 instanceof String ) {
+				value2 = string2boolean( (String)obj2 );
+			} else if ( obj2 instanceof Integer ) {
+				value2 = int2boolean( (Integer)obj2 );
+			} else if ( obj1 instanceof Boolean) {
+				value2 = (Boolean)obj2;
+			} else {
+				throw new InvalidValueException("Unexpected Type: " + obj2.getClass().getName());
+			}
+
+			return value1.equals(value2);
+		}
+
+		private boolean string2boolean(String value) {
+			boolean b = false;
+			if ( ! StringUtils.isBlank(value) ) {
+				b = value.equals("1") || value.equalsIgnoreCase("yes") || value.equalsIgnoreCase("true");
+			}
+			return b;
+		}
+		private boolean int2boolean(Integer value) {
+			boolean b = false;
+			if ( value != null ) {
+				b = value.intValue() == 1;
+			}
+			return b;
+		}
+	}
+
+
+}
 	

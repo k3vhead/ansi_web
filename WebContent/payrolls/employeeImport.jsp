@@ -34,7 +34,7 @@
     	<script type="text/javascript" src="js/callNote.js"></script>  
     
         <style type="text/css">
-        	#conform-modal {
+        	#confirm-modal {
         		display:none;
         	}
         	#display-div {
@@ -122,6 +122,9 @@
 					employeeDict : {},
 					pageVars : {},
 					savedEditEmployee : {},
+					updateErrorCount : 0,
+					updateSuccessCount : 0,
+					updateExpectedCount : 0,
                    			
                    			
 					init : function() {
@@ -134,6 +137,9 @@
 					doEmployeeUpdate : function($employeeValue) {
 						console.log("doEmployeeUpdate");
 						console.log($employeeValue);
+						EMPLOYEE_IMPORT.updateErrorCount = 0;
+						EMPLOYEE_IMPORT.updateSuccessCount = 0;
+						EMPLOYEE_IMPORT.updateExpectedCount = 0;
 						var $url = "payroll/employee/" + $employeeValue['employeeCode'];
 						var $outbound = {
 							'validateOnly':false,
@@ -172,8 +178,11 @@
 						var $rowId = $passThruData['rowId'];
 						console.log("doEmployeeUpdateFailure " + $rowId);
 						var $selector = "#save-all-table ." + $rowId;
-						$($selector).html(EMPLOYEE_IMPORT['statusIsBad']);
-						
+						$($selector).html('<webthing:ban>Update Failure</webthing:ban>');
+						EMPLOYEE_IMPORT.updateErrorCount = EMPLOYEE_IMPORT.updateErrorCount + 1;
+						if ( EMPLOYEE_IMPORT.updateErrorCount + EMPLOYEE_IMPORT.updateSuccessCount >= EMPLOYEE_IMPORT.updateExpectedCount ) {
+							$("#save-employee-cancel").prop('disabled',false);
+						}
 					},
 					
 					
@@ -181,7 +190,25 @@
 						var $rowId = $passThruData['rowId'];
 						console.log("doEmployeeUpdateSuccess " + $rowId);
 						var $selector = "#save-all-table ." + $rowId;
-						$($selector).html(EMPLOYEE_IMPORT['statusIsGood']);
+						
+						if ( $data.responseHeader.responseCode == 'SUCCESS' ) {
+							$($selector).html('<webthing:checkmark>Success</webthing:checkmark>');
+							EMPLOYEE_IMPORT.updateSuccessCount = EMPLOYEE_IMPORT.updateSuccessCount + 1;
+						} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE' ) {
+							EMPLOYEE_IMPORT.updateErrorCount = EMPLOYEE_IMPORT.updateErrorCount + 1;
+							var $errFields = [];
+							$.each( $data.data.webMessages, function($index, $value) {
+								$errFields.push($index);
+							});
+							$($selector).html('<webthing:ban>Validation Errors: '+ $errFields.join("<br />")+'</webthing:ban>');
+						} else {
+							EMPLOYEE_IMPORT.updateErrorCount = EMPLOYEE_IMPORT.updateErrorCount + 1;
+							$($selector).html('<webthing:ban>Unexpected Response ('+$data.responseHeader.responseCode+') Contact Support</webthing:ban>');
+						}
+						
+						if ( EMPLOYEE_IMPORT.updateErrorCount + EMPLOYEE_IMPORT.updateSuccessCount >= EMPLOYEE_IMPORT.updateExpectedCount ) {
+							$("#save-employee-cancel").prop('disabled',false);
+						}
 					},
 					
 					
@@ -199,7 +226,7 @@
 								reader.onload = EMPLOYEE_IMPORT.saveFile;
 								// reader.onprogress ...  (progress bar)
 								$("#workingtag").show();
-							}
+							}							
 						});
 
 						$("#display-div input[name='cancelButton']").click(function($event) {
@@ -293,6 +320,16 @@
                 					id:  "save-employee-cancel",
                 					click: function($event) {
                 						$( "#save-all-modal" ).dialog("close");
+                						console.log("Errors: " + EMPLOYEE_IMPORT.updateErrorCount);
+                						if ( EMPLOYEE_IMPORT.updateErrorCount == 0 ) {
+                							// all updates are complete and successful so do a page reset
+                							$("#globalMsg").html("Update Successful").show().fadeOut(6000);
+                							$("#display-div input[name='cancelButton']").click();
+                						} else {
+                							// some updates failed, so reload the spreadsheet and see where we're at
+                							$("#globalMsg").html("Update failed. Reloading").show().fadeOut(6000);
+                							$("#save-button").click();
+                						}
                 					}
                 				}
                 			]
@@ -302,47 +339,6 @@
             			
             			
                   	
-					saveEmployee : function() {                   		
-                		console.log("saveEmployee");
-               			$("#employee-modal .err").html("");
-               			var $unionMember = 0;
-               			if ( $("#employee-modal input[name='unionMember']").prop("checked") == true ) {
-               				$unionMember = 1; 
-               			} 
-               			var $outbound = {
-               				'validateOnly' : true,
-               				'employeeCode' : $("#employee-modal input[name='employeeCode']").val(),
-       	        			'companyCode' : $("#employee-modal select[name='companyCode']").val(),
-       	        			'divisionId' : $("#employee-modal select[name='divisionId']").val(),
-       	        			'firstName' : $("#employee-modal input[name='firstName']").val(),
-       	        			'lastName' : $("#employee-modal input[name='lastName']").val(),
-       	        			'middleInitial' : $("#employee-modal input[name='middleInitial']").val(),
-       	        			'departmentDescription' : $("#employee-modal input[name='departmentDescription']").val(),
-       	        			'status' : $("#employee-modal select[name='status']").val(),
-       	        			'terminationDate' : $("#employee-modal input[name='terminationDate']").val(),	        			
-       	        			'unionMember' : $unionMember,
-       	        			'unionCode' : $("#employee-modal input[name='unionCode']").val(),
-       	        			'unionRate' : $("#employee-modal input[name='unionRate']").val(),
-       	        			'processDate' : $("#employee-modal input[name='processDate']").val(),
-       	        			'notes' : $("#employee-modal input[name='notes']").val(),
-               			}
-                			
-               			var $passThruData = {
-              					'rowId':$("#employee-modal input[name='rowId']").val(),
-               			};
-               			               			
-               			var $url = "payroll/employee"
-               			var $employeeCode = $("#employee-modal input[name='employeeCode']").val()
-               			if ( $employeeCode != null && $employeeCode != "") {
-               				$url = $url + "/" + $employeeCode
-               			}
-               			$outbound.unionRate = $outbound.unionRate.replace('$', '');
-          					
-               			ANSI_UTILS.makeServerCall("post", $url, JSON.stringify($outbound),{200:EMPLOYEE_IMPORT.processUploadChanges},  $passThruData);
-               		},
-             
-                   		
-                		
                    	makeEmployeeTable : function($data) {
                   		console.log("makeEmployeeTable");
                   		$("#workingtag").hide();
@@ -438,6 +434,7 @@
 								});
 								for (var i = 0; i < $data.employeeRecords.length; i++){                   				                 				
 									if ($data.employeeRecords[i].recordMatches == false){
+										$("#display-div input[name='saveAllButton']").show();
 										document.getElementById($data.employeeRecords[i].rowId).classList.add("highlight");
 									}
 								}    
@@ -613,8 +610,10 @@
 						$("#display-div").show();
                  		$("#employee-display").show();
                   		$("#display-div .employeeFile").html($data.data.fileName);
+                  		$("#display-div input[name='saveAllButton']").hide();
+                  		EMPLOYEE_IMPORT.employeeDict = {};
                   		EMPLOYEE_IMPORT.makeEmployeeTable($data.data);
-
+                  		
                    		$.each($data.data.employeeRecords, function($index, $value) {
                    			EMPLOYEE_IMPORT.employeeDict[$value.rowId] = $value;                   				
                    		});
@@ -661,6 +660,48 @@
                 	},
              
                 	
+                	
+                	saveEmployee : function() {                   		
+                		console.log("saveEmployee");
+               			$("#employee-modal .err").html("");
+               			var $unionMember = 0;
+               			if ( $("#employee-modal input[name='unionMember']").prop("checked") == true ) {
+               				$unionMember = 1; 
+               			} 
+               			var $outbound = {
+               				'validateOnly' : true,
+               				'employeeCode' : $("#employee-modal input[name='employeeCode']").val(),
+       	        			'companyCode' : $("#employee-modal select[name='companyCode']").val(),
+       	        			'divisionId' : $("#employee-modal select[name='divisionId']").val(),
+       	        			'firstName' : $("#employee-modal input[name='firstName']").val(),
+       	        			'lastName' : $("#employee-modal input[name='lastName']").val(),
+       	        			'middleInitial' : $("#employee-modal input[name='middleInitial']").val(),
+       	        			'departmentDescription' : $("#employee-modal input[name='departmentDescription']").val(),
+       	        			'status' : $("#employee-modal select[name='status']").val(),
+       	        			'terminationDate' : $("#employee-modal input[name='terminationDate']").val(),	        			
+       	        			'unionMember' : $unionMember,
+       	        			'unionCode' : $("#employee-modal input[name='unionCode']").val(),
+       	        			'unionRate' : $("#employee-modal input[name='unionRate']").val(),
+       	        			'processDate' : $("#employee-modal input[name='processDate']").val(),
+       	        			'notes' : $("#employee-modal input[name='notes']").val(),
+               			}
+                			
+               			var $passThruData = {
+              					'rowId':$("#employee-modal input[name='rowId']").val(),
+               			};
+               			               			
+               			var $url = "payroll/employee"
+               			var $employeeCode = $("#employee-modal input[name='employeeCode']").val()
+               			if ( $employeeCode != null && $employeeCode != "") {
+               				$url = $url + "/" + $employeeCode
+               			}
+               			$outbound.unionRate = $outbound.unionRate.replace('$', '');
+          					
+               			ANSI_UTILS.makeServerCall("post", $url, JSON.stringify($outbound),{200:EMPLOYEE_IMPORT.processUploadChanges},  $passThruData);
+               		},
+               		
+               		
+               		
         			saveFile : function($event) {
         				console.log('saveFile');
 	        			var results = $event.target.result;
