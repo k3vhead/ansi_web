@@ -339,10 +339,6 @@ td.money {
 	           			} else{
 		           			console.log("No file selected");
 							$("#prompt-div .timesheetFileErr").html("Please select a file to open").show().fadeOut(3000);
-							//if ( $("#prompt-div select[name='divisionId']").val().length == 0) { $("#prompt-div .divisionIdErr").html("Required Value").show(); }
-							//if ( $("#prompt-div input[name='payrollDate']").val().length == 0 ) {$("#prompt-div .payrollDateErr").html("Required Value").show(); }
-							//if ( $("#prompt-div select[name='state']").val().length == 0 ) {$("#prompt-div .stateErr").html("Required Value").show(); }
-							//if ( $("#prompt-div input[name='city']").val().length == 0 ) {$("#prompt-div .cityErr").html("Required Value").show(); }
 	           			}
 	           		},    		
 	           		makeClickers : function() {
@@ -428,12 +424,6 @@ td.money {
            				$("#prompt-div .timesheet-file").val("");
 
            				$("#data-header").hide();
-	           			//$("#data-header .divisionId").html("");
-	           			//$("#data-header .operationsManagerName").html("");           			
-	           			//$("#data-header .payrollDate").html("");
-	           			//$("#data-header .state").html("");
-	           			//$("#data-header .city").html("");
-	           			//$("#data-header .timesheetFile").html("");
 
 	           			$("#open-button").on("click");
 	           			$("#data-detail").hide();
@@ -442,7 +432,6 @@ td.money {
            				$("#timesheet").DataTable().clear();
 
            				/*
-
            				$("#timesheet").DataTable().draw();           				
            				$("#timesheet").DataTable().destroy
            				*/
@@ -509,8 +498,6 @@ td.money {
 	           			$("#data-header .timesheetFile").html($data.data.fileName);	       
 	           			
 	           			// Display File Header Errors
-	           			
-	           			
 	           			////console.log("function : displayHeaderData : Displaying Header Errors");	           			
 
 	           			$("#data-header").show();
@@ -770,14 +757,17 @@ td.money {
 	        	           					$errorMessage = $validationMessage[0].errorMessage.message;
 	        	           					$errorType = $validationMessage[0].errorType;
 	        	           					$isValid = $validationMessage[0].ok;
-				           					console.log($fieldName);	           				
+				           					console.log($fieldName);	           
+				           					
 				           					console.log("    errorMessage.errorLevel field is " + $errorLevel);	           				
 				           					console.log("    errorMessage.message is " + $errorMessage);	           				
 				           					console.log("    Error Type is : " + $errorType);
 				           					console.log("    ok = " + $isValid);
 				           					
-				           					if($isValid == false){
-				           						$headerDataValid = false;
+				           					if($isValid == false){				           						
+				           						if($errorLevel == "ERROR"){
+					           						$headerDataValid = false;
+				           						}
 				           						
 				           						switch($fieldName){
 				           							case "WEEK_ENDING":
@@ -791,7 +781,9 @@ td.money {
 				           								break;
 				           							case "OPERATIONS_MANAGER" :
 				           								$(".operationsManagerNameErr").html($errorMessage);
-				           								break;		
+				           								break;
+				           							case "FILENAME" :
+				           								$(".fileNameErr").html($errorMessage);
 				           						default:
 				           							break;
 				           						}
@@ -804,9 +796,14 @@ td.money {
         	           					});
 	        	           				$(".thinking").hide();
 	        	           				$("#save-button").hide();
-	                   					TIMESHEET_IMPORT.displayHeaderData($data);
-	                   					
-	                   					$("#globalMsg").html("Modify the spreadsheet and try again").show().fadeOut(5000);	                   					
+	        	           				
+	                   					TIMESHEET_IMPORT.displayHeaderData($data);	                   					
+	                   					if($headerDataValid == false){
+	                   						$("#globalMsg").html("Modify the spreadsheet and try again").show().fadeOut(5000);
+	                   					} else { 
+	              							console.log("function : openFile : calling processUploadSuccess($data)");
+	               							TIMESHEET_IMPORT.processUploadSuccess($data);
+	                   					}
 	        	           			} else {
 	           							// process web messages
 	           							console.log("function : openFile : calling ANSI_UTILS.showWarnings()");
@@ -899,16 +896,15 @@ td.money {
 	           			
 	    				<!-- <table  id="time-calcs"style="width:100%;border:1px solid;">   -->
 						
-	           			
-           		 		var $totalHours = 
-           		 			parseFloat(  TIMESHEET_IMPORT.employeeMap[$rowNumber].regularHours)
-           		 			+ parseFloat(TIMESHEET_IMPORT.employeeMap[$rowNumber].otHours)
-           		 			+ parseFloat(TIMESHEET_IMPORT.employeeMap[$rowNumber].vacationHours)
-           		 			+ parseFloat(TIMESHEET_IMPORT.employeeMap[$rowNumber].holidayHours)
-           		 	           		 	
+						//$('[name="regularHours"]').blur(function() { calculateTotaHoursOnModel()});
+						$('[name="regularHours"]').blur(function() { TIMESHEET_IMPORT.calculateTotaHoursOnModel()});
+						$('[name="otHours"]').blur(function() { TIMESHEET_IMPORT.calculateTotaHoursOnModel()});
+	           			$('[name="vacationHours"]').blur(function() { TIMESHEET_IMPORT.calculateTotaHoursOnModel()});
+	           			$('[name="holidayHours"]').blur(function() { TIMESHEET_IMPORT.calculateTotaHoursOnModel()});
                         
+	           			TIMESHEET_IMPORT.calculateTotaHoursOnModel();
+	           			
            				//$('[name="totalHours"]').val($totalHours.toFixed(2));
-	           			$('#employee-modal .totalHours').text($totalHours.toFixed(2));
 	           			
 	           			$('[name="directLabor"]').val(          TIMESHEET_IMPORT.employeeMap[$rowNumber].directLabor);
 	           			$('[name="volume"]').val(               TIMESHEET_IMPORT.employeeMap[$rowNumber].volume);
@@ -928,10 +924,35 @@ td.money {
 	           			//$rowNumber, $action
 	           			TIMESHEET_IMPORT.displayEmployeeModalErrors($rowNumber);
 	           		},
+	           		calculateTotaHoursOnModel : function(){
+           		 		var $totalHours = 0;
+						var $regularHours = parseFloat($('[name="regularHours"]').val()); 
+	           			var	$otHours = parseFloat($('[name="otHours"]').val());
+	           			var $vacationHours = parseFloat($('[name="vacationHours"]').val());
+	           			var $holidayHours = parseFloat($('[name="holidayHours"]').val()); 
+        		           		
+						$('[name="regularHours"]').val($regularHours.toFixed(2));
+	           			$('[name="otHours"]').val($otHours.toFixed(2));
+	           			$('[name="vacationHours"]').val($vacationHours.toFixed(2));
+	           			$('[name="holidayHours"]').val($holidayHours.toFixed(2));
+							           			
+	           			$totalHours = $regularHours + $otHours + $vacationHours + $holidayHours;
+		           		
+       		 			$('#employee-modal .totalHours').text($totalHours.toFixed(2));
+           		 		
+//            		 		var $totalHours = 
+//            		 			parseFloat(  TIMESHEET_IMPORT.employeeMap[$rowNumber].regularHours)
+//            		 			+ parseFloat(TIMESHEET_IMPORT.employeeMap[$rowNumber].otHours)
+//            		 			+ parseFloat(TIMESHEET_IMPORT.employeeMap[$rowNumber].vacationHours)
+//            		 			+ parseFloat(TIMESHEET_IMPORT.employeeMap[$rowNumber].holidayHours)           		 	           		 	           			
+           		 			
+           		 			
+	           		},
 	           		displayEmployeeModalErrors : function($rowNumber) {
 						var $employeeErrors = TIMESHEET_IMPORT.employeeMap[$rowNumber].messages;
 	    				var $selector="";
 	    				var $errMsg="";
+	    				$("#employee-modal .err").html("");
        					console.log("$employeeErrors looks like ");
        					console.log("========================== ");
        					console.log($employeeErrors);
@@ -951,7 +972,10 @@ td.money {
                					$selector="#employee-modal ." + $index + "Err";
                					$errMsg=$value[0].errorMessage.errorLevel + ":" + $value[0].errorMessage.message;
                					$($selector).html($errMsg);               					
-               					console.log("setvars - selector =  " + selector + "  Value is '" + $errMsg);           					
+               					console.log("setvars - selector =  " + $selector + "  Value is '" + $errMsg + "' ");  
+               					//
+               					//$(".expensesSubmittedErr").html("Hyelloo?");               					
+               					console.log("setvars - selector =  " + $selector + "  Value is '" + $errMsg + "' ");  
                				}
            					
            					//console.log("selector is " + $selector);	           					           					
@@ -1297,13 +1321,13 @@ td.money {
 					<td class="row"><span class="row"> </span></td>
 				</tr>
 				<tr>
-					<td colspan="3" class="err"><span class="employeeNameErr err">
+					<td colspan="3"><span class="employeeNameErr err">
 					</span></td>
-					<td colspan="3" class="err"><span
+					<td colspan="3"><span
 						class="employeeNameCodeErr err"> </span></td>
-					<td colspan="3" class="err"><span class="stateErr err">
+					<td colspan="3"><span class="stateErr err">
 					</span></td>
-					<td colspan="2" class="err"><span class="rowErr err"> </span>
+					<td colspan="2"><span class="rowErr err"> </span>
 					</td>
 				</tr>
 			</table>
@@ -1315,7 +1339,7 @@ td.money {
 					<td colspan="2" class="col-heading pay">Expenses</td>
 				</tr>
 				<tr>
-					<td class="row-label">Regular:</td>
+					<td class="row-label">Regular:</td> 
 					<td class="hours"><input class="hours" type="text"
 						name="regularHours" tabindex="102" /></td>
 					<td class="money"><input class="money" type="text"
@@ -1326,13 +1350,10 @@ td.money {
 						name="expensesSubmitted" tabindex="112" /></td>
 				</tr>
 				<tr>
-					<td colspan="2" class="hoursErr err"><span
-						class="regularHoursErr  err"> test value </span></td>
-					<td colspan="1" class="moneyErr err"><span
-						class="regularPayErr err"> test error </span></td>
-					<td class="spacer-mid"></td>
-					<td colspan="2" class="moneyErr err"><span
-						class="expensesSubmittedErr err"> </span></td>
+					<td colspan="2" class="hoursErr">		<span class="regularHoursErr"></span></td>
+					<td colspan="1" class="moneyErr">		<span class="regularPayErr err"></span></td>
+					<td class="spacer-mid"></td>      
+					<td colspan="2" class="moneyErr">	<span class="expensesSubmittedErr err"> </span></td>
 				</tr>
 				<tr>
 					<td class="row-label">Overtime:</td>
@@ -1346,13 +1367,10 @@ td.money {
 						name="expensesAllowed" tabindex="113" /></td>
 				</tr>
 				<tr>
-					<td colspan="2" class="hoursErr err"><span
-						class="otHoursErr err"> </span></td>
-					<td colspan="1" class="moneyErr err"><span
-						class="otPayErr err"> </span></td>
-					<td class="spacer-mid"></td>
-					<td colspan="2" class="moneyErr err"><span
-						class="expensesAllowedErr err"> </span></td>
+					<td colspan="2" class="hoursErr">		<span class="otHoursErr err"> </span></td>
+					<td colspan="1" class="moneyErr">		<span class="otPayErr err"> </span></td>
+					<td class="spacer-mid"></td>     
+					<td colspan="2" class="moneyErr">	<span class="expensesAllowedErr err"> </span></td>
 				</tr>
 				<tr>
 					<td class="row-label"></td>
@@ -1362,8 +1380,8 @@ td.money {
 					<td colspan="2" class="form-label">Productivity</td>
 				</tr>
 				<tr>
-					<td colspan="2" class="hoursErr err"></td>
-					<td class="moneyErr err"></td>
+					<td colspan="2" class="hoursErr"></td>
+					<td class="moneyErr"></td>
 					<td class="spacer-mid"></td>
 				</tr>
 				<tr>
@@ -1378,13 +1396,10 @@ td.money {
 						name="directLabor" tabindex="114" /></td>
 				</tr>
 				<tr>
-					<td colspan="2" class="hoursErr err"><span
-						class="vacationHoursErr"> </span></td>
-					<td colspan="1" class="moneyErr err"><span
-						class="vacationPayErr err"> </span></td>
-					<td class="spacer-mid"></td>
-					<td colspan="2" class="moneyErr err"><span
-						class="directLaborErr err"> </span></td>
+					<td colspan="2" class="hoursErr">		<span class="vacationHoursErr"> </span></td>
+					<td colspan="1" class="moneyErr">		<span class="vacationPayErr err"> </span></td>
+					<td class="spacer-mid"></td> 
+					<td colspan="2" class="moneyErr">		<span class="directLaborErr err"> </span></td>
 				</tr>
 				<tr>
 					<td class="row-label">Holiday:</td>
@@ -1398,13 +1413,10 @@ td.money {
 						name="volume" tabindex="115" /></td>
 				</tr>
 				<tr>
-					<td colspan="2" class="hoursErr err"><span
-						class="holidayHoursErr err"> </span></td>
-					<td colspan="1" class="moneyErr err"><span
-						class="holidayPayErr err"> </span></td>
+					<td colspan="2" class="hoursErr">		<span class="holidayHoursErr err"> </span></td>
+					<td colspan="1" class="moneyErr">		<span class="holidayPayErr err"> </span></td>
 					<td class="spacer-mid"></td>
-					<td colspan="2" class="moneyErr err"><span
-						class="volumeErr err"> </span></td>
+					<td colspan="2" class="moneyErr">		<span class="volumeErr err"> </span></td>
 				</tr>
 				<tr>
 					<td class="row-label">Total:</td>
@@ -1418,13 +1430,10 @@ td.money {
 					<td class="percentage"><span class="productivity"> </span></td>
 				</tr>
 				<tr>
-					<td colspan="2" class="hoursErr err"><span
-						class="totalHoursErr err"> </span></td>
-					<td colspan="1" class="moneyErr err"><span
-						class="grossPayErr err"> </span></td>
+					<td colspan="2" class="hoursErr">  			<span class="totalHoursErr err"> </span></td>
+					<td colspan="1" class="moneyErr">		<span class="grossPayErr err"> </span></td>
 					<td class="spacer-mid"></td>
-					<td colspan="2" class="percentageErr err"><span
-						class="productivityErr err"> </span></td>
+					<td colspan="2" class="percentageErr">	<span class="productivityErr err"> </span></td>
 				</tr>
 			</table>
 		</div>
