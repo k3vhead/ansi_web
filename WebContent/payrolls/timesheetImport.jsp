@@ -958,26 +958,34 @@ td.money {
        					console.log($employeeErrors);
        					       		
            				$.each(TIMESHEET_IMPORT.employeeMap[$rowNumber].messages, function($index, $value) {
-           					console.log("TIMESHEET_IMPORT.employeeMap[$rowNumber].messages - fieldname  -->   " + $index);
-           					console.log("=====================================================================================");
-           					console.log("TIMESHEET_IMPORT.employeeMap[$rowNumber].messages - errorMessage.errorLevel   --> " + $value[0].errorMessage.errorLevel);
-           					console.log("TIMESHEET_IMPORT.employeeMap[$rowNumber].messages - errorMessage.errorMessage --> " + $value[0].errorMessage.message);
-           					console.log("TIMESHEET_IMPORT.employeeMap[$rowNumber].messages - errorType       --> " + $value[0].errorType);
-           					console.log("TIMESHEET_IMPORT.employeeMap[$rowNumber].messages - errorMessage.ok --> " + $value[0].ok);
-           					console.log("=====================================================================================");
-           					           					
-           					if(!$value[0].ok){
-               					console.log("set " +     $index + "Err to display '" + $value[0].errorMessage.message);
-               					
-               					$selector="#employee-modal ." + $index + "Err";
-               					$errMsg=$value[0].errorMessage.errorLevel + ":" + $value[0].errorMessage.message;
-               					$($selector).html($errMsg);               					
-               					console.log("setvars - selector =  " + $selector + "  Value is '" + $errMsg + "' ");  
-               					//
-               					//$(".expensesSubmittedErr").html("Hyelloo?");               					
-               					console.log("setvars - selector =  " + $selector + "  Value is '" + $errMsg + "' ");  
-               				}
-           					
+           					console.log("messages available for : " + $index + " : " + $value.length);
+           				     
+							for(i=0;i<$value.length;i++){
+	           					console.log("field : " + $index);
+	           					console.log("=====================================================================================");
+	           					console.log("message[" + i + "].errorMessage.errorLevel : "   +   $value[i].errorMessage.errorLevel);
+	           					console.log("message[" + i + "].errorMessage.errorMessage : " +   $value[i].errorMessage.message);
+	           					console.log("message[" + i + "].errorType : " +                   $value[i].errorType);
+	           					console.log("message[" + i + "].errorMessage.ok : " + 			  $value[i].ok);
+	           					console.log("=====================================================================================");
+	           					    
+	           					var $s="";
+	           					
+	           					if(!$value[i].ok){
+	               					console.log("set " +     $index + "Err to display '" + $value[i].errorMessage.message);
+	               					
+	               					$selector="#employee-modal ." + $index + "Err";
+	               					$errMsg=$value[i].errorMessage.errorLevel + ":" + $value[i].errorMessage.message;
+	               					
+	               					$s = $($selector).html().text;
+	               					
+	               					$($selector).html($($selector).html() + $errMsg);               					
+	               					console.log("setvars - selector =  " + $selector + "  Value is '" + $s + " " + $errMsg + "' ");  
+	               					//
+	               					//$(".expensesSubmittedErr").html("Hyelloo?");               					
+	               					console.log("setvars - selector =  " + $selector + "  Value is '" + $errMsg + "' ");  
+	               				}
+							}           					
            					//console.log("selector is " + $selector);	           					           					
            					//$($selector).html($value[0]);
            				});
@@ -1321,7 +1329,7 @@ td.money {
 					<td class="row"><span class="row"> </span></td>
 				</tr>
 				<tr>
-					<td colspan="3"><span class="employeeNameErr err">
+					<td colspan="3"><span class="employeeNameErr DIVISIONErr err">
 					</span></td>
 					<td colspan="3"><span
 						class="employeeNameCodeErr err"> </span></td>
