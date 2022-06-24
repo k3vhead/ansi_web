@@ -295,10 +295,81 @@
     			        	"data": $outbound,
     			        	},
     			        columns: [
-        			        	{ title: "Emp Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_code' }, 
-        			        	{ title: "Div", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'div' },
+        			        	{ title: "Emp Code", width:"5%", searchable:true, data: function ( row, type, set ) {
+        			        		//"defaultContent": "<i>N/A</i>", data:'employee_code' }, 
+	//        			        	"defaultContent": "<i>N/A</i>", data:'employee_name'  data: function ( row, type, set ) {
+	        			        	if(row.employee_code != null){
+	       			        			//{return (row.employee_name);{
+	       			        			
+	        			        			//{return "$" + (parseFloat(row.expenses_submitted).toFixed(2));}
+	        			        			//if(row.direct_labor != null){
+	        			        				var $value = row.employee_code;
+	        			        					//"$" + (parseFloat(row.expenses_submitted).toFixed(2));
+	        			        				var $bubbleHelp = []
+	        			        				//if ( row.foreign_division != null && row.foreign_division == 1 ) {
+	        			        				//	$bubbleHelp.push("Foreign Division Flag");
+	        			        				//}
+	        			        				if ( row.foreign_company != null && row.foreign_company == 1 ) {
+	        			        					$bubbleHelp.push("Foreign Company Flag");
+	        			        				}
+	        			        				if ( $bubbleHelp.length > 0 ) {
+	    			        						$value = EXCEPTION_REPORT.makeItRed($value, $bubbleHelp);
+	        			        				}
+	
+	        			        				return $value;
+	        			        			}
+	    			        		
+	    			        		} },
+        			        	{ title: "Div", width:"5%", searchable:true, data: function ( row, type, set ) {
+            			        	//	"defaultContent": "<i>N/A</i>", data:'employee_name'  data: function ( row, type, set ) {
+            			        	if(row.div != null){
+           			        			//{return (row.employee_name);{
+           			        			
+            			        			//{return "$" + (parseFloat(row.expenses_submitted).toFixed(2));}
+            			        			//if(row.direct_labor != null){
+            			        				var $value = row.div;
+            			        					//"$" + (parseFloat(row.expenses_submitted).toFixed(2));
+            			        				var $bubbleHelp = []
+            			        				if ( row.foreign_division != null && row.foreign_division == 1 ) {
+            			        					$bubbleHelp.push("Foreign Division Flag");
+            			        				}
+            			        			//	if ( row.foreign_company != null && row.foreign_company == 1 ) {
+            			        			//		$bubbleHelp.push("Foreign Company Flag");
+            			        			//	}
+            			        				if ( $bubbleHelp.length > 0 ) {
+        			        						$value = EXCEPTION_REPORT.makeItRed($value, $bubbleHelp);
+            			        				}
+
+            			        				return $value;
+            			        			}
+        			        		
+        			        		} },
+        			        		//"defaultContent": "<i>N/A</i>", data:'div' },
         			        	{ title: "Week Ending", width:"5%", searchable:true, searchFormat: "YYYY/MM/DD", "defaultContent": "<i>N/A</i>", data:'week_ending' },
-        			        	{ title: "Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_name' },
+        			        	{ title: "Name", width:"10%", searchable:true, data: function ( row, type, set ) {
+        			        	//	"defaultContent": "<i>N/A</i>", data:'employee_name'  data: function ( row, type, set ) {
+        			        	if(row.employee_name != null){
+       			        			//{return (row.employee_name);{
+       			        			
+        			        			//{return "$" + (parseFloat(row.expenses_submitted).toFixed(2));}
+        			        			//if(row.direct_labor != null){
+        			        				var $value = row.employee_name;
+        			        					//"$" + (parseFloat(row.expenses_submitted).toFixed(2));
+        			        				var $bubbleHelp = []
+        			        				if ( row.foreign_division != null && row.foreign_division == 1 ) {
+        			        					$bubbleHelp.push("Foreign Division Flag");
+        			        				}
+        			        				if ( row.foreign_company != null && row.foreign_company == 1 ) {
+        			        					$bubbleHelp.push("Foreign Company Flag");
+        			        				}
+        			        				if ( $bubbleHelp.length > 0 ) {
+    			        						$value = EXCEPTION_REPORT.makeItRed($value, $bubbleHelp);
+        			        				}
+
+        			        				return $value;
+        			        			}
+    			        		
+    			        		} },
         			        	{ title: "Status", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_status' },
         			        	{ title: "Union Flag", width:"5%", searchable:true, "defaultContent":$unknown,
 	        			        	data:function(row, type, set) {
@@ -355,10 +426,10 @@
         			        				var $value = "$" + (parseFloat(row.minimum_hourly_pay).toFixed(2));
         			        				var $bubbleHelp = []
         			        				if ( row.under_union_min_pay != null && row.under_union_min_pay == 1 ) {
-        			        					$bubbleHelp.push("Under Union Min");
+        			        					$bubbleHelp.push("Under Union Min Flag");
         			        				}
         			        				if ( row.under_govt_min_pay != null && row.under_govt_min_pay == 1 ) {
-        			        					$bubbleHelp.push("Under Govt Min");
+        			        					$bubbleHelp.push("Under Govt Min Flag");
         			        				}
         			        				if ( $bubbleHelp.length > 0 ) {
     			        						$value = EXCEPTION_REPORT.makeItRed($value, $bubbleHelp);
@@ -484,8 +555,8 @@
     			        			//if(row.direct_labor != null){
     			        				var $value = "$" + (parseFloat(row.expenses_submitted).toFixed(2));
     			        				var $bubbleHelp = []
-    			        				if ( row.ytd_excess_expense_claim != null && row.ytd_excess_expense_claim == 1 ) {
-    			        					$bubbleHelp.push("YTD Expense Claim");
+    			        				if ( row.excess_expense_claim != null && row.excess_expense_claim == 1 ) {
+    			        					$bubbleHelp.push("Excess Expense Claim Flag");
     			        				}
     			        				//if ( row.ytd_excess_expense_pct != null && row.ytd_excess_expense_pct == 1 ) {
     			        				//	$bubbleHelp.push("YTD Expense Pct");
@@ -505,10 +576,10 @@
     			        				var $value = "$" + (parseFloat(row.direct_labor).toFixed(2));
     			        				var $bubbleHelp = []
     			        				if ( row.under_union_min_pay != null && row.under_union_min_pay == 1 ) {
-    			        					$bubbleHelp.push("Under Union Min");
+    			        					$bubbleHelp.push("Under Union Min Flag");
     			        				}
     			        				if ( row.under_govt_min_pay != null && row.under_govt_min_pay == 1 ) {
-    			        					$bubbleHelp.push("Under Government Min");
+    			        					$bubbleHelp.push("Under Government Min Flag");
     			        				}
     			        				if ( $bubbleHelp.length > 0 ) {
 			        						$value = EXCEPTION_REPORT.makeItRed($value, $bubbleHelp);
@@ -625,7 +696,7 @@
    <tiles:put name="content" type="string">
     	<h1>Payroll Exception Report</h1> 
     	
-    	<div id="testred">xxx</div>
+    	
 		<div id="prompt-div">
 			<span class="err companyCodeErr"></span><br />
 	    	<select name="companyCode">
