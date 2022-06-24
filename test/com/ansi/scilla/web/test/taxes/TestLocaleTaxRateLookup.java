@@ -44,6 +44,10 @@ public class TestLocaleTaxRateLookup extends AbstractTester {
 			e.printStackTrace();
 		}
 	}
+	@Override
+	protected void go(Connection conn) throws Exception {
+		throw new Exception("THis is just here to make the compiler happy");
+	}
 
 }
 

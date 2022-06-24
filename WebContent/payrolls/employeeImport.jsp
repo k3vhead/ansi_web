@@ -389,7 +389,15 @@
 							data: $data.employeeRecords,
            			        columns: [
            			        	{ title: "Employee Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employeeCode' }, 
-           			        	{ title: "Company Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'companyCode' }, 
+           			        	{ title: "Company Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>",
+           			        		data:function(row, type, set) {
+           			        			$value = row.companyCode;
+           			        			if ( row.fieldList.includes("companyCode") ) {
+           			        				$value = EMPLOYEE_IMPORT.makeItRed(row.companyCode, ["Company Code has changed"]);
+           			        			}
+           			        			return $value;
+           			        		}
+           			        	}, 
            			        	{ title: "Division", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'div' },
            			        	{ title: "First Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'firstName' },
            			        	{ title: "Last Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'lastName' },
@@ -413,7 +421,15 @@
             			        		}
 								}, 
            			        	{ title: "Union Code", width:"10%", searchable:true, "defaultContent": "", data:'unionCode' },
-           			        	{ title: "Union Rate", width:"10%", searchable:true, "defaultContent":"", data:'unionRate' },
+           			        	{ title: "Union Rate", width:"10%", searchable:true, "defaultContent":"",
+           			        		data:function(row, type, set) {
+           			        			$value = row.unionRate;
+           			        			if ( row.fieldList.includes("unionRate") ) {
+           			        				$value = EMPLOYEE_IMPORT.makeItRed(row.unionRate, ["Union Rate has changed"]);
+           			        			}
+           			        			return $value;
+           			        		}
+           			        	},
            			        	{ title: "Notes", width:"10%", searchable:true, "defaultContent": "", data:'notes' },    			        	
            			            { title: "Action", "orderable": false,  width:"5%", searchable:false,  
             			            	data: function ( row, type, set ) { 
@@ -543,6 +559,13 @@
                		}, 
                 		
                 		
+               		
+               		makeItRed : function($value, $bubbleHelp) {
+            			var $helptext = $bubbleHelp.join("<br />");
+            			return '<span class="red tooltip"><span class="tooltiptext">' + $helptext + '</span>' + $value + '</span>';
+            		},
+               		
+               		
                 		
                    	processUploadFailure : function($data) {
 						console.log("processUploadFailure");

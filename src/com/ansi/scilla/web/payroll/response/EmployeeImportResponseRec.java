@@ -2,8 +2,6 @@ package com.ansi.scilla.web.payroll.response;
 
 import java.lang.reflect.InvocationTargetException;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -11,8 +9,12 @@ import com.ansi.scilla.common.db.PayrollEmployee;
 import com.ansi.scilla.common.exceptions.InvalidValueException;
 import com.ansi.scilla.common.payroll.parser.EmployeeImportRecord;
 import com.ansi.scilla.common.utils.compare.AnsiComparable;
-import com.ansi.scilla.common.utils.compare.AnsiComparator;
 import com.ansi.scilla.common.utils.compare.AnsiComparison;
+import com.ansi.scilla.common.utils.compare.BooleanIshComparison;
+import com.ansi.scilla.common.utils.compare.IntComparison;
+import com.ansi.scilla.common.utils.compare.String2DateComparison;
+import com.ansi.scilla.common.utils.compare.String2IntComparison;
+import com.ansi.scilla.common.utils.compare.String2NumberComparison;
 import com.ansi.scilla.common.utils.compare.StringComparison;
 
 	
@@ -47,7 +49,6 @@ public	class EmployeeImportResponseRec extends EmployeeImportRecord implements A
 		this.rowId = record.getRowId();
 		this.divisionId = record.getDivisionId();
 		this.div = record.getDiv();
-		logger.log(Level.DEBUG, record.getEmployeeCode() + "\t" + record.getRowId() + "\t" + this.getRowId());
 		this.recordMatches = null;
 	}
 
@@ -71,49 +72,27 @@ public	class EmployeeImportResponseRec extends EmployeeImportRecord implements A
 	public AnsiComparison[] makeFieldNameList(String className) throws Exception {
 		if (className.equals( PayrollEmployee.class.getName() )) {
 			return new AnsiComparison[] {
-					new AnsiComparison("firstName", "employeeFirstName", new StringComparison(false)),	
-					new AnsiComparison("lastName", "employeeLastName", new StringComparison(false)),
-					new AnsiComparison("status", "employeeStatus", new StringComparison(false)),
-					new AnsiComparison("unionMember", "unionMember", new BooleanIshComparison()),
+				new AnsiComparison("firstName", "employeeFirstName", new StringComparison(false)),	
+				new AnsiComparison("lastName", "employeeLastName", new StringComparison(false)),
+				new AnsiComparison("status", "employeeStatus", new StringComparison(false)),
+				new AnsiComparison("unionMember", "unionMember", new BooleanIshComparison()),
 
 
-					/*
-						private String companyCode;
-						private String divisionNbr;
+				new AnsiComparison("employeeCode","employeeCode", new String2IntComparison()),
+				new AnsiComparison("companyCode","companyCode", new StringComparison(false)),
+				new AnsiComparison("divisionNbr","division", new StringComparison(false)),
+				new AnsiComparison("departmentDescription","deptDescription", new StringComparison(false)),
+				new AnsiComparison("unionCode","unionCode", new StringComparison(false)),
+				new AnsiComparison("divisionId","divisionId", new IntComparison()),
+				new AnsiComparison("notes","notes", new StringComparison(false)),
+				new AnsiComparison("terminationDate","employeeTerminationDate", new String2DateComparison(EmployeeImportRecord.EMPLOYEE_RECORD_DATE_FORMAT)),
+				new AnsiComparison("unionRate","unionRate", new String2NumberComparison()),
 
-						private String departmentDescription;
-						private String ;
-						private String terminationDate;
-						private String ;
-						private String unionCode;
-						private String unionRate;
-						private String processDate;
-						private String recordStatus;
-						private List<String> fieldList = new ArrayList<String>();
-						private String rowId;
-						// We are figuring out the div and divisionId
-						private Integer divisionId;
-						private String div;
-
-
-
-
-
-
-
-
-
-						private String companyCode;
-						private String deptDescription;
-						private String division;
-						private Integer divisionId;
-						private Integer employeeCode;
-						private Date employeeTerminationDate;
-						private String notes;
-						private String unionCode;
-						private BigDecimal unionRate;
-						private Date processDate;
-					 */
+				//new AnsiComparison("recordStatus","", new StringComparison(false)),
+				//new AnsiComparison("fieldList","", new StringComparison(false)),
+				//new AnsiComparison("rowId","", new StringComparison(false)),
+				//new AnsiComparison("div","", new StringComparison(false)),
+				
 			};
 		} else {
 			throw new InvalidValueException("Don't know how to compare to " + className);
@@ -123,50 +102,7 @@ public	class EmployeeImportResponseRec extends EmployeeImportRecord implements A
 
 
 
-	public class BooleanIshComparison implements AnsiComparator {
-
-		@Override
-		public boolean fieldsAreEqual(Object obj1, Object obj2) throws Exception {
-			Boolean value1 = null;
-			if ( obj1 instanceof String ) {
-				value1 = string2boolean( (String)obj1 );
-			} else if ( obj1 instanceof Integer ) {
-				value1 = int2boolean( (Integer)obj1 );
-			} else if ( obj1 instanceof Boolean) {
-				value1 = (Boolean)obj1;
-			} else {
-				throw new InvalidValueException("Unexpected Type: " + obj1.getClass().getName());
-			}
-
-			Boolean value2 = null;
-			if ( obj2 instanceof String ) {
-				value2 = string2boolean( (String)obj2 );
-			} else if ( obj2 instanceof Integer ) {
-				value2 = int2boolean( (Integer)obj2 );
-			} else if ( obj1 instanceof Boolean) {
-				value2 = (Boolean)obj2;
-			} else {
-				throw new InvalidValueException("Unexpected Type: " + obj2.getClass().getName());
-			}
-
-			return value1.equals(value2);
-		}
-
-		private boolean string2boolean(String value) {
-			boolean b = false;
-			if ( ! StringUtils.isBlank(value) ) {
-				b = value.equals("1") || value.equalsIgnoreCase("yes") || value.equalsIgnoreCase("true");
-			}
-			return b;
-		}
-		private boolean int2boolean(Integer value) {
-			boolean b = false;
-			if ( value != null ) {
-				b = value.intValue() == 1;
-			}
-			return b;
-		}
-	}
+	
 
 
 }
