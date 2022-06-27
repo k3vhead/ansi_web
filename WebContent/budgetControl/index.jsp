@@ -52,6 +52,17 @@
 			#bcr_panels .display {
 				display:none;
 			}
+        	#filter-container {
+        		width:402px;
+        		float:right;
+        	}
+        	#ndl-crud-form {
+        		display:none;
+        		background-color:#FFFFFF;
+				color:#000000;
+				width:400px;
+				padding:15px;
+        	}
 			#session_expire_modal {
 				display:none;
 			}
@@ -98,14 +109,25 @@
 				padding:5px; 
 				background-color:#FFFFFF;
 			}
+			.column-header {
+				text-align:center;
+				font-weight:bold;
+				background-color:#CCCCCC;
+			}
+			.column-subheader {
+				text-align:center;
+				font-weight:bold;
+				background-color:#EEEEEE;
+			}
+			.expenseDetails {
+				display:none;
+			}	
+			
 			.field-container {
 				cursor:pointer;
 			}
         	.form-label {
 				font-weight:bold;
-			}	
-			.expenseDetails {
-				display:none;
 			}	
 			.new-bcr {
 				cursor:pointer;
@@ -116,6 +138,7 @@
 			.table-header {
 				text-align:center;
 				font-weight:bold;
+				font-size:110%;
 			}
 			.ticket-week-display {
 				display:none;
@@ -128,17 +151,7 @@
 				cursor:pointer;
 			}
 			
-        	#filter-container {
-        		width:402px;
-        		float:right;
-        	}
-        	#ndl-crud-form {
-        		display:none;
-        		background-color:#FFFFFF;
-				color:#000000;
-				width:400px;
-				padding:15px;
-        	}
+
 			
 			
 			.prettyWideButton {
@@ -1908,8 +1921,8 @@
         			$("#bcr_quick_claim_modal").dialog({
         				title:'Quick Claim',
         				autoOpen: false,
-        				height: 420,
-        				width: 850,
+        				height: 520,
+        				width: 1000,
         				modal: true,
         				closeOnEscape:true,
         				open: function(event, ui) {
@@ -3115,6 +3128,122 @@
 	    	<div style="width:100%; height:25px;">
 	    		<span class="newClaimErr err"></span>
 	    	</div>	    	
+	    	<table style="width:100%;border-top:solid 1px #404040;">
+				<colgroup>
+		        	<col style="width:16%;" />
+		        	<col style="width:16%;" />
+		        	<col style="width:16%;" />
+		        	<col style="width:2%;" />
+		        	<col style="width:2%;" />
+		        	<col style="width:16%;" />
+		        	<col style="width:16%;" />
+		        	<col style="width:16%;" />
+				</colgroup>
+				<tr>
+   					<td class="form-label">Ticket:</td>
+   					<td><input type="text" name="ticketId" /></td>
+   					<td colspan="2"><span class="err ticketIdErr"></span></td>
+   					<td colspan="4"><span class="jobId"></span></td>
+   				</tr>
+   				<tr>
+   					<td class="form-label">Service Type:</td>
+   					<td><span class="serviceTagId"></span><input type="hidden" name="serviceTypeId" /></td>
+   					<td colspan="2"><span class="err serviceTagIdErr"></span></td>
+   					<td colspan="4"><span class="jobSite"></span></td>
+   				</tr>
+   				<tr style="border-bottom:solid 1px #404040;">
+   					<td class="form-label">Claim Week:</td>
+   					<td><select name="claimWeek" tabindex="1"></select></td>
+   					<td colspan="2"><span class="claimWeekErr err"></span></td>
+   					<td colspan="4"><span class="ticketAmt"></span></td>
+   				</tr>
+  			</table>
+	    	<table style="width:100%;border-top:solid 1px #404040;">
+	    		<tr class="table-header">
+	    			<td colspan="5" >Direct Labor</td>
+	    		</tr>
+	    		<tr style="background-color:#CCCCCC;">
+	    			<td class="column-header">Employee (<span class="washer_count">1</span>)</td>
+	    			<td class="column-header">Pct</td>
+	    			<td class="column-header">Direct Labor</td>
+	    			<td class="column-header">Volume Claimed</td>
+	    			<td class="column-header">Notes</td>
+	    		</tr>
+	    		<tr class="column-subheader">
+	    			<td style="text-align:left;">Available</td>
+	    			<td style="text-align:left;">&nbsp;</td>
+	    			<td style="text-align:left;"><span class="available_direct_labor"></span></td>
+	    			<td style="text-align:left;"><span class="available_volume_claimed"></span></td>
+	    			<td style="text-align:left;">&nbsp;</td>
+	    		</tr>
+	    		<tr>
+   					<td><input type="text" name="employee" tabindex="3" /></td>
+   					<td><input type="text" name="employeePct" tabindex="3" /></td>
+   					<td><input type="text" name="dlAmt" tabindex="1" /></td>
+   					<td><input type="text" name="volumeClaimed" tabindex="2" /></td>
+   					<td><input type="text" name="laborNotes" tabindex="4" /></td>
+	    		</tr>
+	    		<tr>
+   					<td><input type="text" name="employee" tabindex="3" /></td>
+   					<td><input type="text" name="employeePct" tabindex="3" /></td>
+   					<td><input type="text" name="dlAmt" tabindex="1" /></td>
+   					<td><input type="text" name="volumeClaimed" tabindex="2" /></td>
+   					<td><input type="text" name="laborNotes" tabindex="4" /></td>
+	    		</tr>
+	    		<tr>
+   					<td><input type="text" name="employee" tabindex="3" /></td>
+   					<td><input type="text" name="employeePct" tabindex="3" /></td>
+   					<td><input type="text" name="dlAmt" tabindex="1" /></td>
+   					<td><input type="text" name="volumeClaimed" tabindex="2" /></td>
+   					<td><input type="text" name="laborNotes" tabindex="4" /></td>
+	    		</tr>
+	    		<tr>
+   					<td><input type="text" name="employee" tabindex="3" /></td>
+   					<td><input type="text" name="employeePct" tabindex="3" /></td>
+   					<td><input type="text" name="dlAmt" tabindex="1" /></td>
+   					<td><input type="text" name="volumeClaimed" tabindex="2" /></td>
+   					<td><input type="text" name="laborNotes" tabindex="4" /></td>
+	    		</tr>
+	    		<tr>
+   					<td><input type="text" name="employee" tabindex="3" /></td>
+   					<td><input type="text" name="employeePct" tabindex="3" /></td>
+   					<td><input type="text" name="dlAmt" tabindex="1" /></td>
+   					<td><input type="text" name="volumeClaimed" tabindex="2" /></td>
+   					<td><input type="text" name="laborNotes" tabindex="4" /></td>
+	    		</tr>
+	    		<tr class="column-subheader">
+	    			<td style="text-align:left;">Total</td>
+	    			<td style="text-align:left;"><span class="total_pct"></span></td>
+	    			<td style="text-align:left;"><span class="total_direct_labor"></span></td>
+	    			<td style="text-align:left;"><span class="total_volume_claimed"></span></td>
+	    			<td style="text-align:left;">&nbsp;</td>
+	    		</tr>
+	    	</table>
+	    	<table style="width:100%;border-top:solid 1px #404040;">
+	    		<colgroup>
+		        	<col style="width:20%;" />
+		        	<col style="width:20%;" />
+		        	<col style="width:20%;" />
+		        	<col style="width:40%;" />		        	
+				</colgroup>
+	    		<tr class="table-header">
+	    			<td colspan="4" >Expense</td>
+	    		</tr>
+	    		<tr style="background-color:#CCCCCC;">
+	    			<td class="column-header">Expense Volume Claimed</td>
+	    			<td class="column-header">Expense Type</td>
+	    			<td class="column-header">Notes</td>
+	    			<td class="column-header">&nbsp;</td>
+	    		</tr>
+	    		<tr>
+	    			<td><input type="text" name="expenseVolume"  tabindex="5"/></td>
+	    			<td><input type="text" name="volumeClaimed" tabindex="2" /></td>
+	    			<td><input type="text" name="expenseNotes" tabindex="2" /></td>
+	    			<td>&nbsp;</td>
+	    		</tr>
+    		</table>
+
+			<%--
 			<table style="width:100%;border-top:solid 1px #404040;">
 				<colgroup>
 		        	<col style="width:16%;" />
@@ -3198,7 +3327,7 @@
    					<td><span class="expenseNotesErr err"></span></td>
    				</tr>
    			</table>
-			
+			 --%>
 			
 	    </div>
     </tiles:put>
