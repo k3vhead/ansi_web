@@ -449,7 +449,10 @@ td.money {
 	           			var $disp_state="";
 	           			var $disp_city="";
 
-           				$disp_divisionId = $data.data.header.division.divisionId;
+	           			if($data.data.header.division)
+	           				$disp_divisionId = $data.data.header.division.divisionId;
+	           			else 
+	           				$disp_divisionId = 0;
 	           			
 	           			if(($data.data.header.operationsManagerName == null) && ($data.data.operationsManagerName != null)){
 	           				$disp_operationsManagerName= $data.data.operationsManagerName;
@@ -485,8 +488,9 @@ td.money {
            				+	"\n disp_city=" +  $disp_city);
 	           				           		
 	           			//$('select[name="divisionId"]').val($disp_divisionId);
-	           			$("input[name='divisionId']").val(     $data.data.header.division.divisionId);    
-	           			$("#file-header-data .divisionId").html($data.data.header.division.divisionDisplay);	           			
+	           			$("input[name='divisionId']").val( $disp_divisionId);    
+	           			if($data.data.header.division)
+	           				$("#file-header-data .divisionId").html($data.data.header.division.divisionDisplay);	           			
 	           			
 	           			$('input[name="operationsManagerName"]').val($disp_operationsManagerName);           			
 	           			$('input[name="payrollDate"]').val($formattedWeekendingDate);
@@ -736,10 +740,10 @@ td.money {
 	           					var $headerMessages = $data.data.header.messages;	           					
 	           					var $headerMessageCount = Object.keys($headerMessages).length;
 	           					
-	           					console.log("function : openFile :  $headerMessages " +  $headerMessages);
+	           					//console.log("function : openFile :  $headerMessages " +  $headerMessages);
 	           					console.log("function : openFile :  $headerMessages count " + $headerMessageCount); 
 
-	           					console.log($headerMessages);
+	           					//console.log($headerMessages);
 	           					
 	           					var $headerDataValid = true;
 	           					var $errorLevel;
@@ -759,10 +763,10 @@ td.money {
 	        	           					$isValid = $validationMessage[0].ok;
 				           					console.log($fieldName);	           
 				           					
-				           					console.log("    errorMessage.errorLevel field is " + $errorLevel);	           				
-				           					console.log("    errorMessage.message is " + $errorMessage);	           				
-				           					console.log("    Error Type is : " + $errorType);
-				           					console.log("    ok = " + $isValid);
+				           					//console.log("    errorMessage.errorLevel field is " + $errorLevel);	           				
+				           					console.log("    errorMessage.message is " + $errorLevel + " : " + $errorMessage);	           				
+				           					//console.log("    Error Type is : " + $errorType);
+				           					//console.log("    ok = " + $isValid);
 				           					
 				           					if($isValid == false){				           						
 				           						if($errorLevel == "ERROR"){
@@ -916,8 +920,8 @@ td.money {
 	           			//$('[name="productivity"]').val(TIMESHEET_IMPORT.employeeMap[$rowNumber].productivity);
 	           			$('#employee-modal .productivity').text(TIMESHEET_IMPORT.employeeMap[$rowNumber].productivity);
 
-	           			$('#employee-modal .state').text($('select[name="state"]').val());
-	           			$('#employee-modal .state').text($('select[name="state"]').val());
+	           			//$('#employee-modal .state').text($('select[name="state"]').val());
+	           			$('#employee-modal .state').text($('#data-header .state').text());
 	           			$('#employee-modal .row'  ).text($rowNumber);
 	           			//blankRow: false
 	           			//errorsFound: null
@@ -953,37 +957,54 @@ td.money {
 	    				var $selector="";
 	    				var $errMsg="";
 	    				$("#employee-modal .err").html("");
+	    				$("#employee-modal input").removeClass("errorsFoundHighlight");
        					console.log("$employeeErrors looks like ");
-       					console.log("========================== ");
+       					//console.log("========================== ");
        					console.log($employeeErrors);
        					       		
            				$.each(TIMESHEET_IMPORT.employeeMap[$rowNumber].messages, function($index, $value) {
-           					console.log("messages available for : " + $index + " : " + $value.length);
+           					//console.log("messages available for : " + $index + " : " + $value.length);
            				     
 							for(i=0;i<$value.length;i++){
-	           					console.log("field : " + $index);
-	           					console.log("=====================================================================================");
-	           					console.log("message[" + i + "].errorMessage.errorLevel : "   +   $value[i].errorMessage.errorLevel);
-	           					console.log("message[" + i + "].errorMessage.errorMessage : " +   $value[i].errorMessage.message);
-	           					console.log("message[" + i + "].errorType : " +                   $value[i].errorType);
-	           					console.log("message[" + i + "].errorMessage.ok : " + 			  $value[i].ok);
-	           					console.log("=====================================================================================");
+	           					console.log("   " + $index + "[" + i + "]: " 
+	           					   + $value[i].errorMessage.errorLevel + ", " 
+	           					   + $value[i].errorMessage.message);
+								
+// 	           					console.log("field : " + $index);
+// 	           					console.log("=====================================================================================");
+// 	           					console.log("message[" + i + "].errorMessage.errorLevel : "   +   $value[i].errorMessage.errorLevel);
+// 	           					console.log("message[" + i + "].errorMessage.errorMessage : " +   $value[i].errorMessage.message);
+// 	           					console.log("message[" + i + "].errorType : " +                   $value[i].errorType);
+// 	           					console.log("message[" + i + "].errorMessage.ok : " + 			  $value[i].ok);
+// 	           					console.log("=====================================================================================");
 	           					    
 	           					var $s="";
 	           					
-	           					if(!$value[i].ok){
-	               					console.log("set " +     $index + "Err to display '" + $value[i].errorMessage.message);
-	               					
+	           					if(!$value[i].ok){	               					
 	               					$selector="#employee-modal ." + $index + "Err";
-	               					$errMsg=$value[i].errorMessage.errorLevel + ":" + $value[i].errorMessage.message;
+	               					$errMsg = $value[i].errorMessage.errorLevel + ": " + $value[i].errorMessage.message;
 	               					
-	               					$s = $($selector).html().text;
+	               					console.log("------/\/\/\/\---> add highlight to " + $s)
 	               					
-	               					$($selector).html($($selector).html() + $errMsg);               					
-	               					console.log("setvars - selector =  " + $selector + "  Value is '" + $s + " " + $errMsg + "' ");  
-	               					//
+	               					$("input[name='" + $index + "']").addClass("errorsFoundHighlight");
+	               					
+	               					$s = $($selector).html();
+	               					console.log("------/\/\/\/\---> err mesg already had - " + $s)
+
+	               					if($s){
+	               						$s = $s + "<br/>" + $errMsg;
+	               					}
+	               					else 
+	               						$s = $errMsg;
+	               					
+	               					//$($selector).html($($selector).html() + $errMsg);               					
+	               					$($selector).html($s);
+           				
+	               					//console.log("setvars - selector =  " + $selector + "  Value is '" + $s + "' ");  
+	               					//x
 	               					//$(".expensesSubmittedErr").html("Hyelloo?");               					
-	               					console.log("setvars - selector =  " + $selector + "  Value is '" + $errMsg + "' ");  
+	               					console.log("        ------/\/\/\/\--->  error found ---> set " +     $index + "Err to display '" + $s);
+	               					//console.log("setvars - selector =  " + $selector + "  Value is '" + $errMsg + "' ");  
 	               				}
 							}           					
            					//console.log("selector is " + $selector);	           					           					
@@ -1329,14 +1350,16 @@ td.money {
 					<td class="row"><span class="row"> </span></td>
 				</tr>
 				<tr>
-					<td colspan="3"><span class="employeeNameErr DIVISIONErr err">
+					<td colspan="8"><span class="employeeNameErr DIVISIONErr stateErr employeeCodeErr rowErr err">
 					</span></td>
+					<!-- 
 					<td colspan="3"><span
 						class="employeeNameCodeErr err"> </span></td>
 					<td colspan="3"><span class="stateErr err">
 					</span></td>
 					<td colspan="2"><span class="rowErr err"> </span>
 					</td>
+					 -->
 				</tr>
 			</table>
 			<table id="time-calcs">
@@ -1361,7 +1384,7 @@ td.money {
 					<td colspan="2" class="hoursErr">		<span class="regularHoursErr"></span></td>
 					<td colspan="1" class="moneyErr">		<span class="regularPayErr err"></span></td>
 					<td class="spacer-mid"></td>      
-					<td colspan="2" class="moneyErr">	<span class="expensesSubmittedErr err"> </span></td>
+					<td colspan="2" class="moneyErr">	<span class="exp-ensesSubmittedErr err"> </span></td>
 				</tr>
 				<tr>
 					<td class="row-label">Overtime:</td>
@@ -1438,10 +1461,12 @@ td.money {
 					<td class="percentage"><span class="productivity"> </span></td>
 				</tr>
 				<tr>
-					<td colspan="2" class="hoursErr">  			<span class="totalHoursErr err"> </span></td>
+					<td colspan="5" class="hoursErr">  			<span class="totalHoursErr grossPayErr productivityErr expensesAllowedErr expensesSubmittedErr err"> </span></td>
+					<!-- 
 					<td colspan="1" class="moneyErr">		<span class="grossPayErr err"> </span></td>
 					<td class="spacer-mid"></td>
 					<td colspan="2" class="percentageErr">	<span class="productivityErr err"> </span></td>
+					 -->
 				</tr>
 			</table>
 		</div>
