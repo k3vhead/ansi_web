@@ -210,6 +210,171 @@
         		
         		
         		
+        		calcEmployeeCount : function() {
+        			console.log("calcEmployeeCount");	
+        			var $employeeCount = 0;        			
+        			var $employeeCount = BUDGETCONTROL.makeQuickClaimCount("employee");
+        			$("#bcr_quick_claim_modal .washer_count").html($employeeCount);
+        		},
+        		
+				calcQuickClaimByPct : function() {
+					console.log("calcQuickClaimByPct");	
+					var $employeeCount = BUDGETCONTROL.makeQuickClaimCount("employee", true);
+					var $pctEmptyCount = BUDGETCONTROL.makeQuickClaimCount("employeePct", false); 
+					var $pctTotal = BUDGETCONTROL.makeQuickClaimTotal("employeePct");
+					var $defaultPct = (100.0 - $pctTotal)/parseFloat($pctEmptyCount);
+					
+					var $availableDL = $("#bcr_quick_claim_modal .quick-claim-available .ticketAmt").text().replace("$","").replace(",","");
+					var $availableVol = $("#bcr_quick_claim_modal .quick-claim-available .available_volume_claimed").text().replace("$","").replace(",","");
+
+					$.each( $("#bcr_quick_claim_modal .quick-claim-employee"), function($index, $value) {
+        				var $pctSelector = "#bcr_quick_claim_modal .employee" + $index + " input[name='employeePct']";
+        				var $employeeSelector = "#bcr_quick_claim_modal .employee" + $index + " input[name='employee']";
+        				var $dlSelector = "#bcr_quick_claim_modal .employee" + $index + " input[name='dlAmt']";
+        				var $volSelector = "#bcr_quick_claim_modal .employee" + $index + " input[name='volumeClaimed']";
+        				var $employeeName = $($employeeSelector).val();
+        				var $employeePct = $($pctSelector).val();
+        				var $dlAmt = $($dlSelector).val();
+        				var $volumeClaimed = $($volSelector).val();
+        				if ( $employeeName != null && $employeeName != '' ) {
+        					var $newPct = null;
+        					if ( $employeePct == null || $employeePct == '' ) {
+        						$newPct = $defaultPct;
+        						$($pctSelector).val(parseFloat($defaultPct).toFixed(2));
+        					} else {
+        						$newPct = $employeePct;
+        						$($pctSelector).val(parseFloat($employeePct).toFixed(2));
+        					}
+        					if ( $dlAmt == null || $dlAmt == '' ) {
+        						$($dlSelector).val( (parseFloat($availableDL)*(parseFloat($newPct)/100)).toFixed(2) );
+        					}
+        					if ( $volumeClaimed == null || $volumeClaimed == '' ) {
+        						$($volSelector).val( (parseFloat($availableVol)*(parseFloat($newPct)/100)).toFixed(2) );
+        					}
+        				}
+        			} );
+					$("#bcr_quick_claim_modal .total_pct").html( BUDGETCONTROL.makeQuickClaimTotal("employeePct").toFixed(2) );
+					$("#bcr_quick_claim_modal .total_direct_labor").html( BUDGETCONTROL.makeQuickClaimTotal("dlAmt").toFixed(2) );
+					$("#bcr_quick_claim_modal .total_volume_claimed").html( BUDGETCONTROL.makeQuickClaimTotal("volumeClaimed").toFixed(2) );
+				},
+				
+				
+				makeQuickClaimCount : function($fieldName, $countPopulated) {
+					// if $countPopulated is true : count up the number of rows where the named field is populated
+					// if $countPopulated is false : count up the number of rows where an employee is populated but the named field is not
+					var $count = 0;
+					$.each( $("#bcr_quick_claim_modal .quick-claim-employee"), function($index, $value) {
+        				var $selector = "#bcr_quick_claim_modal .employee" + $index + " input[name='"+$fieldName+"']";
+        				var $employeeSelector = "#bcr_quick_claim_modal .employee" + $index + " input[name='employee']";
+        				var $employeeName = $($employeeSelector).val();
+        				var $fieldValue = $($selector).val();
+        				if ( $countPopulated == true && ($fieldValue != null && $fieldValue != '') ) {
+        					$count = $count + 1;
+        				} 
+        				if ( $countPopulated == false && ($employeeName != null && $employeeName != '') && ($fieldValue == null || $fieldValue == '') ) {
+        					$count = $count + 1;
+        				} 
+        			} );
+					return $count;
+				},
+				
+				
+				makeQuickClaimTotal : function($fieldName) {
+					var $total = 0;
+					$.each( $("#bcr_quick_claim_modal .quick-claim-employee"), function($index, $value) {
+        				var $selector = "#bcr_quick_claim_modal .employee" + $index + " input[name='"+$fieldName+"']";
+        				var $fieldValue = $($selector).val();
+        				if ( $fieldValue != null && $fieldValue != '' ) {
+        					$total = $total + parseFloat($fieldValue);
+        				} 
+        			} );
+					return $total;
+				},
+				
+				
+        		calcQuickClaimPct : function() {
+        			console.log("calcQuickClaimPct");	
+        			var $employeeCount = 0;
+        			var $blankPctCount = 0;
+        			var $remainingPct = 100.0;
+        			$.each( $("#bcr_quick_claim_modal .quick-claim-employee"), function($index, $value) {
+        				var $employeeSelector = "#bcr_quick_claim_modal .employee" + $index + " input[name='employee']";
+        				var $employeeName = $($employeeSelector).val();
+        				if ( $employeeName != null && $employeeName != '' ) {
+        					$employeeCount = $employeeCount + 1;
+        				}
+        				var $pctSelector = "#bcr_quick_claim_modal .employee" + $index + " input[name='employeePct']";
+        				var $employeePct = $($pctSelector).val();
+        				if ( $employeePct == null || $employeePct == '' ) {
+        					if ( $employeeName != null && $employeeName != '' ) {
+        						$blankPctCount = $blankPctCount + 1;
+        					}
+        				} else {
+        					$remainingPct = $remainingPct - parseFloat($employeePct);
+        				}
+        			} );
+        			var $defaultPct = $remainingPct / parseFloat($blankPctCount);
+        			$.each( $("#bcr_quick_claim_modal .quick-claim-employee"), function($index, $value) {
+        				var $employeeSelector = "#bcr_quick_claim_modal .employee" + $index + " input[name='employee']";
+        				var $employeeName = $($employeeSelector).val();        				
+        				var $pctSelector = "#bcr_quick_claim_modal .employee" + $index + " input[name='employeePct']";
+        				var $employeePct = $($pctSelector).val();
+        				if ( $employeeName != null && $employeeName != '' ) {        					
+	        				if ( $remainingPct > 0 && ($employeePct == null || $employeePct == '') ) {
+	        					$($pctSelector).val($defaultPct.toFixed(2));
+	        				}
+        				}
+        			} );
+        			
+        			BUDGETCONTROL.calcQuickClaimTotals();
+        		},
+        		
+        		
+
+        		calcQuickClaimTotals : function() {
+        			console.log("calcQuickClaimTotals");	
+        			var $totalPct = 0.0;
+        			var $totalDL = 0.0;
+        			var $totalVol = 0.0;
+        			$.each( $("#bcr_quick_claim_modal .quick-claim-employee"), function($index, $value) {
+        				var $pctSelector = "#bcr_quick_claim_modal .employee" + $index + " input[name='employeePct']";
+        				var $dlSelector = "#bcr_quick_claim_modal .employee" + $index + " input[name='dlAmt']";
+        				var $volSelector = "#bcr_quick_claim_modal .employee" + $index + " input[name='volumeClaimed']";
+        				var $employeePct = $($pctSelector).val();
+        				var $dlAmt = $($dlSelector).val();
+        				var $volumeClaimed = $($volSelector).val();
+        				if ( $employeePct != null && $employeePct != '' ) {
+        					try {        						
+        						$($pctSelector).val(parseFloat($employeePct).toFixed(2));
+        					} catch(err) {
+        						// we don't care that much
+        					}
+        					$totalPct = $totalPct + parseFloat($employeePct);
+        				}
+        				if ( $dlAmt != null && $dlAmt != '' ) {
+        					try {        						
+        						$($dlSelector).val(parseFloat($dlAmt).toFixed(2));
+        					} catch(err) {
+        						// we don't care that much
+        					}
+        					$totalDL = $totalDL + parseFloat($dlAmt);
+        				}
+        				if ( $volumeClaimed != null && $volumeClaimed != '' ) {
+        					try {        						
+        						$($volSelector).val(parseFloat($volumeClaimed).toFixed(2));
+        					} catch(err) {
+        						// we don't care that much
+        					}
+        					$totalVol = $totalVol + parseFloat($volumeClaimed);
+        				}
+        			} );
+
+        			$("#bcr_quick_claim_modal .total_pct").html($totalPct.toFixed(2));
+        			$("#bcr_quick_claim_modal .total_direct_labor").html($totalDL.toFixed(2));
+        			$("#bcr_quick_claim_modal .total_volume_claimed").html($totalVol.toFixed(2));
+        		},
+        		
+        		
         		
         		// when total volume or claimed volume is changed, figure out how much is left
         		calculateRemainingVolume : function() {
@@ -1947,6 +2112,18 @@
         			//$("#bcr_new_claim_cancel").attr("tabIndex", "9");
         			//$("#bcr_new_claim_save").attr("tabIndex", "10");
         			BUDGETCONTROL.makeEmployeeAutoComplete("#bcr_quick_claim_modal input[name='employee']");
+					$("#bcr_quick_claim_modal input[name='employee']").blur( function($event) {BUDGETCONTROL.calcEmployeeCount();} );
+        			$("#bcr_quick_claim_modal input[name='employeePct']").focus( function($event) {BUDGETCONTROL.calcQuickClaimByPct();} );
+        			//$("#bcr_quick_claim_modal .quick-claim-employee input").blur( function($event) {BUDGETCONTROL.calcQuickClaimTotals();} );
+        			
+        			//$("#bcr_quick_claim_modal input[name='dlAmt']").blur( function($event) {BUDGETCONTROL.calcQuickClaimTotals();} );
+        			//$("#bcr_quick_claim_modal input[name='volumeClaimed']").blur( function($event) {BUDGETCONTROL.calcQuickClaimTotals();} );
+
+            		
+            		
+            		
+            		
+            		
         			//BUDGETCONTROL.saveOnEnter(); 
         		},
         		
@@ -2049,6 +2226,10 @@
         			ANSI_UTILS.doServerCall("POST", "bcr/newClaim", JSON.stringify($outbound), BUDGETCONTROL.makeQuickClaimSuccess, BUDGETCONTROL.makeQuickClaimFail);
 
         		},
+        		
+        		
+        		
+        		
         		
         		
         		makeQuickClaimFail : function($data, $passthru) {
@@ -2446,7 +2627,7 @@
 				                }
 							}).data('ui-autocomplete');
 							
-							
+							<%-- 
 							$("#bcr_quick_claim_modal input").keydown(function($event) {
 								if ( $event.which == 13 ) {
 									// when you hit "enter" on an input, click the go button
@@ -2461,6 +2642,7 @@
 			 						$("#bcr_quick_claim_save").click();
 								}
 							});
+							--%>
 						}
 					});
 					
@@ -2492,6 +2674,7 @@
         			$("#bcr_quick_claim_modal .jobId").html("Job: " + $data.data.ticketDetail.jobId);
         			$("#bcr_quick_claim_modal .jobSite").html($data.data.ticketDetail.jobSiteAddress.name);
         			$("#bcr_quick_claim_modal .ticketAmt").html($data.data.ticketDetail.actDlAmt);
+        			$("#bcr_quick_claim_modal .available_volume_claimed").html($data.data.claimDetail.volume_remaining.toFixed(2));
         			
         			
         			var $ticketId = $passThruData["ticketId"];
@@ -2505,18 +2688,23 @@
     				$("#bcr_quick_claim_modal select[name='expenseType']").val("");
     				$("#bcr_quick_claim_modal .err").html("");
     				//$("#bcr_new_claim_modal input[name='ticketId']").val($ticketId);
-    				$("#bcr_quick_claim_modal input[name='dlAmt']").val($data.data.ticketDetail.remainingDlAmt.toFixed(2));
-    				$("#bcr_quick_claim_modal input[name='volumeClaimed']").val($data.data.claimDetail.volume_remaining.toFixed(2));
+    				//$("#bcr_quick_claim_modal .employee0 input[name='employeePct']").val("100.00");
+    				//$("#bcr_quick_claim_modal .employee0 input[name='dlAmt']").val($data.data.ticketDetail.remainingDlAmt.toFixed(2));
+    				//$("#bcr_quick_claim_modal .employee0 input[name='volumeClaimed']").val($data.data.claimDetail.volume_remaining.toFixed(2));
+    				$("#bcr_quick_claim_modal .total_pct").html("0.00");
+    				$("#bcr_quick_claim_modal .total_direct_labor").html("0.00");
+    				$("#bcr_quick_claim_modal .total_volume_claimed").html("0.00");
+    				$("#bcr_quick_claim_modal .washer_count").html("0");
     				//$("#bcr_new_claim_modal .ticketId").html($ticketId);
     				$("#bcr_quick_claim_modal input[name='serviceTypeId']").val($serviceTypeId);
     				$("#bcr_quick_claim_modal .serviceTagId").html($serviceTagId);
     				$("#bcr_edit_modal").attr("serviceTagId",$serviceTagId);
     				
     				if ( BUDGETCONTROL.lastEmployeeEntered != null ) {
-    					$("#bcr_quick_claim_modal input[name='employee']").val(BUDGETCONTROL.lastEmployeeEntered);
+    					$("#bcr_quick_claim_modal .employee0 input[name='employee']").val(BUDGETCONTROL.lastEmployeeEntered);
     				}
     				if ( BUDGETCONTROL.lastNoteEntered != null ) {
-    					$("#bcr_quick_claim_modal input[name='notes']").val(BUDGETCONTROL.lastNoteEntered);
+    					$("#bcr_quick_claim_modal .employee0 input[name='notes']").val(BUDGETCONTROL.lastNoteEntered);
     				}
     				
     				if ( BUDGETCONTROL.lastWorkWeekEntered != null ) {
@@ -3155,7 +3343,7 @@
    					<td class="form-label">Claim Week:</td>
    					<td><select name="claimWeek" tabindex="1"></select></td>
    					<td colspan="2"><span class="claimWeekErr err"></span></td>
-   					<td colspan="4"><span class="ticketAmt"></span></td>
+   					<td colspan="4">&nbsp; <%-- <span class="ticketAmt"></span>--%></td>
    				</tr>
   			</table>
 	    	<table style="width:100%;border-top:solid 1px #404040;">
@@ -3163,56 +3351,56 @@
 	    			<td colspan="5" >Direct Labor</td>
 	    		</tr>
 	    		<tr style="background-color:#CCCCCC;">
-	    			<td class="column-header">Employee (<span class="washer_count">1</span>)</td>
+	    			<td class="column-header">Employee</td>
 	    			<td class="column-header">Pct</td>
 	    			<td class="column-header">Direct Labor</td>
 	    			<td class="column-header">Volume Claimed</td>
 	    			<td class="column-header">Notes</td>
 	    		</tr>
-	    		<tr class="column-subheader">
+	    		<tr class="column-subheader quick-claim-available">
 	    			<td style="text-align:left;">Available</td>
 	    			<td style="text-align:left;">&nbsp;</td>
-	    			<td style="text-align:left;"><span class="available_direct_labor"></span></td>
+	    			<td style="text-align:left;"><span class="ticketAmt"></span></span></td>
 	    			<td style="text-align:left;"><span class="available_volume_claimed"></span></td>
 	    			<td style="text-align:left;">&nbsp;</td>
 	    		</tr>
-	    		<tr>
+	    		<tr class="quick-claim-employee employee0">
    					<td><input type="text" name="employee" tabindex="3" /></td>
-   					<td><input type="text" name="employeePct" tabindex="3" /></td>
-   					<td><input type="text" name="dlAmt" tabindex="1" /></td>
-   					<td><input type="text" name="volumeClaimed" tabindex="2" /></td>
-   					<td><input type="text" name="laborNotes" tabindex="4" /></td>
+   					<td><input type="number" name="employeePct" step=".01" tabindex="8" /></td>
+   					<td><input type="number" name="dlAmt" step=".01" tabindex="13" /></td>
+   					<td><input type="number" name="volumeClaimed" step=".01" tabindex="18" /></td>
+   					<td><input type="text" name="laborNotes" tabindex="23" /></td>
 	    		</tr>
-	    		<tr>
-   					<td><input type="text" name="employee" tabindex="3" /></td>
-   					<td><input type="text" name="employeePct" tabindex="3" /></td>
-   					<td><input type="text" name="dlAmt" tabindex="1" /></td>
-   					<td><input type="text" name="volumeClaimed" tabindex="2" /></td>
-   					<td><input type="text" name="laborNotes" tabindex="4" /></td>
+	    		<tr class="quick-claim-employee employee1">
+   					<td><input type="text" name="employee" tabindex="4" /></td>
+   					<td><input type="number" name="employeePct" step=".01" tabindex="9" /></td>
+   					<td><input type="number" name="dlAmt" step=".01" tabindex="14" /></td>
+   					<td><input type="number" name="volumeClaimed" step=".01" tabindex="19" /></td>
+   					<td><input type="text" name="laborNotes" tabindex="24" /></td>
 	    		</tr>
-	    		<tr>
-   					<td><input type="text" name="employee" tabindex="3" /></td>
-   					<td><input type="text" name="employeePct" tabindex="3" /></td>
-   					<td><input type="text" name="dlAmt" tabindex="1" /></td>
-   					<td><input type="text" name="volumeClaimed" tabindex="2" /></td>
-   					<td><input type="text" name="laborNotes" tabindex="4" /></td>
+	    		<tr class="quick-claim-employee employee2">
+   					<td><input type="text" name="employee" tabindex="5" /></td>
+   					<td><input type="number" name="employeePct" step=".01" tabindex="10" /></td>
+   					<td><input type="number" name="dlAmt" step=".01" tabindex="15" /></td>
+   					<td><input type="number" name="volumeClaimed" step=".01" tabindex="20" /></td>
+   					<td><input type="text" name="laborNotes" tabindex="25" /></td>
 	    		</tr>
-	    		<tr>
-   					<td><input type="text" name="employee" tabindex="3" /></td>
-   					<td><input type="text" name="employeePct" tabindex="3" /></td>
-   					<td><input type="text" name="dlAmt" tabindex="1" /></td>
-   					<td><input type="text" name="volumeClaimed" tabindex="2" /></td>
-   					<td><input type="text" name="laborNotes" tabindex="4" /></td>
+	    		<tr class="quick-claim-employee employee3">
+   					<td><input type="text" name="employee" tabindex="6" /></td>
+   					<td><input type="number" name="employeePct" step=".01" tabindex="11" /></td>
+   					<td><input type="number" name="dlAmt" step=".01" tabindex="16" /></td>
+   					<td><input type="number" name="volumeClaimed" step=".01" tabindex="21" /></td>
+   					<td><input type="text" name="laborNotes" tabindex="26" /></td>
 	    		</tr>
-	    		<tr>
-   					<td><input type="text" name="employee" tabindex="3" /></td>
-   					<td><input type="text" name="employeePct" tabindex="3" /></td>
-   					<td><input type="text" name="dlAmt" tabindex="1" /></td>
-   					<td><input type="text" name="volumeClaimed" tabindex="2" /></td>
-   					<td><input type="text" name="laborNotes" tabindex="4" /></td>
+	    		<tr class="quick-claim-employee employee4">
+   					<td><input type="text" name="employee" tabindex="7" /></td>
+   					<td><input type="number" name="employeePct" step=".01" tabindex="12" /></td>
+   					<td><input type="number" name="dlAmt" step=".01" tabindex="17" /></td>
+   					<td><input type="number" name="volumeClaimed" step=".01" tabindex="22" /></td>
+   					<td><input type="text" name="laborNotes" tabindex="27" /></td>
 	    		</tr>
 	    		<tr class="column-subheader">
-	    			<td style="text-align:left;">Total</td>
+	    			<td style="text-align:left;"><span style="float:right; margin-right:8px;" class="washer_count">0</span> Total</td>
 	    			<td style="text-align:left;"><span class="total_pct"></span></td>
 	    			<td style="text-align:left;"><span class="total_direct_labor"></span></td>
 	    			<td style="text-align:left;"><span class="total_volume_claimed"></span></td>
@@ -3236,9 +3424,9 @@
 	    			<td class="column-header">&nbsp;</td>
 	    		</tr>
 	    		<tr>
-	    			<td><input type="text" name="expenseVolume"  tabindex="5"/></td>
-	    			<td><input type="text" name="volumeClaimed" tabindex="2" /></td>
-	    			<td><input type="text" name="expenseNotes" tabindex="2" /></td>
+	    			<td><input type="text" name="expenseVolume"  tabindex="28"/></td>
+	    			<td><select name="expenseType" tabindex="29"></select></td>
+	    			<td><input type="text" name="expenseNotes" tabindex="30" /></td>
 	    			<td>&nbsp;</td>
 	    		</tr>
     		</table>
