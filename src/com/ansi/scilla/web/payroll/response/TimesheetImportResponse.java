@@ -203,7 +203,7 @@ public class TimesheetImportResponse extends MessageResponse  {
 			
 			Logger logger = LogManager.getLogger(TimesheetImportResponse.class);			
 			//logger.log(Level.DEBUG, "TimesheetImportResponse: ");
-			logger.log(Level.DEBUG, "TimesheetImportResponse : employeeMsgs " + employeeMsgs);
+			//logger.log(Level.DEBUG, "TimesheetImportResponse : employeeMsgs " + employeeMsgs);
 			
 			if(employeeMsgs == null) {
 				

@@ -49,9 +49,7 @@ public class TimesheetImportServlet extends AbstractServlet {
 			ResponseCode responseCode = null;
 			WebMessages webMessages = uploadRequest.validate(conn);
 			TimesheetImportResponse data = new TimesheetImportResponse();
-			
-			
-			
+								
 			if ( webMessages.isEmpty() ) {
 				try {
 					Map<String,HashMap<String,List<PayrollMessage>>> employeeMsgs = null;
@@ -65,7 +63,7 @@ public class TimesheetImportServlet extends AbstractServlet {
 					} else {
 						employeeMsgs =  new HashMap<String, HashMap<String, List<PayrollMessage>>>();
 					}
-					logger.log(Level.DEBUG, "TimesheetImportServlet: employeeMsgs = " + employeeMsgs);
+					//logger.log(Level.DEBUG, "TimesheetImportServlet: employeeMsgs = " + employeeMsgs);
 
 					data = new TimesheetImportResponse(conn, header, parser, employeeMsgs);
 					switch ( header.maxErrorLevel() ) {

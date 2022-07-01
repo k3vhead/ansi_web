@@ -883,9 +883,14 @@ td.money {
 	           			console.log(TIMESHEET_IMPORT.employeeMap[$rowNumber]);
 	           			console.log(TIMESHEET_IMPORT.employeeMap[$rowNumber].employeeName);
 	           			
-	           			$('[name="row"]').val(			TIMESHEET_IMPORT.employeeMap[$rowNumber].row);
-	           			$('[name="employeeName"]').val(	TIMESHEET_IMPORT.employeeMap[$rowNumber].employeeName);
-	           			$('[name="employeeCode"]').val(	TIMESHEET_IMPORT.employeeMap[$rowNumber].employeeCode);
+	           			//$('#employee-modal .state').text($('select[name="state"]').val());
+	           			$('#employee-modal .employeeName').text(TIMESHEET_IMPORT.employeeMap[$rowNumber].employeeName);
+	           			$('#employee-modal .employeeCode').text(TIMESHEET_IMPORT.employeeMap[$rowNumber].employeeCode);
+	           			$('#employee-modal .state').text($('#data-header .state').text());
+	           			$('#employee-modal .row'  ).text($rowNumber);
+	           			//$('[name="row"]').val(			TIMESHEET_IMPORT.employeeMap[$rowNumber].row);
+	           			//$('[name="employeeName"]').val(	TIMESHEET_IMPORT.employeeMap[$rowNumber].employeeName);
+	           			//$('[name="employeeCode"]').val(	TIMESHEET_IMPORT.employeeMap[$rowNumber].employeeCode);
 						// status
 
 						$('[name="regularHours"]').val(	TIMESHEET_IMPORT.StringToFloatString(TIMESHEET_IMPORT.employeeMap[$rowNumber].regularHours));
@@ -920,9 +925,6 @@ td.money {
 	           			//$('[name="productivity"]').val(TIMESHEET_IMPORT.employeeMap[$rowNumber].productivity);
 	           			$('#employee-modal .productivity').text(TIMESHEET_IMPORT.employeeMap[$rowNumber].productivity);
 
-	           			//$('#employee-modal .state').text($('select[name="state"]').val());
-	           			$('#employee-modal .state').text($('#data-header .state').text());
-	           			$('#employee-modal .row'  ).text($rowNumber);
 	           			//blankRow: false
 	           			//errorsFound: null
 	           			//$rowNumber, $action
@@ -1352,12 +1354,13 @@ td.money {
 			<table id="employee-data">
 				<tr>
 					<td class="form-label">Employee Name :</td>
-					<td class="employeeName"><input class="employeeName"
-						type="text" name="employeeName" tabindex="101" /></td>
+					<td class="employeeName"><span class="employeeName"> </span></td> 					
+					<!--   <input class="employeeName" type="text" name="employeeName" tabindex="101" /> -->
 					<td class="employeeNameSpacer"></td>
 					<td class="form-label">Code :</td>
-					<td class="employeeName"><input class="employeeCode"
-						type="text" name="employeeCode" tabindex="102" /></td>
+					<td class="employeeCode"><span class="employeeCode"> </span></td>
+					
+					<!--   <input class="employeeCode" type="text" name="employeeCode" tabindex="102" /></td> -->
 					<td class="employeeCodeSpacer"></td>
 					<td class="form-label">State:</td>
 					<td class="state"><span class="state"> </span></td>
