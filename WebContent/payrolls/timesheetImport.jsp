@@ -1057,7 +1057,13 @@ td.money {
 	           			$.each( $("#employee-modal select"), function($index, $value) {
 	           				$outbound[$value.name] = $($value).val();
 	           			});
+			           			           			
 	           			$outbound["action"]="VALIDATE";
+
+	           			console.log("passing these values to the servlet to validate");
+	           			console.log($outbound);
+	           			
+	           			
 	           			var $callbacks = {
 	        				200:TIMESHEET_IMPORT.processEmployeeValidationSuccess,
 	        				//200:TIMESHEET_IMPORT.processEmployeeValidationSuccess($data),
@@ -1075,21 +1081,32 @@ td.money {
 	           			console.log("processEmployeeValidationSuccess");
 	           			console.log("This is the data object");
 	           			console.log($data);
-	           			console.log("This is the response code");
+	           			
+	           			console.log("This is the response header");
+	           			console.log($data.responseHeader);
+	           			
+	           			console.log("This is the data");
 	           			console.log($data.responseHeader.responseCode);
+	           			
 	           				           			
 	           			if ( $data.responseHeader.responseCode == 'EDIT_FAILURE' ) {
            					console.log("processEmployeeValidationSuccess - EDIT_FAILURE");
            					// check for header error messages first
-           					console.log("processEmployeeValidationSuccess : display header errors");
-           					if($data.header.messages){
-    	           				$.each($data.data.webMessages, function($index, $value) {
-    	           					console.log($index + ' value is ' + $value);	           				
-    	           					var $selector = "#file-header-data ." + $index + "Err";
-    	           					console.log("selector is " + $selector);	           					           					
-    	           					$($selector).html($value[0]);
-    	           				});
-           					}
+           					if($data.header){    
+	           					if($data.header.messages){
+	               					console.log("processEmployeeValidationSuccess : display header errors");
+	    	           				$.each($data.data.webMessages, function($index, $value) {
+	    	           					console.log($index + ' value is ' + $value);	           				
+	    	           					var $selector = "#file-header-data ." + $index + "Err";
+	    	           					console.log("selector is " + $selector);	           					           					
+	    	           					$($selector).html($value[0]);
+	    	           				});
+	           					} else {
+	               					console.log("processEmployeeValidationSuccess : header data returned with no messages");
+	           					}
+	           				} else {
+               					console.log("processEmployeeValidationSuccess : no header data returned");
+	           				}
 	           			} else if ( $data.responseHeader.responseCode == 'SUCCESS' || $data.responseHeader.responseCode == 'EDIT_WARNING') {
 	           				updateDataTableFromModal();
 	           				//$("#timesheetLookup").DataTable().ajax.reload();
