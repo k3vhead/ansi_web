@@ -245,8 +245,8 @@
 	        	                    {
 	        	                        extend: 'colvisGroup',
 	        	                        text: 'Default',
-	        	                        show: [ 0,1,2,3,7,9,11,12,14,15,16,17,19],
-	        	                        hide: [ 4,5,6,8,10,13,18]
+	        	                        show: [ 0,1,2,3,7,9,11,16,17,19],
+	        	                        hide: [ 4,5,6,8,10,12,13,14,15,18,20,21]
 	        	                    },
 	        	                    {
 	        	                        extend: 'colvisGroup',
@@ -284,9 +284,9 @@
              	            { "orderable": true, "targets": -1 },
              	            { className: "dt-head-center", "targets":[]},
             	            { className: "dt-left", "targets": [3] },
-            	            { className: "dt-center", "targets": [4,5,6,8,10,12,13,14,15,20,21] },
+            	            { className: "dt-center", "targets": [4,5,6,8,10,12,13,14,15,20,21,22] },
             	         	{ className: "dt-body-right", "targets": [0,1,2,7,9,11,12,13,16,17,18,19] },
-            	            { "visible": false, "targets": [4,5,6,8,10,13]},
+            	            { "visible": false, "targets": [4,5,6,8,10,12,13,14,15,18,20,21]},
             	       		],
             	         	// "paging": true,
     			        "ajax": {
