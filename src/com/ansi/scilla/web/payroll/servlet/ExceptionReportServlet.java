@@ -223,8 +223,8 @@ public class ExceptionReportServlet extends AbstractLookupServlet {
 			
 			
 			
-			Integer employeeCode = (Integer)arg0.get(EMPLOYEE_CODE);
-			Integer divisionId = (Integer)arg0.get(DIVISION_ID);
+			Integer employeeCode = (Integer)arg0.get("employee_code");
+			Integer divisionId = (Integer)arg0.get("division_id");
 			String weekEnding = (String)arg0.get("week_ending_display");
 
 			List<String> source = new ArrayList<String>();
