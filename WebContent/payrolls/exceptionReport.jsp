@@ -179,7 +179,7 @@
         				]
         			});	
         			$("#exception_display_cancel").button('option', 'label', 'Done');    
-        			// EXCEPTION_REPORT.displayExceptionModal($myRow);
+        			//EXCEPTION_REPORT.displayExceptionModal($myRow);
         		},
     		
 
@@ -310,7 +310,7 @@
 	        			        				//	$bubbleHelp.push("Foreign Division Flag");
 	        			        				//}
 	        			        				if ( row.foreign_company != null && row.foreign_company == 1 ) {
-	        			        					$bubbleHelp.push("Non Standard Company");
+	        			        					$bubbleHelp.push("Non Home Company");
 	        			        				}
 	        			        				if ( $bubbleHelp.length > 0 ) {
 	    			        						$value = EXCEPTION_REPORT.makeItRed($value, $bubbleHelp);
@@ -331,7 +331,7 @@
             			        					//"$" + (parseFloat(row.expenses_submitted).toFixed(2));
             			        				var $bubbleHelp = []
             			        				if ( row.foreign_division != null && row.foreign_division == 1 ) {
-            			        					$bubbleHelp.push("Non Standard Division");
+            			        					$bubbleHelp.push("Non Home Division");
             			        				}
             			        			//	if ( row.foreign_company != null && row.foreign_company == 1 ) {
             			        			//		$bubbleHelp.push("Foreign Company Flag");
@@ -610,7 +610,7 @@
         			        		
         			        		} },
         			        	
-        			        	{ title: "Non Standard Company Flag", width:"5%", searchable:true, "defaultContent": "", 
+        			        	{ title: "Non Home Company Flag", width:"5%", searchable:true, "defaultContent": "", 
         			        	data:function(row, type, set) {
     			        			var $value = $unknown;
     			        			if ( row.foreign_company != null ) {
@@ -627,7 +627,7 @@
     			        			return $value;
     			        			}
     			        		},
-        			        	{ title: "Non Standard Division Flag", width:"5%", searchable:true, "defaultContent": "",
+        			        	{ title: "Non Home Division Flag", width:"5%", searchable:true, "defaultContent": "",
         			        	data:function(row, type, set) {
     			        			var $value = $unknown;
     			        			if ( row.foreign_division != null ) {
@@ -646,7 +646,7 @@
     			        		},
         			        	{ title: "Action",  width:"5%", searchable:false,  orderable: false,
         			            	data: function ( row, type, set ) { 
-        			            		var $viewLink = '<span class="action-link view-link" data-id="'+row.row_id+'"><webthing:view>Detail</webthing:view></span>';
+        			            		var $viewLink = '<span class="action-link view-link" data-id="'+ row.row_id +'"><webthing:view>Detail</webthing:view></span>';
         			            		return $viewLink;
         			            	}
         			            }],
@@ -659,17 +659,29 @@
         			            	});
         			            	
         			            	
-        			            	$(".view-link").off("click");
-        			            	$(".view-link").click(function($clickevent) {
-        			            		var $myRow = $(this).attr("data-id");
-        			            		console.log("exception row id: " + $myRow);        			            		
-        			        			EXCEPTION_REPORT.displayExceptionModal($myRow);
-        			            	});   
+        			            //	$(".view-link").off("click");
+        			            //	$(".view-link").click(function($clickevent) {
+        			            //		var $myRow = $(this).attr("data-id");
+        			            //		console.log("exception row id: " + $myRow);        			            		
+        			        	//		EXCEPTION_REPORT.displayExceptionModal($myRow);
+        			            //	});   
         			            },
         			            "drawCallback": function( settings ) {
         			            	//CALL_NOTE.lookupLink();
-    			            		
-        			            }
+
+        			            	$(".view-link").off("click");
+        			            	$(".view-link").click(function($clickevent) {
+        			            		var $myRow = $(this).attr("data-id");
+        			            		console.log("exception row id: " + $myRow.employee_code); 
+        			            		var $url = "payroll/exceptionReport/" + $myRow.employee_code;
+        			            		var $callbacks = {
+        			        				200: EXCEPTION_REPORT.displayExceptionModal($myRow.employee_code)
+        			            		};
+        			            		ANSI_UTILS.makeServerCall("GET", $url, {}, $callbacks, {});
+        			            	});   
+        			            },
+        			            
+        			            
         			    } );
                 	},
         		
