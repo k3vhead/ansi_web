@@ -2159,7 +2159,7 @@
         				title:'New Claim',
         				autoOpen: false,
         				height: 420,
-        				width: 750,
+        				width: 800,
         				modal: true,
         				closeOnEscape:true,
         				open: function(event, ui) {
@@ -2346,6 +2346,26 @@
         			var $workYear = BUDGETCONTROL.workYear; 
         			var $workWeeks = BUDGETCONTROL.workWeek;
         			
+        			var $employeeClaimList = [];
+        			$.each( $("#bcr_quick_claim_modal .quick-claim-employee"), function($index, $row) {
+        				var $claimIt = false;
+        				var $rowSelector = "#bcr_quick_claim_modal .employee" + $index;
+        				var $employeeName = $($rowSelector + " input[name='employee']").val();
+        				var $dlAmt = $($rowSelector + " input[name='dlAmt']").val();
+    					var $volumeClaimed = $($rowSelector + " input[name='volumeClaimed']").val();
+    					var $laborNotes = $($rowSelector + " input[name='laborNotes']").val();
+        				if ( $employeeName != null && $employeeName != '' ) { $claimIt = true; }
+        				if ( $dlAmt != null && $dlAmt != '' ) { $claimIt = true; }
+        				if ( $volumeClaimed != null && $volumeClaimed != '' ) { $claimIt = true; }
+        				if ( $laborNotes != null && $laborNotes != '' ) { $claimIt = true; }
+        				
+        				if ( $claimIt ) {
+        					$employeeClaimList.push(
+        						{"index":$index, "employee":$employeeName,"dlAmt":$dlAmt,"volumeClaimed":$volumeClaimed,"laborNotes":$laborNotes}
+        					);
+        				}
+        			});
+        			
         			var $outbound = {
             				"divisionId":BUDGETCONTROL.divisionId,
                     		"workYear":BUDGETCONTROL.workYear, 
@@ -2354,17 +2374,18 @@
             				"ticketId":$("#bcr_quick_claim_modal input[name='ticketId']").val(),
             				"serviceTypeId":$("#bcr_quick_claim_modal input[name='serviceTypeId']").val(),
             				"claimWeek":$("#bcr_quick_claim_modal select[name='claimWeek']").val(),
-            				"dlAmt":$("#bcr_quick_claim_modal input[name='dlAmt']").val().replace(/,/g,''),
+            				//"dlAmt":$("#bcr_quick_claim_modal input[name='dlAmt']").val().replace(/,/g,''),
             				"expenseVolume":$("#bcr_quick_claim_modal input[name='expenseVolume']").val().replace(/,/g,''),
-            				"volumeClaimed":$("#bcr_quick_claim_modal input[name='volumeClaimed']").val().replace(/,/g,''),
+            				//"volumeClaimed":$("#bcr_quick_claim_modal input[name='volumeClaimed']").val().replace(/,/g,''),
             				"expenseType":$("#bcr_quick_claim_modal select[name='expenseType']").val(),
-            				"employee":$("#bcr_quick_claim_modal input[name='employee']").val(),
-            				"laborNotes":$("#bcr_quick_claim_modal input[name='laborNotes']").val(),
-            				"expenseNotes":$("#bcr_quick_claim_modal input[name='expenseNotes']").val(), 
+            				//"employee":$("#bcr_quick_claim_modal input[name='employee']").val(),
+            				//"laborNotes":$("#bcr_quick_claim_modal input[name='laborNotes']").val(),
+            				"expenseNotes":$("#bcr_quick_claim_modal input[name='expenseNotes']").val(),
+            				"employeeClaims":$employeeClaimList,
             			};
         			
         			console.log(JSON.stringify($outbound));
-        			ANSI_UTILS.doServerCall("POST", "bcr/newClaim", JSON.stringify($outbound), BUDGETCONTROL.makeQuickClaimSuccess, BUDGETCONTROL.makeQuickClaimFail);
+        			ANSI_UTILS.doServerCall("POST", "bcr/splitClaim", JSON.stringify($outbound), BUDGETCONTROL.makeQuickClaimSuccess, BUDGETCONTROL.makeQuickClaimFail);
 
         		},
         		
@@ -2375,9 +2396,21 @@
         		
         		makeQuickClaimFail : function($data, $passthru) {
         			console.log("makeQuickClaimFail");
-        			$.each($data.data.webMessages, function($index, $value) {
-        				var $loc = "#bcr_quick_claim_modal ." + $index + "Err";
-        				$($loc).html($value[0]);
+        			$.each( $data.data.webMessages, function($index, $messageList) {
+        				var $selector = "." + $index + "Err";
+        				$($selector).html( $messageList[0]);
+        			});
+        			$.each( $data.data.expenseMessages, function($index, $messageList) {
+        				var $selector = "#bcr_quick_claim_modal ." + $index + "Err";
+        				var $message = '<webthing:ban>' + $messageList[0] + '</webthing:ban>';
+        				$($selector).html( $message );
+        			});
+        			$.each( $data.data.laborMessages, function($rowNumber, $messageMap) {
+        				$.each($messageMap, function($fieldName, $messageList) {
+        					var $selector = "#bcr_quick_claim_modal .employee" + $rowNumber + " ." + $fieldName + "Err";
+        					var $message = '<webthing:ban>' + $messageList[0] + '</webthing:ban>';
+        					$($selector).html( $message );
+        				});
         			});
         		},
         		
@@ -2703,6 +2736,8 @@
 					$("#bcr_summary .quick-claim").click(function($event) {
 						$("#bcr_quick_claim_modal").dialog("open");
 						
+						$("#bcr_quick_claim_modal .err").html("");
+						
 						$("#bcr_quick_claim_modal .jobId").html("");
 	        			$("#bcr_quick_claim_modal .jobSite").html("");
 	        			$("#bcr_quick_claim_modal .ticketAmt").html("");
@@ -2894,6 +2929,7 @@
         			console.log("resetQuickClaim");
         			$("#bcr_quick_claim_modal select[name='expenseType']").val('');
         			$("#bcr_quick_claim_modal input[name='expenseVolume']").val('');
+        			$("#bcr_quick_claim_modal input[name='expenseNotes']").val('');
         			$("#bcr_quick_claim_modal .available_emp_volume_claimed").html( $("#bcr_quick_claim_modal .available_volume_claimed").html() );
        				$.each(['employee','employeePct','dlAmt','volumeClaimed','laborNotes'], function($index, $fieldName) {
        					var $selector = "#bcr_quick_claim_modal input[name='"+$fieldName+"']";
@@ -2903,6 +2939,7 @@
        				$("#bcr_quick_claim_modal .total_pct").html("0.00");
        				$("#bcr_quick_claim_modal .total_direct_labor").html("0.00");
        				$("#bcr_quick_claim_modal .total_volume_claimed").html("0.00");
+       				$("#bcr_quick_claim_modal .err").html("");
         		},
         		
         		
@@ -3507,92 +3544,135 @@
   			</table>
 			<table style="width:100%;border-top:solid 1px #404040;">
 	    		<colgroup>
-		        	<col style="width:20%;" />
+		        	<col style="width:17%;" />
+					<col style="width:3%;" />
 		        	<col style="width:40%;" />		        	
-		        	<col style="width:20%;" />
-		        	<col style="width:20%;" />
+		        	<col style="width:17%;" />
+					<col style="width:3%;" />
+		        	<col style="width:17%;" />
+					<col style="width:3%;" />
 				</colgroup>
 	    		<tr class="table-header">
-	    			<td colspan="4" >Expense</td>
+	    			<td colspan="7" >Expense</td>
 	    		</tr>
 	    		<tr style="background-color:#CCCCCC;">
-	    			<td class="column-header">Expense Type</td>
+	    			<td class="column-header" colspan="2">Expense Type</td>
 	    			<td class="column-header">&nbsp;</td>
-	    			<td class="column-header">Expense Volume Claimed</td>
-	    			<td class="column-header">Notes</td>
+	    			<td class="column-header" colspan="2">Expense Volume Claimed</td>
+	    			<td class="column-header" colspan="2">Notes</td>
 	    		</tr>
 				<tr class="column-subheader quick-claim-available">
-	    			<td style="text-align:left;">Available</td>
+	    			<td style="text-align:left;" colspan="2">Available</td>
 	    			<td style="text-align:left;">&nbsp;</td>
-	    			<td style="text-align:left;"><span class="available_volume_claimed"></span></td>
-	    			<td style="text-align:left;">&nbsp;</td>
+	    			<td style="text-align:left;" colspan="2"><span class="available_volume_claimed"></span></td>
+	    			<td style="text-align:left;" colspan="2">&nbsp;</td>
 	    		</tr>
 	    		<tr>
 	    			<td><select name="expenseType" tabindex="3"></select></td>
+					<td><span class="err expenseTypeErr"></span></td>
 	    			<td>&nbsp;</td>
 	    			<td><input type="number" step=".01" name="expenseVolume"  tabindex="4"/></td>
+					<td><span class="err expenseVolumeErr"></span></td>
 	    			<td><input type="text" name="expenseNotes" tabindex="5" /></td>
+					<td><span class="err expenseNotesErr"></span></td>
 	    		</tr>
     		</table>
 	    	<table style="width:100%;border-top:solid 1px #404040;">
+				<colgroup>
+		        	<col style="width:17%;" />
+					<col style="width:3%;" />
+		        	<col style="width:17%;" />
+					<col style="width:3%;" />
+		        	<col style="width:17%;" />
+					<col style="width:3%;" />
+		        	<col style="width:17%;" />
+					<col style="width:3%;" />
+		        	<col style="width:17%;" />
+					<col style="width:3%;" />
+				</colgroup>
 	    		<tr class="table-header">
-	    			<td colspan="5" >Direct Labor</td>
+	    			<td colspan="10" >Direct Labor</td>
 	    		</tr>
 	    		<tr style="background-color:#CCCCCC;">
-	    			<td class="column-header">Employee</td>
-	    			<td class="column-header">Pct</td>
-	    			<td class="column-header">Direct Labor</td>
-	    			<td class="column-header">Volume Claimed</td>
-	    			<td class="column-header">Notes</td>
+	    			<td class="column-header" colspan="2">Employee</td>
+	    			<td class="column-header" colspan="2">Pct</td>
+	    			<td class="column-header" colspan="2">Direct Labor</td>
+	    			<td class="column-header" colspan="2">Volume Claimed</td>
+	    			<td class="column-header" colspan="2">Notes</td>
 	    		</tr>
 	    		<tr class="column-subheader quick-claim-available">
-	    			<td style="text-align:left;">Available</td>
-	    			<td style="text-align:left;">&nbsp;</td>
-	    			<td style="text-align:left;"><span class="ticketAmt"></span></span></td>
-	    			<td style="text-align:left;"><span class="available_emp_volume_claimed"></span></td>
-	    			<td style="text-align:left;">&nbsp;</td>
+	    			<td style="text-align:left;" colspan="2">Available</td>
+	    			<td style="text-align:left;" colspan="2">&nbsp;</td>
+	    			<td style="text-align:left;" colspan="2"><span class="ticketAmt"></span></span></td>
+	    			<td style="text-align:left;" colspan="2"><span class="available_emp_volume_claimed"></span></td>
+	    			<td style="text-align:left;" colspan="2">&nbsp;</td>
 	    		</tr>
 	    		<tr class="quick-claim-employee employee0">
-   					<td><input type="text" name="employee" tabindex="6" /></td>
-   					<td><input type="number" name="employeePct" step=".01" tabindex="11" /></td>
-   					<td><input type="number" name="dlAmt" step=".01" tabindex="16" /></td>
-   					<td><input type="number" name="volumeClaimed" step=".01" tabindex="21" /></td>
-   					<td><input type="text" name="laborNotes" tabindex="26" /></td>
+   					<td><input type="text" name="employee" tabindex="6" style="width:95%;" /></td>
+					<td><span class="err employeeErr"></span></td>
+   					<td><input type="number" name="employeePct" step=".01" tabindex="11" style="width:95%;"  /></td>
+					<td><span class="err employeePctErr"></span></td>
+   					<td><input type="number" name="dlAmt" step=".01" tabindex="16" style="width:95%;"  /></td>
+					<td><span class="err dlAmtErr"></span></td>
+   					<td><input type="number" name="volumeClaimed" step=".01" tabindex="21" style="width:95%;"  /></td>
+					<td><span class="err volumeClaimedErr"></span></td>
+   					<td><input type="text" name="laborNotes" tabindex="26" style="width:95%;"  /></td>
+					<td><span class="err laborNotesErr"></span></td>
 	    		</tr>
 	    		<tr class="quick-claim-employee employee1">
-   					<td><input type="text" name="employee" tabindex="7" /></td>
-   					<td><input type="number" name="employeePct" step=".01" tabindex="12" /></td>
-   					<td><input type="number" name="dlAmt" step=".01" tabindex="17" /></td>
-   					<td><input type="number" name="volumeClaimed" step=".01" tabindex="22" /></td>
-   					<td><input type="text" name="laborNotes" tabindex="27" /></td>
+   					<td><input type="text" name="employee" tabindex="7" style="width:95%;" /></td>
+					<td><span class="err employeeErr"></span></td>
+   					<td><input type="number" name="employeePct" step=".01" tabindex="12" style="width:95%;"  /></td>
+					<td><span class="err employeePctErr"></span></td>
+   					<td><input type="number" name="dlAmt" step=".01" tabindex="17" style="width:95%;"  /></td>
+					<td><span class="err dlAmtErr"></span></td>
+   					<td><input type="number" name="volumeClaimed" step=".01" tabindex="22" style="width:95%;"  /></td>
+					<td><span class="err volumeClaimedErr"></span></td>
+   					<td><input type="text" name="laborNotes" tabindex="27" style="width:95%;"  /></td>
+					<td><span class="err laborNotesErr"></span></td>
 	    		</tr>
 	    		<tr class="quick-claim-employee employee2">
-   					<td><input type="text" name="employee" tabindex="8" /></td>
-   					<td><input type="number" name="employeePct" step=".01" tabindex="13" /></td>
-   					<td><input type="number" name="dlAmt" step=".01" tabindex="18" /></td>
-   					<td><input type="number" name="volumeClaimed" step=".01" tabindex="23" /></td>
-   					<td><input type="text" name="laborNotes" tabindex="28" /></td>
+   					<td><input type="text" name="employee" tabindex="8" style="width:95%;"  /></td>
+					<td><span class="err employeeErr"></span></td>
+   					<td><input type="number" name="employeePct" step=".01" tabindex="13" style="width:95%;"  /></td>
+					<td><span class="err employeePctErr"></span></td>
+   					<td><input type="number" name="dlAmt" step=".01" tabindex="18" style="width:95%;"  /></td>
+					<td><span class="err dlAmtErr"></span></td>
+   					<td><input type="number" name="volumeClaimed" step=".01" tabindex="23" style="width:95%;"  /></td>
+					<td><span class="err volumeClaimedErr"></span></td>
+   					<td><input type="text" name="laborNotes" tabindex="28" style="width:95%;"  /></td>
+					<td><span class="err laborNotesErr"></span></td>
 	    		</tr>
 	    		<tr class="quick-claim-employee employee3">
-   					<td><input type="text" name="employee" tabindex="9" /></td>
-   					<td><input type="number" name="employeePct" step=".01" tabindex="14" /></td>
-   					<td><input type="number" name="dlAmt" step=".01" tabindex="19" /></td>
-   					<td><input type="number" name="volumeClaimed" step=".01" tabindex="24" /></td>
-   					<td><input type="text" name="laborNotes" tabindex="29" /></td>
+   					<td><input type="text" name="employee" tabindex="9" style="width:95%;"  /></td>
+					<td><span class="err employeeErr"></span></td>
+   					<td><input type="number" name="employeePct" step=".01" tabindex="14" style="width:95%;"  /></td>
+					<td><span class="err employeePctErr"></span></td>
+   					<td><input type="number" name="dlAmt" step=".01" tabindex="19" style="width:95%;"  /></td>
+					<td><span class="err dlAmtErr"></span></td>
+   					<td><input type="number" name="volumeClaimed" step=".01" tabindex="24" style="width:95%;"  /></td>
+					<td><span class="err volumeClaimedErr"></span></td>
+   					<td><input type="text" name="laborNotes" tabindex="29" style="width:95%;"  /></td>
+					<td><span class="err laborNotesErr"></span></td>
 	    		</tr>
 	    		<tr class="quick-claim-employee employee4">
-   					<td><input type="text" name="employee" tabindex="10" /></td>
-   					<td><input type="number" name="employeePct" step=".01" tabindex="15" /></td>
-   					<td><input type="number" name="dlAmt" step=".01" tabindex="20" /></td>
-   					<td><input type="number" name="volumeClaimed" step=".01" tabindex="25" /></td>
-   					<td><input type="text" name="laborNotes" tabindex="30" /></td>
+   					<td><input type="text" name="employee" tabindex="10" style="width:95%;"  /></td>
+					<td><span class="err employeeErr"></span></td>
+   					<td><input type="number" name="employeePct" step=".01" tabindex="15" style="width:95%;"  /></td>
+					<td><span class="err employeePctErr"></span></td>
+   					<td><input type="number" name="dlAmt" step=".01" tabindex="20" style="width:95%;"  /></td>
+					<td><span class="err dlAmtErr"></span></td>
+   					<td><input type="number" name="volumeClaimed" step=".01" tabindex="25" style="width:95%;"  /></td>
+					<td><span class="err volumeClaimedErr"></span></td>
+   					<td><input type="text" name="laborNotes" tabindex="30" style="width:95%;"  /></td>
+					<td><span class="err laborNotesErr"></span></td>
 	    		</tr>
 	    		<tr class="column-subheader">
-	    			<td style="text-align:left;"><span style="float:right; margin-right:8px;" class="washer_count">0</span> Total</td>
-	    			<td style="text-align:left;"><span class="total_pct"></span></td>
-	    			<td style="text-align:left;"><span class="total_direct_labor"></span></td>
-	    			<td style="text-align:left;"><span class="total_volume_claimed"></span></td>
-	    			<td style="text-align:left;">&nbsp;</td>
+	    			<td style="text-align:left;" colspan="2"><span style="float:right; margin-right:8px;" class="washer_count">0</span> Total</td>
+	    			<td style="text-align:left;" colspan="2"><span class="total_pct"></span></td>
+	    			<td style="text-align:left;" colspan="2"><span class="total_direct_labor"></span></td>
+	    			<td style="text-align:left;" colspan="2"><span class="total_volume_claimed"></span></td>
+	    			<td style="text-align:left;" colspan="2">&nbsp;</td>
 	    		</tr>
 	    	</table>
 	    	
