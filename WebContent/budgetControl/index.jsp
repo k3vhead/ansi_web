@@ -2870,10 +2870,10 @@
         			
     				$("#bcr_quick_claim_modal select[name='expenseType']").val("");
     				$("#bcr_quick_claim_modal .err").html("");
-    				$("#bcr_quick_claim_modal .total_pct").html("0.00");
+    				//$("#bcr_quick_claim_modal .total_pct").html("0.00");
     				$("#bcr_quick_claim_modal .total_direct_labor").html("0.00");
     				$("#bcr_quick_claim_modal .total_volume_claimed").html("0.00");
-    				$("#bcr_quick_claim_modal .washer_count").html("0");
+    				//$("#bcr_quick_claim_modal .washer_count").html("0");
     				$("#bcr_quick_claim_modal input[name='serviceTypeId']").val($serviceTypeId);
     				$("#bcr_quick_claim_modal .serviceTagId").html($serviceTagId);
     				$("#bcr_edit_modal").attr("serviceTagId",$serviceTagId);
