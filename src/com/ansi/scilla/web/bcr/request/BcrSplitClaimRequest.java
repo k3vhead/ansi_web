@@ -1,7 +1,9 @@
 package com.ansi.scilla.web.bcr.request;
 
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -184,7 +186,7 @@ public class BcrSplitClaimRequest extends AbstractRequest {
 	}
 	
 	
-	private boolean hasExpenseClaim() {
+	public boolean hasExpenseClaim() {
 		boolean hasExpenseClaim = false;
 		if ( ! StringUtils.isBlank(this.expenseType)) {hasExpenseClaim = true; }
 		if ( this.expenseVolume != null ) {hasExpenseClaim = true; }
@@ -193,11 +195,55 @@ public class BcrSplitClaimRequest extends AbstractRequest {
 		return hasExpenseClaim;
 	}
 	
-	private boolean hasLaborClaim() {
+	
+	public boolean hasLaborClaim() {
 		boolean hasLaborClaim = false;
 		for ( BcrEmployeeClaim employeeClaim : this.employeeClaims ) {
 			if ( employeeClaim.hasLaborClaim() ) { hasLaborClaim = true; }
 		}
 		return hasLaborClaim;
+	}
+	
+	
+	public BcrExpenseRequest makeBcrExpenseRequest() {
+		BcrExpenseRequest expenseRequest = new BcrExpenseRequest();
+		expenseRequest.setDivisionId(this.divisionId);
+		expenseRequest.setTicketId(this.ticketId);
+		expenseRequest.setServiceTagId(this.serviceTypeId);
+		expenseRequest.setClaimWeek(this.claimWeek);
+		expenseRequest.setVolume(this.expenseVolume);
+		expenseRequest.setExpenseType(this.expenseType);
+		expenseRequest.setNotes(this.expenseNotes);
+		expenseRequest.setWorkYear(this.workYear);
+		expenseRequest.setWorkWeeks(this.workWeeks);
+		
+		return expenseRequest;
+	}
+	
+	
+	
+	public List<BcrTicketClaimRequest> makeBcrTicketClaimRequests() {
+		List<BcrTicketClaimRequest> laborRequestList = new ArrayList<BcrTicketClaimRequest>();
+		for ( BcrEmployeeClaim laborClaim : this.employeeClaims ) {
+			if ( StringUtils.isNotBlank(laborClaim.getEmployee()) ) {
+				BcrTicketClaimRequest claimRequest = new BcrTicketClaimRequest();
+				claimRequest.setTicketId(this.ticketId);
+				claimRequest.setDlAmt(laborClaim.getDlAmt());
+	//			claimRequest.setTotalVolume(this.);
+				claimRequest.setVolumeClaimed(laborClaim.getVolumeClaimed());
+				claimRequest.setNotes(laborClaim.getLaborNotes());
+	//			claimRequest.setBilledAmount(this.);
+				claimRequest.setEmployee(laborClaim.getEmployee());
+				claimRequest.setClaimWeek(this.claimWeek);
+	//			claimRequest.setClaimId(this.);
+				claimRequest.setDivisionId(this.divisionId);
+				claimRequest.setWorkYear(this.workYear);
+				claimRequest.setWorkWeeks(this.workWeeks);
+				claimRequest.setServiceTagId(this.serviceTypeId);
+	//			claimRequest.setClaimedEquipment(this.);
+				laborRequestList.add(claimRequest);
+			}
+		}
+		return laborRequestList;
 	}
 }

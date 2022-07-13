@@ -10,7 +10,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.Level;
 
+import com.ansi.scilla.web.bcr.common.BcrUtils;
+import com.ansi.scilla.web.bcr.request.BcrExpenseRequest;
 import com.ansi.scilla.web.bcr.request.BcrSplitClaimRequest;
+import com.ansi.scilla.web.bcr.request.BcrTicketClaimRequest;
 import com.ansi.scilla.web.bcr.response.BcrSplitClaimValidationResponse;
 import com.ansi.scilla.web.bcr.response.BcrTicketClaimResponse;
 import com.ansi.scilla.web.common.response.ResponseCode;
@@ -47,25 +50,36 @@ public class BcrSplitClaimServlet extends AbstractServlet {
 				SessionUser sessionUser = sessionData.getUser();
 				List<SessionDivision> divisionList = sessionData.getDivisionList();
 
+				/**
+				 * The request object is more complex than the norm, so we have a response object specific
+				 * to split claim messaging. 
+				 */
 				BcrSplitClaimValidationResponse validationResponse = bcrSplitClaimRequest.validate(conn, sessionUser);
 				BcrTicketClaimResponse data = new BcrTicketClaimResponse();
 				
 				if ( validationResponse.responseCode().equals(ResponseCode.SUCCESS) ) {
-					logger.log(Level.DEBUG, "webMessages is Empty");
-					Integer laborClaimId = null;
-					Integer expenseClaimId = null;
-//					if ( bcrSplitClaimRequest.isLaborClaim() ) {
-//						BcrTicketClaimRequest bcrTicketClaimRequest = bcrSplitClaimRequest.makeBcrTicketClaimRequest();
-//						laborClaimId = BcrUtils.addNewLaborClaim(conn, bcrTicketClaimRequest, sessionUser);
-//					}
-//					if ( bcrSplitClaimRequest.isExpenseClaim() ) {						
-//						BcrExpenseRequest bcrExpenseRequest = bcrSplitClaimRequest.makeBcrExpenseRequest();
-//						expenseClaimId = BcrUtils.insertExpenseClaim(conn, bcrExpenseRequest, sessionUser);
-//					}		
-//					Integer claimId = laborClaimId == null ? expenseClaimId : laborClaimId;
-//					data = BcrTicketClaimResponse.fromClaim(conn, sessionUser.getUserId(), divisionList, bcrSplitClaimRequest.getDivisionId(), bcrSplitClaimRequest.getWorkYear(), bcrSplitClaimRequest.getWorkWeeks(), claimId);
-//					conn.commit();
-					super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
+					try {
+						logger.log(Level.DEBUG, "webMessages is Empty");
+						if ( bcrSplitClaimRequest.hasLaborClaim() ) {
+							List<BcrTicketClaimRequest> bcrTicketClaimRequests = bcrSplitClaimRequest.makeBcrTicketClaimRequests();
+							for ( BcrTicketClaimRequest laborRequest : bcrTicketClaimRequests) {
+								Integer claimId = BcrUtils.addNewLaborClaim(conn, laborRequest, sessionUser);
+								logger.log(Level.DEBUG, "Making labor claim: " + claimId);
+							}
+						}
+						if ( bcrSplitClaimRequest.hasExpenseClaim() ) {						
+							BcrExpenseRequest bcrExpenseRequest = bcrSplitClaimRequest.makeBcrExpenseRequest();
+							Integer claimId = BcrUtils.insertExpenseClaim(conn, bcrExpenseRequest, sessionUser);
+							logger.log(Level.DEBUG, "Making expense claim: " + claimId);
+						}		
+						conn.commit();
+						data.setClaimWeek(bcrSplitClaimRequest.getClaimWeek());
+						data.setClaimYear(bcrSplitClaimRequest.getWorkYear());
+						super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
+					} catch ( Exception e ) {
+						conn.rollback();
+						throw e;
+					}
 				} else {
 					super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, validationResponse);
 				}
