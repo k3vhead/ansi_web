@@ -669,16 +669,13 @@
         			            "drawCallback": function( settings ) {
         			            	//CALL_NOTE.lookupLink();
 
+
         			            	$(".view-link").off("click");
         			            	$(".view-link").click(function($clickevent) {
         			            		var $myRow = $(this).attr("data-id");
-        			            		console.log("exception row id: " + $myRow.employee_code); 
-        			            		var $url = "payroll/exceptionReport/" + $myRow.employee_code;
-        			            		var $callbacks = {
-        			        				200: EXCEPTION_REPORT.displayExceptionModal($myRow.employee_code)
-        			            		};
-        			            		ANSI_UTILS.makeServerCall("GET", $url, {}, $callbacks, {});
-        			            	});   
+        			            		console.log("exception row id: " + $myRow);        			            		
+        			        			EXCEPTION_REPORT.displayExceptionModal($myRow);
+        			            	});    
         			            },
         			            
         			            
