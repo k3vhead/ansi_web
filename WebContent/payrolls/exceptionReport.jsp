@@ -141,16 +141,16 @@
         			$("#exception-display input[name='unionCode']").val(EXCEPTION_REPORT.exceptionMap[$myRow].union_code);
         			$("#exception-display input[name='unionRate']").val(EXCEPTION_REPORT.exceptionMap[$myRow].union_rate);
         			$("#exception-display input[name='underUnionMinPay']").val(EXCEPTION_REPORT.exceptionMap[$myRow].under_union_min_pay);
-        			$("#exception-display input[name='minimumHourlyPay']").val(EXCEPTION_REPORT.exceptionMap[$myRow].minimum_hourly_pay);
+        			$("#exception-display input[name='minimumHourlyPay']").val(EXCEPTION_REPORT.exceptionMap[$myRow].minimum_hourly_pay.toFixed(2));
         			$("#exception-display input[name='underGovtMinPay']").val(EXCEPTION_REPORT.exceptionMap[$myRow].under_govt_min_pay);
         			$("#exception-display input[name='excessExpensePct']").val(EXCEPTION_REPORT.exceptionMap[$myRow].excess_expenses_pct);
         			$("#exception-display input[name='excessExpenseClaim']").val(EXCEPTION_REPORT.exceptionMap[$myRow].excess_expenses_claim);
         			$("#exception-display select[name='ytdExcessExpensePct']").val(EXCEPTION_REPORT.exceptionMap[$myRow].ytd_excess_expense_pct);
         			$("#exception-display input[name='ytdExcessExpenseClaim']").val(EXCEPTION_REPORT.exceptionMap[$myRow].ytd_excess_expense_claim);
-        			$("#exception-display input[name='expensesSubmitted']").val(EXCEPTION_REPORT.exceptionMap[$myRow].expenses_submitted);
-        			$("#exception-display input[name='volume']").val(EXCEPTION_REPORT.exceptionMap[$myRow].volume);
-        			$("#exception-display input[name='directLabor']").val(EXCEPTION_REPORT.exceptionMap[$myRow].direct_labor);
-        			$("#exception-display input[name='ytdDirectLabor']").val(EXCEPTION_REPORT.exceptionMap[$myRow].ytd_direct_labor);
+        			$("#exception-display input[name='expensesSubmitted']").val(EXCEPTION_REPORT.exceptionMap[$myRow].expenses_submitted.toFixed(2));
+        			$("#exception-display input[name='volume']").val(EXCEPTION_REPORT.exceptionMap[$myRow].volume.toFixed(2));
+        			$("#exception-display input[name='directLabor']").val(EXCEPTION_REPORT.exceptionMap[$myRow].direct_labor.toFixed(2));
+        			$("#exception-display input[name='ytdDirectLabor']").val(EXCEPTION_REPORT.exceptionMap[$myRow].ytd_direct_labor.toFixed(2));
         			$("#exception-display input[name='foreignCompany']").val(EXCEPTION_REPORT.exceptionMap[$myRow].foreign_company);
         			$("#exception-display input[name='foreignDivision']").val(EXCEPTION_REPORT.exceptionMap[$myRow].foreign_division);
         			
@@ -203,7 +203,7 @@
         			var $outbound = {"errorFilter":$errorsOnly};
         			
         			$('#exceptionReportTable tbody').on('mouseenter', 'td', function () {
-        		        var colIdx = table.cell(this).index().column;
+        		        var colIdx = makeExceptionTable.cell(this).index().column;
         		 
         		        $(table.cells().nodes()).removeClass('highlight');
         		        $(table.column(colIdx).nodes()).addClass('highlight');
@@ -430,13 +430,13 @@
     			        			return $value;
     			        			}
     			        		},
-    			        		{ title: "Expense Pct", width:"5%", searchable: true, searchFormat: "#.##%", data: function ( row, type, set ) {
+    			        		{ title: "Expense Pct", width:"5%", searchable: true, searchFormat: "#%", data: function ( row, type, set ) {
        			        			if(row.excess_expense_pct != null){
        			        			//{return (parseFloat(row.excess_expense_pct).toFixed(2)) + "%";}
        			        			
         			        			//{return "$" + (parseFloat(row.expenses_submitted).toFixed(2));}
         			        			//if(row.direct_labor != null){
-        			        				var $value = "$" + (parseFloat(row.expenses_submitted).toFixed(2));
+        			        				var $value = row.expenses_submitted + "%";
         			        				var $bubbleHelp = []
         			        				if ( row.excess_expense_pct != null && row.excess_expense_pct == 1 ) {
         			        					$bubbleHelp.push("Expense Pct");
