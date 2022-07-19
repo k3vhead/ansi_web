@@ -2,12 +2,17 @@ package com.ansi.scilla.web.payroll.servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import org.apache.commons.collections4.Transformer;
 
 import com.ansi.scilla.web.common.query.LookupQuery;
 import com.ansi.scilla.web.common.servlet.AbstractLookupServlet;
@@ -28,6 +33,7 @@ public class TimesheetLookupServlet extends AbstractLookupServlet {
 	public static final String DIVISION_ID = "division_id";
 	public static final String DIV = "concat(division.division_nbr, '-', division.division_code)"; 
 	public static final String WEEK_ENDING = "week_ending";
+	public static final String WEEK_ENDING_DISPLAY = "week_ending_display";
 	public static final String STATE = "state";
 	public static final String CITY = "city";
 	public static final String EMPLOYEE_CODE = "employee_code";
@@ -55,6 +61,7 @@ public class TimesheetLookupServlet extends AbstractLookupServlet {
 
 	public TimesheetLookupServlet() {
 		super(Permission.PAYROLL_READ);
+		super.itemTransformer = new ItemTransformer();
 		cols = new String[] { 
 //			DIVISION_ID,
 			DIV, 
@@ -112,4 +119,21 @@ public class TimesheetLookupServlet extends AbstractLookupServlet {
 		}
 	}
 
+	
+	public class ItemTransformer implements Transformer<HashMap<String, Object>, HashMap<String, Object>> {
+		private final SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+		
+		@Override
+		public HashMap<String, Object> transform(HashMap<String, Object> arg0) {
+			Date weekEnding = (Date)arg0.get(WEEK_ENDING);
+			if ( weekEnding != null ) {
+				arg0.put(WEEK_ENDING_DISPLAY, sdf.format(weekEnding));
+			} else {
+				arg0.put(WEEK_ENDING_DISPLAY, "");
+			}
+			
+			return arg0;
+		}
+
+	}
 }

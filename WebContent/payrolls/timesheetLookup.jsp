@@ -483,7 +483,7 @@
        			        	},
        			        columns: [
        			        	{ title: "Division", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'div' },
-       			        	{ title: "Week Ending", width:"10%", searchable:true, searchFormat:"yyyy-mm-dd", "defaultContent": "<i>N/A</i>", data:'week_ending' },
+       			        	{ title: "Week Ending", width:"10%", searchable:true, searchFormat:"yyyy-mm-dd", "defaultContent": "<i>N/A</i>", data:'week_ending_display' },
        			        	{ title: "State", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'state' },
        			        	{ title: "City", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'city' },
        			        	{ title: "Employee Code", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_code' },
