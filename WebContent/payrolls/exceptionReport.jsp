@@ -345,7 +345,7 @@
         			        		
         			        		} },
         			        		//"defaultContent": "<i>N/A</i>", data:'div' },
-        			        	{ title: "Week Ending", width:"5%", searchable:true, searchFormat: "YYYY/MM/DD", "defaultContent": "<i>N/A</i>", data:'week_ending' },
+        			        	{ title: "Week Ending", width:"5%", searchable:true, searchFormat: "MM/DD/YYYY", "defaultContent": "", data:'formatted_week_ending' },
         			        	{ title: "Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_name'},
         			        	
         			        	{ title: "Status", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_status' },

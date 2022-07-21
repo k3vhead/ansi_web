@@ -69,6 +69,7 @@ public class ExceptionReportServlet extends AbstractLookupServlet {
 	public static final String TERMINATION_DATE = "employee_termination_date";
 	public static final String FORMATTED_TERMINATION_DATE = "formatted_termination_date";
 	public static final String FORMATTED_PROCESS_DATE = "formatted_process_date";
+	public static final String FORMATTED_WEEK_ENDING = "formatted_week_ending";
 	
 	
 	public static final String ROW_ID = "row_id";
@@ -211,6 +212,11 @@ public class ExceptionReportServlet extends AbstractLookupServlet {
 			java.sql.Date terminationDate = (java.sql.Date)arg0.get(TERMINATION_DATE);			
 			String formattedDate = terminationDate == null ? null : sdf.format(terminationDate);
 			arg0.put(FORMATTED_TERMINATION_DATE, formattedDate);
+			
+			java.sql.Date weekEnding = (java.sql.Date)arg0.get(WEEK_ENDING);			
+			String formattedWeekEndingDate = weekEnding == null ? null : sdf.format(weekEnding);
+			arg0.put(FORMATTED_WEEK_ENDING, formattedWeekEndingDate);
+
 
 			if ( arg0.containsKey(EMPLOYEE_STATUS) && arg0.get(EMPLOYEE_STATUS) != null ) {
 				EmployeeStatus employeeStatus = EmployeeStatus.valueOf((String)arg0.get(EMPLOYEE_STATUS));
@@ -225,12 +231,12 @@ public class ExceptionReportServlet extends AbstractLookupServlet {
 			
 			Integer employeeCode = (Integer)arg0.get("employee_code");
 			Integer divisionId = (Integer)arg0.get("division_id");
-			String weekEnding = (String)arg0.get("week_ending_display");
+			//String weekEnding = (String)arg0.get("week_ending_display");
 
 			List<String> source = new ArrayList<String>();
 			source.add(employeeCode == null ? "" : String.valueOf(employeeCode));
 			source.add(divisionId == null ? "" : String.valueOf(divisionId));
-			source.add(weekEnding == null ? "" : weekEnding);
+		//	source.add(weekEnding == null ? "" : weekEnding);
 			try {
 				MessageDigest md = MessageDigest.getInstance("MD5");
 				byte[] messageDigest = md.digest(StringUtils.join(source, "").getBytes());
