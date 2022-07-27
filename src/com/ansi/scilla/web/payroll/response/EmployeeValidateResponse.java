@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat;
 
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.PayrollEmployee;
-import com.ansi.scilla.common.payroll.parser.EmployeeImportRecord;
+import com.ansi.scilla.common.payroll.parser.employee.EmployeeImportRecord;
 import com.ansi.scilla.web.common.response.MessageResponse;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.payroll.request.EmployeeRequest;

@@ -17,7 +17,6 @@ import org.apache.commons.collections4.Transformer;
 import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.payroll.common.EmployeeStatus;
-import com.ansi.scilla.common.payroll.validator.EmployeeValidationBaseSql;
 import com.ansi.scilla.web.common.query.LookupQuery;
 import com.ansi.scilla.web.common.struts.SessionDivision;
 import com.ansi.scilla.web.payroll.query.ExceptionReportQuery;
