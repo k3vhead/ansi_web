@@ -68,19 +68,24 @@ public class TimesheetImportServlet extends AbstractServlet {
 
 					ValidatedWorksheet validatedWorksheet = new ValidatedWorksheet(header, validatedEmployees);
 					data = new TimesheetImportResponse(conn, parser.getFileName(), validatedWorksheet);
-					switch ( validatedWorksheet.maxErrorLevel() ) {
-					case ERROR:
-						responseCode = ResponseCode.EDIT_FAILURE;
-						break;
-					case OK:
-						responseCode = ResponseCode.SUCCESS;
-						break;
-					case WARNING:
+					if ( validatedWorksheet.getHeader().maxErrorLevel().equals(ErrorLevel.WARNING) ) {
 						responseCode = ResponseCode.EDIT_WARNING;
-						break;
-					default:
-						throw new ServletException("Invalid validation error level: " + header.maxErrorLevel().name());
+					} else {
+						responseCode = ResponseCode.SUCCESS;
 					}
+//					switch ( validatedWorksheet.maxErrorLevel() ) {
+//					case ERROR:
+//						responseCode = ResponseCode.EDIT_FAILURE;
+//						break;
+//					case OK:
+//						responseCode = ResponseCode.SUCCESS;
+//						break;
+//					case WARNING:
+//						responseCode = ResponseCode.EDIT_WARNING;
+//						break;
+//					default:
+//						throw new ServletException("Invalid validation error level: " + header.maxErrorLevel().name());
+//					}
 				} catch ( NotATimesheetException e) {
 					responseCode = ResponseCode.EDIT_FAILURE;
 					webMessages.addMessage(TimesheetImportRequest.TIMESHEET_FILE, "Not a Timesheet Worksheet");
