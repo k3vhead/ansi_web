@@ -442,82 +442,27 @@
 							},
 	           				columnDefs : [
 	             	            //{ className : "dt-head-center", "targets":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]},
-	            	            { className : "dt-left", "targets": [1] },
-	            	            { className : "dt-center", "targets": [17,18] },
-	            	            //{ className : "dt-right", "targets": [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]}
-	            	            { className : "dt-right", "targets": [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]},
-	            	            //{target: 17, visible: false}	            	                
-	            	         ],
+	            	            { className : "dt-left", "targets": [2] },
+	            	            { className : "dt-center", "targets": [0,1,16,17] },
+	            	            { className : "dt-right", "targets": [3,4,5,6,7,8,9,10,11,12,13,14,15]},
+	            	        ],
 	           				columns : [
 	           					{ title : "Row", searchable:true, "defaultContent": "", data:'row' },
+	           					{ title : "Code", searchable:true, "defaultContent": "", data:'employeeCode' },
 	           					{ title : "Employee Name", searchable:true, "defaultContent": "", data:'employeeName' },
-	           					{ title : "Reg Hrs", searchable:true, "defaultContent": "", 
-	           						data: function ( row, type, set ) {
-	           						    value = null;
-	           						    if ( row.regularHours == null || row.regularHours == "" ) {
-	           						        value="";
-	           						    } else if ( isNaN(row.regularHours) ) {
-	           						        value=$errorFound;
-	           						    } else {
-	           						    	x = parseFloat(row.regularHours);
-	           						        value = x.toFixed(2);
-	           						    }
-	           						    return value;
-	           						}
-           						},
-	           					{ title : "Reg Pay", searchable:true, "defaultContent": "", data:'regularPay' },
-	           					{ title : "Exp", searchable:true, "defaultContent": "", data:'expenses' },
-	           					{ title : "OT Hrs", searchable:true, "defaultContent": "", 
-	           						data: function ( row, type, set ) {
-	           						    value = null;
-	           						    if ( row.otHours == null || row.otHours == "" ) {
-	           						        value="";
-	           						    } else if ( isNaN(row.otHours) ) {
-	           						        value=$errorFound;
-	           						    } else {
-	           						    	x = parseFloat(row.otHours);
-	           						        value = x.toFixed(2);
-	           						    }
-	           						    return value;
-	           						}	           					
-	           					},
-	           					{ title : "OT Pay", searchable:true, "defaultContent": "", data:'otPay' },
-	           					{ title : "Vac Hrs", searchable:true, "defaultContent": "", 
-	           						data: function ( row, type, set ) {
-	           						    value = null;
-	           						    if ( row.vacationHours == null || row.vacationHours == ""  ) {
-	           						        value="";
-	           						    } else if ( isNaN(row.vacationHours) ) {
-	           						        value=$errorFound;
-	           						    } else {
-	           						    	x = parseFloat(row.vacationHours);
-	           						        value = x.toFixed(2);
-	           						    }
-	           						    return value;
-	           						} 
-	           					},
-	           					{ title : "Vac Pay", searchable:true, "defaultContent": "", data:'vacationPay' },
-	           					{ title : "Hol Hrs", searchable:true, "defaultContent": "", 
-	           						data: function ( row, type, set ) {
-	           						    value = null;
-	           						    if ( row.holidayHours == null || row.holidayHours == "") {
-	           						        value="";
-	           						    } else if ( isNaN(row.holidayHours) ) {
-	           						        value=$errorFound;
-	           						    } else {
-	           						    	x = parseFloat(row.holidayHours);
-	           						        value = x.toFixed(2);
-	           						    }
-	           						    return value;
-	           						} 
-	           					},
-	           					{ title : "Hol Pay", searchable:true, "defaultContent": "", data:'holidayPay' },
-	           					{ title : "Gross Pay", searchable:true, "defaultContent": "", data:'grossPay' },
-	           					{ title : "Exp Smt'd", searchable:true, "defaultContent": "", data:'expensesSubmitted' },
-	           					{ title : "Exp All'd", searchable:true, "defaultContent": "", data:'expensesAllowed' },
-	           					{ title : "Volume", searchable:true, "defaultContent": "", data:'volume' },
-	           					{ title : "Direct Labor", searchable:true, "defaultContent": "", data:'directLabor' },
-	           					{ title : "Prod %", searchable:true, "defaultContent": "", data:'productivity' },
+	           					{ title : "Reg Hrs", searchable:true, "defaultContent": "",data:function ( row, type, set ) {return row.regularHours.toFixed(2)}},
+	           					{ title : "Reg Pay", searchable:true, "defaultContent": "", data:function ( row, type, set ) {return row.regularPay.toFixed(2)} },
+	           					{ title : "Exp", searchable:true, "defaultContent": "", data:function ( row, type, set ) {return row.expenses.toFixed(2)} },
+	           					{ title : "OT Hrs", searchable:true, "defaultContent": "", data:function ( row, type, set ) {return row.otHours.toFixed(2)}},
+	           					{ title : "OT Pay", searchable:true, "defaultContent": "", data:function ( row, type, set ) {return row.otPay.toFixed(2)}},
+	           					{ title : "Vac Pay", searchable:true, "defaultContent": "", data:function ( row, type, set ) {return row.vacationPay.toFixed(2)}},
+	           					{ title : "Hol Pay", searchable:true, "defaultContent": "", data:function ( row, type, set ) {return row.holidayPay.toFixed(2)} },
+	           					{ title : "Gross Pay", searchable:true, "defaultContent": "", data:function ( row, type, set ) {return row.grossPay.toFixed(2)} },
+	           					{ title : "Exp Smt'd", searchable:true, "defaultContent": "", data:function ( row, type, set ) {return row.expensesSubmitted.toFixed(2)}},
+	           					{ title : "Exp All'd", searchable:true, "defaultContent": "", data:function ( row, type, set ) {return row.expensesAllowed.toFixed(2)} },
+	           					{ title : "Volume", searchable:true, "defaultContent": "", data:function ( row, type, set ) {return row.volume.toFixed(2)} },
+	           					{ title : "Direct Labor", searchable:true, "defaultContent": "",data:function ( row, type, set ) {return row.directLabor.toFixed(2)} },
+	           					{ title : "Prod %", searchable:true, "defaultContent": "", data:function ( row, type, set ) {return row.productivity.toFixed(2)} },
 	           					{ title : "Status", "defaultContent":"", 
 	           						data : function(row, type, set) {
 										var $tag = TIMESHEET_IMPORT.statusIsGood;
@@ -557,7 +502,6 @@
 	           					});	           					
 	           				}
 	           			});
-	           			$table.column(17).visible(false);
 	           			$("#data-detail").show();
 	           			$("#timesheet").show();
 	           		},
