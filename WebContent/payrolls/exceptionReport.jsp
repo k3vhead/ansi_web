@@ -210,9 +210,9 @@
         			}
         			//$("#exception-display input[name='foreignDivision']").val(EXCEPTION_REPORT.exceptionMap[$myRow].foreign_division);
         			if (EXCEPTION_REPORT.exceptionMap[$myRow].foreign_division == 1 ) {
-        				$("#exception-display input[name='foreignDivision']").val($errorFound);
+        				$("#exception-display .foreignDivision").html($errorFound);
         			} else {
-        				$("#exception-display input[name='foreignDivision']").val($noErrorFound);
+        				$("#exception-display .foreignDivision").html($noErrorFound);
         				
         			}
         			
@@ -929,9 +929,10 @@
 				</tr>
 				<tr>
 					<td class="form-label">Non Standard Division:</td>
-					<td><input type="text" name="foreignDivision" readonly="true"/>
+					<td>
+						<span class="foreignDivision" />
 						<input type="hidden" name="selectedForeignDivision" />
-						</td>
+					</td>
 					<td><span class="err foreignDivisionErr"></span></td>
 				</tr>
 			</table>

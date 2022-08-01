@@ -151,7 +151,7 @@ public class ExceptionReportServlet extends AbstractLookupServlet {
 			SessionData sessionData = (SessionData)request.getSession().getAttribute(SessionData.KEY);
 			Integer userId = sessionData.getUser().getUserId();
 			List<SessionDivision> divisionList = sessionData.getDivisionList();
-			LookupQuery exceptionReportQuery = new ExceptionReportQuery(userId, divisionList, Integer.valueOf(groupId));	
+			LookupQuery exceptionReportQuery = new ExceptionReportQuery(userId, divisionList, Integer.valueOf(groupId), errorsOnly);	
 			return exceptionReportQuery;
 		} else {
 			throw new InvalidParameterException();
