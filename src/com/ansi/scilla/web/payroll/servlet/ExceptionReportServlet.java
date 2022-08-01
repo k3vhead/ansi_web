@@ -49,23 +49,26 @@ public class ExceptionReportServlet extends AbstractLookupServlet {
 	public static final String UNION_MEMBER = "union_member";
 	public static final String UNION_CODE = "union_code";
 	public static final String UNION_RATE = "union_rate";
-	public static final String UNDER_UNION_MIN_PAY = "under_union_min_pay";
+	public static final String MINIMUM_HOURLY_PAY = DivisionLookupQuery.MINIMUM_HOURLY_PAY;
 	public static final String UNDER_GOVT_MIN_PAY = "under_govt_min_pay";
-	public static final String EXCESS_EXPENSE_PCT = "excess_expense_pct";
+	public static final String EXPENSES_SUBMITTED = "expenses_submitted";
+	public static final String EXCESS_EXPENSE_PCT = "excess_expense_pct";	
 	public static final String EXCESS_EXPENSE_CLAIM = "excess_expense_claim";
 	public static final String YTD_EXCESS_EXPENSE_PCT = "ytd_excess_expense_pct";
 	public static final String YTD_EXCESS_EXPENSE_CLAIM = "ytd_excess_expense_claim";
-	public static final String EXPENSES_SUBMITTED = "expenses_submitted";
+	//public static final String EXPENSES_SUBMITTED = "expenses_submitted";
+	
 	public static final String VOLUME = "volume";
 	public static final String DIRECT_LABOR = "direct_labor";
 	public static final String YTD_DIRECT_LABOR = "ytd_direct_labor";
 	public static final String FOREIGN_COMPANY = "foreign_company";
 	public static final String FOREIGN_DIVISION = "foreign_division";
+	
 	public static final String PRODUCTIVITY = "productivity";
 	public static final String PROCESS_DATE = "process_date";
 	public static final String EMPLOYEE_LAST_NAME = "employee_last_name";
-	public static final String MINIMUM_HOURLY_PAY = DivisionLookupQuery.MINIMUM_HOURLY_PAY;
 	public static final String COMPANY_CODE = "company_code";
+	public static final String UNDER_UNION_MIN_PAY = "under_union_min_pay";
 	public static final String TERMINATION_DATE = "employee_termination_date";
 	public static final String FORMATTED_TERMINATION_DATE = "formatted_termination_date";
 	public static final String FORMATTED_PROCESS_DATE = "formatted_process_date";
@@ -98,11 +101,12 @@ public class ExceptionReportServlet extends AbstractLookupServlet {
 				UNDER_UNION_MIN_PAY,
 				MINIMUM_HOURLY_PAY,
 				UNDER_GOVT_MIN_PAY,
+				EXPENSES_SUBMITTED,
 				EXCESS_EXPENSE_PCT,
 				EXCESS_EXPENSE_CLAIM,
 				YTD_EXCESS_EXPENSE_PCT,
 				YTD_EXCESS_EXPENSE_CLAIM,
-				EXPENSES_SUBMITTED,
+				//EXPENSES_SUBMITTED,
 				VOLUME,
 				DIRECT_LABOR,
 				YTD_DIRECT_LABOR,
