@@ -22,10 +22,11 @@ import com.ansi.scilla.common.db.ApplicationProperties;
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.exceptions.InvalidValueException;
 import com.ansi.scilla.common.exceptions.PayrollException;
-import com.ansi.scilla.common.payroll.parser.PayrollWorksheetEmployee.WprCols;
-import com.ansi.scilla.common.payroll.validator.EmployeeValidation;
-import com.ansi.scilla.common.payroll.validator.PayrollMessage;
-import com.ansi.scilla.common.payroll.validator.YtdValues;
+import com.ansi.scilla.common.payroll.parser.worksheet.PayrollWorksheetEmployee.FieldLocation;
+import com.ansi.scilla.common.payroll.parser.worksheet.PayrollWorksheetHeader;
+import com.ansi.scilla.common.payroll.validator.common.EmployeeValidation;
+import com.ansi.scilla.common.payroll.validator.common.PayrollMessage;
+import com.ansi.scilla.common.payroll.validator.common.YtdValues;
 import com.ansi.scilla.common.utils.ApplicationProperty;
 import com.ansi.scilla.common.utils.ErrorLevel;
 import com.ansi.scilla.web.common.exception.InvalidFormatException;
@@ -379,20 +380,20 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 	
 			// We're not validating name because the name is just used to get the code, and we validate the code before we get here
 //			addMessage(WprCols.EMPLOYEE_NAME, validateEmployeeName(conn));  
-			addMessage(WprCols.GROSS_PAY, validateMinimumGovtPay(division)); 
-			addMessage(WprCols.EXPENSES_SUBMITTED, validateExcessExpense(maxExpenseRate));
+			addMessage(FieldLocation.GROSS_PAY, validateMinimumGovtPay(division)); 
+			addMessage(FieldLocation.EXPENSES_SUBMITTED, validateExcessExpense(maxExpenseRate));
 			if ( this.employeeCode != null ) {
 				makeEmployeeDefaults(conn, this.employeeCode);
 				YtdValues ytdValues = makeYtdValues(conn, this.employeeCode);
 				if ( ytdValues.isTrue(YtdValues.FieldName.union_member)) {
-					addMessage(WprCols.GROSS_PAY, validateMinimumUnionPay(this.unionRate));
-					addMessage(WprCols.GROSS_PAY, validateYtdMinimumUnionPay(ytdValues));
+					addMessage(FieldLocation.GROSS_PAY, validateMinimumUnionPay(this.unionRate));
+					addMessage(FieldLocation.GROSS_PAY, validateYtdMinimumUnionPay(ytdValues));
 				}
-				addMessage(WprCols.GROSS_PAY, validateYtdMinimumGovtPay(ytdValues));
-				addMessage(WprCols.DIVISION, validateHomeDivision(this.standardDivisionId));
-				addMessage(WprCols.DIVISION, validateHomeCompany(division.getGroupId(), this.standardCompanyId));
-				addMessage(WprCols.EXPENSES_SUBMITTED, validateYtdExcessExpense(ytdValues));
-				addMessage(WprCols.WEEK_ENDING, validateLatePay(ytdValues));
+				addMessage(FieldLocation.GROSS_PAY, validateYtdMinimumGovtPay(ytdValues));
+				addMessage(PayrollWorksheetHeader.FieldLocation.DIVISION_NBR, validateHomeDivision(this.standardDivisionId));
+				addMessage(PayrollWorksheetHeader.FieldLocation.DIVISION_NBR, validateHomeCompany(division.getGroupId(), this.standardCompanyId));
+				addMessage(FieldLocation.EXPENSES_SUBMITTED, validateYtdExcessExpense(ytdValues));
+				addMessage(PayrollWorksheetHeader.FieldLocation.WEEK_ENDING, validateLatePay(ytdValues));
 			}
 			
 			
@@ -457,20 +458,20 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 		Double maxExpenseRate = maxExpenseProperty.getValueFloat().doubleValue();
 
 
-		addMessage(WprCols.GROSS_PAY, validateMinimumGovtPay(division)); 
-		addMessage(WprCols.EXPENSES_SUBMITTED, validateExcessExpense(maxExpenseRate));
+		addMessage(FieldLocation.GROSS_PAY, validateMinimumGovtPay(division)); 
+		addMessage(FieldLocation.EXPENSES_SUBMITTED, validateExcessExpense(maxExpenseRate));
 		if ( this.employeeCode != null ) {
 			makeEmployeeDefaults(conn, this.employeeCode);
 			YtdValues ytdValues = makeYtdValues(conn, this.employeeCode);
 			if ( ytdValues.isTrue(YtdValues.FieldName.union_member)) {
-				addMessage(WprCols.GROSS_PAY, validateMinimumUnionPay(this.unionRate));
-				addMessage(WprCols.GROSS_PAY, validateYtdMinimumUnionPay(ytdValues));
+				addMessage(FieldLocation.GROSS_PAY, validateMinimumUnionPay(this.unionRate));
+				addMessage(FieldLocation.GROSS_PAY, validateYtdMinimumUnionPay(ytdValues));
 			}
-			addMessage(WprCols.GROSS_PAY, validateYtdMinimumGovtPay(ytdValues));
-			addMessage(WprCols.DIVISION, validateHomeDivision(this.standardDivisionId));
-			addMessage(WprCols.DIVISION, validateHomeCompany(division.getGroupId(), this.standardCompanyId));
-			addMessage(WprCols.EXPENSES_SUBMITTED, validateYtdExcessExpense(ytdValues));
-			addMessage(WprCols.WEEK_ENDING, validateLatePay(ytdValues));
+			addMessage(FieldLocation.GROSS_PAY, validateYtdMinimumGovtPay(ytdValues));
+			addMessage(PayrollWorksheetHeader.FieldLocation.DIVISION_NBR, validateHomeDivision(this.standardDivisionId));
+			addMessage(PayrollWorksheetHeader.FieldLocation.DIVISION_NBR, validateHomeCompany(division.getGroupId(), this.standardCompanyId));
+			addMessage(FieldLocation.EXPENSES_SUBMITTED, validateYtdExcessExpense(ytdValues));
+			addMessage(PayrollWorksheetHeader.FieldLocation.WEEK_ENDING, validateLatePay(ytdValues));
 		}
 
 
@@ -511,12 +512,12 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 			logger.log(Level.DEBUG, "MessageKey: " + messageKey);
 			String fieldName = messageKey;
 			try {
-				WprCols wpr = WprCols.valueOf(messageKey);
+				FieldLocation wpr = FieldLocation.valueOf(messageKey);
 				logger.log(Level.DEBUG, "WPR: " + wpr.name());
 				fieldName = wpr == null || StringUtils.isBlank(wpr.fieldName()) ? messageKey : PayrollField.lookup(wpr).fieldName();
 				logger.log(Level.DEBUG, "New fieldname: " + fieldName);
 			} catch ( IllegalArgumentException e ) {
-				// we don't care. If the fieldname is not a wprcols value, we've already defaulted to the fieldname
+				// we don't care. If the fieldname is not a FieldLocation value, we've already defaulted to the fieldname
 			}
 			
 			for ( PayrollMessage message : messageList.get(messageKey) ) {
@@ -693,48 +694,48 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 	
 	/**
 	 * This list is used to for validation (here) and to populate the payroll_worksheet DB record (in TimesheetServlet)
-	 * The mapping is from local field names to WprCols values for the validation utility to work
+	 * The mapping is from local field names to FieldLocation values for the validation utility to work
 	 * 
 	 * Make note that productivity is not listed here
 	 * 
 	 */
 	public enum PayrollField {
-			DIRECT_LABOR("directLabor", WprCols.DIRECT_LABOR),
-			EXPENSES("expenses", WprCols.EXPENSES),
-			EXPENSES_ALLOWED("expensesAllowed", WprCols.EXPENSES_ALLOWED),
-			EXPENSES_SUBMITTED("expensesSubmitted", WprCols.EXPENSES_SUBMITTED),
-			GROSS_PAY("grossPay", WprCols.GROSS_PAY),
-			HOLIDAY_HOURS("holidayHours", WprCols.HOLIDAY_HOURS),
-			HOLIDAY_PAY("holidayPay", WprCols.HOLIDAY_PAY),
-			OT_HOURS("otHours", WprCols.OT_HOURS),
-			OT_PAY("otPay", WprCols.OT_PAY),
-			REGULAR_HOURS("regularHours", WprCols.REGULAR_HOURS),
-			REGULAR_PAY("regularPay", WprCols.REGULAR_PAY),
-			VACATION_HOURS("vacationHours", WprCols.VACATION_HOURS),
-			VACATION_PAY("vacationPay", WprCols.VACATION_PAY),
-			VOLUME("volume", WprCols.VOLUME),
+			DIRECT_LABOR("directLabor", FieldLocation.DIRECT_LABOR),
+			EXPENSES("expenses", FieldLocation.EXPENSES),
+			EXPENSES_ALLOWED("expensesAllowed", FieldLocation.EXPENSES_ALLOWED),
+			EXPENSES_SUBMITTED("expensesSubmitted", FieldLocation.EXPENSES_SUBMITTED),
+			GROSS_PAY("grossPay", FieldLocation.GROSS_PAY),
+			HOLIDAY_HOURS("holidayHours", FieldLocation.HOLIDAY_HOURS),
+			HOLIDAY_PAY("holidayPay", FieldLocation.HOLIDAY_PAY),
+			OT_HOURS("otHours", FieldLocation.OT_HOURS),
+			OT_PAY("otPay", FieldLocation.OT_PAY),
+			REGULAR_HOURS("regularHours", FieldLocation.REGULAR_HOURS),
+			REGULAR_PAY("regularPay", FieldLocation.REGULAR_PAY),
+			VACATION_HOURS("vacationHours", FieldLocation.VACATION_HOURS),
+			VACATION_PAY("vacationPay", FieldLocation.VACATION_PAY),
+			VOLUME("volume", FieldLocation.VOLUME),
 			;
 		
 		
 		private String fieldName;
-		private WprCols wprCols;
+		private FieldLocation wprCols;
 		
-		private static HashMap<WprCols, PayrollField> lookup;
+		private static HashMap<FieldLocation, PayrollField> lookup;
 		
 		static {
-			lookup = new HashMap<WprCols, PayrollField>();
+			lookup = new HashMap<FieldLocation, PayrollField>();
 			for ( PayrollField payrollField : PayrollField.values() ) {
 				lookup.put(payrollField.wpr(), payrollField);
 			}
 		}
 		
-		private PayrollField(String fieldName, WprCols wprCols) {
+		private PayrollField(String fieldName, FieldLocation wprCols) {
 			this.fieldName = fieldName;
 			this.wprCols = wprCols;
 		}
 		
 		public String fieldName() { return this.fieldName; }
-		public WprCols wpr() { return this.wprCols; }
-		public static PayrollField lookup(WprCols wpr) { return lookup.get(wpr); }
+		public FieldLocation wpr() { return this.wprCols; }
+		public static PayrollField lookup(FieldLocation wpr) { return lookup.get(wpr); }
 	};
 }

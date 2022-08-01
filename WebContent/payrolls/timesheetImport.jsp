@@ -28,232 +28,147 @@
 		<script type="text/javascript" src="js/document.js"></script>
 
 		<style type="text/css">
-#data-file {
-	/* margin-bottom : 20px; */
-	display: none;
-}
-
-#data-header {
-	display: none;
-}
-
-#employee-modal {
-	display: none;
-}
-
-#employee-modal #employee-data .employeeCode {
-	width: 40px;
-}
-
-#employee-modal .productivity {
-	text-aligh: right;
-}
-
-#employee-modal .total-hours {
-	text-aligh: right;
-}
-
-/* #employee-data */
-#employee-modal #employee-data {
-	margin-bottom: 20px;
-	/* border : solid red 3px; */
-}
-
-#employee-modal #employee-data .spacer {
-	width: *;
-}
-
-#employee-modal #employee-data .employeeCodeSpacer {
-	width: 45px;
-}
-
-#employee-modal #employee-data .row-number-label {
-	margin-left: 20px;
-}
-
-#employee-modal #time-calcs .row-label {
-	width: 40px;
-	/* border : dashed red 3px; */
-}
-
-#employee-modal #time-calcs .err {
-	/* border : dashed blue 1px; */
-	
-}
-
-#employee-modal .row-label-col-2 {
-	width: 100px;
-	/* border : dashed red 3px;*/
-}
-
-#employee-modal #time-calcs .spacer-mid {
-	width: 15px;
-	/* border : dashed red 3px; */
-}
-/* modal hours area - time calcs*/
-#employee-modal #time-calcs {
-	width: 585px;
-	/* border : solid red 1px; */
-}
-
-#employee-modal #time-calcs td.hours {
-	width: 85px;
-}
-
-#employee-modal #time-calcs td.hours input.hours {
-	width: 75px;
-	text-align: right;
-}
-
-#employee-modal #time-calcs td.hoursErr {
-	width: 40px;
-}
-
-/* modal money fields area - time calcs*/
-td.money {
-	width: 100px;
-	/* border: 1px black solid; */
-}
-
-#employee-modal #time-calcs input.money {
-	width: 80px;
-	text-align: right;
-}
-/*
-			#employee-modal #time-calcs td.moneyErr {
-        		 width:40px; 
+			#data-file {
+				display: none;
 			}
-			*/
-.errorsFoundHighlight {
-	background-color: yellow !important;
-	border: 3px black solid; 
-}
-
-#employee-modal #time-calcs .percentage {
-	/* width: 120px; */
-	text-align: right;
-	padding-right: 20px;
-	/* padding-right: 20px;*/
-}
-/*
-			#employee-modal #time-calcs td.percentageErr {
-        		width:40px;
+			#data-header {
+				display: none;
 			}
-			
-			*/
-#employee-modal #time-calcs input.percentage {
-	width: 80px;
-	text-align: right;
-	padding-right: 20px;
-}
-
-#employee-modal #time-calcs span.productivity {
-	text-align: right;
-	padding-right: 20px;
-}
-
-#employee-modal #time-calcs td.totalHours {
-	/* width: 120px; */
-	text-align: right;
-	padding-right: 20px;
-}
-
-/* duplicate rule
-			#employee-modal #time-calcs td.money input.money {
-				width: 100%; 
-				text-align: right; 
+			#employee-modal {
+				display: none;
 			}
-			*/
-
-/*prod-calcs] */
-
-/* modal productivity and expense area */
-
-/* eliminated div 
-			#employee-modal #prod-calcs td.money {
-        		width:90px;
+			#employee-modal #employee-data .employeeCode {
+				width: 40px;
 			}
-			#employee-modal #prod-calcs td.money input.money {
-				width: 100%; 
-				text-align: right; 
+			#employee-modal .productivity {
+				text-aligh: right;
 			}
-			#employee-modal #prod-calcs td.moneyErr {
-        		width:40px;
+			#employee-modal .total-hours {
+				text-aligh: right;
 			}
-			
-			*/
-#filter-container {
-	width: 402px;
-	float: right;
-}
-
-.col-heading {
-	text-align: left;
-	font-weight: bold;
-}
-
-#organization-display {
-	display: none;
-}
-
-#organization-display table {
-	width: 100%;
-	border: solid 1px #404040;
-}
-
-#organization-display th {
-	text-align: left;
-}
-
-#organization-edit table {
-	width: 100%;
-	border: solid 1px #404040;
-}
-
-#organization-edit th {
-	text-align: left;
-}
-
-.action-link {
-	text-decoration: none;
-	cursor: pointer;
-}
-
-.dataTables_wrapper {
-	padding-top: 10px;
-}
-
-.details-control {
-	cursor: pointer;
-}
-
-.form-label {
-	font-weight: bold;
-	white-space: nowrap;
-}
-
-.org-status-change {
-	display: none;
-	cursor: pointer;
-}
-
-.view-link {
-	color: #404040;
-}
-
-.workingBox {
-	width: 20px;
-	display: inline-block;
-}
-
-.working {
-	display: none;
-}
-
-.thinking {
-	display: none;
-}
-</style>
+			#employee-modal #employee-data {
+				margin-bottom: 20px;
+			}
+			#employee-modal #employee-data .spacer {
+				width: *;
+			}
+			#employee-modal #employee-data .employeeCodeSpacer {
+				width: 45px;
+			}
+			#employee-modal #employee-data .row-number-label {
+				margin-left: 20px;
+			}
+			#employee-modal #time-calcs .row-label {
+				width: 40px;
+			}
+			#employee-modal #time-calcs .err {
+				/* border : dashed blue 1px; */
+			}
+			#employee-modal .row-label-col-2 {
+				width: 100px;
+			}
+			#employee-modal #time-calcs .spacer-mid {
+				width: 15px;
+			}
+			#employee-modal #time-calcs {
+				width: 585px;
+			}
+			#employee-modal #time-calcs td.hours {
+				width: 85px;
+			}
+			#employee-modal #time-calcs td.hours input.hours {
+				width: 75px;
+				text-align: right;
+			}
+			#employee-modal #time-calcs td.hoursErr {
+				width: 40px;
+			}
+			td.money {
+				width: 100px;
+			}
+			#employee-modal #time-calcs input.money {
+				width: 80px;
+				text-align: right;
+			}
+			.errorsFoundHighlight {
+				background-color: yellow !important;
+				border: 3px black solid; 
+			}
+			#employee-modal #time-calcs .percentage {
+				/* width: 120px; */
+				text-align: right;
+				padding-right: 20px;
+			}
+			#employee-modal #time-calcs input.percentage {
+				width: 80px;
+				text-align: right;
+				padding-right: 20px;
+			}
+			#employee-modal #time-calcs span.productivity {
+				text-align: right;
+				padding-right: 20px;
+			}
+			#employee-modal #time-calcs td.totalHours {
+				text-align: right;
+				padding-right: 20px;
+			}
+			#filter-container {
+				width: 402px;
+				float: right;
+			}
+			.col-heading {
+				text-align: left;
+				font-weight: bold;
+			}
+			#organization-display {
+				display: none;
+			}
+			#organization-display table {
+				width: 100%;
+				border: solid 1px #404040;
+			}
+			#organization-display th {
+				text-align: left;
+			}
+			#organization-edit table {
+				width: 100%;
+				border: solid 1px #404040;
+			}
+			#organization-edit th {
+				text-align: left;
+			}
+			.action-link {
+				text-decoration: none;
+				cursor: pointer;
+			}
+			.dataTables_wrapper {
+				padding-top: 10px;
+			}
+			.details-control {
+				cursor: pointer;
+			}
+			.form-label {
+				font-weight: bold;
+				white-space: nowrap;
+			}
+			.org-status-change {
+				display: none;
+				cursor: pointer;
+			}
+			.view-link {
+				color: #404040;
+			}
+			.workingBox {
+				width: 20px;
+				display: inline-block;
+			}
+			.working {
+				display: none;
+			}
+			.thinking {
+				display: none;
+			}
+		</style>
 		<script type="text/javascript">    
 	       	$(document).ready(function(){
 	           	;TIMESHEET_IMPORT = {
@@ -267,57 +182,219 @@ td.money {
 	           		init : function() {
 	           			TIMESHEET_IMPORT.makeClickers();  
 	           			TIMESHEET_IMPORT.setupCityTypeAhead();	           				           			
-	           		},	           	           	           		
+	           		},	           	       
+	           		
+	           		
+	           		calculateTotaHoursOnModel : function(){
+           		 		var $totalHours = 0;
+						var $regularHours = parseFloat($('[name="regularHours"]').val()); 
+	           			var	$otHours = parseFloat($('[name="otHours"]').val());
+	           			var $vacationHours = parseFloat($('[name="vacationHours"]').val());
+	           			var $holidayHours = parseFloat($('[name="holidayHours"]').val()); 
+        		           		
+						$('[name="regularHours"]').val($regularHours.toFixed(2));
+	           			$('[name="otHours"]').val($otHours.toFixed(2));
+	           			$('[name="vacationHours"]').val($vacationHours.toFixed(2));
+	           			$('[name="holidayHours"]').val($holidayHours.toFixed(2));
+							           			
+	           			$totalHours = $regularHours + $otHours + $vacationHours + $holidayHours;
+		           		
+       		 			$('#employee-modal .totalHours').text($totalHours.toFixed(2));
+	           		},
+	           		
+	           		
+	           		closeEmployeeModal : function() {
+	           			//$rowNumber, $action
+	           		},	  
+	           		
+	           		
+	           		
+	           		displayHeader : function($data) {
+						console.log("displayHeader");
+						// this bit maps message keys to html fields (eg a "LOCALE" message gets displayed in a span with class "localeErr")
+						var $messageFieldMap = {
+							"LOCALE":"localeErr",
+							"OPERATIONS_MANAGER":"operationsManagerNameErr",
+							"WEEK_ENDING":"weekEndingErr",
+							"DIVISION":"divisionErr",
+							"FILENAME":"fileNameErr",
+						}
+						
+	           			$("#data-header .err").html("");
+
+	           			var $formattedWeekendingDate = null;
+	           			if ( $data.data.worksheetHeader.weekEnding != null ) {
+	           				$formattedWeekendingDate = new Date($data.data.worksheetHeader.weekEnding).toISOString().slice(0, 10);
+	           			}
+	           			    
+	           			if($data.data.worksheetHeader.division != null) {
+	           				$("input[name='divisionId']").val( $data.data.worksheetHeader.division.divisionId);
+	           				$("#file-header-data .divisionId").html($data.data.worksheetHeader.division.divisionDisplay);
+	           			}
+	           			$('input[name="operationsManagerName"]').val($data.data.worksheetHeader.operationsManager);           			
+	           			$('input[name="payrollDate"]').val($formattedWeekendingDate);
+	           			
+	           			if ( $data.data.worksheetHeader.locale != null ) {
+		           			$("#file-header-data .state").html($data.data.worksheetHeader.locale.stateName);	           			
+	           				if ( $data.data.worksheetHeader.localeTypeId != "STATE") {
+	           					$("#file-header-data .city").html($data.data.worksheetHeader.locale.name);
+	           				}
+	           			}
+	           			$("#data-header .timesheetFile").html($data.data.fileName);	       	           			
+
+	           			$.each( $data.data.worksheetHeader.messages, function($fieldKey, $messageList) {
+	           				if ( $messageList[0].errorMessage.errorLevel != "OK" ) {
+	           					var $displayList = [];
+	           					$.each( $messageList, function($index, $message) {
+	           						$displayList.push($message.errorMessage.message)	
+	           					});
+	           					var $displayText = $displayList.join("<br />");
+	           					var $selector = "#file-header-data ." + $messageFieldMap[$fieldKey];
+	           					$($selector).html($displayText);
+	           				}
+	           			});
+	           			$("#data-header").show();           					
+	           		},	    
+	           		
+	           		
+
+	           		
+	           		
+	           		displayEmployeeModalErrors : function($rowNumber) {
+						var $employeeErrors = TIMESHEET_IMPORT.employeeMap[$rowNumber].messages;
+	    				var $selector="";
+	    				var $errMsg="";
+	    				$("#employee-modal .err").html("");
+	    				$("#employee-modal input").removeClass("errorsFoundHighlight");
+       					       		
+           				$.each(TIMESHEET_IMPORT.employeeMap[$rowNumber].messages, function($index, $value) {
+							for(i=0;i<$value.length;i++){
+	           					var $s="";
+	           					
+	           					if(!$value[i].ok){	               					
+	               					$selector="#employee-modal ." + $index + "Err";
+	               					$errMsg = $value[i].errorMessage.errorLevel + ": " + $value[i].errorMessage.message;
+	               					$("input[name='" + $index + "']").addClass("errorsFoundHighlight");
+	               					$s = $($selector).html();
+
+	               					if($s){
+	               						$s = $s + "<br/>" + $errMsg;
+	               					}
+	               					else 
+	               						$s = $errMsg;
+	               					
+	               					//$($selector).html($($selector).html() + $errMsg);               					
+	               					$($selector).html($s);
+           				
+	               				}
+							}           					
+           				});
+	           		},
+	           		
+	           		
+	           		
 	           		formatDetail : function(row) {
 	           			console.log("formatDetail");
 	           			var $table = $("<table>");
 	           			$table.attr("style","width:375px; margin-left:45px;");
 	           			
 	           			$expenseRow = $("<tr>");
-		           			<!-- $expenseRow.append( $('<td>') );-->
-		           			$expenseRow.append( $("<td>") );
-		           			$expenseRow.append( $("<td>").append("Expenses (Amt) :"));
-		           			$expenseRow.append( $("<td>").append(" ") );
-		           			$expenseRow.append( $("<td aligh='right'>").append(row.expenses));
-		           			$expenseRow.append( $("<td>").append(TIMESHEET_IMPORT.statusIsGood));           			
-		           			$table.append($expenseRow);
-	           			
+	           			<!-- $expenseRow.append( $('<td>') );-->
+	           			$expenseRow.append( $("<td>") );
+	           			$expenseRow.append( $("<td>").append("Expenses (Amt) :"));
+	           			$expenseRow.append( $("<td>").append(" ") );
+	           			$expenseRow.append( $("<td aligh='right'>").append(row.expenses));
+	           			$expenseRow.append( $("<td>").append(TIMESHEET_IMPORT.statusIsGood));           			
+	           			$table.append($expenseRow);
+           			
 	           			$otRow = $("<tr>");
-		           			$expenseRow.append( $('<td>') );
-		           			$otRow.append( $("<td>") );
-		           			$otRow.append( $("<td>").append("Overtime(Hrs|Pay) :"));
-		           			$otRow.append( $("<td>").append(row.otHours));
-		           			$otRow.append( $("<td aligh='right'>").append(row.otPay));
-		           			$otRow.append( $("<td>").append(TIMESHEET_IMPORT.statusIsGood));           			
-		           			$table.append($otRow);
-	           			
+	           			$expenseRow.append( $('<td>') );
+	           			$otRow.append( $("<td>") );
+	           			$otRow.append( $("<td>").append("Overtime(Hrs|Pay) :"));
+	           			$otRow.append( $("<td>").append(row.otHours));
+	           			$otRow.append( $("<td aligh='right'>").append(row.otPay));
+	           			$otRow.append( $("<td>").append(TIMESHEET_IMPORT.statusIsGood));           			
+	           			$table.append($otRow);
+           			
 	           			$vacactionRow = $("<tr>");
-		           			$expenseRow.append( $('<td>').append("&nbsp;") );
-		           			$vacactionRow.append( $("<td>") );
-		           			$vacactionRow.append( $("<td>").append("Vacation (Hrs|Pay)) :"));
-		           			$vacactionRow.append( $("<td>").append(row.vacationHours));
-		           			$vacactionRow.append( $("<td aligh='right'>").append(row.vacationPay));
-		           			$vacactionRow.append( $("<td>").append(TIMESHEET_IMPORT.statusIsBad));           			
-		           			$table.append($vacactionRow);
-							
+	           			$expenseRow.append( $('<td>').append("&nbsp;") );
+	           			$vacactionRow.append( $("<td>") );
+	           			$vacactionRow.append( $("<td>").append("Vacation (Hrs|Pay)) :"));
+	           			$vacactionRow.append( $("<td>").append(row.vacationHours));
+	           			$vacactionRow.append( $("<td aligh='right'>").append(row.vacationPay));
+	           			$vacactionRow.append( $("<td>").append(TIMESHEET_IMPORT.statusIsBad));           			
+	           			$table.append($vacactionRow);
+						
 	           			return $table;
 	
-	           			
-	   					//{ title : "Expenses", "defaultContent": "", data:'expenses' },
-	   					//{ title : "OT Hours", "defaultContent": "", data:'otHours' },
-	   					//{ title : "OT Pay", "defaultContent": "", data:'otPay' },
-	   					//{ title : "Vacation Hours", "defaultContent": "", data:'vacationHours' },
-	   					//{ title : "Vacation Pay", "defaultContent": "", data:'vacationPay' },
-	   					//{ title : "Holiday Hours", "defaultContent": "", data:'holidayHours' },
-	   					//{ title : "Holiday Pay", "defaultContent": "", data:'holidayPay' },
-	   					//{ title : "Gross Pay", "defaultContent": "", data:'grossPay' },
-	   					//{ title : "Expenses Submitted", "defaultContent": "", data:'expensesSubmitted' },
-	   					//{ title : "Expenses Allowed", "defaultContent": "", data:'expensesAllowed' },
-	   					//{ title : "Volume", "defaultContent": "", data:'volume' },
-	   					//{ title : "Direct Labor", "defaultContent": "", data:'directLabor' },
-	   					//{ title : "Productivity", "defaultContent": "", data:'productivity' },
-	
 	           		},
+	           		
+	           	
+	           		initializeDisplay: function(){
+	           			console.log("TIMESHEET_IMPORT.initializeDisplay: function - begin");	           			
+
+           				$("#prompt-div").show();
+           				$("#prompt-div .timesheet-file").val("");
+
+           				$("#data-header").hide();
+
+	           			$("#open-button").on("click");
+	           			$("#data-detail").hide();
+           				$("#timesheet").hide();
+
+           				$("#timesheet").DataTable().clear();
+
+           				/*
+           				$("#timesheet").DataTable().draw();           				
+           				$("#timesheet").DataTable().destroy
+           				*/
+           				
+           				var $el = $('#timesheet-file');
+                        $el.wrap('<form>').closest('form').get(0).reset();
+                        $el.unwrap();
+           
+	           		},	     
+	           		
+	           		
+	           		makeClickers : function() {
+	           			console.log("makeClickers");
+	           			$("#open-button").click(
+	           				function($event) { 
+		           				TIMESHEET_IMPORT.openTheFile();
+		           			});
+	           			
+	           			$("#data-header input[name='cancelButton']").click(function($event) {
+	           				TIMESHEET_IMPORT.initializeDisplay();
+	           			});
+	           		},
+	           		
+	           		
+	           		openFile : function($event) {
+	           			console.log("openFile");
+	           			var results = $event.target.result;
+	           			var file = document.getElementById('timesheet-file').files[0];
+	           			var fileName = document.getElementById('timesheet-file').files[0].name;
+	           			var formData = new FormData();
+	           			
+	           			formData.append('timesheetFile',file, fileName);
+	           			
+	           			var xhr = new XMLHttpRequest();
+	           			xhr.open('POST',"payroll/timesheetImport", true);
+	           			
+	           			xhr.onload = function() {
+	           				if ( xhr.status == 200 ) {
+	           					var $data = JSON.parse(this.response);
+								TIMESHEET_IMPORT.processUpload200($data);	           					
+           					} else {
+           						$("#globalMsg").html("Response Code " + xhr.status + ". Contact Support");
+           					}
+           				};
+           			
+           				xhr.send(formData);
+	           		},
+	           		
+	           		
+	           		
 	           		openTheFile : function(){
 	           			console.log("openTheFile");
            				
@@ -327,35 +404,271 @@ td.money {
 	           			if (typeof file !== 'undefined'){
 	           				var fileName = document.getElementById('timesheet-file').files[0].name;
 	           				var reader = new FileReader();
-							console.log("openTheFile kjw: Selected File was : " + file);
-		           			console.log("openTheFile kjw: Selected File was : " + fileName);
 
 		           			reader.readAsText(file, 'UTF-8');	           				
 	           				reader.onload = TIMESHEET_IMPORT.openFile;		           				
 	           				$("#prompt-div").hide();
 	           				$(".thinking").show();		           				
-		           			console.log(file);
 	           				// reader.onprogress ...  (progress bar)	  
 	           			} else{
-		           			console.log("No file selected");
 							$("#prompt-div .timesheetFileErr").html("Please select a file to open").show().fadeOut(3000);
 	           			}
 	           		},    		
-	           		makeClickers : function() {
-	           			console.log("Creating Button Click events..");
-	           			$("#open-button").click(
-	           				function($event) { 
-	    	           			console.log("this is inside the open-button click event");
-		           				/* $("#open-button").off("click"); */
-		           				TIMESHEET_IMPORT.openTheFile();
-		           				/* $("#open-button").on("click"); */
-		           			});
+	           		
+	           		
+	           		
+	           		
+	           		populateDataGrid : function($data){
+	           			console.log("populateDataGrid");
+	           			// create and populate dicttionary object for use in modal
+	           			var dictionary = $data.data.employeeList;
+					    var $errorFound = '<payroll:errorFound>Invalid Value</payroll:errorFound>';
 	           			
-	           			$("#data-header input[name='cancelButton']").click(function($event) {
-	           				TIMESHEET_IMPORT.initializeDisplay();
+	   
+	           			// populate the visible table on-screen
+	           			var $table = $("#timesheet").DataTable({
+	           				aaSorting : [[0,'asc']],
+	            			processing : true,
+	           				data : $data.data.employeeList,
+	           				searching : true,
+	            	        searchDelay : 800,
+	            	        paging: false,
+	            	        destroy: true,
+	            	        autoWidth: false,
+	            	        "rowCallback": function(row, data, index){
+	            	            if(row.children[17].children[0].children[0].childNodes[0].textContent=="Error"){
+									$(row).addClass('errorsFoundHighlight');
+								}
+							},
+	           				columnDefs : [
+	             	            //{ className : "dt-head-center", "targets":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]},
+	            	            { className : "dt-left", "targets": [2] },
+	            	            { className : "dt-center", "targets": [0,1,16,17] },
+	            	            { className : "dt-right", "targets": [3,4,5,6,7,8,9,10,11,12,13,14,15]},
+	            	        ],
+	           				columns : [
+	           					{ title : "Row", searchable:true, "defaultContent": "", data:'row' },
+	           					{ title : "Code", searchable:true, "defaultContent": "", data:'employeeCode' },
+	           					{ title : "Employee Name", searchable:true, "defaultContent": "", data:'employeeName' },
+	           					{ title : "Reg Hrs", searchable:true, "defaultContent": "",data:function ( row, type, set ) {return row.regularHours.toFixed(2)}},
+	           					{ title : "Reg Pay", searchable:true, "defaultContent": "", data:function ( row, type, set ) {return row.regularPay.toFixed(2)} },
+	           					{ title : "Exp", searchable:true, "defaultContent": "", data:function ( row, type, set ) {return row.expenses.toFixed(2)} },
+	           					{ title : "OT Hrs", searchable:true, "defaultContent": "", data:function ( row, type, set ) {return row.otHours.toFixed(2)}},
+	           					{ title : "OT Pay", searchable:true, "defaultContent": "", data:function ( row, type, set ) {return row.otPay.toFixed(2)}},
+	           					{ title : "Vac Pay", searchable:true, "defaultContent": "", data:function ( row, type, set ) {return row.vacationPay.toFixed(2)}},
+	           					{ title : "Hol Pay", searchable:true, "defaultContent": "", data:function ( row, type, set ) {return row.holidayPay.toFixed(2)} },
+	           					{ title : "Gross Pay", searchable:true, "defaultContent": "", data:function ( row, type, set ) {return row.grossPay.toFixed(2)} },
+	           					{ title : "Exp Smt'd", searchable:true, "defaultContent": "", data:function ( row, type, set ) {return row.expensesSubmitted.toFixed(2)}},
+	           					{ title : "Exp All'd", searchable:true, "defaultContent": "", data:function ( row, type, set ) {return row.expensesAllowed.toFixed(2)} },
+	           					{ title : "Volume", searchable:true, "defaultContent": "", data:function ( row, type, set ) {return row.volume.toFixed(2)} },
+	           					{ title : "Direct Labor", searchable:true, "defaultContent": "",data:function ( row, type, set ) {return row.directLabor.toFixed(2)} },
+	           					{ title : "Prod %", searchable:true, "defaultContent": "", data:function ( row, type, set ) {return row.productivity.toFixed(2)} },
+	           					{ title : "Status", "defaultContent":"", 
+	           						data : function(row, type, set) {
+										var $tag = TIMESHEET_IMPORT.statusIsGood;
+										
+	           							if ( row.errorsFound == true ) { 
+	           								$tag = TIMESHEET_IMPORT.statusIsBad; 
+	           								//$('td', row).css('background-color', 'Yellow');
+	           								}
+	           							return $tag;
+	           							
+	           						}
+	           					},
+	           					{ title : "Action", 
+	           						'orderable': false, 	           						
+	    			            	data: function ( row, type, set ) { 
+	    			            		var $editLink = '<span class="action-link edit-link" data-id="'+row.row+'">' + TIMESHEET_IMPORT.edit + '</span>';
+	    			            		return  $editLink;	    			            		
+	    			            		//var $viewLink = '<span class="action-link view-link" data-id="'+row.row+'">' + TIMESHEET_IMPORT.view + '</span>';
+	    			            		//var $deleteLink = '<span class="action-link delete-link" data-id="'+row.employee_code+'" data-name="'+row.employee_name+'"><webthing:delete>Delete</webthing:delete></span>';
+	    			            		//return  $editLink + TIMESHEET_IMPORT.saveButton;
+	    			            	} 
+	           					},
+	           				],
+	           				"initComplete": function(settings, json) {
+       			            	var myTable = this;
+       			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#timesheet", TIMESHEET_IMPORT.populateDataGrid, null, $data);
+
+       			            	$.each($data.data.employeeRecordList, function($index, $value) {
+       			            		TIMESHEET_IMPORT.employeeMap[$value.row] = $value;
+       			            	});       			            	
+       			            },
+	           				drawCallback : function( settings ) {
+	           					$(".edit-link").off("click");
+	           					$(".edit-link").on("click", function() {
+	           						var $rowNumber = $(this).attr('data-id');
+	           						TIMESHEET_IMPORT.showEmployeeModal($rowNumber, "edit");
+	           					});	           					
+	           				}
 	           			});
+	           			$("#data-detail").show();
+	           			$("#timesheet").show();
 	           		},
+	           		
+	           		
+	           		
+	           		populateEmployeeModal : function($rowNumber) {
+	        			console.log("populateEmployeeModal: " + $rowNumber);
+	           			console.log(TIMESHEET_IMPORT.employeeMap[$rowNumber]);
+	           			console.log(TIMESHEET_IMPORT.employeeMap[$rowNumber].employeeName);
+	           			
+	           			$('#employee-modal .employeeName').text(TIMESHEET_IMPORT.employeeMap[$rowNumber].employeeName);
+	           			$('#employee-modal .employeeCode').text(TIMESHEET_IMPORT.employeeMap[$rowNumber].employeeCode);
+	           			$('#employee-modal .state').text($('#data-header .state').text());
+	           			$('#employee-modal .row'  ).text($rowNumber);
+
+						$('[name="regularHours"]').val(	TIMESHEET_IMPORT.stringToFloatString(TIMESHEET_IMPORT.employeeMap[$rowNumber].regularHours));
+	           			$('[name="otHours"]').val(		TIMESHEET_IMPORT.stringToFloatString(TIMESHEET_IMPORT.employeeMap[$rowNumber].otHours));
+	           			$('[name="vacationHours"]').val(TIMESHEET_IMPORT.stringToFloatString(TIMESHEET_IMPORT.employeeMap[$rowNumber].vacationHours));
+	           			$('[name="holidayHours"]').val(	TIMESHEET_IMPORT.stringToFloatString(TIMESHEET_IMPORT.employeeMap[$rowNumber].holidayHours));
+						
+						$('[name="regularPay"]').val(	TIMESHEET_IMPORT.employeeMap[$rowNumber].regularPay);
+	           			$('[name="otPay"]').val(		TIMESHEET_IMPORT.employeeMap[$rowNumber].otPay);
+	           			$('[name="vacationPay"]').val(	TIMESHEET_IMPORT.employeeMap[$rowNumber].vacationPay);
+	           			$('[name="holidayPay"]').val(	TIMESHEET_IMPORT.employeeMap[$rowNumber].holidayPay);
+	           			
+						$('[name="regularHours"]').blur(function() { TIMESHEET_IMPORT.calculateTotaHoursOnModel()});
+						$('[name="otHours"]').blur(function() { TIMESHEET_IMPORT.calculateTotaHoursOnModel()});
+	           			$('[name="vacationHours"]').blur(function() { TIMESHEET_IMPORT.calculateTotaHoursOnModel()});
+	           			$('[name="holidayHours"]').blur(function() { TIMESHEET_IMPORT.calculateTotaHoursOnModel()});
+                        
+	           			TIMESHEET_IMPORT.calculateTotaHoursOnModel();
+	           			
+	           			$('[name="directLabor"]').val(          TIMESHEET_IMPORT.employeeMap[$rowNumber].directLabor);
+	           			$('[name="volume"]').val(               TIMESHEET_IMPORT.employeeMap[$rowNumber].volume);
+	           			$('[name="grossPay"]').val(             TIMESHEET_IMPORT.employeeMap[$rowNumber].grossPay);
+
+	           			$('[name="expenses"]').val(             TIMESHEET_IMPORT.employeeMap[$rowNumber].expenses);
+	           			$('[name="expensesAllowed"]').val(      TIMESHEET_IMPORT.employeeMap[$rowNumber].expensesAllowed);
+	           			$('[name="expensesSubmitted"]').val(    TIMESHEET_IMPORT.employeeMap[$rowNumber].expensesSubmitted);	           			
+	           			$('#employee-modal .productivity').text(TIMESHEET_IMPORT.employeeMap[$rowNumber].productivity);
+	           			TIMESHEET_IMPORT.displayEmployeeModalErrors($rowNumber);
+	           		},
+	           		
+	           		
+	           		processEmployeeValidationSuccess : function($data, $passthru) {
+	           			console.log("processEmployeeValidationSuccess");
+	           			if ( $data.responseHeader.responseCode == 'EDIT_FAILURE' ) {
+           					// check for header error messages first
+           					if($data.header){    
+	           					if($data.header.messages){
+	    	           				$.each($data.data.webMessages, function($index, $value) {
+	    	           					console.log($index + ' value is ' + $value);	           				
+	    	           					var $selector = "#file-header-data ." + $index + "Err";
+	    	           					console.log("selector is " + $selector);	           					           					
+	    	           					$($selector).html($value[0]);
+	    	           				});
+	           					}
+	           				}
+	           			} else if ( $data.responseHeader.responseCode == 'SUCCESS' || $data.responseHeader.responseCode == 'EDIT_WARNING') {
+	           				updateDataTableFromModal();
+	               			if ($data.responseHeader.responseCode == 'SUCCESS') {
+	               				$("#globalMsg").html("Success").show().fadeOut(3000);
+	               			} else {
+	               				ANSI_UTILS.showWarnings("timesheet_warnings", $data.header.messages);
+	               			}
+	           			} else {
+	           				$("#employee-modal .timesheet-err").html("Unexpected response code: " + $data.responseHeader.responseCode + ". Contact Support").show();
+	           			}
+	           		},
+	           		
+
+	           		
+	           		
+	           		processEmployeeValidationErrors : function($data, $passthru) {
+	           			console.log("processEmployeeValidationErrors");
+	           			if ( $data.responseHeader.responseCode == 'EDIT_FAILURE' ) {
+	           				$.each($data.data.webMessages, function($index, $value) {
+	           					var $selector = "#employee-modal ." + $index + "Err";
+	           					$($selector).html($value[0]);
+	           				});
+	           			} else if ( $data.responseHeader.responseCode == 'SUCCESS' || $data.responseHeader.responseCode == 'EDIT_WARNING') {
+	               			$("#timesheetLookup").DataTable().ajax.reload();
+	               			// close both modals because we don't know which one called this method, but only after they've been init'd
+	               			if ( $("#edit-modal").hasClass("ui-dialog-content")) {
+	               				$("#edit-modal").dialog("close");
+	               			}
+	               			if ( $("#confirmation-modal").hasClass("ui-dialog-content")) {
+	               				$("#confirmation-modal").dialog("close");
+	               			}
+	               			if ($data.responseHeader.responseCode == 'SUCCESS') {
+	               				$("#globalMsg").html("Success").show().fadeOut(3000);
+	               			} else {
+	               				ANSI_UTILS.showWarnings("timesheet_warnings", $data.data.webMessages);
+	               			}
+	           			}
+	           		},	       
+	           		
+	           		
+	           		
+	           		processUpload200 : function($data) {
+	           			console.log("processUpload200");
+	           			$("#data-header .err").html("");
+	           			
+	           			// SUCCESS == File is OK & Header is OK; employee weirdnesses will be processed at a different level
+	           			// WARNING == issue with the header, but we can still process (eg. duplicate upload)
+	           			// FAILURE == catastrophic problem (eg not a timesheet, wrong format, etc)
+	           			if ( $data.responseHeader.responseCode == "SUCCESS") {
+	           				TIMESHEET_IMPORT.processUploadSuccess($data);
+	           			} else if ( $data.responseHeader.responseCode == "EDIT_WARNING" ) {
+	           				TIMESHEET_IMPORT.processUploadWarning($data);
+	           			} else if ( $data.responseHeader.responseCode == "EDIT_FAILURE" ) {
+	           				TIMESHEET_IMPORT.processUploadFailure($data);
+	           			} else {
+	           				$("#globalMsg").html("Unexpected HTTP Response " + $data.responseHeader.responseCode + ". Contact Support");
+	           			}
+	           			
+	           		},	
+	           			
+	           		
+	           		
+	           		
+	           		
+	           		// FAILURE == catastrophic problem (eg not a timesheet, wrong format, etc)
+       				// 1. hide thinking
+       				// 2. Show prompt with messages
+	           		processUploadFailure : function($data) {
+	           			console.log("processUploadFailure");
+	           			$("#prompt-div .err").html("");
+	           			var fName = document.getElementById('timesheet-file').files[0].name;
+	           			var $fileMessages = $data.data.webMessages.timesheetFile;
+	           			$(".thinking").hide();		
+	           			$("#prompt-div").show();  
+	           			$("#prompt-div .timesheetFileErr").html($fileMessages[0]).show().fadeOut(10000);
+	           		},
+	           		
+	           		
+	           		// SUCCESS == File is OK & Header is OK; employee weirdnesses will be processed at a different level
+       				// 1. hide thinking
+       				// 2. clear header
+       				// 3. display header
+       				// 4. Show employee grid
+	           		processUploadSuccess : function($data) {
+	           			console.log("processUploadSuccess");
+	           			$(".thinking").hide();		
+						TIMESHEET_IMPORT.displayHeader($data);
+       					TIMESHEET_IMPORT.populateDataGrid($data);   
+	           		},
+
+	           		// WARNING == issue with the header, but we can still process (eg. duplicate upload)
+       				// 1. hide thinking
+       				// 2. clear header
+       				// 3. display header / messages
+       				// 4. Show employee grid
+	           		processUploadWarning : function($data) {
+	           			console.log("processUploadWarning");
+	           			//TIMESHEET_IMPORT.displayHeaderAndHeaderMessages($data);
+	           			$(".thinking").hide();		
+						TIMESHEET_IMPORT.displayHeader($data);
+       					TIMESHEET_IMPORT.populateDataGrid($data);           					
+	           		},
+	           		
+	           		
+	           		
+	           		
 	           		setupCityTypeAhead : function(){
+	           			console.log("setupCityTypeAhead");
 	        			var $cityField = "#file-header-data  input[name='city']";
 	        			var $stateField = "#file-header-data select[name='state']";
 	        			
@@ -383,460 +696,17 @@ td.money {
 		                        }
 		                    }
 		              	}).data('ui-autocomplete');	            		           			
-	           		},	           		           		           		
-	           		DisplayHeaderAndHeaderMessages : function($data) {
-						// this displays the header data 
-						// this displays the header error msgs 
-						// 	           			
-						console.log("DisplayHeaderAndHeaderMessages");
-						
-						// Clears the prompt div error messages, hides everything else and displays the file prompt box
-	           			$("#prompt-div .err").html("");
-	           			var fName = document.getElementById('timesheet-file').files[0].name;
-	           			$(".thinking").hide();		
-	           			$("#timesheet_processing").hide();
-
-	           			$("#prompt-div").show();          				
-
-	           			$("#data-header .err").html("");
-           				
-       					var $fileMessages = $data.data.webMessages.timesheetFile;
-
-       					// tests to see if a there was any error with the file selected 
-       					// if no errors witrh the file it displays the header and detail sections.
-       					if ( $fileMessages == null ) {
-           					$("#prompt-div").hide();
-           					// this was a recursive call.. 
-           					// TIMESHEET_IMPORT.processUploadWarning($data);
-           					TIMESHEET_IMPORT.displayHeaderData($data);	           					
-           					TIMESHEET_IMPORT.populateDataGrid($data);           					
-           				} else {           					
-           					$("#prompt-div .timesheetFileErr").html($fileMessages[0]).show().fadeOut(10000);
-           				}           										           				           				
-	           		},	           		
-	           		processUploadWarning : function($data) {
-	           		},
-	           		           
-	           		initializeDisplay: function(){
-	           			console.log("TIMESHEET_IMPORT.initializeDisplay: function - begin");	           			
-
-           				$("#prompt-div").show();
-           				$("#prompt-div .timesheet-file").val("");
-
-           				$("#data-header").hide();
-
-	           			$("#open-button").on("click");
-	           			$("#data-detail").hide();
-           				$("#timesheet").hide();
-
-           				$("#timesheet").DataTable().clear();
-
-           				/*
-           				$("#timesheet").DataTable().draw();           				
-           				$("#timesheet").DataTable().destroy
-           				*/
-           				
-           				var $el = $('#timesheet-file');
-                        $el.wrap('<form>').closest('form').get(0).reset();
-                        $el.unwrap();
-           
-	           		},	      
-	           		displayHeaderData : function($data) {
-	           			console.log("function : displayHeaderData : kjw");
-	           			var $disp_divisionId="";
-	           			var $disp_operationsManagerName="";
-	           			var $disp_weekEnding="";
-	           			var $disp_state="";
-	           			var $disp_city="";
-
-	           			if($data.data.header.division)
-	           				$disp_divisionId = $data.data.header.division.divisionId;
-	           			else 
-	           				$disp_divisionId = 0;
-	           			
-	           			if(($data.data.header.operationsManagerName == null) && ($data.data.operationsManagerName != null)){
-	           				$disp_operationsManagerName= $data.data.operationsManagerName;
-	           			} else {
-	           				$disp_operationsManagerName= $data.data.header.operationsManagerName;
-	           			}
-	           			
-	           			if(($data.data.header.weekEnding == null) && ($data.data.weekEnding != null)){
-	           				$disp_weekEnding= $data.data.weekEnding;
-	           			} else {
-	           				$disp_weekEnding= $data.data.header.weekEnding;
-	           			}
-	           			
-	           			if(($data.data.header.state == null) && ($data.data.state != null)){
-	           				$disp_state= $data.data.state;
-	           			} else {
-	           				$disp_state= $data.data.header.state;
-	           			}
-	           			
-	           			if(($data.data.header.city == null) && ($data.data.city != null)){
-	           				$disp_city= $data.data.city;
-	           			} else {
-	           				$disp_city= $data.data.header.city;
-	           			}
-	           				 
-	           			
-	           			var $formattedWeekendingDate = new Date($disp_weekEnding).toISOString().slice(0, 10);	           			
-	           			
-	           			console.log("\n disp_divisionId = " + $disp_divisionId
-           				+	"\n disp_operationsManagerName = " + $disp_operationsManagerName 
-           				+	"\n disp_weekEnding=" + $formattedWeekendingDate
-           				+	"\n disp_state=" +  $disp_state 
-           				+	"\n disp_city=" +  $disp_city);
-	           				           		
-	           			//$('select[name="divisionId"]').val($disp_divisionId);
-	           			$("input[name='divisionId']").val( $disp_divisionId);    
-	           			if($data.data.header.division)
-	           				$("#file-header-data .divisionId").html($data.data.header.division.divisionDisplay);	           			
-	           			
-	           			$('input[name="operationsManagerName"]').val($disp_operationsManagerName);           			
-	           			$('input[name="payrollDate"]').val($formattedWeekendingDate);
-	           			
-	           			//$('select[name="state"]').val($disp_state.toUpperCase());
-	           			$("#file-header-data .state").html($disp_state);	           			
-	           			//$('input[name="city"]').val($disp_city);
-	           			$("#file-header-data .city").html($disp_city);	           			
-	           			$("#data-header .timesheetFile").html($data.data.fileName);	       
-	           			
-	           			// Display File Header Errors
-	           			////console.log("function : displayHeaderData : Displaying Header Errors");	           			
-
-	           			$("#data-header").show();
-
-	           			//$("#file-header-data .err").html("");
-	           			
-	           			//$.each($data.data.webMessages, function($index, $value) {
-	           			//	var $destination = "#file-header-data ." + $index + "Err";
-	           			//	var $message = $value[0];
-	           			//	console.log($destination + " " + $message);
-	           			//	$($destination).html($message);
-	           			//});	           			      				           				
-	           		},
+	           		},	    
 	           		
 	           		
 	           		
-	           		populateDataGrid : function($data){
-	           			// create and populate dicttionary object for use in modal
-	           			var dictionary = $data.data.employeeRecordList;
-					    var $errorFound = '<payroll:errorFound>Invalid Value</payroll:errorFound>';
-	           			
-	   
-	           			// populate the visible table on-screen
-	           			var $table = $("#timesheet").DataTable({
-	           				aaSorting : [[0,'asc']],
-	            			processing : true,
-	           				data : $data.data.employeeRecordList,
-	           				searching : true,
-	            	        searchDelay : 800,
-	            	        paging: false,
-	            	        destroy: true,
-	            	        autoWidth: false,
-	            	        "rowCallback": function(row, data, index){
-	            	            if(row.children[17].children[0].children[0].childNodes[0].textContent=="Error"){
-	            	                $(row).addClass('errorsFoundHighlight');
-	            	            }
-	            	          },
-	           				columnDefs : [
-	             	            //{ className : "dt-head-center", "targets":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]},
-	            	            { className : "dt-left", "targets": [1] },
-	            	            { className : "dt-center", "targets": [17,18] },
-	            	            //{ className : "dt-right", "targets": [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]}
-	            	            { className : "dt-right", "targets": [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]},
-	            	            //{target: 17, visible: false}	            	                
-	            	         ],
-	           				columns : [
-	           					{ title : "Row", searchable:true, "defaultContent": "", data:'row' },
-	           					{ title : "Employee Name", searchable:true, "defaultContent": "", data:'employeeName' },
-	           					{ title : "Reg Hrs", searchable:true, "defaultContent": "", 
-	           						data: function ( row, type, set ) {
-	           						    value = null;
-	           						    if ( row.regularHours == null || row.regularHours == "" ) {
-	           						        value="";
-	           						    } else if ( isNaN(row.regularHours) ) {
-	           						        value=$errorFound;
-	           						    } else {
-	           						    	x = parseFloat(row.regularHours);
-	           						        value = x.toFixed(2);
-	           						    }
-	           						    return value;
-	           						}},
-	           					{ title : "Reg Pay", searchable:true, "defaultContent": "", data:'regularPay' },
-	           					{ title : "Exp", searchable:true, "defaultContent": "", data:'expenses' },
-	           					{ title : "OT Hrs", searchable:true, "defaultContent": "", 
-	           						data: function ( row, type, set ) {
-	           						    value = null;
-	           						    if ( row.otHours == null || row.otHours == "" ) {
-	           						        value="";
-	           						    } else if ( isNaN(row.otHours) ) {
-	           						        value=$errorFound;
-	           						    } else {
-	           						    	x = parseFloat(row.otHours);
-	           						        value = x.toFixed(2);
-	           						    }
-	           						    return value;
-	           						}},
-	           					{ title : "OT Pay", searchable:true, "defaultContent": "", data:'otPay' },
-	           					{ title : "Vac Hrs", searchable:true, "defaultContent": "", 
-	           						data: function ( row, type, set ) {
-	           						    value = null;
-	           						    if ( row.vacationHours == null || row.vacationHours == ""  ) {
-	           						        value="";
-	           						    } else if ( isNaN(row.vacationHours) ) {
-	           						        value=$errorFound;
-	           						    } else {
-	           						    	x = parseFloat(row.vacationHours);
-	           						        value = x.toFixed(2);
-	           						    }
-	           						    return value;
-	           						} },
-	           					{ title : "Vac Pay", searchable:true, "defaultContent": "", data:'vacationPay' },
-	           					{ title : "Hol Hrs", searchable:true, "defaultContent": "", 
-	           						data: function ( row, type, set ) {
-	           						    value = null;
-	           						    if ( row.holidayHours == null || row.holidayHours == "") {
-	           						        value="";
-	           						    } else if ( isNaN(row.holidayHours) ) {
-	           						        value=$errorFound;
-	           						    } else {
-	           						    	x = parseFloat(row.holidayHours);
-	           						        value = x.toFixed(2);
-	           						    }
-	           						    return value;
-	           						} },
-	           					{ title : "Hol Pay", searchable:true, "defaultContent": "", data:'holidayPay' },
-	           					{ title : "Gross Pay", searchable:true, "defaultContent": "", data:'grossPay' },
-	           					{ title : "Exp Smt'd", searchable:true, "defaultContent": "", data:'expensesSubmitted' },
-	           					{ title : "Exp All'd", searchable:true, "defaultContent": "", data:'expensesAllowed' },
-	           					{ title : "Volume", searchable:true, "defaultContent": "", data:'volume' },
-	           					{ title : "Direct Labor", searchable:true, "defaultContent": "", data:'directLabor' },
-	           					{ title : "Prod %", searchable:true, "defaultContent": "", data:'productivity' },
-	           					{ title : "Status", "defaultContent":"", 
-	           						data : function(row, type, set) {
-										var $tag = TIMESHEET_IMPORT.statusIsGood;
-										
-	           							if ( row.errorsFound == true ) { 
-	           								$tag = TIMESHEET_IMPORT.statusIsBad; 
-	           								//$('td', row).css('background-color', 'Yellow');
-	           								}
-	           							return $tag;
-	           							
-	           						}
-	           					},
-	           					{ title : "Action", 
-	           						'orderable': false, 	           						
-	    			            	data: function ( row, type, set ) { 
-	    			            		var $editLink = '<span class="action-link edit-link" data-id="'+row.row+'">' + TIMESHEET_IMPORT.edit + '</span>';
-	    			            		return  $editLink;	    			            		
-	    			            		//var $viewLink = '<span class="action-link view-link" data-id="'+row.row+'">' + TIMESHEET_IMPORT.view + '</span>';
-	    			            		//var $deleteLink = '<span class="action-link delete-link" data-id="'+row.employee_code+'" data-name="'+row.employee_name+'"><webthing:delete>Delete</webthing:delete></span>';
-	    			            		//return  $editLink + TIMESHEET_IMPORT.saveButton;
-	    			            	} },
-	           				],
-	           				"initComplete": function(settings, json) {
-       			            	var myTable = this;
-       			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#timesheet", TIMESHEET_IMPORT.populateDataGrid, null, $data);
-
-       			            	$.each($data.data.employeeRecordList, function($index, $value) {
-       			            		TIMESHEET_IMPORT.employeeMap[$value.row] = $value;
-       			            	});
-       			            	
-       			                console.log("employeeMap looks like");
-       			                console.log(TIMESHEET_IMPORT.employeeMap);
-       			            },
-	           				drawCallback : function( settings ) {
-	           					$(".edit-link").off("click");
-	           					$(".edit-link").on("click", function() {
-	           						var $rowNumber = $(this).attr('data-id');
-	           						TIMESHEET_IMPORT.showEmployeeModal($rowNumber, "edit");
-	           					});
-	           					/*
-     			            	for (var i = 0; i < $data.data.employeeRecordList.length-1; i++){                   				                 				
-                       				if ($data.data.employeeRecordList[i].errorsFound == true){
-                       					//document.getElementById(.classList.add("errorsFoundHighlight");
-                       					//        $(table.column(colIdx).nodes()).addClass('highlight');
-
-                       					$($table.rows($data.data.employeeRecordList[i].rowId).nodes()).addClass('errorsFoundHighlight');
-                       				}
-                       			} 
-	           					*/
-	           					
-	           					//added 2022-06-07
-//      			            	for (var i = 0; i < $data.employeeRecordList.length; i++){                   				                 				
-//                        				if ($data.employeeRecordList[i].errorsFound){
-//                        					document.getElementById($data.employeeRecordList[i].rowId).classList.add("highlight");
-//                        				}
-//                        			} 
-	           					
-	           				}
-	           			});
-	           			$table.column(17).visible(false);
-	           			$("#data-detail").show();
-	           			$("#timesheet").show();
-	           		},
-	           		processUploadSuccess : function($data) {
-	           			console.log("processUploadSuccess");
-	           			$("#prompt-div").hide();
-	           			$("#file-header-data .err").html();
-	           			$("#data-header").show();
-	           			console.log("showing display div.. ");
-	           			console.log($data);
-	           			console.log($data.data.division);
-           				$(".thinking").hide();
-           				
-           				TIMESHEET_IMPORT.displayHeaderData($data);
-           				TIMESHEET_IMPORT.populateDataGrid($data);
-
-           				/*
-           				$('select[name="divisionId"]').val($data.data.header.divisionId);
-	           			$('input[name="operationsManagerName"]').val($data.data.operationsManagerName);           			
-	           			$('input[name="payrollDate"]').val($data.data.header.weekEndingDisplay);
-	           			$('select[name="state"]').val($data.data.header.state);
-	           			$('input[name="city"]').val($data.data.header.city);
-	           			$("#data-header .timesheetFile").html($data.data.fileName);
-	           			*/
-
-           				console.log($data.data.header.divisionId);
-	           			
-	           			
-	           			/*
-	           			$("#data-header input .divisionId").html($data.data.division);
-	           			$("#data-header .operationsManagerName").html($data.data.operationsManagerName);           			
-	           			$("#data-header .payrollDate").html($data.data.weekEnding);
-	           			$("#data-header .state").html($data.data.state);
-	           			$("#data-header .city").html($data.data.city);
-	           			$("#data-header .timesheetFile").html($data.data.fileName);
-	           			*/
-	           			
-	           		},	        
-	           		openFile : function($event) {
-	           			var results = $event.target.result;
-	           			/*  var fileName = document.getElementById('timesheet-file').files[0].name; */
-	           			var file = document.getElementById('timesheet-file').files[0];
-	           			var fileName = document.getElementById('timesheet-file').files[0].name;
-	           			var formData = new FormData();
-	           			
-	           			formData.append('timesheetFile',file, fileName);
-						console.log("function : openFile : Selected File was : " + file);
-	           			console.log("function : openFile : Selected fileName was : " + fileName);
-	           			
-	           			//formData.append('divisionId', $("#prompt-div select[name='divisionId']").val());
-	           			//formData.append('payrollDate', $("#prompt-div input[name='payrollDate']").val());
-	           			//formData.append('state', $("#prompt-div select[name='state']").val());
-	           			//formData.append('city', $("#prompt-div input[name='city']").val());
-	           			
-	           			var xhr = new XMLHttpRequest();
-	           			xhr.open('POST',"payroll/timesheetImport", true);
-	           			
-	           			xhr.onload = function() {
-	           				if ( xhr.status == 200 ) {
-	           					var $data = JSON.parse(this.response);
-	           					console.log("Data response data returned looks like this.");
-	           					console.log($data);
-
-	           					$("#data-header .err").html("");
-	           					var $headerMessages = $data.data.header.messages;	           					
-	           					var $headerMessageCount = Object.keys($headerMessages).length;
-	           					
-	           					//console.log("function : openFile :  $headerMessages " +  $headerMessages);
-	           					console.log("function : openFile :  $headerMessages count " + $headerMessageCount); 
-
-	           					//console.log($headerMessages);
-	           					
-	           					var $headerDataValid = true;
-	           					var $errorLevel;
-	           					var $errorMessage;
-	           					var $errorType;
-	           					var $isValid;
-	           					var $fieldName;
-           						           						           					
-           						if ( $data.responseHeader.responseCode != "SUCCESS") {
-	           						if($headerMessageCount > 0){
-	           							// process header messages
-	        	           				$.each($headerMessages, function($validatedField, $validationMessage) {
-	        	           					$fieldName = $validatedField
-	        	           					$errorLevel = $validationMessage[0].errorMessage.errorLevel
-	        	           					$errorMessage = $validationMessage[0].errorMessage.message;
-	        	           					$errorType = $validationMessage[0].errorType;
-	        	           					$isValid = $validationMessage[0].ok;
-				           					console.log($fieldName);	           
-				           					
-				           					//console.log("    errorMessage.errorLevel field is " + $errorLevel);	           				
-				           					console.log("    errorMessage.message is " + $errorLevel + " : " + $errorMessage);	           				
-				           					//console.log("    Error Type is : " + $errorType);
-				           					//console.log("    ok = " + $isValid);
-				           					
-				           					if($isValid == false){				           						
-				           						if($errorLevel == "ERROR"){
-					           						$headerDataValid = false;
-				           						}
-				           						
-				           						switch($fieldName){
-				           							case "WEEK_ENDING":
-				           								$(".weekEndingErr").html($errorMessage);
-				           								break;
-				           							case "LOCALE" :
-				           								$(".cityErr").html($errorMessage);
-				           								break;
-				           							case "DIVISION" :
-				           								$(".divisionErr").html($errorMessage);
-				           								break;
-				           							case "OPERATIONS_MANAGER" :
-				           								$(".operationsManagerNameErr").html($errorMessage);
-				           								break;
-				           							case "FILENAME" :
-				           								$(".fileNameErr").html($errorMessage);
-				           						default:
-				           							break;
-				           						}
-				           					}
-		        	           					//var $selector = "#file-header-data ." + $index + "Err";
-		        	           					//console.log("selector is " + $selector);	           					           					
-		        	           					//$($selector).html($value[0]);
-			           							//console.log("function : openFile : calling DisplayHeaderAndHeaderMessages($data)");
-			           							//TIMESHEET_IMPORT.DisplayHeaderAndHeaderMessages($data);
-        	           					});
-	        	           				$(".thinking").hide();
-	        	           				$("#save-button").hide();
-	        	           				
-	                   					TIMESHEET_IMPORT.displayHeaderData($data);	                   					
-	                   					if($headerDataValid == false){
-	                   						$("#globalMsg").html("Modify the spreadsheet and try again").show().fadeOut(5000);
-	                   					} else { 
-	              							console.log("function : openFile : calling processUploadSuccess($data)");
-	               							TIMESHEET_IMPORT.processUploadSuccess($data);
-	                   					}
-	        	           			} else {
-	           							// process web messages
-	           							console.log("function : openFile : calling ANSI_UTILS.showWarnings()");
-	        							ANSI_UTILS.showWarnings("timesheet_warnings", $data.data.webMessages);
-	           						}
-           						} else if ( $data.responseHeader.responseCode == "SUCCESS" ) {	           						
-          							console.log("function : openFile : calling processUploadSuccess($data)");
-           							TIMESHEET_IMPORT.processUploadSuccess($data);
-           						} else {
-          							console.log("function : openFile : showing Invalid response code");
-           							$("#globalMsg").html("Invalid response code " + $data.responseHeader.responseCode + ". Contact Support");
-           						} 
-           				} else {
-   							console.log("function : openFile : Contact Support");
-           					$("#globalMsg").html("Response Code " + xhr.status + ". Contact Support");
-           				}
-           			};
-           			console.log("kjw - openFile :  FormData is : " + formData);
-           			xhr.send(formData);
-	           		},	           		
+	           		          		
+	           		
+	           		
 	           		showEmployeeModal : function($rowNumber, $action) {
 	           			console.log("showEmployeeModal: " + $rowNumber + " " + $action);
 	           			$edit = $action == 'edit';
-	           			//var $message = "";
-	           			//$.each( TIMESHEET_IMPORT.employeeMap[$rowNumber], function($index, $value) {
-	           			//	$message = $message + "\n" + $index + "|" + $value;
-	           			//});
-	           			//alert($message);
-	      	           			
+
 	        			$("#employee-modal").dialog({
 	        				title:'Employee Timesheet',
 	        				autoOpen: false,
@@ -866,300 +736,50 @@ td.money {
 	        			$("#employee-modal-continue-button").button('option', 'label', 'Continue');
 	        			TIMESHEET_IMPORT.populateEmployeeModal($rowNumber);
 	        		},
-	        		StringToFloatString : function (NumberAsString){
-   						    value = null;
-   						    if (NumberAsString == null || NumberAsString == "") {
-   						        value="";
-   						    } else if ( isNaN(NumberAsString) ) {
-   						        value="";
-   						    } else {
-   						    	x = parseFloat(NumberAsString);
-   						        value = x.toFixed(2);
-   						    }
-   						    return value;
-   						},
-	        		populateEmployeeModal : function($rowNumber) {
-	        			console.log("populateEmployeeModal: " + $rowNumber);
-	           			console.log(TIMESHEET_IMPORT.employeeMap[$rowNumber]);
-	           			console.log(TIMESHEET_IMPORT.employeeMap[$rowNumber].employeeName);
-	           			
-	           			//$('#employee-modal .state').text($('select[name="state"]').val());
-	           			$('#employee-modal .employeeName').text(TIMESHEET_IMPORT.employeeMap[$rowNumber].employeeName);
-	           			$('#employee-modal .employeeCode').text(TIMESHEET_IMPORT.employeeMap[$rowNumber].employeeCode);
-	           			$('#employee-modal .state').text($('#data-header .state').text());
-	           			$('#employee-modal .row'  ).text($rowNumber);
-	           			//$('[name="row"]').val(			TIMESHEET_IMPORT.employeeMap[$rowNumber].row);
-	           			//$('[name="employeeName"]').val(	TIMESHEET_IMPORT.employeeMap[$rowNumber].employeeName);
-	           			//$('[name="employeeCode"]').val(	TIMESHEET_IMPORT.employeeMap[$rowNumber].employeeCode);
-						// status
-
-						$('[name="regularHours"]').val(	TIMESHEET_IMPORT.StringToFloatString(TIMESHEET_IMPORT.employeeMap[$rowNumber].regularHours));
-	           			$('[name="otHours"]').val(		TIMESHEET_IMPORT.StringToFloatString(TIMESHEET_IMPORT.employeeMap[$rowNumber].otHours));
-	           			$('[name="vacationHours"]').val(TIMESHEET_IMPORT.StringToFloatString(TIMESHEET_IMPORT.employeeMap[$rowNumber].vacationHours));
-	           			$('[name="holidayHours"]').val(	TIMESHEET_IMPORT.StringToFloatString(TIMESHEET_IMPORT.employeeMap[$rowNumber].holidayHours));
-						
-						$('[name="regularPay"]').val(	TIMESHEET_IMPORT.employeeMap[$rowNumber].regularPay);
-	           			$('[name="otPay"]').val(		TIMESHEET_IMPORT.employeeMap[$rowNumber].otPay);
-	           			$('[name="vacationPay"]').val(	TIMESHEET_IMPORT.employeeMap[$rowNumber].vacationPay);
-	           			$('[name="holidayPay"]').val(	TIMESHEET_IMPORT.employeeMap[$rowNumber].holidayPay);
-	           			
-	    				<!-- <table  id="time-calcs"style="width:100%;border:1px solid;">   -->
-						
-						//$('[name="regularHours"]').blur(function() { calculateTotaHoursOnModel()});
-						$('[name="regularHours"]').blur(function() { TIMESHEET_IMPORT.calculateTotaHoursOnModel()});
-						$('[name="otHours"]').blur(function() { TIMESHEET_IMPORT.calculateTotaHoursOnModel()});
-	           			$('[name="vacationHours"]').blur(function() { TIMESHEET_IMPORT.calculateTotaHoursOnModel()});
-	           			$('[name="holidayHours"]').blur(function() { TIMESHEET_IMPORT.calculateTotaHoursOnModel()});
-                        
-	           			TIMESHEET_IMPORT.calculateTotaHoursOnModel();
-	           			
-           				//$('[name="totalHours"]').val($totalHours.toFixed(2));
-	           			
-	           			$('[name="directLabor"]').val(          TIMESHEET_IMPORT.employeeMap[$rowNumber].directLabor);
-	           			$('[name="volume"]').val(               TIMESHEET_IMPORT.employeeMap[$rowNumber].volume);
-	           			$('[name="grossPay"]').val(             TIMESHEET_IMPORT.employeeMap[$rowNumber].grossPay);
-
-	           			$('[name="expenses"]').val(             TIMESHEET_IMPORT.employeeMap[$rowNumber].expenses);
-	           			$('[name="expensesAllowed"]').val(      TIMESHEET_IMPORT.employeeMap[$rowNumber].expensesAllowed);
-	           			$('[name="expensesSubmitted"]').val(    TIMESHEET_IMPORT.employeeMap[$rowNumber].expensesSubmitted);	           			
-	           			//$('[name="productivity"]').val(TIMESHEET_IMPORT.employeeMap[$rowNumber].productivity);
-	           			$('#employee-modal .productivity').text(TIMESHEET_IMPORT.employeeMap[$rowNumber].productivity);
-
-	           			//blankRow: false
-	           			//errorsFound: null
-	           			//$rowNumber, $action
-	           			TIMESHEET_IMPORT.displayEmployeeModalErrors($rowNumber);
-	           		},
-	           		calculateTotaHoursOnModel : function(){
-           		 		var $totalHours = 0;
-						var $regularHours = parseFloat($('[name="regularHours"]').val()); 
-	           			var	$otHours = parseFloat($('[name="otHours"]').val());
-	           			var $vacationHours = parseFloat($('[name="vacationHours"]').val());
-	           			var $holidayHours = parseFloat($('[name="holidayHours"]').val()); 
-        		           		
-						$('[name="regularHours"]').val($regularHours.toFixed(2));
-	           			$('[name="otHours"]').val($otHours.toFixed(2));
-	           			$('[name="vacationHours"]').val($vacationHours.toFixed(2));
-	           			$('[name="holidayHours"]').val($holidayHours.toFixed(2));
-							           			
-	           			$totalHours = $regularHours + $otHours + $vacationHours + $holidayHours;
-		           		
-       		 			$('#employee-modal .totalHours').text($totalHours.toFixed(2));
-           		 		
-//            		 		var $totalHours = 
-//            		 			parseFloat(  TIMESHEET_IMPORT.employeeMap[$rowNumber].regularHours)
-//            		 			+ parseFloat(TIMESHEET_IMPORT.employeeMap[$rowNumber].otHours)
-//            		 			+ parseFloat(TIMESHEET_IMPORT.employeeMap[$rowNumber].vacationHours)
-//            		 			+ parseFloat(TIMESHEET_IMPORT.employeeMap[$rowNumber].holidayHours)           		 	           		 	           			
-           		 			
-           		 			
-	           		},
-	           		displayEmployeeModalErrors : function($rowNumber) {
-						var $employeeErrors = TIMESHEET_IMPORT.employeeMap[$rowNumber].messages;
-	    				var $selector="";
-	    				var $errMsg="";
-	    				$("#employee-modal .err").html("");
-	    				$("#employee-modal input").removeClass("errorsFoundHighlight");
-       					console.log("$employeeErrors looks like ");
-       					//console.log("========================== ");
-       					console.log($employeeErrors);
-       					       		
-           				$.each(TIMESHEET_IMPORT.employeeMap[$rowNumber].messages, function($index, $value) {
-           					//console.log("messages available for : " + $index + " : " + $value.length);
-           				     
-							for(i=0;i<$value.length;i++){
-	           					console.log("   " + $index + "[" + i + "]: " 
-	           					   + $value[i].errorMessage.errorLevel + ", " 
-	           					   + $value[i].errorMessage.message);
-								
-// 	           					console.log("field : " + $index);
-// 	           					console.log("=====================================================================================");
-// 	           					console.log("message[" + i + "].errorMessage.errorLevel : "   +   $value[i].errorMessage.errorLevel);
-// 	           					console.log("message[" + i + "].errorMessage.errorMessage : " +   $value[i].errorMessage.message);
-// 	           					console.log("message[" + i + "].errorType : " +                   $value[i].errorType);
-// 	           					console.log("message[" + i + "].errorMessage.ok : " + 			  $value[i].ok);
-// 	           					console.log("=====================================================================================");
-	           					    
-	           					var $s="";
-	           					
-	           					if(!$value[i].ok){	               					
-	               					$selector="#employee-modal ." + $index + "Err";
-	               					$errMsg = $value[i].errorMessage.errorLevel + ": " + $value[i].errorMessage.message;
-	               					
-	               					console.log("------/\/\/\/\---> add highlight to " + $s)
-	               					
-	               					$("input[name='" + $index + "']").addClass("errorsFoundHighlight");
-	               					
-	               					$s = $($selector).html();
-	               					console.log("------/\/\/\/\---> err mesg already had - " + $s)
-
-	               					if($s){
-	               						$s = $s + "<br/>" + $errMsg;
-	               					}
-	               					else 
-	               						$s = $errMsg;
-	               					
-	               					//$($selector).html($($selector).html() + $errMsg);               					
-	               					$($selector).html($s);
-           				
-	               					//console.log("setvars - selector =  " + $selector + "  Value is '" + $s + "' ");  
-	               					//x
-	               					//$(".expensesSubmittedErr").html("Hyelloo?");               					
-	               					console.log("        ------/\/\/\/\--->  error found ---> set " +     $index + "Err to display '" + $s);
-	               					//console.log("setvars - selector =  " + $selector + "  Value is '" + $errMsg + "' ");  
-	               				}
-							}           					
-           					//console.log("selector is " + $selector);	           					           					
-           					//$($selector).html($value[0]);
-           				});
-       					
-
-	           			
-	           			// 	    				employeeEditErr
-// 	    				employeeNameErr
-// 	    				employeeNameCodeErr
-// 	    				stateErr
-// 	    				rowErr
-// 	    				hoursErr
-// 	    				regularHoursErr
-// 	    				regularPayErr
-// 	    				expensesSubmittedErr
-// 	    				otHoursErr
-// 	    				otPayErr
-// 	    				expensesAllowedErr
-// 	    				vacationHoursErr
-// 	    				vacationPayErr
-// 	    				directLaborErr
-// 	    				holidayHoursErr
-// 	    				holidayPayErr
-// 	    				volumeErr
-// 	    				totalHoursErr
-// 	    				grossPayErr
-// 	    				productivityErr
-	    				
-	    				
-
-	    				
-	           		},
-	           		closeEmployeeModal : function() {
-	           			//$rowNumber, $action
-	           		},	           		
-	           		//validateEmployeeModal : function($data) {
-	           		validateEmployeeModal : function() {
-	           			console.log("validate employee timesheet");
-	           			$("#employee-modal .err").html("").show();
-	           			var $outbound = {};
-	           			var s;
-	           			$.each( $("#employee-modal input"), function($index, $value) {
-	           				s = $($value).val();
-	           			   	s = s.replace(/\d+% ?/g, "");
-	           			   	s = s.replace(/\d+, ?/g, "");	           			   	
-	           				$outbound[$value.name] = s;
-	           			});
-	           			$.each( $("#employee-modal select"), function($index, $value) {
-	           				$outbound[$value.name] = $($value).val();
-	           			});
-			           			           			
-	           			$outbound["action"]="VALIDATE";
-
-	           			console.log("passing these values to the servlet to validate");
-	           			console.log($outbound);
-	           			
-	           			
-	           			var $callbacks = {
-	        				200:TIMESHEET_IMPORT.processEmployeeValidationSuccess,
-	        				//200:TIMESHEET_IMPORT.processEmployeeValidationSuccess($data),
-	        				403:TIMESHEET_IMPORT.processEmployeeValidationErrors,
-	           				404:TIMESHEET_IMPORT.processEmployeeValidationErrors,
-	           				405:TIMESHEET_IMPORT.processEmployeeValidationErrors,
-	           				500:TIMESHEET_IMPORT.processEmployeeValidationErrors,
-	        			};
-	           			//makeServerCall : function($type, $url,              $outbound,                  $callbacks,        $passThruData) 
-	           			ANSI_UTILS.makeServerCall("POST", "payroll/timesheet", JSON.stringify($outbound), $callbacks, {});
-	           		},
-	           		processEmployeeValidationSuccess : function($data, $passthru) {
-	           		//processEmployeeValidationSuccess : function($data) {
-		           	//	processEmployeeValidationSuccess : function() {
-	           			console.log("processEmployeeValidationSuccess");
-	           			console.log("This is the data object");
-	           			console.log($data);
-	           			
-	           			console.log("This is the response header");
-	           			console.log($data.responseHeader);
-	           			
-	           			console.log("This is the data");
-	           			console.log($data.responseHeader.responseCode);
-	           			
-	           				           			
-	           			if ( $data.responseHeader.responseCode == 'EDIT_FAILURE' ) {
-           					console.log("processEmployeeValidationSuccess - EDIT_FAILURE");
-           					// check for header error messages first
-           					if($data.header){    
-	           					if($data.header.messages){
-	               					console.log("processEmployeeValidationSuccess : display header errors");
-	    	           				$.each($data.data.webMessages, function($index, $value) {
-	    	           					console.log($index + ' value is ' + $value);	           				
-	    	           					var $selector = "#file-header-data ." + $index + "Err";
-	    	           					console.log("selector is " + $selector);	           					           					
-	    	           					$($selector).html($value[0]);
-	    	           				});
-	           					} else {
-	               					console.log("processEmployeeValidationSuccess : header data returned with no messages");
-	           					}
-	           				} else {
-               					console.log("processEmployeeValidationSuccess : no header data returned");
-	           				}
-	           			} else if ( $data.responseHeader.responseCode == 'SUCCESS' || $data.responseHeader.responseCode == 'EDIT_WARNING') {
-	           				updateDataTableFromModal();
-	           				//$("#timesheetLookup").DataTable().ajax.reload();
-	               			// close both modals because we don't know which one called this method, but only after they've been init'd
-	               			
-							// 	               			if ( $("#edit-modal").hasClass("ui-dialog-content")) {
-							// 	               				$("#edit-modal").dialog("close");
-							// 	               	showWarnings		}
-							// 	               			if ( $("#confirmation-modal").hasClass("ui-dialog-content")) {
-							// 	               				$("#confirmation-modal").dialog("close");
-							// 	               			}
-	               			if ($data.responseHeader.responseCode == 'SUCCESS') {
-	               				$("#globalMsg").html("Success").show().fadeOut(3000);
-	               			} else {
-	               				//ANSI_UTILS.showWarnings("timesheet_warnings", $data.data.webMessages);
-	               				ANSI_UTILS.showWarnings("timesheet_warnings", $data.header.messages);
-	               			}
-	           			} else {
-	           				$("#employee-modal .timesheet-err").html("Unexpected response code: " + $data.responseHeader.responseCode + ". Contact Support").show();
-	           			}
-	           		},
+	        		
+	        		
+	        		
+	        		stringToFloatString : function (NumberAsString){
+						value = null;
+						if (NumberAsString == null || NumberAsString == "") {
+							value="";
+						} else if ( isNaN(NumberAsString) ) {
+							value="";
+						} else {
+							x = parseFloat(NumberAsString);
+							value = x.toFixed(2);
+						}
+						return value;
+					},
+					
+					
+					
+	        		
 	           		
-	           		//processEmployeeValidationErrors : function($data, $passthru) {
-	           		processEmployeeValidationErrors : function($data, $passthru) {
-	           			console.log("processEmployeeValidationErrors kevin");
-	           			if ( $data.responseHeader.responseCode == 'EDIT_FAILURE' ) {
-	           				$.each($data.data.webMessages, function($index, $value) {
-	           					var $selector = "#employee-modal ." + $index + "Err";
-	           					$($selector).html($value[0]);
-	           				});
-	           			} else if ( $data.responseHeader.responseCode == 'SUCCESS' || $data.responseHeader.responseCode == 'EDIT_WARNING') {
-	               			$("#timesheetLookup").DataTable().ajax.reload();
-	               			// close both modals because we don't know which one called this method, but only after they've been init'd
-	               			if ( $("#edit-modal").hasClass("ui-dialog-content")) {
-	               				$("#edit-modal").dialog("close");
-	               			}
-	               			if ( $("#confirmation-modal").hasClass("ui-dialog-content")) {
-	               				$("#confirmation-modal").dialog("close");
-	               			}
-	               			if ($data.responseHeader.responseCode == 'SUCCESS') {
-	               				$("#globalMsg").html("Success").show().fadeOut(3000);
-	               			} else {
-	               				ANSI_UTILS.showWarnings("timesheet_warnings", $data.data.webMessages);
-	               			}
-	           			}
-	           		},	           		
+	           		
+	           		
+	           		
+	           		
+	           		
+	           		
+	           		
+	           		
+	           		
+	           		
+	           		         		
+	           		
+	           		
+	           		
+	           		
+	           		
+	           		
+	           		
+	           		    		
+	           		
+	           		
+	           		
 	           		updateDataTableFromModal : function() {
 	           			console.log("saveEmployeeModal - grabbing values");
-						//var $ticketId = $("#employee-modal").attr("ticketId");
-	           				           		
-						//<td class="employeeName"><input type="text" class="employeeName" Name="employeeName"tabindex="1" /></td>						
 	           			var $rowNumber 			= $("#employee-modal [name='row']").val();	           			
 	           			var $employeeName 		= $("#employee-modal [name='employeeName']").val();
 	           			var $regularPay  		= $("#employee-modal [name='regularPay']").val();
@@ -1177,14 +797,12 @@ td.money {
 	           			var $expensesAllowed 	= $("#employee-modal [name='expensesAllowed']").val();
 	           			var $expensesSubmitted  = $("#employee-modal [name='expensesSubmitted']").val();
 	           			var $productivity 		= $("#employee-modal [name='productivity']").val();
-	           			console.log("saveEmployeeModal: ");
 	           			
 	           			var $idx = $rowNumber +1;
 	           			$idx = $idx -1;
 	           			
 					    var table = $("#timesheet").DataTable();
 					    
-	           			console.log("re-adding row? = " + $idx);	           			
 	           			TIMESHEET_IMPORT.employeeMap[$idx].employeeName = $employeeName;
 	           			TIMESHEET_IMPORT.employeeMap[$idx].regularPay = $regularPay;
 	           			TIMESHEET_IMPORT.employeeMap[$idx].otPay = $otPay;
@@ -1209,19 +827,35 @@ td.money {
 	           			TIMESHEET_IMPORT.employeeMap[$idx].expensesSubmitted = $expensesSubmitted;
 	           			TIMESHEET_IMPORT.employeeMap[$idx].productivity = $productivity;
 	           			
-	           			//alert("Do Stuff here to store the changes");	           			
-// 	           			console.log("Employee name from employeeRecordList = " + $data.data.employeeRecordList[$rowNumber].employeeName);
-					    //var $test = "TIMESHEET_IMPORT.employeeMap[" + $rowNumber + "] = " + TIMESHEET_IMPORT.employeeMap[$rowNumber].directLabor;
-					 				
 					    table.row($rowNumber).data(TIMESHEET_IMPORT.employeeMap[$rowNumber]).draw();			    
+	           		},
+	           		
+	           		
+	           		validateEmployeeModal : function() {
+	           			console.log("validate employee timesheet");
+	           			$("#employee-modal .err").html("").show();
+	           			var $outbound = {};
+	           			var s;
+	           			$.each( $("#employee-modal input"), function($index, $value) {
+	           				s = $($value).val();
+	           			   	s = s.replace(/\d+% ?/g, "");
+	           			   	s = s.replace(/\d+, ?/g, "");	           			   	
+	           				$outbound[$value.name] = s;
+	           			});
+	           			$.each( $("#employee-modal select"), function($index, $value) {
+	           				$outbound[$value.name] = $($value).val();
+	           			});
+			           			           			
+	           			$outbound["action"]="VALIDATE";
 
-					    console.log("test row update");
-					    console.log(TIMESHEET_IMPORT.employeeMap[$rowNumber]);
-
-					    
-// 						click: function($event) {
-// 								TIMESHEETLOOKUP.saveTimesheet();
-					    
+	           			var $callbacks = {
+	        				200:TIMESHEET_IMPORT.processEmployeeValidationSuccess,
+	        				403:TIMESHEET_IMPORT.processEmployeeValidationErrors,
+	           				404:TIMESHEET_IMPORT.processEmployeeValidationErrors,
+	           				405:TIMESHEET_IMPORT.processEmployeeValidationErrors,
+	           				500:TIMESHEET_IMPORT.processEmployeeValidationErrors,
+	        			};
+	           			ANSI_UTILS.makeServerCall("POST", "payroll/timesheet", JSON.stringify($outbound), $callbacks, {});
 	           		},
 	           	};
 	           	
@@ -1258,84 +892,38 @@ td.money {
 		<div id="data-header">
 			<table id="data-file">
 				<tr>
-					<td id="payroll-file-label"><span class="form-label">Currently
-							Viewing Payroll File :</span> <span class="timesheetFile"></span></td>
+					<td id="payroll-file-label"><span class="form-label">Currently Viewing Payroll File :</span> <span class="timesheetFile"></span></td>
 				</tr>
 			</table>
 			<table id="file-header-data">
 				<tr class="label-row">
-					<td class="col1" id="division-label"><span class="form-label">Division
-					</span></td>
-					<td class="col2" id="operations-manager-label"><span
-						class="form-label">Operations Manager </span></td>
-					<td class="col3" id="week-ending-label"><span
-						class="form-label">Week Ending </span></td>
-					<td class="col4" id="state-label"><span class="form-label">State
-					</span></td>
-					<td class="col5" id="city-label"><span class="form-label">City/Jurisdiction
-					</span></td>
-					<td class="col6" id="payroll-file-label"><span
-						class="form-label">Payroll File </span></td>
+					<td class="col1" id="division-label"><span class="form-label">Division</span></td>
+					<td class="col2" id="operations-manager-label"><span class="form-label">Operations Manager </span></td>
+					<td class="col3" id="week-ending-label"><span class="form-label">Week Ending </span></td>
+					<td class="col4" id="state-label"><span class="form-label">State</span></td>
+					<td class="col5" id="city-label"><span class="form-label">City/Jurisdiction</span></td>
+					<td class="col6" id="payroll-file-label"><span class="form-label">Payroll File </span></td>
 					<td class="col7"><span class="form-label"> </span></td>
 				</tr>
 				<tr>
 					<td class="col1">
-						<input type="hidden" name="divisionId"/> 
-						<span class="divisionId"></span>
-					    <!--  
-						<select
-							name="divisionId">
-								<option value=""></option>
-								<ansi:divisionSelect format="select" />
-						</select>
-						 -->
+						<input type="hidden" name="divisionId"/><span class="divisionId"></span>
 					</td>
-					<!--								
-    					<input type="text" class="division" 				name="divisionId"				tabindex="1" />
-    					-->
-					<td class="col2">
-						<span class="operationsManagerName">
-							  
-							<input type="text" class="operationsManagerName"
-							name="operationsManagerName" tabindex="2" />
-							
-					</span></td>
-					<td class="col3"><span class="payrollDate"> 
-						 
-						<input
-							type="date" class="payrollDate" name="payrollDate" tabindex="3" />
-						
-					</span></td>
-					<!-- 
-   					<td class="col4"><span class="ansi:states">				<input type="text" class="state" 					name="state"					tabindex="4" />									</span></td>
-					 -->
-					<td class="col4">
-							<span class="state"></span>
-							<!-- 
-							<select id="state" name="state">
-							<option value=""></option>
-							<webthing:states />
-							 
-							</select>
-							-->
-					</td>
-					<td class="col5"><span class="city">
-							<!-- 							 
-							<input type="text"
-							class="city" name="city" tabindex="5" />
-							 -->
-					</span></td>
+					<td class="col2"><span class="operationsManagerName"><input type="text" class="operationsManagerName" name="operationsManagerName" tabindex="2" /></span></td>
+					<td class="col3"><span class="payrollDate"><input type="date" class="payrollDate" name="payrollDate" tabindex="3" /></span></td>
+					<td class="col4"><span class="state"></span></td>
+					<td class="col5"><span class="city"></span></td>
 					<td class="col6"><span class="timesheetFile"></span></td>
-					<td class="col7" id="cancel-save-buttons"><input type="button"
-						value="Cancel" name="cancelButton" class="action-button" /> <input
-						type="button" value="Save" id="save-button" /></td>
+					<td class="col7" id="cancel-save-buttons">
+						<input type="button" value="Cancel" name="cancelButton" class="action-button" /> 
+						<input type="button" value="Save" id="save-button" />
+					</td>
 				</tr>
 				<tr class="message-row">
 					<td class="col1"><span class="divisionErr err"></span></td>
 					<td class="col2"><span class="operationsManagerNameErr err"></span></td>
 					<td class="col3"><span class="weekEndingErr err"></span></td>
-					<td class="col4"><span class="stateErr err"></span></td>
-					<td class="col5"><span class="cityErr err"></span></td>
+					<td colspan="2"><span class="localeErr err"></span></td>
 					<td class="col6" colspan="2"><span class="fileNameErr err"></span></td>
 				</tr>
 			</table>

@@ -7,7 +7,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 
-import com.ansi.scilla.common.payroll.validator.EmployeeValidationBaseSql;
+import com.ansi.scilla.common.payroll.validator.employee.EmployeeValidationBaseSql;
 import com.ansi.scilla.common.queries.SelectType;
 import com.ansi.scilla.web.common.query.LookupQuery;
 import com.ansi.scilla.web.common.struts.SessionDivision;

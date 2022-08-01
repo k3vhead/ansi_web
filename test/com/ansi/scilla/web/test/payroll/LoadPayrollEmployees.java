@@ -13,8 +13,8 @@ import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.PayrollEmployee;
 import com.ansi.scilla.common.payroll.common.EmployeeStatus;
-import com.ansi.scilla.common.payroll.parser.EmployeeImportParser;
-import com.ansi.scilla.common.payroll.parser.EmployeeImportRecord;
+import com.ansi.scilla.common.payroll.parser.employee.EmployeeImportParser;
+import com.ansi.scilla.common.payroll.parser.employee.EmployeeImportRecord;
 import com.ansi.scilla.common.utils.AppUtils;
 
 @Deprecated

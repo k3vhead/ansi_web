@@ -3,7 +3,6 @@ package com.ansi.scilla.web.test.payroll;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -12,16 +11,15 @@ import org.apache.commons.lang3.time.DateUtils;
 
 import com.ansi.scilla.common.exceptions.InvalidValueException;
 import com.ansi.scilla.common.exceptions.PayrollException;
-import com.ansi.scilla.common.payroll.common.PayrollWorksheetHeader;
-import com.ansi.scilla.common.payroll.common.PayrollWorksheetHeader.PayrollWorksheetFields;
-import com.ansi.scilla.common.payroll.parser.PayrollWorksheetEmployee;
-import com.ansi.scilla.common.payroll.parser.PayrollWorksheetParser;
-import com.ansi.scilla.common.payroll.validator.PayrollMessage;
-import com.ansi.scilla.common.payroll.validator.PayrollWorksheetValidator;
+import com.ansi.scilla.common.payroll.parser.worksheet.PayrollWorksheetEmployee;
+import com.ansi.scilla.common.payroll.parser.worksheet.PayrollWorksheetHeader;
+import com.ansi.scilla.common.payroll.parser.worksheet.PayrollWorksheetParser;
+import com.ansi.scilla.common.payroll.validator.common.PayrollMessage;
+import com.ansi.scilla.common.payroll.validator.worksheet.HeaderValidator;
+import com.ansi.scilla.common.payroll.validator.worksheet.ValidatedWorksheetHeader;
+import com.ansi.scilla.common.payroll.validator.worksheet.ValidatedWorksheetHeader.PayrollWorksheetFields;
 import com.ansi.scilla.common.utils.AppUtils;
-import com.ansi.scilla.web.common.response.WebMessagesStatus;
 import com.ansi.scilla.web.payroll.request.TimesheetRequest;
-import com.ansi.scilla.web.payroll.response.TimesheetImportResponse;
 
 public class TestWorksheetValidator {
 	private final String fileName = "/home/dclewis/Documents/Dropbox/webthing_v2/projects/ANSI/data/20211211_payroll/payroll_worksheets_v2/Payroll 77 01.21.2022.ods";
@@ -58,7 +56,9 @@ public class TestWorksheetValidator {
 	
 	
 	private void testValidator(Connection conn, PayrollWorksheetParser parser) throws PayrollException, InvalidValueException, SQLException, InterruptedException, Exception {
-		PayrollWorksheetHeader header = PayrollWorksheetValidator.validateHeader(conn, parser);
+		
+		PayrollWorksheetHeader worksheetHeader = parser.getHeader();
+		ValidatedWorksheetHeader header = HeaderValidator.validateHeader(conn, worksheetHeader);
 		
 		Map<PayrollWorksheetFields, List<PayrollMessage>> validatorMsg = header.getMessages();
 		Set<PayrollWorksheetFields> fieldNameList = validatorMsg.keySet();
@@ -68,16 +68,20 @@ public class TestWorksheetValidator {
 				System.out.println("\t" + msg.getErrorType() + "\t" + msg.getErrorMessage().getErrorLevel() + "\t" + msg.getErrorMessage().getMessage());
 			}				
 		}
-		Map<String,HashMap<String,List<PayrollMessage>>> employeeMsgs =  PayrollWorksheetValidator.validatePayrollEmployees(conn, header, parser);
-		for ( String rownum : employeeMsgs.keySet() ) {
-			System.out.println("Row: " + rownum);
-			for ( String fieldName : employeeMsgs.get(rownum).keySet() ) {
-				System.out.println("\t" + fieldName);
-				for ( PayrollMessage msg : employeeMsgs.get(rownum).get(fieldName) ) {
-					System.out.println("\t\t" + msg.getErrorType() + "\t" + msg.getErrorMessage().getErrorLevel() + "\t" + msg.getErrorMessage().getMessage());
-				}
-			}
-		}
+		
+		/**
+		 * This bit has all changed because messages are now part of the ValidatedWorksheetEmployee object
+		 */
+//		Map<String,HashMap<String,List<PayrollMessage>>> employeeMsgs =  PayrollWorksheetValidator.validatePayrollEmployees(conn, header, parser);
+//		for ( String rownum : employeeMsgs.keySet() ) {
+//			System.out.println("Row: " + rownum);
+//			for ( String fieldName : employeeMsgs.get(rownum).keySet() ) {
+//				System.out.println("\t" + fieldName);
+//				for ( PayrollMessage msg : employeeMsgs.get(rownum).get(fieldName) ) {
+//					System.out.println("\t\t" + msg.getErrorType() + "\t" + msg.getErrorMessage().getErrorLevel() + "\t" + msg.getErrorMessage().getMessage());
+//				}
+//			}
+//		}
 		
 	}
 

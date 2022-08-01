@@ -4,14 +4,13 @@ import java.util.HashMap;
 
 import org.apache.commons.collections4.Transformer;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.PayrollEmployee;
 import com.ansi.scilla.common.payroll.common.EmployeeStatus;
-import com.ansi.scilla.common.payroll.parser.EmployeeImportRecord;
+import com.ansi.scilla.common.payroll.parser.employee.EmployeeImportRecord;
 
 public class EmployeeRecordTransformer implements Transformer<EmployeeImportRecord, EmployeeImportResponseRec> {
 

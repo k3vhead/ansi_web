@@ -7,8 +7,8 @@ import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.collections4.Predicate;
 
 import com.ansi.scilla.common.db.PayrollEmployee;
-import com.ansi.scilla.common.payroll.parser.EmployeeImportParser;
-import com.ansi.scilla.common.payroll.parser.EmployeeImportRecord;
+import com.ansi.scilla.common.payroll.parser.employee.EmployeeImportParser;
+import com.ansi.scilla.common.payroll.parser.employee.EmployeeImportRecord;
 import com.ansi.scilla.common.utils.AppUtils;
 import com.ansi.scilla.web.payroll.response.EmployeeImportResponseRec;
 

@@ -7,7 +7,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.db.PayrollEmployee;
 import com.ansi.scilla.common.exceptions.InvalidValueException;
-import com.ansi.scilla.common.payroll.parser.EmployeeImportRecord;
+import com.ansi.scilla.common.payroll.parser.employee.EmployeeImportRecord;
 import com.ansi.scilla.common.utils.compare.AnsiComparable;
 import com.ansi.scilla.common.utils.compare.AnsiComparison;
 import com.ansi.scilla.common.utils.compare.BooleanIshComparison;

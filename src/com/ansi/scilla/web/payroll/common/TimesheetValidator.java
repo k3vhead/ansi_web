@@ -11,9 +11,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.db.ApplicationProperties;
 import com.ansi.scilla.common.db.Division;
-import com.ansi.scilla.common.payroll.validator.PayrollErrorType;
-import com.ansi.scilla.common.payroll.validator.PayrollMessage;
-import com.ansi.scilla.common.payroll.validator.ValidatorUtils;
+import com.ansi.scilla.common.payroll.validator.common.PayrollErrorType;
+import com.ansi.scilla.common.payroll.validator.common.PayrollMessage;
+import com.ansi.scilla.common.payroll.validator.common.ValidatorUtils;
 import com.ansi.scilla.common.utils.ApplicationProperty;
 import com.ansi.scilla.common.utils.ErrorLevel;
 import com.ansi.scilla.web.common.response.WebMessages;

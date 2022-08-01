@@ -20,8 +20,9 @@ import org.apache.commons.lang3.StringUtils;
 import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.PayrollWorksheet;
-import com.ansi.scilla.common.payroll.parser.PayrollWorksheetEmployee;
-import com.ansi.scilla.common.payroll.parser.PayrollWorksheetParser;
+import com.ansi.scilla.common.payroll.parser.worksheet.PayrollWorksheetEmployee;
+import com.ansi.scilla.common.payroll.parser.worksheet.PayrollWorksheetHeader;
+import com.ansi.scilla.common.payroll.parser.worksheet.PayrollWorksheetParser;
 import com.ansi.scilla.common.utils.AppUtils;
 
 public class LoadPayrollWorksheets extends Loader {
@@ -123,13 +124,14 @@ public class LoadPayrollWorksheets extends Loader {
 		String[] bits = fileName.split("/");
 		System.out.println("Processing file: " + bits[bits.length-1]);
 		PayrollWorksheetParser parser = new PayrollWorksheetParser(fileName);
+		PayrollWorksheetHeader worksheetHeader = parser.getHeader();
 		String file = parser.getFileName();
-		Integer divNbr = Integer.valueOf( parser.getDivision() );
-		String omName = parser.getOperationsManagerName();
-		Date weekEnding = weekEndingFormat.parse(parser.getWeekEnding());
+		Integer divNbr = Integer.valueOf( worksheetHeader.getDivisionNbr() );
+		String omName = worksheetHeader.getOperationsManagerName();
+		Date weekEnding = weekEndingFormat.parse(worksheetHeader.getWeekEnding());
 		Integer divisionId = divMap.get(divNbr).getDivisionId();
-		String city = makeCity(divisionId, parser.getCity());
-		String state = makeState(divisionId, parser.getState());
+		String city = makeCity(divisionId, worksheetHeader.getCity());
+		String state = makeState(divisionId, worksheetHeader.getState());
 		List<PayrollWorksheetEmployee> employeeList = parser.getTimesheetRecords();
 		System.out.println("[" + file + "]\t[" + divNbr + "]\t[" + city + "]\t[" + state + "]\t[" + omName + "]\t[" + weekEnding + "]");
 		for ( PayrollWorksheetEmployee employee : employeeList ) {
