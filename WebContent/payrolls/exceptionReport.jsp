@@ -147,54 +147,54 @@
         			$("#exception-display select[name='employeeStatus']").val(EXCEPTION_REPORT.exceptionMap[$myRow].employee_status);
         			//$("#exception-display input[name='unionMember']").val(EXCEPTION_REPORT.exceptionMap[$myRow].union_member);
         			if (EXCEPTION_REPORT.exceptionMap[$myRow].union_member == 1 ) {
-        				$("#exception-display select[name='unionMember']").val('Error Found');
+        				$("#exception-display .unionMember").html($yes);
         			} else {
-        				$("#exception-display select[name='unionMember']").val('No Error Found');
+        				$("#exception-display .unionMember").html($no);
         				
         			}
         			$("#exception-display input[name='unionCode']").val(EXCEPTION_REPORT.exceptionMap[$myRow].union_code);
         			$("#exception-display input[name='unionRate']").val(EXCEPTION_REPORT.exceptionMap[$myRow].union_rate);
         			//$("#exception-display input[name='underUnionMinPay']").val(EXCEPTION_REPORT.exceptionMap[$myRow].under_union_min_pay);
         			if (EXCEPTION_REPORT.exceptionMap[$myRow].under_union_min_pay == 1 ) {
-        				$("#exception-display input[name='underUnionMinPay']").val('Error Found');
+        				$("#exception-display .underUnionMinPay").html($errorFound);
         			} else {
-        				$("#exception-display input[name='underUnionMinPay']").val('No Error Found');
+        				$("#exception-display .underUnionMinPay").html($noErrorFound);
         				
         			}
         			$("#exception-display input[name='minimumHourlyPay']").val(EXCEPTION_REPORT.exceptionMap[$myRow].minimum_hourly_pay.toFixed(2));
         			//$("#exception-display input[name='underGovtMinPay']").val(EXCEPTION_REPORT.exceptionMap[$myRow].under_govt_min_pay);
         			if (EXCEPTION_REPORT.exceptionMap[$myRow].under_govt_min_pay == 1 ) {
-        				$("#exception-display input[name='underGovtMinPay']").val('Error Found');
+        				$("#exception-display .underGovtMinPay").html($errorFound);
         			} else {
-        				$("#exception-display input[name='underGovtMinPay']").val('No Error Found');
+        				$("#exception-display .underGovtMinPay").html($noErrorFound);
         				
         			}
-        			//$("#exception-display input[name='excessExpensePct']").val(EXCEPTION_REPORT.exceptionMap[$myRow].excess_expenses_pct);
-        			if (EXCEPTION_REPORT.exceptionMap[$myRow].excess_expenses_pct == 1 ) {
-        				$("#exception-display input[name='excessExpensePct']").val('Error Found');
+        			//$("#exception-display input[name='excessExpensePct']").val(EXCEPTION_REPORT.exceptionMap[$myRow].excess_expense_pct);
+        			if (EXCEPTION_REPORT.exceptionMap[$myRow].excess_expense_pct == 1 ) {
+        				$("#exception-display .excessExpensePct").html($errorFound);
         			} else {
-        				$("#exception-display input[name='excessExpensePct']").val('No Error Found');
+        				$("#exception-display .excessExpensePct").html($noErrorFound);
         				
         			}
-        			//$("#exception-display input[name='excessExpenseClaim']").val(EXCEPTION_REPORT.exceptionMap[$myRow].excess_expenses_claim);
-        			if (EXCEPTION_REPORT.exceptionMap[$myRow].excess_expenses_claim == 1 ) {
-        				$("#exception-display input[name='excessExpenseClaim']").val('Error Found');
+        			//$("#exception-display input[name='excessExpenseClaim']").val(EXCEPTION_REPORT.exceptionMap[$myRow].excess_expense_claim);
+        			if (EXCEPTION_REPORT.exceptionMap[$myRow].excess_expense_claim == 1 ) {
+        				$("#exception-display .excessExpenseClaim").html($errorFound);
         			} else {
-        				$("#exception-display input[name='excessExpenseClaim']").val('No Error Found');
+        				$("#exception-display .excessExpenseClaim").html($noErrorFound);
         				
         			}
         			//$("#exception-display select[name='ytdExcessExpensePct']").val(EXCEPTION_REPORT.exceptionMap[$myRow].ytd_excess_expense_pct);
         			if (EXCEPTION_REPORT.exceptionMap[$myRow].ytd_excess_expense_pct == 1 ) {
-        				$("#exception-display input[name='ytdExcessExpensePct']").val('Error Found');
+        				$("#exception-display .ytdExcessExpensePct").html($errorFound);
         			} else {
-        				$("#exception-display input[name='ytdExcessExpensePct']").val('No Error Found');
+        				$("#exception-display .ytdExcessExpensePct").html($noErrorFound);
         				
         			}
         			//$("#exception-display input[name='ytdExcessExpenseClaim']").val(EXCEPTION_REPORT.exceptionMap[$myRow].ytd_excess_expense_claim);
         			if (EXCEPTION_REPORT.exceptionMap[$myRow].ytd_excess_expense_claim == 1 ) {
-        				$("#exception-display input[name='ytdExcessExpenseClaim']").val('Error Found');
+        				$("#exception-display .ytdExcessExpenseClaim").html($errorFound);
         			} else {
-        				$("#exception-display input[name='ytdExcessExpenseClaim']").val('No Error Found');
+        				$("#exception-display .ytdExcessExpenseClaim").html($noErrorFound);
         				
         			}
         			$("#exception-display input[name='expensesSubmitted']").val(EXCEPTION_REPORT.exceptionMap[$myRow].expenses_submitted.toFixed(2));
@@ -203,9 +203,9 @@
         			$("#exception-display input[name='ytdDirectLabor']").val(EXCEPTION_REPORT.exceptionMap[$myRow].ytd_direct_labor.toFixed(2));
         			//$("#exception-display input[name='foreignCompany']").val(EXCEPTION_REPORT.exceptionMap[$myRow].foreign_company);
         			if (EXCEPTION_REPORT.exceptionMap[$myRow].foreign_company == 1 ) {
-        				$("#exception-display input[name='foreignCompany']").attr($errorFound);
+        				$("#exception-display .foreignCompany").html($errorFound);
         			} else {
-        				$("#exception-display input[name='foreignCompany']").attr($noErrorFound);
+        				$("#exception-display .foreignCompany").html($noErrorFound);
         				
         			}
         			//$("#exception-display input[name='foreignDivision']").val(EXCEPTION_REPORT.exceptionMap[$myRow].foreign_division);
@@ -309,8 +309,8 @@
 	        	                    {
 	        	                        extend: 'colvisGroup',
 	        	                        text: 'Default',
-	        	                        show: [ 0,1,2,3,7,9,11,16,17,19],
-	        	                        hide: [ 4,5,6,8,10,12,13,14,15,18,20,21]
+	        	                        show: [ 0,1,2,3,7,9,15,16,18],
+	        	                        hide: [ 4,5,6,8,10,11,12,13,14,17,19,20]
 	        	                    },
 	        	                    {
 	        	                        extend: 'colvisGroup',
@@ -321,25 +321,25 @@
             	                        extend: 'colvisGroup',
             	                        text: 'Union',
             	                        show: [ 0,1,2,3,4,5,6],
-            	                        hide: [ 8,9,10,11,12,13,14,15,16,17,18 ]
+            	                        hide: [ 8,9,10,11,12,13,14,15,16,17 ]
             	                    },
             	                    {
             	                        extend: 'colvisGroup',
             	                        text: 'Min Pay',
             	                        show: [ 0,1,2,3,4,7,8],
-            	                        hide: [ 4,5,6,9,10,11,12,13,14,15,16,17,18]
+            	                        hide: [ 4,5,6,9,10,11,12,13,14,15,16,17]
             	                    },
             	                    {
             	                        extend: 'colvisGroup',
             	                        text: 'Expenses',
             	                        show: [ 0,1,2,3,9,10,11,12,13,14,15],
-            	                        hide: [ 4,5,6,7,8,16,17,18]
+            	                        hide: [ 4,5,6,7,8,15,16,17]
             	                    },            	                    
             	                    {
             	                        extend: 'colvisGroup',
             	                        text: 'Out of Area',
-            	                        show: [ 0,1,2,3,16,17],
-            	                        hide: [ 4,5,6,7,8,10,11,12,13,14,15,18 ]
+            	                        show: [ 0,1,2,3,15,16],
+            	                        hide: [ 4,5,6,7,8,10,11,12,13,14,17 ]
             	                    }     
             	                
             	        		
@@ -348,9 +348,9 @@
              	            { "orderable": true, "targets": -1 },
              	            { className: "dt-head-center", "targets":[]},
             	            { className: "dt-left", "targets": [3] },
-            	            { className: "dt-center", "targets": [4,5,6,8,10,12,13,14,15,20,21,22] },
-            	         	{ className: "dt-body-right", "targets": [0,1,2,7,9,11,12,13,16,17,18,19] },
-            	            { "visible": false, "targets": [4,5,6,8,10,12,13,14,15,18,20,21]},
+            	            { className: "dt-center", "targets": [4,5,6,8,10,11,12,13,14,19,20,21] },
+            	         	{ className: "dt-body-right", "targets": [0,1,2,7,9,15,16,17,18] },
+            	            { "visible": false, "targets": [4,5,6,8,10,11,12,13,14,19,20]},
             	       		],
             	         	// "paging": true,
     			        "ajax": {
@@ -480,7 +480,7 @@
         			        				return $value;
         			        			}
     			        		} },
-    			        		{ title: "Under Govt Min Flag", width:"5%", searchable:true, searchFormat: "0|1", "defaultContent": "",
+    			        		{ title: "Under Govt Min", width:"5%", searchable:true, searchFormat: "0|1", "defaultContent": "",
     			        		data:function(row, type, set) {
     			        			var $value = $unknown;
     			        			if ( row.under_govt_min_pay != null ) {
@@ -494,30 +494,30 @@
     			        			return $value;
     			        			}
     			        		},
-    			        		{ title: "Expense Pct", width:"5%", searchable: true, searchFormat: "#%", 
-    			        			data: function ( row, type, set ) {
-       			        			if(row.excess_expense_pct != null){
+    			        		//{ title: "Expense Pct", width:"5%", searchable: true, searchFormat: "#%", 
+    			        		//	data: function ( row, type, set ) {
+       			        		//	if(row.excess_expense_pct != null){
        			        			//{return (parseFloat(row.excess_expense_pct).toFixed(2)) + "%";}
        			        			
         			        			//{return "$" + (parseFloat(row.expenses_submitted).toFixed(2));}
         			        			//if(row.direct_labor != null){
-        			        				var $value = row.expenses_submitted + "%";
-        			        				var $bubbleHelp = []
-        			        				if ( row.excess_expense_pct != null && row.excess_expense_pct == 1 ) {
-        			        					$bubbleHelp.push("Expense Pct");
-        			        				}
-        			        				if ( row.ytd_excess_expense_pct != null && row.ytd_excess_expense_pct == 1 ) {
-        			        					$bubbleHelp.push("YTD Expense Pct");
-        			        				}
-        			        				if ( $bubbleHelp.length > 0 ) {
-    			        						$value = EXCEPTION_REPORT.makeItRed($value, $bubbleHelp);
-        			        				}
+        			        	//			var $value = row.expenses_submitted + "%";
+        			        	//			var $bubbleHelp = []
+        			        	//			if ( row.excess_expense_pct != null && row.excess_expense_pct == 1 ) {
+        			        	//				$bubbleHelp.push("Expense Pct");
+        			        	//			}
+        			        	//			if ( row.ytd_excess_expense_pct != null && row.ytd_excess_expense_pct == 1 ) {
+        			        	//				$bubbleHelp.push("YTD Expense Pct");
+        			        	//			}
+        			        	//			if ( $bubbleHelp.length > 0 ) {
+    			        		//				$value = EXCEPTION_REPORT.makeItRed($value, $bubbleHelp);
+        			        	//			}
 
-        			        				return $value;
-        			        			}
+        			        	//			return $value;
+        			        	//		}
     			        		
-    			        		} },
-    			        		{ title: "Expense Pct Flag", width:"5%", searchable:true, searchFormat: "0|1", "defaultContent": "",
+    			        	//	} },
+    			        		{ title: "Expense Pct", width:"5%", searchable:true, searchFormat: "0|1", "defaultContent": "",
     			        		data:function(row, type, set) {
     			        			var $value = $unknown;
     			        			if ( row.excess_expense_pct != null ) {
@@ -556,7 +556,7 @@
     			        			return $value;
     			        			}
     			        		},
-    			        		{ title: "YTD Expense Pct Flag", width:"5%", searchable:true, searchFormat: "0|1", "defaultContent": "",
+    			        		{ title: "YTD Expense Pct", width:"5%", searchable:true, searchFormat: "0|1", "defaultContent": "",
         			        		data:function(row, type, set) {
         			        			var $value = $unknown;
         			        			if ( row.ytd_excess_expense_pct != null ) {
@@ -574,7 +574,7 @@
         			        			return $value;
        			        			}
        			        		},
-       			        		{ title: "YTD Expense Claim Flag", width:"5%", searchable:true, searchFormat: "0|1", "defaultContent": "",
+       			        		{ title: "YTD Expense Claim", width:"5%", searchable:true, searchFormat: "0|1", "defaultContent": "",
            			        		data:function(row, type, set) {
            			        			var $value = $unknown;
            			        			if ( row.ytd_excess_expense_claim != null ) {
@@ -675,7 +675,7 @@
         			        		
         			        		} },
         			        	
-        			        	{ title: "Non Home Company Flag", width:"5%", searchable:true, searchFormat: "0|1", "defaultContent": "", 
+        			        	{ title: "Non Home Company", width:"5%", searchable:true, searchFormat: "0|1", "defaultContent": "", 
         			        	data:function(row, type, set) {
     			        			var $value = $unknown;
     			        			if ( row.foreign_company != null ) {
@@ -692,7 +692,7 @@
     			        			return $value;
     			        			}
     			        		},
-        			        	{ title: "Non Home Division Flag", width:"5%", searchable:true, searchFormat: "0|1", "defaultContent": "",
+        			        	{ title: "Non Home Division", width:"5%", searchable:true, searchFormat: "0|1", "defaultContent": "",
         			        	data:function(row, type, set) {
     			        			var $value = $unknown;
     			        			if ( row.foreign_division != null ) {
@@ -840,7 +840,7 @@
 				</tr>
 				<tr>
 					<td class="form-label">Union Member:</td>
-					<td><input type="text" name="unionMember" readonly="true" />
+					<td><span class="unionMember" />
 						<input type="hidden" name="selectedUnionMember" />
 					<td><span class="err unionMemberErr"></span></td>
 				</tr>
@@ -852,13 +852,13 @@
 				</tr>
 				<tr>
 					<td class="form-label">Union Rate:</td>
-					<td><input type="select" name="unionRate" readonly="true" />
+					<td><input type="text" name="unionRate" readonly="true" />
 						<input type="hidden" name="selectedUnionRate" />
 					<td><span class="err unionRateErr"></span></td>
 				</tr>	
 				<tr>
 					<td class="form-label">Under Union Min Pay:</td>
-					<td><input type="select" name="underUnionMinPay" readonly="true" />
+					<td><span class="underUnionMinPay" />
 						<input type="hidden" name="selectedUnderUnionMinPay" />
 					<td><span class="err underUnionMinPayErr"></span></td>
 				</tr>		
@@ -870,25 +870,25 @@
 				</tr>		
 				<tr>
 					<td class="form-label">Excess Expense Pct:</td>
-					<td><input type="select" name="excessExpensePct" readonly="true" />
+					<td><span class="excessExpensePct" />
 						<input type="hidden" name="selectedExcessExpensePct" />
 					<td><span class="err excessExpensePctErr"></span></td>
 				</tr>			
 				<tr>
 					<td class="form-label">Excess Expense Claim:</td>
-					<td><input type="select" name="excessExpenseClaim" readonly="true" />
+					<td><span class="excessExpenseClaim" />
 						<input type="hidden" name="selectedExcessExpenseClaim" />
 					<td><span class="err excessExpenseClaimErr"></span></td>
 				</tr>		
 				<tr>
 					<td class="form-label">YTD Excess Expense Pct:</td>
-					<td><input type="select" name="ytdExcessExpensePct" readonly="true" />
+					<td><span class="ytdExcessExpensePct" />
 						<input type="hidden" name="selectedYtdExcessExpensePct" />
 					<td><span class="err ytdExcessExpensePctErr"></span></td>
 				</tr>			
 				<tr>
 					<td class="form-label">YTD Excess Expense Claim:</td>
-					<td><input type="select" name="ytdExcessExpenseClaim" readonly="true" />
+					<td><span class="ytdExcessExpenseClaim" />
 						<input type="hidden" name="selectedYtdExcessExpenseClaim" />
 					<td><span class="err ytdExcessExpenseClaimErr"></span></td>
 				</tr>		
@@ -922,7 +922,7 @@
 				</tr>						
 				<tr>
 					<td class="form-label">Non Standard Company:</td>
-					<td><input type="text" name="foreignCompany" readonly="true" />
+					<td><span class="foreignCompany" />
 						<input type="hidden" name="selectedForeignCompany" />
 						</td>
 					<td><span class="err departmentErr"></span></td>
