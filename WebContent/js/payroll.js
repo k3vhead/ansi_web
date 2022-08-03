@@ -1,5 +1,158 @@
 ;PAYROLL_UTILS = {
-	dosomething : function() {
+	timesheetFields : [
+		{"label":"Regular", "name":"regular", hoursAndPay:true},
+		{"label":"Expenses", "name":"expenses", hoursAndPay:false},
+		{"label":"OT", "name":"otHours", hoursAndPay:true},
+		{"label":"Vacation", "name":"vacationHours", hoursAndPay:true},
+		{"label":"Holiday", "name":"holidayHours", hoursAndPay:true},
+		{"label":"Gross Pay", "name":"grossPay", hoursAndPay:false},
+		{"label":"Expenses Submitted", "name":"expensesSubmitted", hoursAndPay:false},
+		{"label":"Expenses Allowed", "name":"expensesAllowed", hoursAndPay:false},
+		{"label":"Volume", "name":"volume", hoursAndPay:false},
+		{"label":"Direct Labor", "name":"directLabor", hoursAndPay:false},
+		{"label":"Productivity", "name":"productivity", hoursAndPay:false},
+	],
+        		
+        		
+	initEditModal : function($modalName, $saveMethod) {
+		console.log("initEditModal");
 		
-	}
+		$.each(PAYROLL_UTILS.timesheetFields, function($index, $value) {
+			var $row = $("<tr>").addClass("employee-edit-row");
+			if ( $value.hoursAndPay ) {
+				$row.append( PAYROLL_UTILS.makeLabel($value.label + " Hours") );
+				$row.append( PAYROLL_UTILS.makeInput($value.name + "Hours") );
+				$row.append( PAYROLL_UTILS.makeErr($value.name + "Hours") );
+				$row.append( PAYROLL_UTILS.makeLabel("Pay") );
+				$row.append( PAYROLL_UTILS.makeInput($value.name + "Pay") );
+				$row.append( PAYROLL_UTILS.makeErr($value.name + "Pay") );
+			} else {
+				$row.append( PAYROLL_UTILS.makeLabel($value.label) );
+				$row.append( PAYROLL_UTILS.makeInput($value.name) );
+				$row.append( PAYROLL_UTILS.makeErr($value.name) );
+				$row.append( $("<td>").attr("colspan","3") );
+			}
+			var $tableSelector = $modalName + " .edit-form";
+			$($tableSelector).append($row);
+		});
+		
+		
+		$( $modalName ).dialog({
+			title:'Timesheet Edit',
+			autoOpen: false,
+			height: 600,
+			width: 650,
+			modal: true,
+			closeOnEscape:true,
+			//open: function(event, ui) {
+			//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+			//},
+			buttons: [
+				{
+					id:  "edit-cancel",
+					click: function($event) {
+						$( $modalName ).dialog("close");
+					}
+				},{
+					id:  "edit-save",
+					click: function($event) {
+						$saveMethod();
+					}
+				}
+			]
+		});	
+		$("#edit-cancel").button('option', 'label', 'Cancel');  
+		$("#edit-save").button('option', 'label', 'Save');
+		
+		$(".employee-edit-row").mouseover(function() { $(this).addClass("grayback"); });
+		$(".employee-edit-row").mouseout(function() { $(this).removeClass("grayback"); });
+		
+		
+		
+		var $nameSelector = $modalName + " input[name='employeeName']";
+		var $codeSelector = $modalName + " input[name='employeeCode']"
+		$( $nameSelector ).autocomplete({
+			'source':"payroll/employeeAutoComplete?",
+			position:{my:"left top", at:"left bottom",collision:"none"},
+			appendTo:$modalName,
+			select: function( event, ui ) {
+				console.log(ui);
+				$($nameSelector).val(ui.item.label);
+				$($codeSelector).val(ui.item.id);
+				if ( ui.item.value == null || ui.item.value.trim() == "" ) {
+					$($nameSelector).val("")
+					$($codeSelector).val("")
+				}
+	      	}
+	 	});
+		        			
+		$( $codeSelector ).autocomplete({
+			'source':"payroll/employeeCodeComplete?",
+			position:{my:"left top", at:"left bottom",collision:"none"},
+			appendTo:$modalName,
+			select: function( event, ui ) {
+				console.log(ui);
+				console.log(event);
+				$($nameSelector).val(ui.item.employeeName);
+				//$($codeSelector).val(ui.item.label);
+				if ( ui.item.value == null || ui.item.value.trim() == "" ) {
+					$($nameSelector).val("")
+					$($codeSelector).val("")
+				}
+	      	}
+	 	});
+		
+		
+		var $cityField = $modalName + " input[name='city']";
+		var $stateField = $modalName + " select[name='state']";
+		
+		var $localeComplete = $( $cityField ).autocomplete({
+			source: function(request,response) {
+				term = $($cityField).val();
+				localeTypeId = null; 
+				stateName = null; 
+				if ( $( $stateField ).val() != null ) {
+					stateName = $( $stateField ).val();	
+				}
+				$.getJSON("localeAutocomplete", {"term":term, "localeTypeId":localeTypeId, "stateId":stateName}, response);
+			},
+            minLength: 2,
+            //select: function( event, ui ) {
+            	//$("#addLocaleForm input[name='parentId']").val(ui.item.id);
+            //	console.log("Got it: " + ui.item.id)
+            //},
+            response: function(event, ui) {
+                if (ui.content.length === 0) {
+                	$($modalName + " .cityErr").html("No Matching Locale");
+                	//$("#addLocaleForm input[name='parentId']").val("");
+                } else {
+                	$($modalName + " .cityErr").html("");
+                }
+            }
+      	}).data('ui-autocomplete');	            	
+        
+		//$localeComplete._renderMenu = function( ul, items ) {
+		//	var that = this;
+		//	$.each( items, function( index, item ) {
+		//		that._renderItemData( ul, item );
+		//	});
+		//	if ( items.length == 1 ) {
+		//		$("#addLocaleForm input[name='parentId']").val(items[0].id);
+		//		$($cityField).autocomplete("close");
+		//	}
+		//};
+	},
+	
+	
+	
+	makeLabel : function($name) {
+		return $("<td>").append( $("<span>").addClass("form-label").append($name + ": ")   );
+	},
+	makeInput : function($name) {
+		return $("<td>").append($("<input>").attr("type","text").attr("name", $name).attr("style","width:65px;").attr("placeholder","0.00"));
+	},
+	makeErr : function($name) {
+		return $("<td>").append( $("<span>").addClass("err").addClass($name+"Err")  );
+	},
+	
 };

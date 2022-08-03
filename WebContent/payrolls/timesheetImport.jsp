@@ -26,6 +26,7 @@
 		<script type="text/javascript" src="js/addressUtils.js"></script>
 		<script type="text/javascript" src="js/lookup.js"></script>
 		<script type="text/javascript" src="js/document.js"></script>
+		<script type="text/javascript" src="js/payroll.js"></script>
 
 		<style type="text/css">
 			#data-file {
@@ -150,10 +151,21 @@
 			.form-label {
 				font-weight: bold;
 				white-space: nowrap;
+			}		
+			.grayback {
+				background-color:#CFCFCF;
+			}	
+			.orange-bold {
+				color:#CC6600;
+				font-weight:bold;
 			}
 			.org-status-change {
 				display: none;
 				cursor: pointer;
+			}
+			.red-bold {
+				color:#FF0000;
+				font-weight:bold;
 			}
 			.view-link {
 				color: #404040;
@@ -174,9 +186,11 @@
 	           	;TIMESHEET_IMPORT = {
 	           		statusIsGood : '<webthing:checkmark>No Errors</webthing:checkmark>',
 	           		statusIsBad : '<webthing:ban>Error</webthing:ban>',
+	           		statusAintGood : '<webthing:warning>Warning</webthing:warning>',
 	           		saveButton : '<webthing:save>Save</webthing:save>',
 	           		edit : '<webthing:edit>Edit</webthing:edit>',
 	           		view : '<webthing:view styleClass="details-control">Details</webthing:view>',
+	           		worksheetHeader : null,
 	           		employeeMap : {},
 
 	           		init : function() {
@@ -185,7 +199,7 @@
 	           		},	           	       
 	           		
 	           		
-	           		calculateTotaHoursOnModel : function(){
+	           		calculateTotaHoursOnModal : function(){
            		 		var $totalHours = 0;
 						var $regularHours = parseFloat($('[name="regularHours"]').val()); 
 	           			var	$otHours = parseFloat($('[name="otHours"]').val());
@@ -211,6 +225,8 @@
 	           		
 	           		displayHeader : function($data) {
 						console.log("displayHeader");
+						TIMESHEET_IMPORT.worksheetHeader = $data.data.worksheetHeader;
+						
 						// this bit maps message keys to html fields (eg a "LOCALE" message gets displayed in a span with class "localeErr")
 						var $messageFieldMap = {
 							"LOCALE":"localeErr",
@@ -369,6 +385,29 @@
 	           		},
 	           		
 	           		
+	           		makeEmployeeValue : function ($value, $messageList) {
+	           			// <span class="red tooltip"><span class="tooltiptext">Expense Claim<br />YTD Expense Ptc</span>$48.23</span>
+	           			var $errorList = [];
+	           			var $employeeValue = $value;
+	           			var $errorLevel = "WARNING";  // set to warning because we don't use this if max error level is OK
+	           			var $msgColor = {"WARNING":"orange-bold", "ERROR":"red-bold"};
+	           			$.each( $messageList, function($index, $msgValue) {
+	           				if ( $msgValue.ok == false ) {
+	           					$errorList.push($msgValue.errorMessage.message);
+	           					if ( $msgValue.errorMessage.errorLevel == "ERROR" ) {
+	           						$errorLevel = "ERROR";
+	           					} 
+	           				}
+	           			});
+	           			if ( $errorList.length > 0 ) {
+	           				var $message = $errorList.join("<br />");
+	           				$employeeValue = '<span class="'+ $msgColor[$errorLevel]+' tooltip"><span class="tooltiptext">'+$message+'</span>'+$value+'</span>';
+	           			}
+	           			return $employeeValue;
+	           		},
+	           		
+	           		
+	           		
 	           		openFile : function($event) {
 	           			console.log("openFile");
 	           			var results = $event.target.result;
@@ -423,7 +462,10 @@
 	           			// create and populate dicttionary object for use in modal
 	           			var dictionary = $data.data.employeeList;
 					    var $errorFound = '<payroll:errorFound>Invalid Value</payroll:errorFound>';
-	           			
+					    TIMESHEET_IMPORT.employeeMap = {};
+					    $.each($data.data.employeeList, function($index, $value) {
+		            		TIMESHEET_IMPORT.employeeMap[$value.row] = $value;
+		            	});  
 	   
 	           			// populate the visible table on-screen
 	           			var $table = $("#timesheet").DataTable({
@@ -447,30 +489,64 @@
 	            	            { className : "dt-right", "targets": [3,4,5,6,7,8,9,10,11,12,13,14,15]},
 	            	        ],
 	           				columns : [
-	           					{ title : "Row", searchable:true, "defaultContent": "", data:'row' },
-	           					{ title : "Code", searchable:true, "defaultContent": "", data:'employeeCode' },
-	           					{ title : "Employee Name", searchable:true, "defaultContent": "", data:'employeeName' },
-	           					{ title : "Reg Hrs", searchable:true, "defaultContent": "",data:function ( row, type, set ) {return row.regularHours.toFixed(2)}},
-	           					{ title : "Reg Pay", searchable:true, "defaultContent": "", data:function ( row, type, set ) {return row.regularPay.toFixed(2)} },
-	           					{ title : "Exp", searchable:true, "defaultContent": "", data:function ( row, type, set ) {return row.expenses.toFixed(2)} },
-	           					{ title : "OT Hrs", searchable:true, "defaultContent": "", data:function ( row, type, set ) {return row.otHours.toFixed(2)}},
-	           					{ title : "OT Pay", searchable:true, "defaultContent": "", data:function ( row, type, set ) {return row.otPay.toFixed(2)}},
-	           					{ title : "Vac Pay", searchable:true, "defaultContent": "", data:function ( row, type, set ) {return row.vacationPay.toFixed(2)}},
-	           					{ title : "Hol Pay", searchable:true, "defaultContent": "", data:function ( row, type, set ) {return row.holidayPay.toFixed(2)} },
-	           					{ title : "Gross Pay", searchable:true, "defaultContent": "", data:function ( row, type, set ) {return row.grossPay.toFixed(2)} },
-	           					{ title : "Exp Smt'd", searchable:true, "defaultContent": "", data:function ( row, type, set ) {return row.expensesSubmitted.toFixed(2)}},
-	           					{ title : "Exp All'd", searchable:true, "defaultContent": "", data:function ( row, type, set ) {return row.expensesAllowed.toFixed(2)} },
-	           					{ title : "Volume", searchable:true, "defaultContent": "", data:function ( row, type, set ) {return row.volume.toFixed(2)} },
-	           					{ title : "Direct Labor", searchable:true, "defaultContent": "",data:function ( row, type, set ) {return row.directLabor.toFixed(2)} },
-	           					{ title : "Prod %", searchable:true, "defaultContent": "", data:function ( row, type, set ) {return row.productivity.toFixed(2)} },
+	           					{ title : "Row", searchable:true, "defaultContent": "", 
+	           						data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeValue(row.row, row.messageList['row']);  }
+	           					},
+	           					{ title : "Code", searchable:true, "defaultContent": "", 
+	           						data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeValue(row.employeeCode, row.messageList['globalMsg']);  }
+	           					},
+	           					{ title : "Employee Name", searchable:true, "defaultContent": "", 
+	           						data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeValue(row.employeeName, row.messageList['employeeName']);  }
+	           					},
+	           					{ title : "Reg Hrs", searchable:true, "defaultContent": "",
+           							data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeValue(row.regularHours.toFixed(2), row.messageList['regularHours']);  }
+	           					},
+	           					{ title : "Reg Pay", searchable:true, "defaultContent": "", 
+           							data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeValue(row.regularPay.toFixed(2), row.messageList['regularPay']);  }
+	           					},
+	           					{ title : "Exp", searchable:true, "defaultContent": "", 
+           							data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeValue(row.expenses.toFixed(2), row.messageList['expenses']);  }
+	           					},
+	           					{ title : "OT Hrs", searchable:true, "defaultContent": "", 
+           							data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeValue(row.otHours.toFixed(2), row.messageList['otHours']);  }
+	           					},
+	           					{ title : "OT Pay", searchable:true, "defaultContent": "", 
+           							data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeValue(row.otPay.toFixed(2), row.messageList['otPay']);  }
+	           					},
+	           					{ title : "Vac Pay", searchable:true, "defaultContent": "", 
+           							data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeValue(row.vacationPay.toFixed(2), row.messageList['vacationPay']);  }
+	           					},
+	           					{ title : "Hol Pay", searchable:true, "defaultContent": "", 
+           							data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeValue(row.holidayPay.toFixed(2), row.messageList['holidayPay']);  }
+	           					},
+	           					{ title : "Gross Pay", searchable:true, "defaultContent": "",  
+           							data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeValue(row.grossPay.toFixed(2), row.messageList['grossPay']);  }
+	           					},
+	           					{ title : "Exp Smt'd", searchable:true, "defaultContent": "", 
+           							data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeValue(row.expensesSubmitted.toFixed(2), row.messageList['expensesSubmitted']);  }
+	           					},
+	           					{ title : "Exp All'd", searchable:true, "defaultContent": "", 
+           							data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeValue(row.expensesAllowed.toFixed(2), row.messageList['expensesAllowed']);  }
+	           					},
+	           					{ title : "Volume", searchable:true, "defaultContent": "", 
+	           						data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeValue(row.volume.toFixed(2), row.messageList['volume']);  }
+	           					},
+	           					{ title : "Direct Labor", searchable:true, "defaultContent": "",
+	           						data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeValue(row.directLabor.toFixed(2), row.messageList['directLabor']);  }
+	           					},
+	           					{ title : "Prod %", searchable:true, "defaultContent": "", 
+	           						data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeValue(row.productivity.toFixed(2), row.messageList['productivity']);  }
+	           					},
 	           					{ title : "Status", "defaultContent":"", 
 	           						data : function(row, type, set) {
 										var $tag = TIMESHEET_IMPORT.statusIsGood;
 										
-	           							if ( row.errorsFound == true ) { 
-	           								$tag = TIMESHEET_IMPORT.statusIsBad; 
+	           							if ( row.errorLevel == "WARNING" ) { 
+	           								$tag = TIMESHEET_IMPORT.statusAintGood;
+	           							} else if ( row.errorLevel == "ERROR" ) {
+											$tag = TIMESHEET_IMPORT.statusIsBad;	           								
 	           								//$('td', row).css('background-color', 'Yellow');
-	           								}
+           								}
 	           							return $tag;
 	           							
 	           						}
@@ -489,10 +565,6 @@
 	           				"initComplete": function(settings, json) {
        			            	var myTable = this;
        			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#timesheet", TIMESHEET_IMPORT.populateDataGrid, null, $data);
-
-       			            	$.each($data.data.employeeRecordList, function($index, $value) {
-       			            		TIMESHEET_IMPORT.employeeMap[$value.row] = $value;
-       			            	});       			            	
        			            },
 	           				drawCallback : function( settings ) {
 	           					$(".edit-link").off("click");
@@ -510,40 +582,54 @@
 	           		
 	           		populateEmployeeModal : function($rowNumber) {
 	        			console.log("populateEmployeeModal: " + $rowNumber);
-	           			console.log(TIMESHEET_IMPORT.employeeMap[$rowNumber]);
-	           			console.log(TIMESHEET_IMPORT.employeeMap[$rowNumber].employeeName);
-	           			
-	           			$('#employee-modal .employeeName').text(TIMESHEET_IMPORT.employeeMap[$rowNumber].employeeName);
-	           			$('#employee-modal .employeeCode').text(TIMESHEET_IMPORT.employeeMap[$rowNumber].employeeCode);
-	           			$('#employee-modal .state').text($('#data-header .state').text());
-	           			$('#employee-modal .row'  ).text($rowNumber);
 
-						$('[name="regularHours"]').val(	TIMESHEET_IMPORT.stringToFloatString(TIMESHEET_IMPORT.employeeMap[$rowNumber].regularHours));
-	           			$('[name="otHours"]').val(		TIMESHEET_IMPORT.stringToFloatString(TIMESHEET_IMPORT.employeeMap[$rowNumber].otHours));
-	           			$('[name="vacationHours"]').val(TIMESHEET_IMPORT.stringToFloatString(TIMESHEET_IMPORT.employeeMap[$rowNumber].vacationHours));
-	           			$('[name="holidayHours"]').val(	TIMESHEET_IMPORT.stringToFloatString(TIMESHEET_IMPORT.employeeMap[$rowNumber].holidayHours));
+	           			var $myEmployee = TIMESHEET_IMPORT.employeeMap[$rowNumber];
+	           			console.log($myEmployee);
+	           			console.log(TIMESHEET_IMPORT.worksheetHeader);
+	           			$('#employee-modal select[name="divisionId"]').val(TIMESHEET_IMPORT.worksheetHeader.division.divisionId);
+	           			$formattedWeekendingDate = new Date(TIMESHEET_IMPORT.worksheetHeader.weekEnding).toISOString().slice(0, 10);
+	           			$('#employee-modal input[name="weekEnding"]').val($formattedWeekendingDate);
+	           			$('#employee-modal input[name="employeeName"]').val($myEmployee.employeeName);
+	           			$('#employee-modal input[name="employeeCode"]').val($myEmployee.employeeCode);
+	           			if ( TIMESHEET_IMPORT.worksheetHeader.locale.localeTypeId == 'STATE' ) {
+	           				$('#employee-modal input[name="city"]').val('');
+	           			} else {
+	           				$('#employee-modal input[name="city"]').val( TIMESHEET_IMPORT.worksheetHeader.locale.name );
+	           			}
+	           			$('#employee-modal select[name="state"]').val( TIMESHEET_IMPORT.worksheetHeader.locale.stateName );
+	           			$('#employee-modal input[name="row"]').text($rowNumber);
+
+						$('#employee-modal input[name="regularHours"]').val(TIMESHEET_IMPORT.formatFloat($myEmployee.regularHours));
+	           			$('#employee-modal input[name="otHours"]').val(TIMESHEET_IMPORT.formatFloat($myEmployee.otHours));
+	           			$('#employee-modal input[name="vacationHours"]').val(TIMESHEET_IMPORT.formatFloat($myEmployee.vacationHours));
+	           			$('#employee-modal input[name="holidayHours"]').val(TIMESHEET_IMPORT.formatFloat($myEmployee.holidayHours));
 						
-						$('[name="regularPay"]').val(	TIMESHEET_IMPORT.employeeMap[$rowNumber].regularPay);
-	           			$('[name="otPay"]').val(		TIMESHEET_IMPORT.employeeMap[$rowNumber].otPay);
-	           			$('[name="vacationPay"]').val(	TIMESHEET_IMPORT.employeeMap[$rowNumber].vacationPay);
-	           			$('[name="holidayPay"]').val(	TIMESHEET_IMPORT.employeeMap[$rowNumber].holidayPay);
+						$('#employee-modal input[name="regularPay"]').val(TIMESHEET_IMPORT.formatFloat($myEmployee.regularPay));
+	           			$('#employee-modal input[name="otPay"]').val(TIMESHEET_IMPORT.formatFloat($myEmployee.otPay));
+	           			$('#employee-modal input[name="vacationPay"]').val(TIMESHEET_IMPORT.formatFloat($myEmployee.vacationPay));
+	           			$('#employee-modal input[name="holidayPay"]').val(TIMESHEET_IMPORT.formatFloat($myEmployee.holidayPay));
 	           			
-						$('[name="regularHours"]').blur(function() { TIMESHEET_IMPORT.calculateTotaHoursOnModel()});
-						$('[name="otHours"]').blur(function() { TIMESHEET_IMPORT.calculateTotaHoursOnModel()});
-	           			$('[name="vacationHours"]').blur(function() { TIMESHEET_IMPORT.calculateTotaHoursOnModel()});
-	           			$('[name="holidayHours"]').blur(function() { TIMESHEET_IMPORT.calculateTotaHoursOnModel()});
+						$('#employee-modal input[name="regularHours"]').blur(function() { TIMESHEET_IMPORT.calculateTotaHoursOnModal()});
+						$('#employee-modal input[name="otHours"]').blur(function() { TIMESHEET_IMPORT.calculateTotaHoursOnModal()});
+	           			$('#employee-modal input[name="vacationHours"]').blur(function() { TIMESHEET_IMPORT.calculateTotaHoursOnModal()});
+	           			$('#employee-modal input[name="holidayHours"]').blur(function() { TIMESHEET_IMPORT.calculateTotaHoursOnModal()});
                         
-	           			TIMESHEET_IMPORT.calculateTotaHoursOnModel();
+	           			TIMESHEET_IMPORT.calculateTotaHoursOnModal();
 	           			
-	           			$('[name="directLabor"]').val(          TIMESHEET_IMPORT.employeeMap[$rowNumber].directLabor);
-	           			$('[name="volume"]').val(               TIMESHEET_IMPORT.employeeMap[$rowNumber].volume);
-	           			$('[name="grossPay"]').val(             TIMESHEET_IMPORT.employeeMap[$rowNumber].grossPay);
+	           			$('#employee-modal input[name="directLabor"]').val(TIMESHEET_IMPORT.formatFloat($myEmployee.directLabor));
+	           			$('#employee-modal input[name="volume"]').val(TIMESHEET_IMPORT.formatFloat($myEmployee.volume));
+	           			$('#employee-modal input[name="grossPay"]').val(TIMESHEET_IMPORT.formatFloat($myEmployee.grossPay));
 
-	           			$('[name="expenses"]').val(             TIMESHEET_IMPORT.employeeMap[$rowNumber].expenses);
-	           			$('[name="expensesAllowed"]').val(      TIMESHEET_IMPORT.employeeMap[$rowNumber].expensesAllowed);
-	           			$('[name="expensesSubmitted"]').val(    TIMESHEET_IMPORT.employeeMap[$rowNumber].expensesSubmitted);	           			
-	           			$('#employee-modal .productivity').text(TIMESHEET_IMPORT.employeeMap[$rowNumber].productivity);
-	           			TIMESHEET_IMPORT.displayEmployeeModalErrors($rowNumber);
+	           			$('#employee-modal input[name="expenses"]').val(TIMESHEET_IMPORT.formatFloat($myEmployee.expenses));
+	           			$('#employee-modal input[name="expensesAllowed"]').val(TIMESHEET_IMPORT.formatFloat($myEmployee.expensesAllowed));
+	           			$('#employee-modal input[name="expensesSubmitted"]').val(TIMESHEET_IMPORT.formatFloat($myEmployee.expensesSubmitted));	           			
+	           			$('#employee-modal .productivity').text(TIMESHEET_IMPORT.formatFloat($myEmployee.productivity));
+	           			
+	           			$.each(['select[name="divisionId"]','input[name="weekEnding"]','input[name="city"]','select[name="state"]'], function($index, $value) {
+	           				var $selector = '#employee-modal ' + $value;
+	           				$($selector).attr("disabled","");
+	           			});
+	           			//TIMESHEET_IMPORT.displayEmployeeModalErrors($rowNumber);
 	           		},
 	           		
 	           		
@@ -707,46 +793,24 @@
 	           			console.log("showEmployeeModal: " + $rowNumber + " " + $action);
 	           			$edit = $action == 'edit';
 
-	        			$("#employee-modal").dialog({
-	        				title:'Employee Timesheet',
-	        				autoOpen: false,
-	        				height: 450,
-	        				width: 600,
-	        				modal: true,
-	        				closeOnEscape:true,
-	        				open: function(event, ui) {
-	        					$(".ui-dialog-titlebar-close", ui.dialog | ui).show();
-	        				},
-	        				buttons: [ 
-	        					{
-	        						id:  "employee-modal-cancel-button",
-	        						click: function($event) {
-	        							$("#employee-modal").dialog("close");      							
-	        						}
-	        					},{
-	        						id:  "employee-modal-continue-button",
-	        						click: function($event) {
-	        							TIMESHEET_IMPORT.validateEmployeeModal();
-	        						}
-	        					}
-	        				]
-	        				});
+	           			// if modal does not yet exist, then initialize it
+	           			if ( ! $("#employee-modal").hasClass('ui-dialog-content') ) {
+		        			PAYROLL_UTILS.initEditModal("#employee-modal",TIMESHEET_IMPORT.validateEmployeeModal);
+	           			}
 	        			$("#employee-modal").dialog("open");
-	        			$("#employee-modal-cancel-button").button('option', 'label', 'Cancel');
-	        			$("#employee-modal-continue-button").button('option', 'label', 'Continue');
 	        			TIMESHEET_IMPORT.populateEmployeeModal($rowNumber);
 	        		},
 	        		
 	        		
 	        		
-	        		stringToFloatString : function (NumberAsString){
+	        		formatFloat : function (numberAsString) {
 						value = null;
-						if (NumberAsString == null || NumberAsString == "") {
+						if (numberAsString == null || numberAsString == "") {
 							value="";
-						} else if ( isNaN(NumberAsString) ) {
+						} else if ( isNaN(numberAsString) ) {
 							value="";
 						} else {
-							x = parseFloat(NumberAsString);
+							x = parseFloat(numberAsString);
 							value = x.toFixed(2);
 						}
 						return value;
@@ -755,28 +819,6 @@
 					
 					
 	        		
-	           		
-	           		
-	           		
-	           		
-	           		
-	           		
-	           		
-	           		
-	           		
-	           		
-	           		
-	           		         		
-	           		
-	           		
-	           		
-	           		
-	           		
-	           		
-	           		
-	           		    		
-	           		
-	           		
 	           		
 	           		updateDataTableFromModal : function() {
 	           			console.log("saveEmployeeModal - grabbing values");
@@ -935,6 +977,12 @@
 			</table>
 		</div>
 
+
+		<jsp:include page="timesheetEmployee.jsp">
+			<jsp:param name="id" value="employee-modal" />
+		</jsp:include>
+
+		<%-- 
 		<div id="employee-modal">
 			<div style="width: 100%; height: 0px;">
 				<span class="employeeEditErr err"></span>
@@ -1078,6 +1126,7 @@
 				</tr>
 			</table>
 		</div>
+		--%>
 	</tiles:put>
 </tiles:insert>
 

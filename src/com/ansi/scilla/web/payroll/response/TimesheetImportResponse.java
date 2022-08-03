@@ -10,6 +10,7 @@ import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.collections4.Transformer;
+import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.payroll.parser.worksheet.PayrollWorksheetEmployee.FieldLocation;
@@ -115,7 +116,10 @@ public class TimesheetImportResponse extends MessageResponse  {
 		public ResponseEmployee(ValidatedWorksheetEmployee employee) {
 			super();
 			this.row = employee.getRow();
-		    this.employeeName = employee.getEmployeeFirstName() + " " + employee.getEmployeeLastName();
+		    this.employeeName =
+		    	StringUtils.isBlank(employee.getEmployeeFirstName()) && StringUtils.isBlank(employee.getEmployeeLastName()) ?
+		    	employee.getEmployee().getEmployeeName() :
+	    		employee.getEmployeeFirstName() + " " + employee.getEmployeeLastName();
 		    this.regularHours = employee.getValues().get(FieldLocation.REGULAR_HOURS.fieldName());
 		    this.regularPay = employee.getValues().get(FieldLocation.REGULAR_PAY.fieldName());
 		    this.expenses = employee.getValues().get(FieldLocation.EXPENSES.fieldName());

@@ -30,6 +30,7 @@
     	<script type="text/javascript" src="js/addressUtils.js"></script>
     	<script type="text/javascript" src="js/lookup.js"></script> 
     	<script type="text/javascript" src="js/document.js"></script> 
+    	<script type="text/javascript" src="js/payroll.js"></script> 
     
         <style type="text/css">
         	#confirmation-modal {
@@ -73,6 +74,9 @@
 			.form-label {
 				font-weight:bold;
 			}
+			.grayback {
+				background-color:#CFCFCF;
+			}
 			.new-timesheet-container {
 				width:100%;
 			}
@@ -86,23 +90,7 @@
         
         $(document).ready(function(){
         	;TIMESHEETLOOKUP = {
-        		timesheetFields : [
-        			{"label":"Regular Hours", "name":"regularHours"},
-        			{"label":"Regular Pay", "name":"regularPay"},
-        			{"label":"Expenses", "name":"expenses"},
-        			{"label":"OT Hours", "name":"otHours"},
-        			{"label":"OT Pay", "name":"otPay"},
-        			{"label":"Vacation Hours", "name":"vacationHours"},
-        			{"label":"Vacation Pay", "name":"vacationPay"},
-        			{"label":"Holiday Hours", "name":"holidayHours"},
-        			{"label":"Holiday Pay", "name":"holidayPay"},
-        			{"label":"Gross Pay", "name":"grossPay"},
-        			{"label":"Expenses Submitted", "name":"expensesSubmitted"},
-        			{"label":"Expenses Allowed", "name":"expensesAllowed"},
-        			{"label":"Volume", "name":"volume"},
-        			{"label":"Direct Labor", "name":"directLabor"},
-        			{"label":"Productivity", "name":"productivity"},
-        		],
+        		
         		
        			init : function() {       				
        				TIMESHEETLOOKUP.makeTimesheetLookup(); 
@@ -155,122 +143,7 @@
            		
            		
            		
-           		initEditModal : function() {
-           			console.log("initEditModal");
-           			
-           			$.each(TIMESHEETLOOKUP.timesheetFields, function($index, $value) {
-           				var $row = $("<tr>");
-           				var $label = $("<td>").append( $("<span>").addClass("form-label").append($value.label + ": ")   );
-           				var $input = $("<td>").append($("<input>").attr("type","text").attr("name", $value.name).attr("style","width:65px;").attr("placeholder","0.00"));
-           				var $err = $("<td>").append( $("<span>").addClass("err").addClass($value.name+"Err")  );
-           				$row.append($label);
-           				$row.append($input);
-           				$row.append($err);
-           				$("#edit-modal .edit-form").append($row);
-           			});
-           			
-           			
-           			
-           			$( "#edit-modal" ).dialog({
-        				title:'Timesheet Edit',
-        				autoOpen: false,
-        				height: 700,
-        				width: 600,
-        				modal: true,
-        				closeOnEscape:true,
-        				//open: function(event, ui) {
-        				//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
-        				//},
-        				buttons: [
-        					{
-        						id:  "edit-cancel",
-        						click: function($event) {
-       								$( "#edit-modal" ).dialog("close");
-        						}
-        					},{
-        						id:  "edit-save",
-        						click: function($event) {
-       								TIMESHEETLOOKUP.saveTimesheet();
-        						}
-        					}
-        				]
-        			});	
-        			$("#edit-cancel").button('option', 'label', 'Cancel');  
-        			$("#edit-save").button('option', 'label', 'Save');
-        			
-        			var $nameSelector = "#edit-modal input[name='employeeName']";
-        			var $codeSelector = "#edit-modal input[name='employeeCode']"
-        			$( $nameSelector ).autocomplete({
-						'source':"payroll/employeeAutoComplete?",
-						position:{my:"left top", at:"left bottom",collision:"none"},
-						appendTo:"#edit_form",
-						select: function( event, ui ) {
-							console.log(ui);
-							$($nameSelector).val(ui.item.label);
-							$($codeSelector).val(ui.item.id);
-							if ( ui.item.value == null || ui.item.value.trim() == "" ) {
-								$($nameSelector).val("")
-								$($codeSelector).val("")
-							}
-       			      	}
-       			 	});
-        			        			
-        			$( $codeSelector ).autocomplete({
-						'source':"payroll/employeeCodeComplete?",
-						position:{my:"left top", at:"left bottom",collision:"none"},
-						appendTo:"#edit_form",
-						select: function( event, ui ) {
-							console.log(ui);
-							console.log(event);
-							$($nameSelector).val(ui.item.employeeName);
-							//$($codeSelector).val(ui.item.label);
-							if ( ui.item.value == null || ui.item.value.trim() == "" ) {
-								$($nameSelector).val("")
-								$($codeSelector).val("")
-							}
-       			      	}
-       			 	});
-        			
-        			
-        			var $cityField = "#edit-modal input[name='city']";
-        			var $stateField = "#edit-modal select[name='state']";
-        			
-        			var $localeComplete = $( $cityField ).autocomplete({
-	    				source: function(request,response) {
-	    					term = $($cityField).val();
-	    					localeTypeId = null; 
-	    					stateName = null; 
-	    					if ( $( $stateField ).val() != null ) {
-	    						stateName = $( $stateField ).val();	
-	    					}
-	    					$.getJSON("localeAutocomplete", {"term":term, "localeTypeId":localeTypeId, "stateId":stateName}, response);
-	    				},
-	                    minLength: 2,
-	                    //select: function( event, ui ) {
-	                    	//$("#addLocaleForm input[name='parentId']").val(ui.item.id);
-	                    //	console.log("Got it: " + ui.item.id)
-	                    //},
-	                    response: function(event, ui) {
-	                        if (ui.content.length === 0) {
-	                        	$("#edit-modal .cityErr").html("No Matching Locale");
-	                        	//$("#addLocaleForm input[name='parentId']").val("");
-	                        } else {
-	                        	$("#edit-modal .cityErr").html("");
-	                        }
-	                    }
-	              	}).data('ui-autocomplete');	            	
-	                
-	    			//$localeComplete._renderMenu = function( ul, items ) {
-	    			//	var that = this;
-	    			//	$.each( items, function( index, item ) {
-	    			//		that._renderItemData( ul, item );
-	    			//	});
-	    			//	if ( items.length == 1 ) {
-	    			//		$("#addLocaleForm input[name='parentId']").val(items[0].id);
-	    			//		$($cityField).autocomplete("close");
-	    			//	}
-	    			//};
-           		},
+           		
            		
            		
            		
@@ -315,7 +188,7 @@
            		
            		showNewTimeSheet : function() {
            			if ( ! $("#edit-modal").hasClass("ui-dialog-content")) {
-           				TIMESHEETLOOKUP.initEditModal();
+           				PAYROLL_UTILS.initEditModal("#edit-modal",TIMESHEETLOOKUP.saveTimesheet);
            			}
        				$("#edit-modal .err").html("").show();           				
            			$.each( $("#edit-modal input"), function($index, $value) {
@@ -632,7 +505,7 @@
            		showEditModal : function($data, $passthru) {
            			console.log("showEditModal");
            			if ( ! $("#edit-modal").hasClass("ui-dialog-content")) {
-           				TIMESHEETLOOKUP.initEditModal();
+           				PAYROLL_UTILS.initEditModal("#edit-modal",TIMESHEETLOOKUP.saveTimesheet);
            			}
            			
            			$("#edit-modal .err").html("");
@@ -644,10 +517,22 @@
            			$("#edit-modal input[name='city']").val($data.data.city);
            			$("#edit-modal input[name='employeeCode']").val($data.data.employeeCode);
            			$("#edit-modal input[name='employeeName']").val($data.data.employeeName);
-           			$.each(TIMESHEETLOOKUP.timesheetFields, function($index, $value) {
-           				var $selector = "#edit-modal input[name='"+$value.name+"']";
-           				var $displayValue = $data.data[$value.name] == null ? "" : $data.data[$value.name].toFixed(2);
-           				$($selector).val($displayValue);
+           			$.each(PAYROLL_UTILS.timesheetFields, function($index, $value) {
+           				if ( $value.hoursAndPay ) {
+           					$fieldName = $value.name + "Hours";
+	           				var $selector = "#edit-modal input[name='"+$fieldName+"']";
+	           				var $displayValue = $data.data[$fieldName] == null ? "" : $data.data[$fieldName].toFixed(2);
+	           				$($selector).val($displayValue);
+           					$fieldName = $value.name + "Pay";
+	           				var $selector = "#edit-modal input[name='"+$fieldName+"']";
+	           				var $displayValue = $data.data[$fieldName] == null ? "" : $data.data[$fieldName].toFixed(2);
+	           				$($selector).val($displayValue);
+           					
+           				} else {           				
+	           				var $selector = "#edit-modal input[name='"+$value.name+"']";
+	           				var $displayValue = $data.data[$value.name] == null ? "" : $data.data[$value.name].toFixed(2);
+	           				$($selector).val($displayValue);
+           				}
            			});
            			$("#edit-modal .update-field").prop("disabled", true);
            			$("#edit-modal").dialog("open");
@@ -673,52 +558,12 @@
 		<table id="timesheetLookup"></table>
 		<div class="new-timesheet-container"><input type="button" value="New Timesheet" class="prettyWideButton" name="new-timesheet" /></div>
 		
-		<div id="edit-modal">
-			<div class="timesheet-err err"></div>
-			<input type="hidden" name="action" />
-			<table class="edit-form">
-				<tr>
-					<td><span class="form-label">Division: </span></td>
-					<td>
-						<select name="divisionId" class="update-field">
-							<option value=""></option>
-							<ansi:selectOrganization active="true" type="DIVISION" />
-						</select>
-					</td>
-					<td><span class="divisionIdErr err"></span></td>
-				</tr>
-				<tr>
-					<td><span class="form-label">Week Ending: </span></td>
-					<td><input type="date" name="weekEnding" class="update-field" /></td>
-					<td><span class="weekEndingErr err"></span></td>
-				</tr>
-				<tr>
-					<td><span class="form-label">State: </span></td>
-					<td>
-						<select name="state" class="update-field">
-							<option value=""></option>
-							<ansi:localeStateSelect format="select" />
-						</select>
-					</td>
-					<td><span class="stateErr err"></span></td>
-				</tr>
-				<tr>
-					<td><span class="form-label">City: </span></td>
-					<td><input type="text" name="city" class="update-field" /></td>
-					<td><span class="cityErr err"></span></td>
-				</tr>
-				<tr>
-					<td><span class="form-label">Employee Code: </span></td>
-					<td><input type="text" name="employeeCode" class="update-field" disabled="" /></td>
-					<td><span class="employeeCodeErr err"></span></td>
-				</tr>
-				<tr>
-					<td><span class="form-label">Employee Name: </span></td>
-					<td><input type="text" name="employeeName" class="update-field" /></td>
-					<td><span class="employeeNameErr err"></span></td>
-				</tr>
-			</table>
-		</div>
+		
+		<jsp:include page="timesheetEmployee.jsp">
+			<jsp:param name="id" value="edit-modal" />
+		</jsp:include>
+		
+		
 		
 		<div id="confirmation-modal">
 			<h2>Are You Sure?</h2>
