@@ -34,7 +34,7 @@ import com.ansi.scilla.web.common.request.AbstractRequest;
 import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
-import com.ansi.scilla.web.payroll.common.PayrollValidationResponse;
+import com.ansi.scilla.web.payroll.common.PayrollValidation;
 import com.ansi.scilla.web.payroll.common.TimesheetValidator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -100,6 +100,7 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 	private Double vacationHours;
 	private Double vacationPay;
 	private Double volume;
+	private Integer row;
 
 	// indicate whether values or OK / Error (stop processing) / Warning (throw a tantrum, but keep going)
 	private ErrorLevel errorLevel;
@@ -331,7 +332,10 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 		this.volume = volume;
 	}
 	
-	
+	public Integer getRow() {
+		return row;
+	}
+
 	/**
 	 * There are 2 steps to the validation when adding a new worksheet record:
 	 * 1. Are all the required fields in place, and valid (eg Is division id populated and in the division table?)
@@ -343,7 +347,7 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 	 * @return
 	 * @throws PayrollException
 	 */
-	public PayrollValidationResponse validateAdd(Connection conn) throws PayrollException, Exception {
+	public PayrollValidation validateAdd(Connection conn) throws PayrollException, Exception {
 		ResponseCode responseCode = null;
 		WebMessages webMessages = new WebMessages();
 		
@@ -421,7 +425,7 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 
 		}		
 		
-		return new PayrollValidationResponse(responseCode, webMessages);
+		return new PayrollValidation(responseCode, webMessages);
 	}
 	
 
@@ -439,7 +443,7 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 	 * @return
 	 * @throws Exception
 	 */
-	public PayrollValidationResponse validateUpdate(Connection conn) throws Exception {
+	public PayrollValidation validateUpdate(Connection conn) throws Exception {
 		Logger logger = LogManager.getLogger(this.getClass());
 		ResponseCode responseCode = null;
 		WebMessages webMessages = new WebMessages();	
@@ -495,7 +499,7 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 			throw new InvalidValueException(getErrorLevel() + " is not a valid response");
 		}
 		
-		return new PayrollValidationResponse(responseCode, webMessages);
+		return new PayrollValidation(responseCode, webMessages);
 	}
 	
 	
@@ -669,8 +673,7 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 
 	@Override
 	public void setRow(Integer row) {
-		throw new RuntimeException("We don't use row here");
-		
+		this.row = row;		
 	}
 
 	@Override

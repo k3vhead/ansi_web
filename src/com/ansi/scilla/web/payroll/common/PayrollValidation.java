@@ -4,16 +4,22 @@ import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 
-public class PayrollValidationResponse extends ApplicationObject {
+/**
+ * Validation message list from validating a timesheet employee
+ * 
+ * @author dclewis
+ *
+ */
+public class PayrollValidation extends ApplicationObject {
 
 	private static final long serialVersionUID = 1L;
 
 	private ResponseCode responseCode;
 	private WebMessages webMessages;
-	public PayrollValidationResponse() {
+	public PayrollValidation() {
 		super();
 	}
-	public PayrollValidationResponse(ResponseCode responseCode, WebMessages webMessages) {
+	public PayrollValidation(ResponseCode responseCode, WebMessages webMessages) {
 		this();
 		this.responseCode = responseCode;
 		this.webMessages = webMessages;

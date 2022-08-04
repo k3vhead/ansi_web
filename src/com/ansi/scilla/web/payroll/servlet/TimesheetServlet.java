@@ -15,8 +15,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
+import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.Locale;
 import com.ansi.scilla.common.db.PayrollWorksheet;
+import com.ansi.scilla.common.payroll.common.PayrollUtils;
+import com.ansi.scilla.common.payroll.parser.worksheet.PayrollWorksheetEmployee;
+import com.ansi.scilla.common.payroll.validator.worksheet.ValidatedWorksheetEmployee;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
@@ -27,9 +31,11 @@ import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.locale.common.LocaleUtils;
-import com.ansi.scilla.web.payroll.common.PayrollValidationResponse;
+import com.ansi.scilla.web.payroll.common.PayrollValidation;
 import com.ansi.scilla.web.payroll.request.TimesheetRequest;
+import com.ansi.scilla.web.payroll.response.TimesheetEmployee;
 import com.ansi.scilla.web.payroll.response.TimesheetResponse;
+import com.ansi.scilla.web.payroll.response.TimesheetValidationResponse;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class TimesheetServlet extends AbstractServlet {
@@ -186,22 +192,55 @@ public class TimesheetServlet extends AbstractServlet {
 		} 
 	}
 
+	/**
+	 * We're going to validate the employee the same way that the timesheet import validates each row of the 
+	 * worksheet employee list, and then return the same object that the Worksheet Import servlet returns.
+	 * 
+	 * @param conn
+	 * @param response
+	 * @param timesheetRequest
+	 * @param sessionData
+	 * @throws Exception
+	 */
 	private void processValidate(Connection conn, HttpServletResponse response, TimesheetRequest timesheetRequest, SessionData sessionData) throws Exception {
-		TimesheetResponse data = new TimesheetResponse();
-		PayrollValidationResponse validationResponse = timesheetRequest.validateAdd(conn);
+		TimesheetValidationResponse data = new TimesheetValidationResponse();
+//		PayrollValidation validationResponse = timesheetRequest.validateAdd(conn);
 		
-		/*
-		if (validationResponse.getResponseCode().equals(ResponseCode.EDIT_FAILURE) ) {
-			
+		PayrollWorksheetEmployee payrollWorksheetEmployee = makePayrollWorksheetEmployee(timesheetRequest);
+		Division division = new Division();
+		division.setDivisionId( timesheetRequest.getDivisionId() );
+		division.selectOne(conn);
+		
+		Double maxExpenseRate = PayrollUtils.makeMaxExpenseRate(conn);
+		
+		ValidatedWorksheetEmployee validatedEmployee = new ValidatedWorksheetEmployee(conn, payrollWorksheetEmployee, division, maxExpenseRate);
+		TimesheetEmployee timesheetEmployee = new TimesheetEmployee(validatedEmployee);
+		data.setEmployee( timesheetEmployee );
+		logger.log(Level.DEBUG, timesheetEmployee);
+		ResponseCode responseCode = null;
+		switch (timesheetEmployee.getErrorLevel()) {
+		case ERROR:
+			responseCode = ResponseCode.EDIT_FAILURE;
+			break;
+		case OK:
+			responseCode = ResponseCode.SUCCESS;
+			break;
+		case WARNING:
+			responseCode = ResponseCode.EDIT_WARNING;
+			break;
+		default:
+			throw new Exception("Unexpected errorLevel: " + timesheetEmployee.getErrorLevel().name() );
 		}
-		*/
-		data.setWebMessages(validationResponse.getWebMessages());
-		super.sendResponse(conn, response, validationResponse.getResponseCode(), data);
+		
+//		data.setWebMessages(validationResponse.getWebMessages());
+		super.sendResponse(conn, response, responseCode, data);
 	}
+	
+	
 	
 	private void processAdd(Connection conn, HttpServletResponse response, TimesheetRequest timesheetRequest, SessionData sessionData) throws Exception {
 		TimesheetResponse data = new TimesheetResponse();
-		PayrollValidationResponse validationResponse = timesheetRequest.validateAdd(conn);
+		PayrollValidation validationResponse = timesheetRequest.validateAdd(conn);
 		
 		// do the update for success and warning, but not for failure.
 		if ( ! validationResponse.getResponseCode().equals(ResponseCode.EDIT_FAILURE) ) {
@@ -228,7 +267,7 @@ public class TimesheetServlet extends AbstractServlet {
 
 	private void processUpdate(Connection conn, HttpServletResponse response, TimesheetRequest timesheetRequest, SessionData sessionData) throws RecordNotFoundException, Exception {
 		TimesheetResponse data = new TimesheetResponse();
-		PayrollValidationResponse validationResponse = timesheetRequest.validateUpdate(conn);
+		PayrollValidation validationResponse = timesheetRequest.validateUpdate(conn);
 		
 		// do the update for success and warning, but not for failure.
 		if ( ! validationResponse.getResponseCode().equals(ResponseCode.EDIT_FAILURE) ) {
@@ -284,6 +323,44 @@ public class TimesheetServlet extends AbstractServlet {
 		}
 		Double productivity = timesheetRequest.getProductivity();
 		timesheet.setProductivity(new BigDecimal(productivity == null ? 0.0D : productivity));
+	}
+
+
+
+	private PayrollWorksheetEmployee makePayrollWorksheetEmployee(TimesheetRequest timesheetRequest) {
+		PayrollWorksheetEmployee employee = new PayrollWorksheetEmployee();
+		
+		Integer row = timesheetRequest.getRow();
+		employee.setRow(row == null ? null : String.valueOf(row));
+		employee.setEmployeeName(timesheetRequest.getEmployeeName());
+		employee.setRegularHours(makeRequestValue(timesheetRequest.getRegularHours()));
+		employee.setRegularPay(makeRequestValue(timesheetRequest.getRegularPay()));
+		employee.setExpenses(makeRequestValue(timesheetRequest.getExpenses()));
+		employee.setOtHours(makeRequestValue(timesheetRequest.getOtHours()));
+		employee.setOtPay(makeRequestValue(timesheetRequest.getOtPay()));
+		employee.setVacationHours(makeRequestValue(timesheetRequest.getVacationHours()));
+		employee.setVacationPay(makeRequestValue(timesheetRequest.getVacationPay()));
+		employee.setHolidayHours(makeRequestValue(timesheetRequest.getHolidayHours()));
+		employee.setHolidayPay(makeRequestValue(timesheetRequest.getHolidayPay()));
+		employee.setGrossPay(makeRequestValue(timesheetRequest.getGrossPay()));
+		employee.setExpensesSubmitted(makeRequestValue(timesheetRequest.getExpensesSubmitted()));
+		employee.setExpensesAllowed(makeRequestValue(timesheetRequest.getExpensesAllowed()));
+		employee.setVolume(makeRequestValue(timesheetRequest.getVolume()));
+		employee.setDirectLabor(makeRequestValue(timesheetRequest.getDirectLabor()));
+		employee.setProductivity(makeRequestValue(timesheetRequest.getProductivity()));
+		
+		
+		return employee;
+	}
+
+
+
+	private String makeRequestValue(Double value) {
+		String requestValue = null;
+		if ( value != null ) {
+			requestValue = String.valueOf(value);
+		}
+		return requestValue;
 	}
 	
 
