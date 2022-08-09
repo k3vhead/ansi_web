@@ -2,9 +2,9 @@
 	timesheetFields : [
 		{"label":"Regular", "name":"regular", hoursAndPay:true},
 		{"label":"Expenses", "name":"expenses", hoursAndPay:false},
-		{"label":"OT", "name":"otHours", hoursAndPay:true},
-		{"label":"Vacation", "name":"vacationHours", hoursAndPay:true},
-		{"label":"Holiday", "name":"holidayHours", hoursAndPay:true},
+		{"label":"OT", "name":"ot", hoursAndPay:true},
+		{"label":"Vacation", "name":"vacation", hoursAndPay:true},
+		{"label":"Holiday", "name":"holiday", hoursAndPay:true},
 		{"label":"Gross Pay", "name":"grossPay", hoursAndPay:false},
 		{"label":"Expenses Submitted", "name":"expensesSubmitted", hoursAndPay:false},
 		{"label":"Expenses Allowed", "name":"expensesAllowed", hoursAndPay:false},
@@ -17,31 +17,38 @@
 	initEditModal : function($modalName, $saveMethod) {
 		console.log("initEditModal");
 		
+		var $tableSelector = $modalName + " .edit-form";
 		$.each(PAYROLL_UTILS.timesheetFields, function($index, $value) {
 			var $row = $("<tr>").addClass("employee-edit-row");
 			if ( $value.hoursAndPay ) {
 				$row.append( PAYROLL_UTILS.makeLabel($value.label + " Hours") );
-				$row.append( PAYROLL_UTILS.makeInput($value.name + "Hours") );
+				$row.append( PAYROLL_UTILS.makeInput($value.name + "Hours", false) );
 				$row.append( PAYROLL_UTILS.makeErr($value.name + "Hours") );
 				$row.append( PAYROLL_UTILS.makeLabel("Pay") );
-				$row.append( PAYROLL_UTILS.makeInput($value.name + "Pay") );
+				$row.append( PAYROLL_UTILS.makeInput($value.name + "Pay", true) );
 				$row.append( PAYROLL_UTILS.makeErr($value.name + "Pay") );
 			} else {
 				$row.append( PAYROLL_UTILS.makeLabel($value.label) );
 				$row.append( PAYROLL_UTILS.makeInput($value.name) );
 				$row.append( PAYROLL_UTILS.makeErr($value.name) );
 				$row.append( $("<td>").attr("colspan","3") );
-			}
-			var $tableSelector = $modalName + " .edit-form";
+			}			
 			$($tableSelector).append($row);
 		});
-		
+
+		var $totalPayRow = 	$("<tr>")
+		$totalPayRow.append( $("<td>") );
+		$totalPayRow.append( $("<td>") );
+		$totalPayRow.append( $("<td>") );
+		$totalPayRow.append( $("<td>").append($("<span>").addClass("form-label").append("Total Pay: ")   ));	
+		$totalPayRow.append( $("<td>").attr("style","text-align:right;").append($("<span>").attr("class", "totalpay-display")));
+		$($tableSelector).append($totalPayRow);
 		
 		$( $modalName ).dialog({
 			title:'Timesheet Edit',
 			autoOpen: false,
-			height: 600,
-			width: 650,
+			height: 650,
+			width: 675,
 			modal: true,
 			closeOnEscape:true,
 			//open: function(event, ui) {
@@ -141,15 +148,39 @@
 		//		$($cityField).autocomplete("close");
 		//	}
 		//};
+		
+		$paySelector = $tableSelector + " input[data-payfield='1']";
+		$($paySelector).blur( function($event) {
+			PAYROLL_UTILS.calculateTotalPay($modalName);
+		});
 	},
 	
+	calculateTotalPay : function($modalName) {
+		console.log("calculateTotalPay");
+		var $totalPay = 0.0;
+		$.each(PAYROLL_UTILS.timesheetFields, function($index, $value) {
+			if ( $value.hoursAndPay == true ) {
+				var $selector = $modalName + " input[name='"+$value.name+"Pay']";
+				$payValue = $($selector).val();
+				if ( $payValue != null && $payValue != "" ) {
+					$totalPay = $totalPay + parseFloat($payValue);
+				}
+			}
+		});
+		$($modalName + " .totalpay-display").html( $totalPay.toFixed(2));
+	},
 	
 	
 	makeLabel : function($name) {
 		return $("<td>").append( $("<span>").addClass("form-label").append($name + ": ")   );
 	},
-	makeInput : function($name) {
-		return $("<td>").append($("<input>").attr("type","text").attr("name", $name).attr("style","width:65px;").attr("placeholder","0.00"));
+	makeInput : function($name, $payField) {
+		if ( $payField == true ) {
+			$dataPay = "1";
+		} else {
+			$dataPay = "0";
+		}
+		return $("<td>").append($("<input>").attr("type","number").attr("name", $name).attr("step",".01").attr("data-payfield",$dataPay).attr("style","width:65px;").attr("placeholder","0.00"));
 	},
 	makeErr : function($name) {
 		return $("<td>").append( $("<span>").addClass("err").addClass($name+"Err")  );

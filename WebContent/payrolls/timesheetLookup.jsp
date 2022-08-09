@@ -535,6 +535,7 @@
            				}
            			});
            			$("#edit-modal .update-field").prop("disabled", true);
+           			PAYROLL_UTILS.calculateTotalPay("#edit-modal");
            			$("#edit-modal").dialog("open");
 
            		},

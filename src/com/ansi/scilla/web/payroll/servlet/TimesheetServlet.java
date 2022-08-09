@@ -204,7 +204,6 @@ public class TimesheetServlet extends AbstractServlet {
 	 */
 	private void processValidate(Connection conn, HttpServletResponse response, TimesheetRequest timesheetRequest, SessionData sessionData) throws Exception {
 		TimesheetValidationResponse data = new TimesheetValidationResponse();
-//		PayrollValidation validationResponse = timesheetRequest.validateAdd(conn);
 		
 		PayrollWorksheetEmployee payrollWorksheetEmployee = makePayrollWorksheetEmployee(timesheetRequest);
 		Division division = new Division();

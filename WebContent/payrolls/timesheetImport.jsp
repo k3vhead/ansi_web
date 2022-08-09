@@ -457,8 +457,8 @@
 	           		
 	           		
 	           		
-	           		populateDataGrid : function($data){
-	           			console.log("populateDataGrid");
+	           		makeEmployeeMap : function($data){
+	           			console.log("makeEmployeeMap");
 	           			// create and populate dicttionary object for use in modal
 	           			var dictionary = $data.data.employeeList;
 					    var $errorFound = '<payroll:errorFound>Invalid Value</payroll:errorFound>';
@@ -466,12 +466,19 @@
 					    $.each($data.data.employeeList, function($index, $value) {
 		            		TIMESHEET_IMPORT.employeeMap[$value.row] = $value;
 		            	});  
-	   
+					    TIMESHEET_IMPORT.populateDataGrid();
+	           		},
+	           		
+	           		
+	           		
+	           		populateDataGrid : function() {
+	           			console.log("populateDataGrid");
 	           			// populate the visible table on-screen
+	           			var $employeeList = Object.values(TIMESHEET_IMPORT.employeeMap);
 	           			var $table = $("#timesheet").DataTable({
 	           				aaSorting : [[0,'asc']],
 	            			processing : true,
-	           				data : $data.data.employeeList,
+	           				data : $employeeList,
 	           				searching : true,
 	            	        searchDelay : 800,
 	            	        paging: false,
@@ -564,7 +571,7 @@
 	           				],
 	           				"initComplete": function(settings, json) {
        			            	var myTable = this;
-       			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#timesheet", TIMESHEET_IMPORT.populateDataGrid, null, $data);
+       			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#timesheet", TIMESHEET_IMPORT.populateDataGrid, null, $employeeList);
        			            },
 	           				drawCallback : function( settings ) {
 	           					$(".edit-link").off("click");
@@ -586,6 +593,7 @@
 	           			var $myEmployee = TIMESHEET_IMPORT.employeeMap[$rowNumber];
 	           			console.log($myEmployee);
 	           			console.log(TIMESHEET_IMPORT.worksheetHeader);
+	           			$('#employee-modal input[name="row"]').val($rowNumber);
 	           			$('#employee-modal select[name="divisionId"]').val(TIMESHEET_IMPORT.worksheetHeader.division.divisionId);
 	           			$formattedWeekendingDate = new Date(TIMESHEET_IMPORT.worksheetHeader.weekEnding).toISOString().slice(0, 10);
 	           			$('#employee-modal input[name="weekEnding"]').val($formattedWeekendingDate);
@@ -609,12 +617,12 @@
 	           			$('#employee-modal input[name="vacationPay"]').val(TIMESHEET_IMPORT.formatFloat($myEmployee.vacationPay));
 	           			$('#employee-modal input[name="holidayPay"]').val(TIMESHEET_IMPORT.formatFloat($myEmployee.holidayPay));
 	           			
-						$('#employee-modal input[name="regularHours"]').blur(function() { TIMESHEET_IMPORT.calculateTotaHoursOnModal()});
-						$('#employee-modal input[name="otHours"]').blur(function() { TIMESHEET_IMPORT.calculateTotaHoursOnModal()});
-	           			$('#employee-modal input[name="vacationHours"]').blur(function() { TIMESHEET_IMPORT.calculateTotaHoursOnModal()});
-	           			$('#employee-modal input[name="holidayHours"]').blur(function() { TIMESHEET_IMPORT.calculateTotaHoursOnModal()});
+						//$('#employee-modal input[name="regularHours"]').blur(function() { TIMESHEET_IMPORT.calculateTotaHoursOnModal()});
+						//$('#employee-modal input[name="otHours"]').blur(function() { TIMESHEET_IMPORT.calculateTotaHoursOnModal()});
+	           			//$('#employee-modal input[name="vacationHours"]').blur(function() { TIMESHEET_IMPORT.calculateTotaHoursOnModal()});
+	           			//$('#employee-modal input[name="holidayHours"]').blur(function() { TIMESHEET_IMPORT.calculateTotaHoursOnModal()});
                         
-	           			TIMESHEET_IMPORT.calculateTotaHoursOnModal();
+	           			PAYROLL_UTILS.calculateTotalPay("#employee-modal");
 	           			
 	           			$('#employee-modal input[name="directLabor"]').val(TIMESHEET_IMPORT.formatFloat($myEmployee.directLabor));
 	           			$('#employee-modal input[name="volume"]').val(TIMESHEET_IMPORT.formatFloat($myEmployee.volume));
@@ -635,6 +643,7 @@
 	           		
 	           		processEmployeeValidationSuccess : function($data, $passthru) {
 	           			console.log("processEmployeeValidationSuccess");
+	           			var $row = $passthru["row"];
 	           			if ( $data.responseHeader.responseCode == 'EDIT_FAILURE' ) {
            					// check for header error messages first
            					if($data.header){    
@@ -647,13 +656,16 @@
 	    	           				});
 	           					}
 	           				}
-	           			} else if ( $data.responseHeader.responseCode == 'SUCCESS' || $data.responseHeader.responseCode == 'EDIT_WARNING') {
-	           				updateDataTableFromModal();
-	               			if ($data.responseHeader.responseCode == 'SUCCESS') {
-	               				$("#globalMsg").html("Success").show().fadeOut(3000);
-	               			} else {
-	               				ANSI_UTILS.showWarnings("timesheet_warnings", $data.header.messages);
-	               			}
+	           			} else if ( $data.responseHeader.responseCode == 'SUCCESS' ) { 
+           					TIMESHEET_IMPORT.employeeMap[$row] = $data.data.employee;
+               				$("#globalMsg").html("Success").show().fadeOut(3000);
+               				TIMESHEET_IMPORT.populateDataGrid();
+               				$("#employee-modal").dialog("close");
+	           			} else if ( $data.responseHeader.responseCode == 'EDIT_WARNING') {
+           					TIMESHEET_IMPORT.employeeMap[$row] = $data.data.employee;
+               				$("#globalMsg").html("Success - With Warnings").show().fadeOut(3000);
+               				TIMESHEET_IMPORT.populateDataGrid();
+               				$("#employee-modal").dialog("close");
 	           			} else {
 	           				$("#employee-modal .timesheet-err").html("Unexpected response code: " + $data.responseHeader.responseCode + ". Contact Support").show();
 	           			}
@@ -734,7 +746,7 @@
 	           			console.log("processUploadSuccess");
 	           			$(".thinking").hide();		
 						TIMESHEET_IMPORT.displayHeader($data);
-       					TIMESHEET_IMPORT.populateDataGrid($data);   
+       					TIMESHEET_IMPORT.makeEmployeeMap($data);   
 	           		},
 
 	           		// WARNING == issue with the header, but we can still process (eg. duplicate upload)
@@ -747,7 +759,7 @@
 	           			//TIMESHEET_IMPORT.displayHeaderAndHeaderMessages($data);
 	           			$(".thinking").hide();		
 						TIMESHEET_IMPORT.displayHeader($data);
-       					TIMESHEET_IMPORT.populateDataGrid($data);           					
+       					TIMESHEET_IMPORT.makeEmployeeMap($data);           					
 	           		},
 	           		
 	           		
@@ -818,66 +830,12 @@
 					
 					
 					
-	        		
-	           		
-	           		updateDataTableFromModal : function() {
-	           			console.log("saveEmployeeModal - grabbing values");
-	           			var $rowNumber 			= $("#employee-modal [name='row']").val();	           			
-	           			var $employeeName 		= $("#employee-modal [name='employeeName']").val();
-	           			var $regularPay  		= $("#employee-modal [name='regularPay']").val();
-	           			var $otPay 				= $("#employee-modal [name='otPay']").val();
-	           			var $vacationPay  		= $("#employee-modal [name='vacationPay']").val();
-	           			var $holidayPay  		= $("#employee-modal [name='holidayPay']").val();
-	           			var $regularHours 		= $("#employee-modal [name='regularHours']").val();
-	           			var $otHours  			= $("#employee-modal [name='otHours']").val();
-	    	           	var $vacationHours 		= $("#employee-modal [name='vacationHours']").val();
-	           			var $holidayHours  		= $("#employee-modal [name='holidayHours']").val();
-	           			var $directLabor  		= $("#employee-modal [name='directLabor']").val();
-	           			var $volume  			= $("#employee-modal [name='volume']").val();
-	           			var $grossPay   		= $("#employee-modal [name='grossPay']").val();
-	           			var $expenses  			= $("#employee-modal [name='expenses']").val();
-	           			var $expensesAllowed 	= $("#employee-modal [name='expensesAllowed']").val();
-	           			var $expensesSubmitted  = $("#employee-modal [name='expensesSubmitted']").val();
-	           			var $productivity 		= $("#employee-modal [name='productivity']").val();
-	           			
-	           			var $idx = $rowNumber +1;
-	           			$idx = $idx -1;
-	           			
-					    var table = $("#timesheet").DataTable();
-					    
-	           			TIMESHEET_IMPORT.employeeMap[$idx].employeeName = $employeeName;
-	           			TIMESHEET_IMPORT.employeeMap[$idx].regularPay = $regularPay;
-	           			TIMESHEET_IMPORT.employeeMap[$idx].otPay = $otPay;
-	           			TIMESHEET_IMPORT.employeeMap[$idx].vacationPay = $vacationPay;
-	           			TIMESHEET_IMPORT.employeeMap[$idx].holidayPay = $holidayPay;
-	           			TIMESHEET_IMPORT.employeeMap[$idx].regularHours = $regularHours;
-	           			TIMESHEET_IMPORT.employeeMap[$idx].otHours = $otHours;
-	           			TIMESHEET_IMPORT.employeeMap[$idx].vacationHours = $vacationHours;
-	           			TIMESHEET_IMPORT.employeeMap[$idx].holidayHours = $holidayHours;
-	           			TIMESHEET_IMPORT.employeeMap[$idx].directLabor = $directLabor; 
-	           			TIMESHEET_IMPORT.employeeMap[$idx].volume	 = $volume;
-	           			TIMESHEET_IMPORT.employeeMap[$idx].grossPay = $grossPay;
-	           			TIMESHEET_IMPORT.employeeMap[$idx].expenses = $expenses;
-	           			TIMESHEET_IMPORT.employeeMap[$idx].expensesAllowed = $expensesAllowed;
-	           			TIMESHEET_IMPORT.employeeMap[$idx].expensesSubmitted = $expensesSubmitted;
-	           			TIMESHEET_IMPORT.employeeMap[$idx].productivity = $productivity;	           			
-	           			TIMESHEET_IMPORT.employeeMap[$idx].directLabor = $directLabor;
-	           			TIMESHEET_IMPORT.employeeMap[$idx].volume = $volume;
-	           			TIMESHEET_IMPORT.employeeMap[$idx].grossPay = $grossPay;
-	           			TIMESHEET_IMPORT.employeeMap[$idx].expenses = $expenses;
-	           			TIMESHEET_IMPORT.employeeMap[$idx].expensesAllowed = $expensesAllowed;
-	           			TIMESHEET_IMPORT.employeeMap[$idx].expensesSubmitted = $expensesSubmitted;
-	           			TIMESHEET_IMPORT.employeeMap[$idx].productivity = $productivity;
-	           			
-					    table.row($rowNumber).data(TIMESHEET_IMPORT.employeeMap[$rowNumber]).draw();			    
-	           		},
-	           		
 	           		
 	           		validateEmployeeModal : function() {
-	           			console.log("validate employee timesheet");
+	           			console.log("validateEmployeeModal");
 	           			$("#employee-modal .err").html("").show();
 	           			var $outbound = {};
-	           			var s;
+	           			var s = null;
 	           			$.each( $("#employee-modal input"), function($index, $value) {
 	           				s = $($value).val();
 	           			   	s = s.replace(/\d+% ?/g, "");
@@ -897,7 +855,9 @@
 	           				405:TIMESHEET_IMPORT.processEmployeeValidationErrors,
 	           				500:TIMESHEET_IMPORT.processEmployeeValidationErrors,
 	        			};
-	           			ANSI_UTILS.makeServerCall("POST", "payroll/timesheet", JSON.stringify($outbound), $callbacks, {});
+	           			var $rowNum = $("#employee-modal input[name='row']").val();
+	           			var $passThru = {"row":$rowNum};
+	           			ANSI_UTILS.makeServerCall("POST", "payroll/timesheet", JSON.stringify($outbound), $callbacks, $passThru);
 	           		},
 	           	};
 	           	
