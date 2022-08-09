@@ -1,13 +1,19 @@
 package com.ansi.scilla.web.test.payroll;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.ansi.scilla.common.utils.AppUtils;
-import com.ansi.scilla.web.payroll.common.ExceptionReportRecord;
+import org.apache.commons.lang3.StringUtils;
 
-public class TestExceptionQuery {
+import com.ansi.scilla.web.common.struts.SessionDivision;
+import com.ansi.scilla.web.common.utils.ColumnFilter;
+import com.ansi.scilla.web.payroll.query.ExceptionReportQuery;
+import com.ansi.scilla.web.payroll.servlet.ExceptionReportServlet;
+import com.ansi.scilla.web.test.common.AbstractTester;
+
+public class TestExceptionQuery extends AbstractTester {
 	private final String sql = "SELECT division_group.group_id, \n"
 			+ "	division_group.name as group_name, \n"
 			+ "	division_group.company_code,\n"
@@ -47,34 +53,73 @@ public class TestExceptionQuery {
 			+ "	-- and week_ending \n"
 			+ "WHERE group_type = 'COMPANY' and division_group.group_id is not NULL \n"
 			+ "ORDER BY group_id, group_name\n";
-			
+
+//	public static void main(String[] args) {
+//		try {
+//			TestExceptionQuery te = new TestExceptionQuery();
+//			te.go();
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//
+//	}
+
+	//	private void go() throws Exception {
+	//		
+	//		Connection con = null;
+	//		try {
+	//			con = AppUtils.getDevConn();
+	//			PreparedStatement ps = con.prepareStatement(sql);
+	//			ResultSet rs = ps.executeQuery();
+	//			while (rs.next()) {
+	//				String group_id = rs.getString("group_id");
+	//				System.out.println(group_id);
+	//				ExceptionReportRecord rec = new ExceptionReportRecord(rs);
+	//			}
+	//			rs.close();
+	//		} finally {
+	//			con.close();
+	//		}
+	//		
+	//	}
+
 	public static void main(String[] args) {
 		try {
 			TestExceptionQuery te = new TestExceptionQuery();
-			te.go();
+			te.run();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 	}
 
-	private void go() throws Exception {
+	
+	private List<ColumnFilter> makeColumnFilter() {
+//		String[] cols = new ExceptionReportServlet().getCols();		
+		List<ColumnFilter> columnFilterList = new ArrayList<ColumnFilter>();
+		ColumnFilter cf = new ColumnFilter("excess_expense_claim","1");
+		columnFilterList.add(cf);
+		return columnFilterList;
+	}
+
+	@Override
+	protected void go(Connection conn) throws Exception {
+		Integer userId = 5;
+		List<SessionDivision> divisionList = super.makeDivisionList(conn);
+		Integer groupId = 13;
+		Boolean errorsOnly = false;
+		ExceptionReportQuery query = new ExceptionReportQuery(userId, divisionList, groupId, errorsOnly);
+		query.setSearchTerm("");
+		query.setColumnFilter(makeColumnFilter());
 		
-		Connection con = null;
-		try {
-			con = AppUtils.getDevConn();
-			PreparedStatement ps = con.prepareStatement(sql);
-			ResultSet rs = ps.executeQuery();
-			while (rs.next()) {
-				String group_id = rs.getString("group_id");
-				System.out.println(group_id);
-				ExceptionReportRecord rec = new ExceptionReportRecord(rs);
-			}
-			rs.close();
-		} finally {
-			con.close();
-		}
 		
+//		ResultSet rs = query.select(conn, 0, 10);
+//		rs.close();
+		
+		Integer count = query.selectCount(conn);
+		Integer countAll = query.countAll(conn);
+		System.out.println("count: " + count);
+		System.out.println("countAll: " + countAll);
 	}
 
 }

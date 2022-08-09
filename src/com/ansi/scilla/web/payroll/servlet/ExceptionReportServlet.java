@@ -39,11 +39,11 @@ import com.thewebthing.commons.db2.RecordNotFoundException;
 public class ExceptionReportServlet extends AbstractLookupServlet {
 
 //	public static final String COMPANY_CODE = "company_code";
-	public static final String EMPLOYEE_CODE = "payroll_worksheet.employee_code";
-	public static final String DIVISION_ID = "concat(division.division_nbr, '-', division.division_code)";
+	public static final String EMPLOYEE_CODE = "employee_code"; //"payroll_worksheet.employee_code";
+	public static final String DIVISION_ID = "div";  //"concat(division.division_nbr, '-', division.division_code)";
 	public static final String WEEK_ENDING = "week_ending";
 	public static final String EMPLOYEE_FIRST_NAME = "employee_name";
-	public static final String EMPLOYEE_STATUS = "payroll_employee.employee_status";
+	public static final String EMPLOYEE_STATUS = "employee_status"; //"payroll_employee.employee_status";
 
 	//	public static final String DESCRIPTION = "description";
 	public static final String UNION_MEMBER = "union_member";
@@ -144,11 +144,20 @@ public class ExceptionReportServlet extends AbstractLookupServlet {
 		boolean errorsOnly = (! StringUtils.isBlank(errorFilter)) && errorFilter.equalsIgnoreCase("true");
 		logger.log(Level.DEBUG, "Errors: " + errorsOnly);
 		
+		String searchTerm = "";
+		if(request.getParameter("search[value]") != null){
+			searchTerm = request.getParameter("search[value]");
+		}
+		
+		
 		if ( StringUtils.isNumeric(groupId) ) {
 			SessionData sessionData = (SessionData)request.getSession().getAttribute(SessionData.KEY);
 			Integer userId = sessionData.getUser().getUserId();
 			List<SessionDivision> divisionList = sessionData.getDivisionList();
-			LookupQuery exceptionReportQuery = new ExceptionReportQuery(userId, divisionList, Integer.valueOf(groupId), errorsOnly);	
+			LookupQuery exceptionReportQuery = new ExceptionReportQuery(userId, divisionList, Integer.valueOf(groupId), errorsOnly);
+			if ( searchTerm != null ) {
+				exceptionReportQuery.setSearchTerm(searchTerm);
+			}
 			return exceptionReportQuery;
 		} else {
 			throw new InvalidParameterException();
@@ -156,53 +165,7 @@ public class ExceptionReportServlet extends AbstractLookupServlet {
 	}
 
 
-	protected void doGetXXX(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		
-		Connection conn = null;
-		WebMessages webMessages = new WebMessages();
-		try {
-			conn = AppUtils.getDBCPConn();
-			conn.setAutoCommit(false);
-			
-			AppUtils.validateSession(request, Permission.PAYROLL_WRITE);
-			
-			Integer index = request.getRequestURI().indexOf(REALM);
-			String path = request.getRequestURI().substring(index);   // eg: /exceptionReport/102
-			logger.log(Level.DEBUG, "Exception uri: " + request.getRequestURI());
-			logger.log(Level.DEBUG, "Exception path: " + path);
-			
-			String groupId = path.substring(StringUtils.lastIndexOf(path, "/")+1);
-			logger.log(Level.DEBUG, "division: " + groupId);
-			
-			if ( StringUtils.isNumeric(groupId) ) {
-				try {
-					ExceptionReportResponse data = new ExceptionReportResponse(conn, Integer.valueOf(groupId));
-					data.setWebMessages(webMessages);
-					super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
-				} catch ( RecordNotFoundException e ) {
-					super.sendNotFound(response);
-				}
-			} else {
-				super.sendNotFound(response);
-			}
-
-				
-				
-		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
-			super.sendForbidden(response);
-		} catch ( Exception e) {
-			AppUtils.logException(e);
-			AppUtils.rollbackQuiet(conn);
-			throw new ServletException(e);
-		} finally {
-			AppUtils.closeQuiet(conn);
-		}
-		
-	}
 	
-
-
 	
 	public class ItemTransformer implements Transformer<HashMap<String, Object>, HashMap<String, Object>> {
 
