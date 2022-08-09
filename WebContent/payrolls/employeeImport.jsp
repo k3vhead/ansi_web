@@ -141,6 +141,15 @@
 						EMPLOYEE_IMPORT.updateSuccessCount = 0;
 						EMPLOYEE_IMPORT.updateExpectedCount = 0;
 						var $url = "payroll/employee/" + $employeeValue['employeeCode'];
+						var $unionMember = $employeeValue['unionMember'];
+						if ( $unionMember == null || $unionMember == "" ) {
+							$unionMember = 0;
+						} else if ( $unionMember.toLowerCase() == "yes" ) {
+							$unionMember = 1;
+						} else {
+							$unionMember = 0;
+						}
+						var $unionRate = $employeeValue['unionRate'].replaceAll("$","").replace(",","");
 						var $outbound = {
 							'validateOnly':false,
 							'employeeCode':$employeeValue['employeeCode'],
@@ -152,9 +161,9 @@
 							'departmentDescription':$employeeValue['departmentDescription'],
 							'status':$employeeValue['status'],
 							'terminationDate':$employeeValue['terminationDate'],
-							'unionMember':$employeeValue['unionMember'],
+							'unionMember':$unionMember,
 							'unionCode':$employeeValue['unionCode'],
-							'unionRate':$employeeValue['unionRate'],
+							'unionRate':$unionRate,
 							//'notes':$employeeValue['notes'],
 						};
 						var $callbacks = {
