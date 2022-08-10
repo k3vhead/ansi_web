@@ -29,6 +29,9 @@
 		<script type="text/javascript" src="js/payroll.js"></script>
 
 		<style type="text/css">
+			#confirm-modal {
+        		display:none;
+        	}
 			#data-file {
 				display: none;
 			}
@@ -138,6 +141,12 @@
 			#organization-edit th {
 				text-align: left;
 			}
+			#save-all-modal {
+        		display:none;
+        	}
+        	#save-all-table {
+        		width:100%;
+        	}
 			.action-link {
 				text-decoration: none;
 				cursor: pointer;
@@ -187,6 +196,8 @@
 	           		statusIsGood : '<webthing:checkmark>No Errors</webthing:checkmark>',
 	           		statusIsBad : '<webthing:ban>Error</webthing:ban>',
 	           		statusAintGood : '<webthing:warning>Warning</webthing:warning>',
+	           		statusIsPending : '<webthing:pending>Pending</webthing:pending>',
+	           		statusIsQueued : '<webthing:queue>Queued</webthing:queue>',
 	           		saveButton : '<webthing:save>Save</webthing:save>',
 	           		edit : '<webthing:edit>Edit</webthing:edit>',
 	           		view : '<webthing:view styleClass="details-control">Details</webthing:view>',
@@ -217,9 +228,7 @@
 	           		},
 	           		
 	           		
-	           		closeEmployeeModal : function() {
-	           			//$rowNumber, $action
-	           		},	  
+	           			  
 	           		
 	           		
 	           		
@@ -345,6 +354,21 @@
 	
 	           		},
 	           		
+	           		
+	           		formatFloat : function (numberAsString) {
+						value = null;
+						if (numberAsString == null || numberAsString == "") {
+							value="";
+						} else if ( isNaN(numberAsString) ) {
+							value="";
+						} else {
+							x = parseFloat(numberAsString);
+							value = x.toFixed(2);
+						}
+						return value;
+					},
+					
+					
 	           	
 	           		initializeDisplay: function(){
 	           			console.log("TIMESHEET_IMPORT.initializeDisplay: function - begin");	           			
@@ -382,9 +406,67 @@
 	           			$("#data-header input[name='cancelButton']").click(function($event) {
 	           				TIMESHEET_IMPORT.initializeDisplay();
 	           			});
+	           			
+	           			
+	           			$("#save-button").click(function($event) {
+	           				if ( ! $("#confirm-modal").hasClass("ui-dialog-content")) {
+	           					TIMESHEET_IMPORT.makeConfirmModal();
+	           				}
+	           				$("#confirm-modal").dialog("open");	 
+	           			});
 	           		},
 	           		
 	           		
+	           		
+	           		
+	           		
+	           		makeConfirmModal : function() {
+           				$( "#confirm-modal" ).dialog({
+               				title:'Confirm Save',
+               				autoOpen: false,
+               				height: 200,
+               				width: 300,
+               				modal: true,
+               				closeOnEscape:true,
+               				//open: function(event, ui) {
+               				//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+               				//},
+               				buttons: [
+               					{
+               						id:  "confirm-cancel",
+               						click: function($event) {
+             							$( "#confirm-modal" ).dialog("close");
+               						}
+               					},{
+               						id:  "confirm-save",
+               						click: function($event) {
+               							TIMESHEET_IMPORT.saveTimesheet();
+               						}
+               					}
+               				]
+               			});	
+               			$("#confirm-cancel").button('option', 'label', 'Cancel');  
+               			$("#confirm-save").button('option', 'label', 'Confirm');
+	           		},
+	           		
+	           		
+	           		
+	           		
+	           		makeEmployeeMap : function($data){
+	           			console.log("makeEmployeeMap");
+	           			// create and populate dicttionary object for use in modal
+	           			var dictionary = $data.data.employeeList;
+					    var $errorFound = '<payroll:errorFound>Invalid Value</payroll:errorFound>';
+					    TIMESHEET_IMPORT.employeeMap = {};
+					    $.each($data.data.employeeList, function($index, $value) {
+		            		TIMESHEET_IMPORT.employeeMap[$value.row] = $value;
+		            	});  
+					    TIMESHEET_IMPORT.populateDataGrid();
+	           		},
+	           		
+	           		
+	           		
+
 	           		makeEmployeeValue : function ($value, $messageList) {
 	           			// <span class="red tooltip"><span class="tooltiptext">Expense Claim<br />YTD Expense Ptc</span>$48.23</span>
 	           			var $errorList = [];
@@ -405,6 +487,43 @@
 	           			}
 	           			return $employeeValue;
 	           		},
+	           		
+	           		
+	           		
+	           		makeSaveallModal : function() {
+	           			console.log("makeSaveallModal");
+	           			$( "#save-all-modal" ).dialog({
+							title:'Save Employee Updates',
+							autoOpen: false,
+							height: 600,
+							width: 800,
+							modal: true,
+							closeOnEscape:false,
+							open: function(event, ui) {
+								$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+							},
+                			buttons: [
+                				{
+                					id:  "save-employee-cancel",
+                					click: function($event) {
+                						$( "#save-all-modal" ).dialog("close");
+                						//console.log("Errors: " + EMPLOYEE_IMPORT.updateErrorCount);
+                						//if ( EMPLOYEE_IMPORT.updateErrorCount == 0 ) {
+                							// all updates are complete and successful so do a page reset
+                						//	$("#globalMsg").html("Update Successful").show().fadeOut(6000);
+                						//	$("#display-div input[name='cancelButton']").click();
+                						//} else {
+                							// some updates failed, so reload the spreadsheet and see where we're at
+                						//	$("#globalMsg").html("Update failed. Reloading").show().fadeOut(6000);
+                						//	$("#save-button").click();
+                						//}
+                					}
+                				}
+                			]
+                		});	
+                		$("#save-employee-cancel").button('option', 'label', 'Done');  
+	           		},
+	           		
 	           		
 	           		
 	           		
@@ -457,24 +576,22 @@
 	           		
 	           		
 	           		
-	           		makeEmployeeMap : function($data){
-	           			console.log("makeEmployeeMap");
-	           			// create and populate dicttionary object for use in modal
-	           			var dictionary = $data.data.employeeList;
-					    var $errorFound = '<payroll:errorFound>Invalid Value</payroll:errorFound>';
-					    TIMESHEET_IMPORT.employeeMap = {};
-					    $.each($data.data.employeeList, function($index, $value) {
-		            		TIMESHEET_IMPORT.employeeMap[$value.row] = $value;
-		            	});  
-					    TIMESHEET_IMPORT.populateDataGrid();
-	           		},
-	           		
-	           		
-	           		
 	           		populateDataGrid : function() {
 	           			console.log("populateDataGrid");
 	           			// populate the visible table on-screen
 	           			var $employeeList = Object.values(TIMESHEET_IMPORT.employeeMap);
+	           			$("#save-button").hide();
+	           			
+	           			var $allGood = true;
+	           			$.each( $employeeList, function($index, $employee) {
+	           				if ($employee.errorLevel == "ERROR") {
+	           					$allGood = false;
+	           				}
+	           			});
+	           			if ( $allGood == true ) {
+	           				$("#save-button").show();
+	           			}
+	           			
 	           			var $table = $("#timesheet").DataTable({
 	           				aaSorting : [[0,'asc']],
 	            			processing : true,
@@ -763,6 +880,99 @@
 	           		},
 	           		
 	           		
+	           		saveEmployee : function($employee) {
+	           			console.log("saveEmployee: " + $employee.employeeCode);
+	           			var $selector = "#save-all-modal .emp" + $employee.employeeCode;
+	           			$($selector).html(TIMESHEET_IMPORT.statusIsPending);
+	           			$outbound = {};
+	           			$outbound["action"]="VALIDATE";
+
+	           			$outbound["row"] = $employee.row
+	           			$outbound["weekEnding"] = new Date(TIMESHEET_IMPORT.worksheetHeader.weekEnding).toISOString().slice(0, 10);
+	           			if ( TIMESHEET_IMPORT.worksheetHeader.locale.localeTypeId == "CITY" ) {
+           					$outbound["city"] = TIMESHEET_IMPORT.worksheetHeader.locale.name;
+	           			}
+        				$outbound["employeeCode"] = $employee.employeeCode;
+   						$outbound["employeeName"] = $employee.employeeName
+        				$outbound["regularHours"] = $employee.regularHours
+        				$outbound["regularPay"] = $employee.regularPay
+        				$outbound["expenses"] = $employee.expenses
+        				$outbound["otHours"] = $employee.otHours
+        				$outbound["otPay"] = $employee.otPay
+        				$outbound["vacationHours"] = $employee.vacationHours
+        				$outbound["vacationPay"] = $employee.vacationPay
+        				$outbound["holidayHours"] = $employee.holidayHours
+        				$outbound["holidayPay"] = $employee.holidayPay
+        				$outbound["grossPay"] = $employee.grossPay
+        				$outbound["expensesSubmitted"] = $employee.expensesSubmitted
+        				$outbound["expensesAllowed"] = $employee.expensesAllowed
+        				$outbound["volume"] = $employee.volume
+        				$outbound["directLabor"] = $employee.directLabor
+        				$outbound["productivity"] = $employee.productivity
+        				$outbound["divisionId"] = $employee.divisionId
+        				$outbound["state"] = TIMESHEET_IMPORT.worksheetHeader.locale.stateName;
+
+	           			var $callbacks = {
+	        				200:TIMESHEET_IMPORT.saveEmployeeSuccess,
+	        				403:TIMESHEET_IMPORT.saveEmployeeErrors,
+	           				404:TIMESHEET_IMPORT.saveEmployeeErrors,
+	           				405:TIMESHEET_IMPORT.saveEmployeeErrors,
+	           				500:TIMESHEET_IMPORT.saveEmployeeErrors,
+	        			};
+	           			var $passThru = {"employeeCode":$employee.employeeCode};
+	           			ANSI_UTILS.makeServerCall("POST", "payroll/timesheet", JSON.stringify($outbound), $callbacks, $passThru);
+	           			
+	           		},
+	           		
+	           		
+	           		
+	           		saveEmployeeSuccess : function($data, $passthru) {
+	           			console.log("saveEmployeeSuccess");
+	           			var $selector = "#save-all-modal .emp" + $passthru['employeeCode'];
+	           			$($selector).html(TIMESHEET_IMPORT.statusIsGood);
+	           		},
+	           		
+	           		
+	           		
+	           		
+	           		saveEmployeeErrors : function($data, $passthru) {
+	           			console.log("saveEmployeeErrors");
+	           			var $selector = "#save-all-modal .emp" + $passthru['employeeCode'];
+	           			$($selector).html(TIMESHEET_IMPORT.statusIsBad);
+	           		},
+	           		
+	           		
+	           		
+	           		
+	           		saveTimesheet : function() {
+	           			console.log("saveTimesheet");
+	           			
+	           			$("#confirm-modal").dialog("close");
+	           			if ( ! $("#save-all-modal").hasClass("ui-dialog-content")) {
+	           				TIMESHEET_IMPORT.makeSaveallModal();
+	           			}
+	           			$("#save-all-table tbody").html("");
+	           			
+	           			$.each( TIMESHEET_IMPORT.employeeMap, function($index, $value) {
+	           				var $row = $("<tr>");
+	           				$row.append( $("<td>").append( $value.row ) );
+	           				$row.append( $("<td>").append( $value.employeeCode ) );
+	           				$row.append( $("<td>").append( $value.employeeName ) );
+	           				$row.append( $("<td>").append( $("<span>").addClass("emp"+$value.employeeCode).append(TIMESHEET_IMPORT.statusIsQueued) ) );
+	           				$("#save-all-table tbody").append( $row );
+	           			});
+	           			$("#save-all-modal").dialog("open");
+	           			
+	           			var $employeeList = Object.values( TIMESHEET_IMPORT.employeeMap );
+	           			
+	           			$.each( $employeeList, function($index, $employee) {
+	           				if ($employee.employeeCode != null ) {
+	           					TIMESHEET_IMPORT.saveEmployee($employee);
+	           				}
+	           			});
+	           		},
+	           		
+	           		
 	           		
 	           		
 	           		setupCityTypeAhead : function(){
@@ -815,18 +1025,7 @@
 	        		
 	        		
 	        		
-	        		formatFloat : function (numberAsString) {
-						value = null;
-						if (numberAsString == null || numberAsString == "") {
-							value="";
-						} else if ( isNaN(numberAsString) ) {
-							value="";
-						} else {
-							x = parseFloat(numberAsString);
-							value = x.toFixed(2);
-						}
-						return value;
-					},
+	        		
 					
 					
 					
@@ -859,11 +1058,19 @@
 	           			var $passThru = {"row":$rowNum};
 	           			ANSI_UTILS.makeServerCall("POST", "payroll/timesheet", JSON.stringify($outbound), $callbacks, $passThru);
 	           		},
+	           		
+	           		
+	           		
 	           	};
 	           	
 	           	TIMESHEET_IMPORT.init();
-	            	
-	        });        		
+	            
+	           	
+	           	
+	           	
+	           	
+	        });    
+	       
         </script>
 	</tiles:put>
 
@@ -942,151 +1149,25 @@
 			<jsp:param name="id" value="employee-modal" />
 		</jsp:include>
 
-		<%-- 
-		<div id="employee-modal">
-			<div style="width: 100%; height: 0px;">
-				<span class="employeeEditErr err"></span>
-			</div>
-			<table id="employee-data">
-				<tr>
-					<td class="form-label">Employee Name :</td>
-					<td class="employeeName"><span class="employeeName"> </span></td> 					
-					<!--   <input class="employeeName" type="text" name="employeeName" tabindex="101" /> -->
-					<td class="employeeNameSpacer"></td>
-					<td class="form-label">Code :</td>
-					<td class="employeeCode"><span class="employeeCode"> </span></td>
-					
-					<!--   <input class="employeeCode" type="text" name="employeeCode" tabindex="102" /></td> -->
-					<td class="employeeCodeSpacer"></td>
-					<td class="form-label">State:</td>
-					<td class="state"><span class="state"> </span></td>
-					<td class="stateSpacer"></td>
-					<td class="form-label"><span
-						class="form-label row-number-label">Row: </span></td>
-					<td class="row"><span class="row"> </span></td>
-				</tr>
-				<tr>
-					<td colspan="8"><span class="employeeNameErr DIVISIONErr stateErr employeeCodeErr rowErr err">
-					</span></td>
-					<!-- 
-					<td colspan="3"><span
-						class="employeeNameCodeErr err"> </span></td>
-					<td colspan="3"><span class="stateErr err">
-					</span></td>
-					<td colspan="2"><span class="rowErr err"> </span>
-					</td>
-					 -->
-				</tr>
-			</table>
-			<table id="time-calcs">
-				<tr>
-					<td class="row-label"></td>
-					<td colspan="1" class="col-heading hours">Hours</td>
-					<td colspan="2" class="col-heading pay">Pay</td>
-					<td colspan="2" class="col-heading pay">Expenses</td>
-				</tr>
-				<tr>
-					<td class="row-label">Regular:</td> 
-					<td class="hours"><input class="hours" type="text"
-						name="regularHours" tabindex="102" /></td>
-					<td class="money"><input class="money" type="text"
-						name="regularPay" tabindex="103" /></td>
-					<td class="spacer-mid"></td>
-					<td class="row-label-col-2">Submitted:</td>
-					<td class="money"><input class="money" type="text"
-						name="expensesSubmitted" tabindex="112" /></td>
-				</tr>
-				<tr>
-					<td colspan="2" class="hoursErr">		<span class="regularHoursErr"></span></td>
-					<td colspan="1" class="moneyErr">		<span class="regularPayErr err"></span></td>
-					<td class="spacer-mid"></td>      
-					<td colspan="2" class="moneyErr">	<span class="exp-ensesSubmittedErr err"> </span></td>
-				</tr>
-				<tr>
-					<td class="row-label">Overtime:</td>
-					<td class="hours"><input class="hours" type="text"
-						name="otHours" tabindex="104" /></td>
-					<td class="money"><input class="money" type="text"
-						name="otPay" tabindex="105" /></td>
-					<td class="spacer-mid"></td>
-					<td class="row-label-col-2">Allowed:</td>
-					<td class="money"><input class="money" type="text"
-						name="expensesAllowed" tabindex="113" /></td>
-				</tr>
-				<tr>
-					<td colspan="2" class="hoursErr">		<span class="otHoursErr err"> </span></td>
-					<td colspan="1" class="moneyErr">		<span class="otPayErr err"> </span></td>
-					<td class="spacer-mid"></td>     
-					<td colspan="2" class="moneyErr">	<span class="expensesAllowedErr err"> </span></td>
-				</tr>
-				<tr>
-					<td class="row-label"></td>
-					<td class="hours total"></td>
-					<td class="money"></td>
-					<td class="spacer-mid"></td>
-					<td colspan="2" class="form-label">Productivity</td>
-				</tr>
-				<tr>
-					<td colspan="2" class="hoursErr"></td>
-					<td class="moneyErr"></td>
-					<td class="spacer-mid"></td>
-				</tr>
-				<tr>
-					<td class="row-label">Vacation:</td>
-					<td class="hours"><input class="hours" type="text"
-						name="vacationHours" tabindex="106" /></td>
-					<td class="money"><input class="money" type="text"
-						name="vacationPay" tabindex="107" /></td>
-					<td class="spacer-mid"></td>
-					<td class="row-label-col-2">Direct Labor:</td>
-					<td class="money"><input class="money" type="text"
-						name="directLabor" tabindex="114" /></td>
-				</tr>
-				<tr>
-					<td colspan="2" class="hoursErr">		<span class="vacationHoursErr"> </span></td>
-					<td colspan="1" class="moneyErr">		<span class="vacationPayErr err"> </span></td>
-					<td class="spacer-mid"></td> 
-					<td colspan="2" class="moneyErr">		<span class="directLaborErr err"> </span></td>
-				</tr>
-				<tr>
-					<td class="row-label">Holiday:</td>
-					<td class="hours"><input class="hours" type="text"
-						name="holidayHours" tabindex="108" /></td>
-					<td class="money"><input class="money" type="text"
-						name="holidayPay" tabindex="109" /></td>
-					<td class="spacer-mid"></td>
-					<td class="row-label-col-2">Volume :</td>
-					<td class="money"><input class="money" type="text"
-						name="volume" tabindex="115" /></td>
-				</tr>
-				<tr>
-					<td colspan="2" class="hoursErr">		<span class="holidayHoursErr err"> </span></td>
-					<td colspan="1" class="moneyErr">		<span class="holidayPayErr err"> </span></td>
-					<td class="spacer-mid"></td>
-					<td colspan="2" class="moneyErr">		<span class="volumeErr err"> </span></td>
-				</tr>
-				<tr>
-					<td class="row-label">Total:</td>
-					<!-- <td class="hours total">	<input 	class="hours" type="text" name="totalHours" 				tabindex="110" />		</td> -->
-					<td class="totalHours"><span class="totalHours"> </span></td>
-					<td class="money"><input class="money" type="text"
-						name="grossPay" tabindex="111" /></td>
-					<td class="spacer-mid"></td>
-					<td class="row-label-col-2">Productivity:</td>
-					<!--  <td class="percentage">		<input 	class="percentage" 	type="text" name="productivity"			tabindex="116" />		</td>  -->
-					<td class="percentage"><span class="productivity"> </span></td>
-				</tr>
-				<tr>
-					<td colspan="5" class="hoursErr">  			<span class="totalHoursErr grossPayErr productivityErr expensesAllowedErr expensesSubmittedErr err"> </span></td>
-					<!-- 
-					<td colspan="1" class="moneyErr">		<span class="grossPayErr err"> </span></td>
-					<td class="spacer-mid"></td>
-					<td colspan="2" class="percentageErr">	<span class="productivityErr err"> </span></td>
-					 -->
-				</tr>
+		<div id="confirm-modal">			
+			<h2>Are you sure?</h2>
+		</div>
+		
+		
+		<div id="save-all-modal">
+			<table id="save-all-table">
+				<thead>
+					<tr>
+						<td><span class="form-label">Row</span></td>
+						<td><span class="form-label">Employee Code</span></td>
+						<td><span class="form-label">Employee Name</span></td>
+						<td><span class="form-label">Status</span></td>
+					</tr>
+				</thead>
+				<tbody>
+				</tbody>
 			</table>
 		</div>
-		--%>
 	</tiles:put>
 </tiles:insert>
 
