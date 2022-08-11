@@ -203,6 +203,9 @@
 	           		view : '<webthing:view styleClass="details-control">Details</webthing:view>',
 	           		worksheetHeader : null,
 	           		employeeMap : {},
+	           		updateErrorCount : 0,
+					updateSuccessCount : 0,
+					updateExpectedCount : 0,
 
 	           		init : function() {
 	           			TIMESHEET_IMPORT.makeClickers();  
@@ -507,16 +510,16 @@
                 					id:  "save-employee-cancel",
                 					click: function($event) {
                 						$( "#save-all-modal" ).dialog("close");
-                						//console.log("Errors: " + EMPLOYEE_IMPORT.updateErrorCount);
-                						//if ( EMPLOYEE_IMPORT.updateErrorCount == 0 ) {
+                						console.log("Errors: " + TIMESHEET_IMPORT.updateErrorCount);
+                						if ( TIMESHEET_IMPORT.updateErrorCount == 0 ) {
                 							// all updates are complete and successful so do a page reset
-                						//	$("#globalMsg").html("Update Successful").show().fadeOut(6000);
-                						//	$("#display-div input[name='cancelButton']").click();
-                						//} else {
+                							$("#globalMsg").html("Update Successful").show().fadeOut(6000);
+                							$("#data-header input[name='cancelButton']").click();
+                						} else {
                 							// some updates failed, so reload the spreadsheet and see where we're at
-                						//	$("#globalMsg").html("Update failed. Reloading").show().fadeOut(6000);
-                						//	$("#save-button").click();
-                						//}
+                							$("#globalMsg").html("Update failed. Reloading").show().fadeOut(6000);
+                							$("#save-button").click();
+                						}
                 					}
                 				}
                 			]
@@ -588,7 +591,7 @@
 	           					$allGood = false;
 	           				}
 	           			});
-	           			if ( $allGood == true ) {
+	           			if ( $allGood == true && $employeeList.length > 0) {
 	           				$("#save-button").show();
 	           			}
 	           			
@@ -885,7 +888,7 @@
 	           			var $selector = "#save-all-modal .emp" + $employee.employeeCode;
 	           			$($selector).html(TIMESHEET_IMPORT.statusIsPending);
 	           			$outbound = {};
-	           			$outbound["action"]="VALIDATE";
+	           			$outbound["action"]="ADD";
 
 	           			$outbound["row"] = $employee.row
 	           			$outbound["weekEnding"] = new Date(TIMESHEET_IMPORT.worksheetHeader.weekEnding).toISOString().slice(0, 10);
@@ -929,7 +932,26 @@
 	           		saveEmployeeSuccess : function($data, $passthru) {
 	           			console.log("saveEmployeeSuccess");
 	           			var $selector = "#save-all-modal .emp" + $passthru['employeeCode'];
-	           			$($selector).html(TIMESHEET_IMPORT.statusIsGood);
+	           			
+	           			
+	           			if ( $data.responseHeader.responseCode == 'SUCCESS' || $data.responseHeader.responseCode == 'EDIT_WARNING' ) {
+							$($selector).html('<webthing:checkmark>Success</webthing:checkmark>');
+							TIMESHEET_IMPORT.updateSuccessCount = TIMESHEET_IMPORT.updateSuccessCount + 1;
+						} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE' ) {
+							TIMESHEET_IMPORT.updateErrorCount = TIMESHEET_IMPORT.updateErrorCount + 1;
+							var $errFields = [];
+							$.each( $data.data.webMessages, function($index, $value) {
+								$errFields.push($index);
+							});
+							$($selector).html('<webthing:ban>Validation Errors: '+ $errFields.join("<br />")+'</webthing:ban>');
+						} else {
+							TIMESHEET_IMPORT.updateErrorCount = TIMESHEET_IMPORT.updateErrorCount + 1;
+							$($selector).html('<webthing:ban>Unexpected Response ('+$data.responseHeader.responseCode+') Contact Support</webthing:ban>');
+						}
+	           			
+	           			if ( TIMESHEET_IMPORT.updateErrorCount + TIMESHEET_IMPORT.updateSuccessCount >= TIMESHEET_IMPORT.updateExpectedCount ) {
+	           				$("#save-employee-cancel").prop('disabled',false);
+						}
 	           		},
 	           		
 	           		
@@ -939,6 +961,11 @@
 	           			console.log("saveEmployeeErrors");
 	           			var $selector = "#save-all-modal .emp" + $passthru['employeeCode'];
 	           			$($selector).html(TIMESHEET_IMPORT.statusIsBad);
+	           			
+	           			TIMESHEET_IMPORT.updateErrorCount = TIMESHEET_IMPORT.updateErrorCount + 1;
+	           			if ( TIMESHEET_IMPORT.updateErrorCount + TIMESHEET_IMPORT.updateSuccessCount >= TIMESHEET_IMPORT.updateExpectedCount ) {
+	           				$("#save-employee-cancel").prop('disabled',false);
+						}
 	           		},
 	           		
 	           		
@@ -953,23 +980,31 @@
 	           			}
 	           			$("#save-all-table tbody").html("");
 	           			
+	           			TIMESHEET_IMPORT.updateErrorCount = 0;
+	           			TIMESHEET_IMPORT.updateSuccessCount = 0;
+	           			TIMESHEET_IMPORT.updateExpectedCount = 0;
+	           			
 	           			$.each( TIMESHEET_IMPORT.employeeMap, function($index, $value) {
-	           				var $row = $("<tr>");
+	           				var $row = $("<tr>").addClass("save-emp-row");
 	           				$row.append( $("<td>").append( $value.row ) );
 	           				$row.append( $("<td>").append( $value.employeeCode ) );
 	           				$row.append( $("<td>").append( $value.employeeName ) );
 	           				$row.append( $("<td>").append( $("<span>").addClass("emp"+$value.employeeCode).append(TIMESHEET_IMPORT.statusIsQueued) ) );
 	           				$("#save-all-table tbody").append( $row );
+	           				TIMESHEET_IMPORT.updateExpectedCount = TIMESHEET_IMPORT.updateExpectedCount + 1;
 	           			});
 	           			$("#save-all-modal").dialog("open");
+	           			$("#save-employee-cancel").prop('disabled',true);
 	           			
 	           			var $employeeList = Object.values( TIMESHEET_IMPORT.employeeMap );
 	           			
 	           			$.each( $employeeList, function($index, $employee) {
-	           				if ($employee.employeeCode != null ) {
-	           					TIMESHEET_IMPORT.saveEmployee($employee);
-	           				}
+           					TIMESHEET_IMPORT.saveEmployee($employee);
 	           			});
+	           			
+	           			$("#save-all-table .save-emp-row").mouseover(function() { $(this).addClass("grayback"); });
+						$("#save-all-table .save-emp-row").mouseout(function() { $(this).removeClass("grayback"); });
+						
 	           		},
 	           		
 	           		
