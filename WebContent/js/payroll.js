@@ -10,7 +10,7 @@
 		{"label":"Expenses Allowed", "name":"expensesAllowed", hoursAndPay:false},
 		{"label":"Volume", "name":"volume", hoursAndPay:false},
 		{"label":"Direct Labor", "name":"directLabor", hoursAndPay:false},
-		{"label":"Productivity", "name":"productivity", hoursAndPay:false},
+		//{"label":"Productivity", "name":"productivity", hoursAndPay:false},
 	],
         		
         		

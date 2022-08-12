@@ -320,8 +320,8 @@ public class TimesheetServlet extends AbstractServlet {
 			BigDecimal setterValue =  getterValue == null ? null : new BigDecimal(getterValue).round(MathContext.DECIMAL32);
 			setter.invoke(timesheet, new Object[] {setterValue} );
 		}
-		Double productivity = timesheetRequest.getProductivity();
-		timesheet.setProductivity(new BigDecimal(productivity == null ? 0.0D : productivity));
+//		Double productivity = timesheetRequest.getProductivity();
+//		timesheet.setProductivity(new BigDecimal(productivity == null ? 0.0D : productivity));
 	}
 
 
@@ -346,7 +346,7 @@ public class TimesheetServlet extends AbstractServlet {
 		employee.setExpensesAllowed(makeRequestValue(timesheetRequest.getExpensesAllowed()));
 		employee.setVolume(makeRequestValue(timesheetRequest.getVolume()));
 		employee.setDirectLabor(makeRequestValue(timesheetRequest.getDirectLabor()));
-		employee.setProductivity(makeRequestValue(timesheetRequest.getProductivity()));
+//		employee.setProductivity(makeRequestValue(timesheetRequest.getProductivity()));
 		
 		
 		return employee;

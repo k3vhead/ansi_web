@@ -64,7 +64,7 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 	public static final String CITY = "city";
 	
 	public static final String EMPLOYEE_NAME = "employeeName";
-	public static final String PRODUCTIVITY = "productivity";
+//	public static final String PRODUCTIVITY = "productivity";
 	
 
 
@@ -94,7 +94,7 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 	private Double holidayPay;
 	private Double otHours;
 	private Double otPay;
-	private Double productivity;
+//	private Double productivity;
 	private Double regularHours;
 	private Double regularPay;
 	private Double vacationHours;
@@ -284,13 +284,13 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 		this.otPay = otPay;
 	}
 
-	public Double getProductivity() {
-		return productivity;
-	}
+//	public Double getProductivity() {
+//		return productivity;
+//	}
 
-	public void setProductivity(Double productivity) {
-		this.productivity = productivity;
-	}
+//	public void setProductivity(Double productivity) {
+//		this.productivity = productivity;
+//	}
 
 	public Double getRegularHours() {
 		return regularHours;
@@ -615,7 +615,7 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 			Double value = (Double)field.get(this);
 			RequestValidator.validateDouble(webMessages, payrollField.fieldName(), value, 0.0D, (Double)null, false, null);			
 		}
-		RequestValidator.validateDouble(webMessages, PRODUCTIVITY, this.productivity, 0.0D, 1.0D, false, null);
+//		RequestValidator.validateDouble(webMessages, PRODUCTIVITY, this.productivity, 0.0D, 1.0D, false, null);
 	}
 
 	

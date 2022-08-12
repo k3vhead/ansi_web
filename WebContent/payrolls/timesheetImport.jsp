@@ -249,6 +249,7 @@
 						}
 						
 	           			$("#data-header .err").html("");
+						
 
 	           			var $formattedWeekendingDate = null;
 	           			if ( $data.data.worksheetHeader.weekEnding != null ) {
@@ -262,6 +263,8 @@
 	           			$('input[name="operationsManagerName"]').val($data.data.worksheetHeader.operationsManager);           			
 	           			$('input[name="payrollDate"]').val($formattedWeekendingDate);
 	           			
+	           			$("#file-header-data .state").html("");
+	           			$("#file-header-data .city").html("");
 	           			if ( $data.data.worksheetHeader.locale != null ) {
 		           			$("#file-header-data .state").html($data.data.worksheetHeader.locale.stateName);	           			
 	           				if ( $data.data.worksheetHeader.localeTypeId != "STATE") {
@@ -605,15 +608,15 @@
 	            	        destroy: true,
 	            	        autoWidth: false,
 	            	        "rowCallback": function(row, data, index){
-	            	            if(row.children[17].children[0].children[0].childNodes[0].textContent=="Error"){
+	            	            if(row.children[16].children[0].children[0].childNodes[0].textContent=="Error"){
 									$(row).addClass('errorsFoundHighlight');
 								}
 							},
 	           				columnDefs : [
 	             	            //{ className : "dt-head-center", "targets":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]},
 	            	            { className : "dt-left", "targets": [2] },
-	            	            { className : "dt-center", "targets": [0,1,16,17] },
-	            	            { className : "dt-right", "targets": [3,4,5,6,7,8,9,10,11,12,13,14,15]},
+	            	            { className : "dt-center", "targets": [0,1,15,16] },
+	            	            { className : "dt-right", "targets": [3,4,5,6,7,8,9,10,11,12,13,14]},
 	            	        ],
 	           				columns : [
 	           					{ title : "Row", searchable:true, "defaultContent": "", 
@@ -661,9 +664,9 @@
 	           					{ title : "Direct Labor", searchable:true, "defaultContent": "",
 	           						data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeValue(row.directLabor.toFixed(2), row.messageList['directLabor']);  }
 	           					},
-	           					{ title : "Prod %", searchable:true, "defaultContent": "", 
-	           						data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeValue(row.productivity.toFixed(2), row.messageList['productivity']);  }
-	           					},
+	           					//{ title : "Prod %", searchable:true, "defaultContent": "", 
+	           					//	data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeValue(row.productivity.toFixed(2), row.messageList['productivity']);  }
+	           					//},
 	           					{ title : "Status", "defaultContent":"", 
 	           						data : function(row, type, set) {
 										var $tag = TIMESHEET_IMPORT.statusIsGood;
@@ -764,18 +767,19 @@
 	           		processEmployeeValidationSuccess : function($data, $passthru) {
 	           			console.log("processEmployeeValidationSuccess");
 	           			var $row = $passthru["row"];
-	           			if ( $data.responseHeader.responseCode == 'EDIT_FAILURE' ) {
-           					// check for header error messages first
-           					if($data.header){    
-	           					if($data.header.messages){
-	    	           				$.each($data.data.webMessages, function($index, $value) {
-	    	           					console.log($index + ' value is ' + $value);	           				
-	    	           					var $selector = "#file-header-data ." + $index + "Err";
-	    	           					console.log("selector is " + $selector);	           					           					
-	    	           					$($selector).html($value[0]);
-	    	           				});
-	           					}
-	           				}
+	           			if ( $data.responseHeader.responseCode == 'EDIT_FAILURE' ) {           					
+           					$.each($data.data.employee.messageList, function($fieldName, $fieldMessageList) {
+           						var $messageText = [];
+           						$.each($fieldMessageList, function($index, $message) {
+           							if ( $message.errorMessage.errorLevel != 'OK' ) {
+           								$messageText.push($message.errorMessage.message);
+           							}
+           						});
+           						if ( $messageText.length > 0 ) {
+           							var $selector = "#employee-modal ." + $fieldName + "Err";
+           							$($selector).html( $messageText.join("<br />") );
+           						}
+           					});
 	           			} else if ( $data.responseHeader.responseCode == 'SUCCESS' ) { 
            					TIMESHEET_IMPORT.employeeMap[$row] = $data.data.employee;
                				$("#globalMsg").html("Success").show().fadeOut(3000);
@@ -888,7 +892,14 @@
 	           			var $selector = "#save-all-modal .emp" + $employee.employeeCode;
 	           			$($selector).html(TIMESHEET_IMPORT.statusIsPending);
 	           			$outbound = {};
+	           			
 	           			$outbound["action"]="ADD";
+	           			// check if this is a duplicate upload
+	           			$.each( TIMESHEET_IMPORT.worksheetHeader.messages.FILENAME, function($index, $message) {
+	           				if ( $message.errorType = "DUPLICATE_UPLOAD" ) {
+	           					$outbound["action"]="UPDATE";
+	           				}
+	           			});
 
 	           			$outbound["row"] = $employee.row
 	           			$outbound["weekEnding"] = new Date(TIMESHEET_IMPORT.worksheetHeader.weekEnding).toISOString().slice(0, 10);

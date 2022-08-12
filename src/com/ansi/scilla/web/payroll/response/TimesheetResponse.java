@@ -32,7 +32,7 @@ public class TimesheetResponse extends MessageResponse {
 	private BigDecimal holidayPay;
 	private BigDecimal otHours;
 	private BigDecimal otPay;
-	private BigDecimal productivity;
+//	private BigDecimal productivity;
 	private BigDecimal regularHours;
 	private BigDecimal regularPay;
 	private BigDecimal vacationHours;
@@ -75,7 +75,7 @@ public class TimesheetResponse extends MessageResponse {
 				"HolidayPay",
 				"OtHours",
 				"OtPay",
-				"Productivity",
+//				"Productivity",
 				"RegularHours",
 				"RegularPay",
 				"VacationHours",
@@ -195,12 +195,12 @@ public class TimesheetResponse extends MessageResponse {
 	public void setOtPay(BigDecimal otPay) {
 		this.otPay = otPay;
 	}
-	public BigDecimal getProductivity() {
-		return productivity;
-	}
-	public void setProductivity(BigDecimal productivity) {
-		this.productivity = productivity;
-	}
+//	public BigDecimal getProductivity() {
+//		return productivity;
+//	}
+//	public void setProductivity(BigDecimal productivity) {
+//		this.productivity = productivity;
+//	}
 	public BigDecimal getRegularHours() {
 		return regularHours;
 	}
