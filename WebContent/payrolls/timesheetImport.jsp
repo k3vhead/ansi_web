@@ -812,8 +812,8 @@
 	               			if ( $("#edit-modal").hasClass("ui-dialog-content")) {
 	               				$("#edit-modal").dialog("close");
 	               			}
-	               			if ( $("#confirmation-modal").hasClass("ui-dialog-content")) {
-	               				$("#confirmation-modal").dialog("close");
+	               			if ( $("#confirm-modal").hasClass("ui-dialog-content")) {
+	               				$("#confirm-modal").dialog("close");
 	               			}
 	               			if ($data.responseHeader.responseCode == 'SUCCESS') {
 	               				$("#globalMsg").html("Success").show().fadeOut(3000);

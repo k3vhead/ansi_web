@@ -115,7 +115,16 @@ public class TimesheetServlet extends AbstractServlet {
 					processValidate(conn, response, timesheetRequest, sessionData);
 					break;
 				case TimesheetRequest.ACTION_IS_UPDATE:
-					processUpdate(conn, response, timesheetRequest, sessionData);
+					try {
+						processUpdate(conn, response, timesheetRequest, sessionData);
+					} catch ( RecordNotFoundException e ) {
+						logger.log(Level.DEBUG, "Updating non-existing record, so we add it");
+						logger.log(Level.DEBUG, "Employee: " + timesheetRequest.getEmployeeCode());
+						logger.log(Level.DEBUG, "Division: " + timesheetRequest.getDivisionId());
+						logger.log(Level.DEBUG, "Location: " + timesheetRequest.getCity() + ", " + timesheetRequest.getState());
+						logger.log(Level.DEBUG, "Date: " + timesheetRequest.getWeekEnding().getTime());
+						processAdd(conn, response, timesheetRequest, sessionData);
+					}
 					break;
 				default:
 					throw new com.ansi.scilla.web.common.exception.InvalidFormatException(TimesheetRequest.EMPLOYEE_CODE);

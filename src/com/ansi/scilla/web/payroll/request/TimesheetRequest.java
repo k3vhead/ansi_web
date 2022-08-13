@@ -2,8 +2,6 @@ package com.ansi.scilla.web.payroll.request;
 
 import java.lang.reflect.Field;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -14,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -35,7 +32,6 @@ import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.payroll.common.PayrollValidation;
-import com.ansi.scilla.web.payroll.common.TimesheetValidator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 
@@ -513,13 +509,10 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 		WebMessages webMessages = new WebMessages();
 		
 		for ( String messageKey : messageList.keySet() ) {
-			logger.log(Level.DEBUG, "MessageKey: " + messageKey);
 			String fieldName = messageKey;
 			try {
 				FieldLocation wpr = FieldLocation.valueOf(messageKey);
-				logger.log(Level.DEBUG, "WPR: " + wpr.name());
 				fieldName = wpr == null || StringUtils.isBlank(wpr.fieldName()) ? messageKey : PayrollField.lookup(wpr).fieldName();
-				logger.log(Level.DEBUG, "New fieldname: " + fieldName);
 			} catch ( IllegalArgumentException e ) {
 				// we don't care. If the fieldname is not a FieldLocation value, we've already defaulted to the fieldname
 			}
@@ -536,68 +529,7 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 
 	
 	
-	/**
-	 * THis is just here so we can steal code -- erase it before we go prod
-	 * @param conn
-	 * @return
-	 * @throws Exception
-	 */
-	@Deprecated
-	public WebMessages validateMe(Connection conn) throws Exception {
-		Logger logger = LogManager.getLogger(this.getClass());
-		WebMessages webMessages = new WebMessages();		
-		validateNumbers(webMessages);
-		RequestValidator.validateId(conn, webMessages, Division.TABLE, Division.DIVISION_ID, DIVISION_ID, this.divisionId, true);
-//		RequestValidator.validateState(webMessages, STATE, this.state, true, null);
-		RequestValidator.validateString(webMessages, CITY, this.city, 255, false, null);
-		RequestValidator.validateDate(webMessages, WEEK_ENDING, this.weekEnding, true, null, null);
-		RequestValidator.validateEmployeeCode(conn, webMessages, EMPLOYEE_CODE, this.employeeCode, true, null);
-	
-		for ( String x : webMessages.keySet() ) {
-			logger.log(Level.DEBUG, x + "=>" + webMessages.get(x));
-		}
-		// Validate code/name combo
-		// Handles: Franklin Roosevelt
-		//			Franklin D Roosevelt
-		//			Franklin D. Roosevelt
-		//			Roosevelt, Franklin
-		//			Roosevelt, Franklin D
-		//			Roosevelt, Franklin D.
-		if ( ! webMessages.containsKey(EMPLOYEE_CODE) ) {
-			String sql = "select count(*) as record_count from payroll_employee pe where pe.employee_code = ? \n" + 
-					"	and (\n" + 
-					"		lower(concat(pe.employee_first_name,' ',pe.employee_last_name)) = ?\n" + 
-					"		or lower(concat(pe.employee_first_name,' ',pe.employee_mi,' ',pe.employee_last_name)) = ?\n" + 
-					"		or lower(concat(pe.employee_first_name,' ',pe.employee_mi,'. ',pe.employee_last_name)) = ?\n" + 
-					"		or lower(concat(pe.employee_last_name,', ',pe.employee_first_name)) = ?\n" + 
-					"		or lower(concat(pe.employee_last_name,', ',pe.employee_first_name,' ',pe.employee_mi)) = ?\n" + 
-					"		or lower(concat(pe.employee_last_name,', ',pe.employee_first_name,' ',pe.employee_mi,'.')) = ?\n" + 
-					"	)";
-			PreparedStatement ps = conn.prepareStatement(sql);
-			ps.setInt(1, employeeCode);
-			for ( int n = 2; n < 8; n++ ) {
-				ps.setString(n, this.employeeName.toLowerCase());
-			}
-			ResultSet rs = ps.executeQuery();
-			if ( rs.next() ) {
-				if ( rs.getInt("record_count") == 0 ) {
-					webMessages.addMessage(EMPLOYEE_CODE, "Invalid EmployeeCode/Employee Name combination");
-				}
-			} else {
-				webMessages.addMessage(EMPLOYEE_CODE, "Error while validating");
-			}
-			rs.close();
-		}
 		
-		if ( webMessages.isEmpty() ) {
-			TimesheetValidator.validateEmployeeName(conn, webMessages, EMPLOYEE_NAME, this.employeeName, "Employee Name");
-			TimesheetValidator.validateExpenses(conn, webMessages, PayrollField.EXPENSES_SUBMITTED.fieldName(), expensesAllowed, expensesSubmitted, grossPay);
-			TimesheetValidator.validateExpensesYTD(conn, webMessages, PayrollField.EXPENSES_SUBMITTED.fieldName(), employeeCode, weekEnding);
-		}
-		return webMessages;
-	}
-
-	
 	public WebMessages validateDelete(Connection conn) throws Exception {
 		WebMessages webMessages = new WebMessages();		
 		RequestValidator.validateId(conn, webMessages, Division.TABLE, Division.DIVISION_ID, DIVISION_ID, this.divisionId, true);
