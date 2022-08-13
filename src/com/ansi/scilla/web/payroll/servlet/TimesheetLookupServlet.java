@@ -34,8 +34,8 @@ public class TimesheetLookupServlet extends AbstractLookupServlet {
 	public static final String DIV = "concat(division.division_nbr, '-', division.division_code)"; 
 	public static final String WEEK_ENDING = "week_ending";
 	public static final String WEEK_ENDING_DISPLAY = "week_ending_display";
-	public static final String STATE = "state";
-	public static final String CITY = "city";
+	public static final String STATE = "locale.state_name";
+	public static final String CITY = "locale.name";
 	public static final String EMPLOYEE_CODE = "employee_code";
 //	-- payroll_employee.employee_first_name,
 //	-- payroll_employee.employee_last_name,

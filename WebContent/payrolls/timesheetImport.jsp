@@ -745,6 +745,7 @@
 	           			//$('#employee-modal input[name="vacationHours"]').blur(function() { TIMESHEET_IMPORT.calculateTotaHoursOnModal()});
 	           			//$('#employee-modal input[name="holidayHours"]').blur(function() { TIMESHEET_IMPORT.calculateTotaHoursOnModal()});
                         
+	           			$("#employee-modal .totalpay-display").html( "");
 	           			PAYROLL_UTILS.calculateTotalPay("#employee-modal");
 	           			
 	           			$('#employee-modal input[name="directLabor"]').val(TIMESHEET_IMPORT.formatFloat($myEmployee.directLabor));

@@ -187,10 +187,12 @@
            		
            		
            		showNewTimeSheet : function() {
+           			console.log("showNewTimeSheet");
            			if ( ! $("#edit-modal").hasClass("ui-dialog-content")) {
            				PAYROLL_UTILS.initEditModal("#edit-modal",TIMESHEETLOOKUP.saveTimesheet);
            			}
-       				$("#edit-modal .err").html("").show();           				
+       				$("#edit-modal .err").html("").show();  
+       				$("#edit-modal .totalpay-display").html( "");
            			$.each( $("#edit-modal input"), function($index, $value) {
            				$($value).val("");
            			});
@@ -509,6 +511,7 @@
            			}
            			
            			$("#edit-modal .err").html("");
+           			$("#edit-modal .totalpay-display").html( "");
            			$("#edit-modal input[name='action']").val("UPDATE");
            		 	$("#edit-modal select[name='divisionId']").val($data.data.divisionId);
            		 	$("#edit-modal input[name='weekEnding']").val($data.data.weekEnding);

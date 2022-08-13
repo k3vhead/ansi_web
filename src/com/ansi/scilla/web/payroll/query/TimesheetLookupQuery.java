@@ -119,8 +119,8 @@ public class TimesheetLookupQuery extends LookupQuery {
 		
 		String[] searchableFields = new String[] {
 				"concat(division.division_nbr, '-', division.division_code)",
-				"payroll_worksheet.state", 
-				"payroll_worksheet.city",
+				"locale.state_name", 
+				"locale.state_name",
 				"payroll_worksheet.employee_code", 
 				"payroll_worksheet.employee_name",
 				"payroll_worksheet.week_ending",
