@@ -465,6 +465,7 @@
                				terminationDisplay = b.toISOString().substring(0,10);
                			} 
                 			
+               			$("#employee-modal .err").html('');
                			$("#employee-modal input[name='rowId']").val($rowId);
                			$("#employee-modal input[name='employeeCode']").val($row['employeeCode']);
                			$("#employee-modal input[name='employeeCode']").prop('disabled',true);

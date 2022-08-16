@@ -10,6 +10,7 @@ import com.ansi.scilla.common.payroll.common.EmployeeStatus;
 import com.ansi.scilla.web.common.request.AbstractRequest;
 import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.WebMessages;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class EmployeeRequest extends AbstractRequest {
 
@@ -102,9 +103,11 @@ public class EmployeeRequest extends AbstractRequest {
 	public void setStatus(String status) {
 		this.status = StringUtils.trimToNull(status);
 	}
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yy", timezone="America/Chicago")
 	public Calendar getTerminationDate() {
 		return terminationDate;
 	}
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yy", timezone="America/Chicago")
 	public void setTerminationDate(Calendar terminationDate) {
 		this.terminationDate = terminationDate;
 	}
