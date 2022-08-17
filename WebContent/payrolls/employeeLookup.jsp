@@ -92,6 +92,7 @@
         			$("#employee-edit input").val("");
         			$("#employee-edit select").val("");
         			$("#employee-edit .err").html("");
+        			$("#employee-edit .attn").hide();
         			$("#employee-edit input[name='selectedEmployeeCode']").val($data.data.employee.employeeCode);
         			$("#employee-edit input[name='employeeCode']").val($data.data.employee.employeeCode);
         			$("#employee-edit select[name='companyCode']").val($data.data.employee.companyCode);
