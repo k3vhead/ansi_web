@@ -119,6 +119,16 @@
     	<servlet-name>autoComplete</servlet-name>
     	<url-pattern>/autoComplete</url-pattern>
 	</servlet-mapping>
+	
+	
+	<servlet>
+		<servlet-name>batch</servlet-name>
+		<servlet-class>com.ansi.scilla.web.batch.servlet.BatchServlet</servlet-class>
+	</servlet><servlet-mapping>
+    	<servlet-name>batch</servlet-name>
+    	<url-pattern>/batch</url-pattern>
+    	<url-pattern>/batch/*</url-pattern>
+	</servlet-mapping>
 
 
     
