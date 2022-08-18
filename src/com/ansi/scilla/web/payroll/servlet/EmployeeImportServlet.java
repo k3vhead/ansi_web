@@ -58,15 +58,6 @@ public class EmployeeImportServlet extends AbstractServlet {
 			data.setWebMessages(webMessages);
 			
 			if ( webMessages.isEmpty() ) {
-//				CSVReader reader = new CSVReader(new InputStreamReader(item.getInputStream()));		
-//				List<String[]> recordList = reader.readAll();										
-//				recordList.remove(0);								
-//				reader.close();
-//				
-//				for ( int i = 0; i < 5; i++ ) {						
-//					EmployeeRecord rec = new EmployeeRecord(recordList.get(i));
-//					logger.log(Level.DEBUG,rec);					
-//				}
 				List<Division> divisionList = Division.cast( new Division().selectAll(conn) );
 				HashMap<Integer, Division> divMap = new HashMap<Integer, Division>();
 				for ( Division d : divisionList ) {
@@ -79,8 +70,6 @@ public class EmployeeImportServlet extends AbstractServlet {
 					employeeStatusMap.put(s.display(), s );
 				}
 				
-//				PreparedStatement ps = conn.prepareStatement("select * from payroll_employee where employee_code=? or (lower(employee_first_name)=? and lower(employee_last_name)=?)");
-				
 				try {
 					
 					HashMap<Integer, PayrollEmployee> employeeMap = makeEmployeeMap(conn);
@@ -90,10 +79,8 @@ public class EmployeeImportServlet extends AbstractServlet {
 					
 					EmployeeImportParser parser = new EmployeeImportParser(conn, fileName, inputStream);
 					List<EmployeeImportRecord> employeeRecords = parser.getEmployeeRecords();	
-
 					EmployeeRecordTransformer betterTransformer = new EmployeeRecordTransformer(employeeMap, divMap, employeeStatusMap);
 					List<EmployeeImportResponseRec> matchedRecords = IterableUtils.toList(IterableUtils.transformedIterable(employeeRecords, betterTransformer));
-
 					
 					data = new EmployeeImportResponse();
 					data.setFileName(fileName);

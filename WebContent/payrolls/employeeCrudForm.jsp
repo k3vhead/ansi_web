@@ -46,7 +46,7 @@
 			<td class="form-label">Department:</td>
 			<td><webthing:attention styleClass="attn departmentAttn">Change to existing value</webthing:attention></td>
 			<td><input name="departmentDescription" type="text" /></td>
-			<td><span class="err departmentErr"></span></td>
+			<td><span class="err departmentDescriptionErr"></span></td>
 		</tr>
 		<tr>
 			<td class="form-label">Status</td>

@@ -348,10 +348,11 @@
             			
             			
                   	
-                   	makeEmployeeTable : function($data) {
+                   	makeEmployeeTable : function() {
                   		console.log("makeEmployeeTable");
                   		$("#workingtag").hide();
                    			
+                  		$data = Object.values(EMPLOYEE_IMPORT.employeeDict);
                 		var $yes = '<webthing:checkmark>Yes</webthing:checkmark>';
                 		var $no = '<webthing:ban>No</webthing:ban>';
                			var $unknown = '<webthing:questionmark>Invalid</webthing:questionmark>';
@@ -395,7 +396,7 @@
             			    //   "type": "GET",
             			    //   "data": {},
             			    //},
-							data: $data.employeeRecords,
+							data: $data,
            			        columns: [
            			        	{ title: "Employee Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employeeCode' }, 
            			        	{ title: "Company Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>",data:"companyCode"}, 
@@ -441,10 +442,10 @@
 									var $id = $(this).attr("data-id");
 									EMPLOYEE_IMPORT.displayEditModal($id);
 								});
-								for (var i = 0; i < $data.employeeRecords.length; i++){                   				                 				
-									if ($data.employeeRecords[i].recordMatches == false){
+								for (var i = 0; i < $data.length; i++){                   				                 				
+									if ($data[i].recordMatches == false){
 										$("#display-div input[name='saveAllButton']").show();
-										document.getElementById($data.employeeRecords[i].rowId).classList.add("highlight");
+										document.getElementById($data[i].rowId).classList.add("highlight");
 									}
 								}    
 							}
@@ -465,6 +466,7 @@
                				terminationDisplay = b.toISOString().substring(0,10);
                			} 
                 			
+               			$("#employee-modal .err").html('');
                			$("#employee-modal input[name='rowId']").val($rowId);
                			$("#employee-modal input[name='employeeCode']").val($row['employeeCode']);
                			$("#employee-modal input[name='employeeCode']").prop('disabled',true);
@@ -610,11 +612,13 @@
                    			$.each( EMPLOYEE_IMPORT.employeeDict, function($index, $value) {
                    				$reportData.push($value);
                    			});
-                    			
-                   			var $importData = {};
-                   			$importData.employeeRecords = $reportData
-                    			
-                   			EMPLOYEE_IMPORT.makeEmployeeTable($importData);
+                    		
+                   			EMPLOYEE_IMPORT.employeeDict = {};
+                      		$.each($reportData, function($index, $value) {
+                       			EMPLOYEE_IMPORT.employeeDict[$value.rowId] = $value;                   				
+                       		});
+                      		
+                   			EMPLOYEE_IMPORT.makeEmployeeTable();
        	        			$("#globalMsg").html("Success").show().fadeOut(3000);
                			} else if ($data.responseHeader.responseCode == 'EDIT_FAILURE' ) {
        						$.each($data.data.webMessages, function($index, $value) {
@@ -638,11 +642,13 @@
                   		$("#display-div .employeeFile").html($data.data.fileName);
                   		$("#display-div input[name='saveAllButton']").hide();
                   		EMPLOYEE_IMPORT.employeeDict = {};
-                  		EMPLOYEE_IMPORT.makeEmployeeTable($data.data);
-                  		
-                   		$.each($data.data.employeeRecords, function($index, $value) {
+                  		$.each($data.data.employeeRecords, function($index, $value) {
                    			EMPLOYEE_IMPORT.employeeDict[$value.rowId] = $value;                   				
                    		});
+                  		
+                  		EMPLOYEE_IMPORT.makeEmployeeTable();
+                  		
+                   		
                    			
 						$("#organization-edit .org-status-change").on("click", function($event) {
                				console.log("changing status");

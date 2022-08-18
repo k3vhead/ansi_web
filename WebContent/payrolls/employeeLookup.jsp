@@ -92,7 +92,7 @@
         			$("#employee-edit input").val("");
         			$("#employee-edit select").val("");
         			$("#employee-edit .err").html("");
-        			$("#employee-edit input[name='selectedEmployeeCode']").val($data.data.employee.employeeCode);
+        			$("#employee-edit .attn").hide();
         			$("#employee-edit input[name='employeeCode']").val($data.data.employee.employeeCode);
         			$("#employee-edit select[name='companyCode']").val($data.data.employee.companyCode);
         			$("#employee-edit select[name='divisionId']").val($data.data.employee.divisionId);
@@ -117,6 +117,8 @@
         			}
         			$("#employee-edit input[name='processDate']").val($data.data.employee.processDate);
         			$("#employee-edit input[name='notes']").val($data.data.employee.notes);
+        			$("#employee-edit input[name='employeeCode']").prop('disabled',true);
+        			$("#employee-edit").attr("data-action", "update");
         			$("#employee-edit").dialog("open");
         		},
         		
@@ -286,6 +288,9 @@
             			$("#employee-edit select").val("");
             			$("#employee-edit .err").html("");
             			$("#employee-edit .employee-code").html("New")
+         			    $("#employee-edit input[name='employeeCode']").prop('disabled',false);
+            			$("#employee-edit .attn").hide();
+            			$("#employee-edit").attr("data-action", "add");
             			$("#employee-edit").dialog("open");
         			});
         			
@@ -525,13 +530,13 @@
         		saveEmployee : function() {
         			console.log("saveEmployee");
         			$("#employee-edit .err").html("");
-        			var $selectedEmployeeCode = $("#employee-edit input[name='selectedEmployeeCode']").val();
+        			var $selectedEmployeeCode = $("#employee-edit input[name='employeeCode']").val();
         			var $unionMember = 0;
         			if ( $("#employee-edit input[name='unionMember']").prop("checked") == true ) {
         				$unionMember = 1; 
         			} 
         			var $outbound = {
-       					'selectedEmployeeCode' : $("#employee-edit input[name='selectedEmployeeCode']").val(),
+       					//'selectedEmployeeCode' : $("#employee-edit input[name='selectedEmployeeCode']").val(),
         				'employeeCode' : $("#employee-edit input[name='employeeCode']").val(),
 	        			'companyCode' : $("#employee-edit select[name='companyCode']").val(),
 	        			'divisionId' : $("#employee-edit select[name='divisionId']").val(),
@@ -548,7 +553,8 @@
 	        			'notes' : $("#employee-edit input[name='notes']").val(),
         			}
         			var $url = "payroll/employee"
-        			if ( $selectedEmployeeCode != null && $selectedEmployeeCode != "") {
+        			//if ( $selectedEmployeeCode != null && $selectedEmployeeCode != "") {
+        			if ( $("#employee-edit").attr("data-action") == "update" ) {
         				$url = $url + "/" + $selectedEmployeeCode
         			}
         			ANSI_UTILS.makeServerCall("post", $url, JSON.stringify($outbound), {200:EMPLOYEELOOKUP.saveEmployeeSuccess}, {});

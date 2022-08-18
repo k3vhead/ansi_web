@@ -277,6 +277,9 @@ public class EmployeeServlet extends AbstractServlet {
 		if ( isUnionMember ) {
 			employee.setUnionCode(employeeRequest.getUnionCode());
 			employee.setUnionRate(new BigDecimal(employeeRequest.getUnionRate()).round(MathContext.DECIMAL32));
+		} else {
+			employee.setUnionCode(null);
+			employee.setUnionRate(null);
 		}
 //		employee.setProcessDate(employeeRequest.getProcessDate().getTime());
 		employee.setNotes(StringUtils.trimToNull(employeeRequest.getNotes()));
