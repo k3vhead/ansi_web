@@ -57,7 +57,7 @@ public class TimesheetImportServlet extends AbstractServlet {
 					List<ValidatedWorksheetEmployee> validatedEmployees = new ArrayList<ValidatedWorksheetEmployee>();
 										
 					FileItem requestFile = uploadRequest.getTimesheetFile();
-					PayrollWorksheetParser parser = new PayrollWorksheetParser(requestFile.getName(), requestFile.getInputStream());
+					PayrollWorksheetParser parser = new PayrollWorksheetParser(conn, requestFile.getName(), requestFile.getInputStream());
 					
 					ValidatedWorksheetHeader header = HeaderValidator.validateHeader(conn, parser.getHeader());
 					
