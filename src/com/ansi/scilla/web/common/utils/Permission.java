@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.list.SetUniqueList;
 
+
 /**, ""
  * Enumerates permissions. These are the permissions that will be grouped to make a
  * permission group. Each function will have Read/Write/None privilege
@@ -264,6 +265,20 @@ public enum Permission {
 		}
 	}
 	
+	/**
+	 * Make a list of all permissions in this functional area
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Permission> makeFunctionalAreaTree() {
+		List<Permission> functionalAreaList = new ArrayList<Permission>();
+		CollectionUtils.addAll(functionalAreaList, makeChildTree().iterator());
+		CollectionUtils.addAll(functionalAreaList, makeParentList().iterator());
+		// remove duplicate values (this permission will be in both lists)
+		List<Permission> uniqueList = SetUniqueList.decorate(new ArrayList<Permission>()); 
+		uniqueList.addAll(functionalAreaList);
+		return uniqueList;
+	}
 	
 	/**
 	 * Make a list of all permissions in this functional area

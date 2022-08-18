@@ -1,5 +1,5 @@
 package com.ansi.scilla.web.permission.response;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
