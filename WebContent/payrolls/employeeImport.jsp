@@ -456,15 +456,22 @@
                 		
 					displayEditModal : function($rowId) {
 						console.log("displayEditModal");
+						
                 		var $row = EMPLOYEE_IMPORT.employeeDict[$rowId];                			
                 		EMPLOYEE_IMPORT.localVars = $rowId;
                			EMPLOYEE_IMPORT.savedEditEmployee = $row
                 			
                			var terminationDisplay = $row['terminationDate'];
-               			if (terminationDisplay !== ""){
+               			console.log(terminationDisplay);
+               			if (terminationDisplay !== "" && terminationDisplay != null){
                				const b = new Date(terminationDisplay);
                				terminationDisplay = b.toISOString().substring(0,10);
-               			} 
+               				console.log("inside" + terminationDisplay);
+               				
+               			} else {
+               				terminationDisplay = null;
+               				console.log("outside"+ terminationDisplay);
+               			}
                 			
                			$("#employee-modal .err").html('');
                			$("#employee-modal input[name='rowId']").val($rowId);
