@@ -136,11 +136,13 @@
 					
 					doEmployeeUpdate : function($employeeValue) {
 						console.log("doEmployeeUpdate");
-						console.log($employeeValue);
 						EMPLOYEE_IMPORT.updateErrorCount = 0;
 						EMPLOYEE_IMPORT.updateSuccessCount = 0;
-						EMPLOYEE_IMPORT.updateExpectedCount = 0;
-						var $url = "payroll/employee/" + $employeeValue['employeeCode'];
+						EMPLOYEE_IMPORT.updateExpectedCount = 0;						
+						var $url = "payroll/employee";
+						if ( $employeeValue.newEmployee == false ) {
+							$url = $url + "/" + $employeeValue['employeeCode'];
+						}
 						var $unionMember = $employeeValue['unionMember'];
 						if ( $unionMember == null || $unionMember == "" ) {
 							$unionMember = 0;
@@ -176,8 +178,6 @@
 						var $passThruData = {
 							'rowId':$employeeValue['rowId']
 						};
-						console.log($url);
-						console.log(JSON.stringify($outbound));
 						ANSI_UTILS.makeServerCall("POST", $url, JSON.stringify($outbound), $callbacks, $passThruData);
 					},
 					
@@ -550,7 +550,6 @@
 								var $rowId = $employeeIndex;
 								var $row = $("<tr>");
 								$row.addClass("save-emp-row");
-								console.log($employeeIndex);
 								
 								$.each( ['employeeCode','companyCode','div','firstName','lastName'], function($index, $key) {
 									var $display = $employeeValue[$key];

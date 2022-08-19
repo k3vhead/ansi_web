@@ -19,10 +19,11 @@ import com.ansi.scilla.common.utils.compare.StringComparison;
 
 	
 public	class EmployeeImportResponseRec extends EmployeeImportRecord implements AnsiComparable {
-	private final Logger logger = LogManager.getLogger(EmployeeImportResponseRec.class);
+//	private final Logger logger = LogManager.getLogger(EmployeeImportResponseRec.class);
 	private static final long serialVersionUID = 1L;
 	private String notes;
 	private Boolean recordMatches;
+	private Boolean newEmployee;
 
 	public EmployeeImportResponseRec() {
 		super();
@@ -66,6 +67,14 @@ public	class EmployeeImportResponseRec extends EmployeeImportRecord implements A
 
 	public void setRecordMatches(Boolean recordMatches) {
 		this.recordMatches = recordMatches;
+	}
+
+	public Boolean getNewEmployee() {
+		return newEmployee;
+	}
+
+	public void setNewEmployee(Boolean newEmployee) {
+		this.newEmployee = newEmployee;
 	}
 
 	@Override
