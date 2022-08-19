@@ -44,13 +44,15 @@ public class EmployeeValidateResponse extends MessageResponse {
 			this.employee = new EmployeeImportResponseRec(employeeImportRecord);
 
 			// override with validated data from request
-			makeEmployee(employeeRequest, division);			
+			makeEmployee(employeeRequest, division);				
 			employee.setRecordMatches( employee.ansiEquals(payrollEmployee) );
+			employee.setNewEmployee(false);
 		} catch (RecordNotFoundException e) {
 			this.employee = new EmployeeImportResponseRec();			
 			// override with validated data from request
 			makeEmployee(employeeRequest, division);
 			employee.setRecordMatches( false );
+			employee.setNewEmployee(true);
 		}
 	}
 

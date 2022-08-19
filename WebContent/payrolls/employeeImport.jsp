@@ -466,11 +466,8 @@
                			if (terminationDisplay !== "" && terminationDisplay != null){
                				const b = new Date(terminationDisplay);
                				terminationDisplay = b.toISOString().substring(0,10);
-               				console.log("inside" + terminationDisplay);
-               				
                			} else {
                				terminationDisplay = null;
-               				console.log("outside"+ terminationDisplay);
                			}
                 			
                			$("#employee-modal .err").html('');
