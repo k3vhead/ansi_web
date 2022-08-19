@@ -103,11 +103,11 @@ public class EmployeeRequest extends AbstractRequest {
 	public void setStatus(String status) {
 		this.status = StringUtils.trimToNull(status);
 	}
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="America/Chicago")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yy", timezone="America/Chicago")
 	public Calendar getTerminationDate() {
 		return terminationDate;
 	}
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="America/Chicago")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yy", timezone="America/Chicago")
 	public void setTerminationDate(Calendar terminationDate) {
 		this.terminationDate = terminationDate;
 	}

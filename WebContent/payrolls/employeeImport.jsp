@@ -703,6 +703,25 @@
                			if ( $("#employee-modal input[name='unionMember']").prop("checked") == true ) {
                				$unionMember = 1; 
                			} 
+               			var $termDateString = $("#employee-modal input[name='terminationDate']").val();
+               			// if you're here because we have date format weirdness, check these libraries that
+               			// might make your life easier:
+               			// Date.toLocaleString() or Date.toLocaleFormat()
+               			// https://www.w3docs.com/snippets/javascript/hot-to-format-a-javascript-date.html and moment.js
+               			if ( $termDateString != null && $termDateString != "") {
+               				console.log("Term Date String: " + $termDateString);
+               				var $termDateArray = $termDateString.split("-");
+               				var $termDate = new Date($termDateArray[0], parseInt($termDateArray[1]) - 1, $termDateArray[2]);
+               				console.log("Term Date: " + $termDate);
+               				var $termMonth = $termDate.getMonth()+1
+               				var $termDOM = $termDate.getDate();
+               				var $termYear = $termDate.getFullYear().toString().substring(2);
+               				if ( $termMonth < 10 ) { $termMonth = "0" + $termMonth; }
+               				if ( $termDOM < 10 ) { $termDOM = "0" + $termDOM; }               				
+               				var $terminationDate = $termMonth + "/" + $termDOM + "/" + $termYear;
+               				//var $terminationDate = $termDate.toLocaleFormat("%m/%d/%y");
+               				console.log($terminationDate);
+               			}
                			var $outbound = {
                				'validateOnly' : true,
                				'employeeCode' : $("#employee-modal input[name='employeeCode']").val(),
@@ -713,11 +732,11 @@
        	        			'middleInitial' : $("#employee-modal input[name='middleInitial']").val(),
        	        			'departmentDescription' : $("#employee-modal input[name='departmentDescription']").val(),
        	        			'status' : $("#employee-modal select[name='status']").val(),
-       	        			'terminationDate' : $("#employee-modal input[name='terminationDate']").val(),	        			
+       	        			'terminationDate' : $terminationDate, //$("#employee-modal input[name='terminationDate']").val(),	        			
        	        			'unionMember' : $unionMember,
        	        			'unionCode' : $("#employee-modal input[name='unionCode']").val(),
        	        			'unionRate' : $("#employee-modal input[name='unionRate']").val(),
-       	        			'processDate' : $("#employee-modal input[name='processDate']").val(),
+       	        			//'processDate' : $("#employee-modal input[name='processDate']").val(),
        	        			'notes' : $("#employee-modal input[name='notes']").val(),
                			}
                 			
