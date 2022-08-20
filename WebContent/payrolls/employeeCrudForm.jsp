@@ -80,7 +80,7 @@
 		<tr>
 			<td class="form-label">Union Rate:</td>
 			<td><webthing:attention styleClass="attn unionRateAttn">Change to existing value</webthing:attention></td>
-			<td><input name="unionRate" style="height:12px;" class="unionInput" type="text"  placeholder="0.00"  /></td>
+			<td><input name="unionRate" style="height:12px;" class="unionInput" type="number" step="0.01" placeholder="0.00"  /></td>
 			<td><span class="err unionRateErr"></span></td>
 		</tr>
 		<!-- <tr>

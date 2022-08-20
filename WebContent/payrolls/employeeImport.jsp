@@ -708,19 +708,16 @@
                			// might make your life easier:
                			// Date.toLocaleString() or Date.toLocaleFormat()
                			// https://www.w3docs.com/snippets/javascript/hot-to-format-a-javascript-date.html and moment.js
+               			var $terminationDate = null;
                			if ( $termDateString != null && $termDateString != "") {
-               				console.log("Term Date String: " + $termDateString);
                				var $termDateArray = $termDateString.split("-");
                				var $termDate = new Date($termDateArray[0], parseInt($termDateArray[1]) - 1, $termDateArray[2]);
-               				console.log("Term Date: " + $termDate);
                				var $termMonth = $termDate.getMonth()+1
                				var $termDOM = $termDate.getDate();
                				var $termYear = $termDate.getFullYear().toString().substring(2);
                				if ( $termMonth < 10 ) { $termMonth = "0" + $termMonth; }
                				if ( $termDOM < 10 ) { $termDOM = "0" + $termDOM; }               				
-               				var $terminationDate = $termMonth + "/" + $termDOM + "/" + $termYear;
-               				//var $terminationDate = $termDate.toLocaleFormat("%m/%d/%y");
-               				console.log($terminationDate);
+               				$terminationDate = $termMonth + "/" + $termDOM + "/" + $termYear;
                			}
                			var $outbound = {
                				'validateOnly' : true,

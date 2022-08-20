@@ -535,6 +535,18 @@
         			if ( $("#employee-edit input[name='unionMember']").prop("checked") == true ) {
         				$unionMember = 1; 
         			} 
+        			$termDateString = $("#employee-edit input[name='terminationDate']").val()
+        			var $terminationDate = null;
+           			if ( $termDateString != null && $termDateString != "") {
+           				var $termDateArray = $termDateString.split("-");
+           				var $termDate = new Date($termDateArray[0], parseInt($termDateArray[1]) - 1, $termDateArray[2]);
+           				var $termMonth = $termDate.getMonth()+1
+           				var $termDOM = $termDate.getDate();
+           				var $termYear = $termDate.getFullYear().toString().substring(2);
+           				if ( $termMonth < 10 ) { $termMonth = "0" + $termMonth; }
+           				if ( $termDOM < 10 ) { $termDOM = "0" + $termDOM; }               				
+           				$terminationDate = $termMonth + "/" + $termDOM + "/" + $termYear;
+           			}
         			var $outbound = {
        					//'selectedEmployeeCode' : $("#employee-edit input[name='selectedEmployeeCode']").val(),
         				'employeeCode' : $("#employee-edit input[name='employeeCode']").val(),
@@ -545,7 +557,7 @@
 	        			'middleInitial' : $("#employee-edit input[name='middleInitial']").val(),
 	        			'departmentDescription' : $("#employee-edit input[name='departmentDescription']").val(),
 	        			'status' : $("#employee-edit select[name='status']").val(),
-	        			'terminationDate' : $("#employee-edit input[name='terminationDate']").val(),	        			
+	        			'terminationDate' : $terminationDate,	        			
 	        			'unionMember' : $unionMember,
 	        			'unionCode' : $("#employee-edit input[name='unionCode']").val(),
 	        			'unionRate' : $("#employee-edit input[name='unionRate']").val(),
