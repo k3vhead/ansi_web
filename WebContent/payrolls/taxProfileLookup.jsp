@@ -258,7 +258,7 @@
        			            { title: "Action", width:"10%", searchable:false, "orderable": false, defaultContent:"", data: function(row, type, set) {
        			            	var $parms = 'data-profile="'+row.profile_id+'"';
        			            	var $deleteLink = "";
-       			            	if ( row.locale_count == 0 ) {
+       			            	if ( row.locale_count + row.history_count == 0 ) {
        			            		$deleteLink = '<span class="action-link delete-action" ' + $parms + '>' + $delete + '</span>';
        			            	}
        			            	var $editLink = '<span class="action-link edit-action"  ' + $parms + '>' + $edit + '</span>';

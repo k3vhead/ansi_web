@@ -21,7 +21,8 @@ public class TaxProfileLookupQuery extends LookupQuery {
 			+ "	payroll_tax_profile.regular_pay, \n"
 			+ "	payroll_tax_profile.ot_hours, \n"
 			+ "	payroll_tax_profile.ot_pay, \n"
-			+ "	(select count(*) from locale where locale.payroll_tax_profile = payroll_tax_profile.profile_id) as locale_count\n";			
+			+ "	(select count(*) from locale where locale.payroll_tax_profile = payroll_tax_profile.profile_id) as locale_count,\n"
+			+ "	(select count(*) from locale_history where locale_history.payroll_tax_profile = payroll_tax_profile.profile_id) as history_count\n";
 	private static final String sqlFromClause = "FROM payroll_tax_profile\n"; 
 	private static final String sqlWhereClause = "";
 	
