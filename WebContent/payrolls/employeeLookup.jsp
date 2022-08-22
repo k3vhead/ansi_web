@@ -610,7 +610,7 @@
     	<webthing:lookupFilter filterContainer="filter-container" />
 		<table id="employeeLookup">
 		</table>
-		<input class="prettyWideButton" id="new-employee-button" value="New" type="button" />
+		<ansi:hasPermission permissionRequired="PAYROLL_WRITE"><input class="prettyWideButton" id="new-employee-button" value="New" type="button" /></ansi:hasPermission>
 		
 		<div id="alias-display">
 			<div class="alias-message err"></div>

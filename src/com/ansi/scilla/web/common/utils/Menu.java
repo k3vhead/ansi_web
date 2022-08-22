@@ -50,7 +50,7 @@ public enum Menu {
 	BCR(                "Budget Control",       QUICK_LINKS, Permission.CLAIMS_WRITE,   "budgetControl.html"),
 	
 	
-	PAYROLL("Payroll", null, Permission.PAYROLL_WRITE, "#"),
+	PAYROLL("Payroll", null, Permission.PAYROLL_READ, "#"),
 	PAYROLL_EMPLOYEE_LOOKUP("Employee Lookup",   PAYROLL,    Permission.PAYROLL_READ,   "payrollEmployeeLookup.html"),
 	PAYROLL_TIMESHEET_LOOKUP("Timesheet Lookup", PAYROLL,    Permission.PAYROLL_READ,   "payrollTimesheetLookup.html"),
 	PAYROLL_TAX_PROFILE_LOOKUP("Tax Profile Lookup", PAYROLL, Permission.PAYROLL_READ,  "payrollTaxProfileLookup.html"),

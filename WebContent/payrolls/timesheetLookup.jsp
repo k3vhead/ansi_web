@@ -316,12 +316,13 @@
     	        	        			$otDisplay = false;
     	        	        			TIMESHEETLOOKUP.resetColumns($defaultDisplay);	        	        			
     	        	        		}
-    	        	        	},{
+    	        	        	}<ansi:hasPermission permissionRequired="PAYROLL_WRITE">,{
     	        	        		text:'New',
     	        	        		action: function(e, dt, node, config) {
     	        	        			TIMESHEETLOOKUP.showNewTimeSheet()
     	        	        		}
     	        	        	}
+    	        	        	</ansi:hasPermission>
                	        	],
                	        "columnDefs": [
                 	            { "orderable": true, "targets": -1 },
@@ -560,7 +561,9 @@
 
     	<webthing:lookupFilter filterContainer="filter-container" />
 		<table id="timesheetLookup"></table>
-		<div class="new-timesheet-container"><input type="button" value="New Timesheet" class="prettyWideButton" name="new-timesheet" /></div>
+		<div class="new-timesheet-container">
+			<ansi:hasPermission permissionRequired="PAYROLL_WRITE"><input type="button" value="New Timesheet" class="prettyWideButton" name="new-timesheet" /></ansi:hasPermission>
+		</div>
 		
 		
 		<jsp:include page="timesheetEmployee.jsp">

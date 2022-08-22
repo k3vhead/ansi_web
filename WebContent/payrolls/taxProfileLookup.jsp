@@ -227,13 +227,14 @@
                	        		'csv', 
                	        		'excel', 
                	        		{extend: 'pdfHtml5', orientation: 'landscape'}, 
-               	        		'print',{extend: 'colvis',	label: function () {doFunctionBinding();$('#timesheetLookup').draw();}},
+               	        		'print',{extend: 'colvis',	label: function () {doFunctionBinding();$('#timesheetLookup').draw();}}<ansi:hasPermission permissionRequired="PAYROLL_WRITE">,
                	        		{
     	        	        		text:'New',
     	        	        		action: function(e, dt, node, config) {
     	        	        			PROFILELOOKUP.showNewProfile()
     	        	        		}
     	        	        	}
+               	        		</ansi:hasPermission>
                	        	],
                	        "columnDefs": [
                	            { "orderable": true, "targets": -1 },                	            
@@ -401,7 +402,9 @@
 
     	<webthing:lookupFilter filterContainer="filter-container" />
 		<table id="timesheetLookup"></table>
-		<div class="new-profile-container"><input type="button" value="New Profile" class="prettyWideButton" name="new-profile" /></div>
+		<div class="new-profile-container">
+			<ansi:hasPermission permissionRequired="PAYROLL_WRITE"><input type="button" value="New Profile" class="prettyWideButton" name="new-profile" /></ansi:hasPermission>
+		</div>
 		
 		
 				            
