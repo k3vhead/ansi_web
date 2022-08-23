@@ -6,11 +6,13 @@ import java.util.Calendar;
 import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.db.Division;
+import com.ansi.scilla.common.db.PayrollEmployee;
 import com.ansi.scilla.common.payroll.common.EmployeeStatus;
 import com.ansi.scilla.web.common.request.AbstractRequest;
 import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class EmployeeRequest extends AbstractRequest {
 
@@ -144,9 +146,40 @@ public class EmployeeRequest extends AbstractRequest {
 	
 	
 	public WebMessages validateAdd(Connection conn) throws Exception {
-		WebMessages webMessages = validateUpdate(conn);
+		
+		WebMessages webMessages = new WebMessages();
+		if ( employeeExists(conn) ) {
+			webMessages.addMessage(EMPLOYEE_CODE, "Duplicate Employee");
+		}
 		RequestValidator.validateInteger(webMessages, EMPLOYEE_CODE, employeeCode, null, null, true);
+		RequestValidator.validateString(webMessages, "name", this.firstName, 40, true, "Name");
+		RequestValidator.validateString(webMessages, "name", this.lastName, 40, true, "Name");
+		RequestValidator.validateString(webMessages, "name", this.middleInitial, 2, false, "Middle Initial");
+		RequestValidator.validateString(webMessages, DEPARTMENT_DESCRIPTION, this.departmentDescription, 45, true, null);
+		RequestValidator.validateString(webMessages, NOTES, this.notes, 512, false, null);
+		RequestValidator.validateCompanyCode(conn, webMessages, COMPANY_CODE, companyCode, true, null);
+		RequestValidator.validateEmployeeStatus(webMessages, STATUS, status, true);
+		if ( this.unionMember != null && this.unionMember.intValue() == 1 ) {
+			RequestValidator.validateString(webMessages, UNION_CODE, unionCode, 45, true, null);
+			RequestValidator.validateNumber(webMessages, UNION_RATE, unionRate, 0.01D, null, true, null);			
+		}
+//		RequestValidator.validateDate(webMessages, PROCESS_DATE, processDate, true, null, null);
+		validateTerminationDate(webMessages);
 		return webMessages;
+	}
+	
+	
+	private boolean employeeExists(Connection conn) throws Exception {
+		PayrollEmployee payrollEmployee = new PayrollEmployee();
+		payrollEmployee.setEmployeeCode(this.employeeCode);
+		Boolean payrollEmployeeExists = null;
+		try {
+			payrollEmployee.selectOne(conn);
+			payrollEmployeeExists = true;
+		} catch ( RecordNotFoundException e) {
+			payrollEmployeeExists = false;
+		}
+		return payrollEmployeeExists.booleanValue();
 	}
 	
 	

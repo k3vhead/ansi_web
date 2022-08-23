@@ -420,6 +420,10 @@
 	           				}
 	           				$("#confirm-modal").dialog("open");	 
 	           			});
+	           			
+	           			$("#data-header input[name='reloadButton']").click( function($event) {
+	           				TIMESHEET_IMPORT.openTheFile();
+	           			});
 	           		},
 	           		
 	           		
@@ -1172,6 +1176,7 @@
 					<td class="col6"><span class="timesheetFile"></span></td>
 					<td class="col7" id="cancel-save-buttons">
 						<input type="button" value="Cancel" name="cancelButton" class="action-button" /> 
+						<input type="button" value="Reload" name="reloadButton" class="action-button" />
 						<input type="button" value="Save" id="save-button" />
 					</td>
 				</tr>
