@@ -29,6 +29,9 @@
 		<script type="text/javascript" src="js/payroll.js"></script>
 
 		<style type="text/css">
+			#alias-modal {
+				display:none;
+			}
 			#confirm-modal {
         		display:none;
         	}
@@ -198,6 +201,7 @@
 	           		statusAintGood : '<webthing:warning>Warning</webthing:warning>',
 	           		statusIsPending : '<webthing:pending>Pending</webthing:pending>',
 	           		statusIsQueued : '<webthing:queue>Queued</webthing:queue>',
+	           		userAlias : '<webthing:userAlias>Make Alias</webthing:userAlias>',
 	           		saveButton : '<webthing:save>Save</webthing:save>',
 	           		edit : '<webthing:edit>Edit</webthing:edit>',
 	           		view : '<webthing:view styleClass="details-control">Details</webthing:view>',
@@ -375,6 +379,15 @@
 					},
 					
 					
+					
+					getAliasSuccess : function($data, $passthru) {
+						console.log("getAliasSuccess");
+						$("#alias-modal .division").html($data.data.employee.div);
+						$("#alias-modal .companyCode").html($data.data.employee.companyCode);
+						$("#alias-modal .err").html('');
+					},
+					
+					
 	           	
 	           		initializeDisplay: function(){
 	           			console.log("TIMESHEET_IMPORT.initializeDisplay: function - begin");	           			
@@ -427,6 +440,57 @@
 	           		},
 	           		
 	           		
+	           		makeAliasModal : function() {
+           				$( "#alias-modal" ).dialog({
+               				title:'Employee Alias',
+               				autoOpen: false,
+               				height: 230,
+               				width: 500,
+               				modal: true,
+               				closeOnEscape:true,
+               				//open: function(event, ui) {
+               				//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+               				//},
+               				buttons: [
+               					{
+               						id:  "alias-cancel",
+               						click: function($event) {
+             							$( "#alias-modal" ).dialog("close");
+               						}
+               					},{
+               						id:  "alias-save",
+               						click: function($event) {               							
+               							TIMESHEET_IMPORT.saveAlias();
+               						}
+               					}
+               				]
+               			});	
+               			$("#alias-cancel").button('option', 'label', 'Cancel');  
+               			$("#alias-save").button('option', 'label', 'Save');
+               			
+               			
+               			var $nameSelector = "#alias-modal input[name='employeeName']"
+               			$( $nameSelector ).autocomplete({
+               				'source':"payroll/employeeAutoComplete?",
+               				position:{my:"left top", at:"left bottom",collision:"none"},
+               				appendTo:"#alias-modal",
+               				select: function( event, ui ) {
+               					console.log(ui);
+               					$($nameSelector).val(ui.item.label);
+               					$("#alias-modal .employeeCode").html(ui.item.id);
+               					if ( ui.item.value == null || ui.item.value.trim() == "" ) {
+               						$($nameSelector).val("")
+               						$("#alias-modal .employeeCode").html("")
+               						$("#alias-modal .alias-display").html("")
+               					} else {
+               						var $url = "payroll/employee/" + ui.item.id;
+               						var $callbacks = {200:TIMESHEET_IMPORT.getAliasSuccess};
+               						var $passthru = {};
+               						ANSI_UTILS.makeServerCall("GET", $url, null, $callbacks, $passthru);
+               					}
+               		      	}
+               		 	});
+	           		},
 	           		
 	           		
 	           		
@@ -689,7 +753,12 @@
 	           						'orderable': false, 	           						
 	    			            	data: function ( row, type, set ) { 
 	    			            		var $editLink = '<span class="action-link edit-link" data-id="'+row.row+'">' + TIMESHEET_IMPORT.edit + '</span>';
-	    			            		return  $editLink;	    			            		
+	    			            		var $aliasLink = '';
+										if ( row.employeeCode == null || row.employeeCode == '' ) {
+											$aliasLink = '<span class="action-link alias-link" data-id="'+row.row+'" data-employeename="'+row.employeeName+'">' + TIMESHEET_IMPORT.userAlias + '</span>';
+										}
+
+	    			            		return  $editLink + $aliasLink;	    			            		
 	    			            		//var $viewLink = '<span class="action-link view-link" data-id="'+row.row+'">' + TIMESHEET_IMPORT.view + '</span>';
 	    			            		//var $deleteLink = '<span class="action-link delete-link" data-id="'+row.employee_code+'" data-name="'+row.employee_name+'"><webthing:delete>Delete</webthing:delete></span>';
 	    			            		//return  $editLink + TIMESHEET_IMPORT.saveButton;
@@ -705,7 +774,14 @@
 	           					$(".edit-link").on("click", function() {
 	           						var $rowNumber = $(this).attr('data-id');
 	           						TIMESHEET_IMPORT.showEmployeeModal($rowNumber, "edit");
-	           					});	           					
+	           					});	   
+	           					
+	           					$(".alias-link").off("click");
+	           					$(".alias-link").on("click", function() {
+	           						var $rowNumber = $(this).attr('data-id');
+	           						var $employeeName = $(this).attr('data-employeename');
+	           						TIMESHEET_IMPORT.showAliasModal($rowNumber, $employeeName);
+	           					});
 	           				}
 	           			});
 	           			$("#data-detail").show();
@@ -892,6 +968,39 @@
 	           		},
 	           		
 	           		
+	           		
+	           		saveAlias : function() {
+	           			console.log("saveAlias");
+	           			var $employeeCode = $("#alias-modal .employeeCode").html();
+	           			if ( $employeeCode == null || $employeeCode == '' ) {
+	           				$("#alias-modal .employeeNameErr").html("Invalid value");
+	           			} else {
+		            		var $employeeName = $("#alias-modal .alias").html();
+		            		var $url = "payroll/alias/" + $employeeCode;
+		            		$("#alias-modal .err").html("");
+		            		console.log("new alias name: " + $employeeName);
+		            		ANSI_UTILS.makeServerCall("POST", $url, {"employeeName":$employeeName}, {200:TIMESHEET_IMPORT.saveAliasSuccess}, {});
+	           			}
+	           		},
+	           		
+	           		
+	           		
+	           		saveAliasSuccess : function($data, $passthru) {
+	           			console.log("saveAliasSuccess");
+	           			if ( $data.responseHeader.responseCode == "SUCCESS") {
+							$("#globalMsg").html("Success").show().fadeOut(6000);
+							$("#alias-modal").dialog("close");
+							$("#data-header input[name='reloadButton']").click();
+	           			} else if ( $data.responseHeader.responseCode == "EDIT_FAILURE") {
+	           				console.log("EDIT FAILURE");
+	           			} else {
+							$("#globalMsg").html("Unexpected response status: " + $data.responseHeader.responseCode + ". Contact Support").show();
+	           			}
+	           		},
+	           		
+	           		
+	           		
+	           		
 	           		saveEmployee : function($employee) {
 	           			console.log("saveEmployee: " + $employee.employeeCode);
 	           			var $selector = "#save-all-modal .emp" + $employee.employeeCode;
@@ -1059,6 +1168,18 @@
 	           		
 	           		
 	           		
+	           		showAliasModal : function($rowNumber, $employeeName) {
+	           			console.log("showAliasModal " + $rowNumber + " [" + $employeeName + "]");	
+	           			if ( ! $("#edit-modal").hasClass("ui-dialog-content")) {
+	           				TIMESHEET_IMPORT.makeAliasModal();
+	           			}
+	           			$("#alias-modal .err").html('');
+	           			$("#alias-modal .alias-display").html('');
+	           			$("#alias-modal input").val('');
+	           			
+	           			$("#alias-modal .alias").html($employeeName);
+	           			$("#alias-modal").dialog("open");
+	           		},
 	           		          		
 	           		
 	           		
@@ -1132,14 +1253,10 @@
 			<form id="file-selection" method="post" enctype="multipart/form-data">
 				<table class="prompt">
 					<tr>
-						<td class="col1" id="file-picker-label"><span
-							class="form-label">Payroll File: </span></td>
-						<td class="col2" id="file-picker"><input type="file"
-							id="timesheet-file" name="files[]" /></td>
-						<td class="col3" id="open-button-cell"><input type="button"
-							id="open-button" value="Open" /></td>
-						<td class="col4" id="file-picker-err"><span
-							class="timesheetFileErr err"> </span></td>
+						<td class="col1" id="file-picker-label"><span class="form-label">Payroll File: </span></td>
+						<td class="col2" id="file-picker"><input type="file" id="timesheet-file" name="files[]" /></td>
+						<td class="col3" id="open-button-cell"><input type="button" id="open-button" value="Open" /></td>
+						<td class="col4" id="file-picker-err"><span class="timesheetFileErr err"> </span></td>
 					</tr>
 				</table>
 			</form>
@@ -1218,6 +1335,37 @@
 				</thead>
 				<tbody>
 				</tbody>
+			</table>
+		</div>
+		
+		
+		<div id="alias-modal">			
+			<table>
+				<tr>
+					<td><span class="form-label">Alias:</span></td>
+					<td><span class="alias alias-display"></span></td>
+					<td>&nbsp;</td>
+				</tr>
+				<tr>
+					<td><span class="form-label">Employee Name:</span></td>
+					<td><input name="employeeName" /></td>
+					<td><span class="err employeeNameErr"></span></td>
+				</tr>
+				<tr>
+					<td><span class="form-label">Employee Code:</span></td>
+					<td><span class="employeeCode alias-display"></span></td>
+					<td>&nbsp;</td>
+				</tr>
+				<tr>
+					<td><span class="form-label">Division:</span></td>
+					<td><span class="division alias-display"></span></td>
+					<td>&nbsp;</td>
+				</tr>
+				<tr>
+					<td><span class="form-label">Company:</span></td>
+					<td><span class="companyCode alias-display"></span></td>
+					<td>&nbsp;</td>
+				</tr>
 			</table>
 		</div>
 	</tiles:put>

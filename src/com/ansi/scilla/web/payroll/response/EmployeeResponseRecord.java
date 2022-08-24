@@ -6,6 +6,7 @@ import java.util.Calendar;
 import org.apache.commons.lang3.time.DateUtils;
 
 import com.ansi.scilla.common.ApplicationObject;
+import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.PayrollEmployee;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.thewebthing.commons.db2.RecordNotFoundException;
@@ -29,6 +30,7 @@ public class EmployeeResponseRecord extends ApplicationObject {
 	private Double unionRate;
 //	private Calendar processDate;
 	private String notes;
+	private String div;
 	
 	public EmployeeResponseRecord() {
 		super();
@@ -55,6 +57,12 @@ public class EmployeeResponseRecord extends ApplicationObject {
 		this.unionCode = employee.getUnionCode();
 		this.unionRate = employee.getUnionRate() == null ? null : employee.getUnionRate().doubleValue();
 //		this.processDate = DateUtils.toCalendar(employee.getProcessDate());
+		if ( this.divisionId != null ) {
+			Division division = new Division();
+			division.setDivisionId(divisionId);
+			division.selectOne(conn);
+			this.div = division.getDivisionDisplay();
+		}
 		
 	}
 
@@ -165,6 +173,14 @@ public class EmployeeResponseRecord extends ApplicationObject {
 //	public void setProcessDate(Calendar processDate) {
 //		this.processDate = processDate;
 //	}
+
+	public String getDiv() {
+		return div;
+	}
+
+	public void setDiv(String div) {
+		this.div = div;
+	}
 
 	public String getNotes() {
 		return notes;
