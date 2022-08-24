@@ -774,8 +774,14 @@
 	           					} else {
 	           						$("#globalMsg").html("Invalid response code " + $data.responseHeader.responseCode + ". Contact Support");
 	           					}
+	           				} else if ( xhr.status == 403 ) {
+	           					$("#globalMsg").html("Session Expired").show();
+	           					$("#prompt-div").hide();
+	           					$("#workingtag").hide();	
 	           				} else {
-	           					$("#globalMsg").html("Response Code " + xhr.status + ". Contact Support");
+	    						$("#workingtag").hide();
+	           					$("#prompt-div").hide();
+	           					$("#globalMsg").html("Response Code " + xhr.status + ". Contact Support").show();
 	           				}
 	           			};
         				xhr.send(formData);
@@ -793,21 +799,17 @@
 		
    
 	    	
-	    <div id="prompt-div">
-	   
-	    <table>
-    		
-    		<tr>
-    			<td><span class="formLabel">Paycom Import File:</span></td>
-    			<td><input type="file" id="employee-file" name="files[]" /><br /></td>
-    			<td><span class="employeeFileErr err"></span></td>
-    		</tr>
-    		<tr>
-    			
+	    <div id="prompt-div">	   
+	    	<table>
+	    		<tr>
+	    			<td><span class="formLabel">Paycom Import File:</span></td>
+	    			<td><input type="file" id="employee-file" name="files[]" /><br /></td>
+	    			<td><span class="employeeFileErr err"></span></td>
+	    		</tr>
+	    		<tr>
     				<td colspan="2" style="text-align:center;"><input type="button" value="Open" id="save-button" /></td>
-    			
-    		</tr>
-    	</table>
+	    		</tr>
+	    	</table>
     	</div>
 	    	
 	    <div id="workingtag">
@@ -815,104 +817,27 @@
 	    </div>
     	
     	<div id="display-div">
-    	 <webthing:lookupFilter filterContainer="filter-container" />
-    	<table>
-    		<tr id="makeedit">
-   				<td><span class="form-label">Paycom Import File:</span></td>
-   				<td><span class="employeeFile"></span></td>
-   				<td rowspan="2"><input type="button" value="Cancel" name="cancelButton" class="action-button" /></td>
-   				<td rowspan="2"><input type="button" value="Save All" name="saveAllButton" class="action-button" /></td>
-   				
-    		</tr>
-    	</table>
+			<webthing:lookupFilter filterContainer="filter-container" />
+	    	<table>
+	    		<tr id="makeedit">
+	   				<td><span class="form-label">Paycom Import File:</span></td>
+	   				<td><span class="employeeFile"></span></td>
+	   				<td rowspan="2"><input type="button" value="Cancel" name="cancelButton" class="action-button" /></td>
+	   				<td rowspan="2"><input type="button" value="Save All" name="saveAllButton" class="action-button" /></td>
+	   				
+	    		</tr>
+	    	</table>
     	</div>
+    	
+    	
 		<div id="employee-display">
 			<div class="employee-message err"></div>
 			<table id="employeeImport">				
 			</table>			
 		</div>
 		
-<%-- 		 <div id="employee-modal">
-			<input type="hidden" name="rowId"/>
-			<table>
-			
-				<tr>
-					<td><span class="formLabel" >Employee Code:</span></td>
-					<td><input name="employeeCode" disabled="" /></td>
-					<td><span class="err employeeCodeErr"></span></td>
-				</tr>
-					<tr>
-					<td><span class="formLabel">Company Code:</span></td>
-					<td><input name="companyCode" /></td>
-					<td><span class="err companyCodeErr"></span></td>
-				</tr>
-				<tr>
-					<td class="form-label">Division:</td>
-					<td>
-						<select name="divisionId">
-							<option value=""></option>
-							
-							<ansi:selectOrganization active="true" type="DIVISION" />
-						</select>
-					</td>
-					<td><span class="divisionIdErr err"></span></td>
-				</tr>
-					<tr>
-					<td><span class="formLabel">First Name:</span></td>
-					<td><input name="firstName" /></td>
-					<td><span class="err firstNameErr"></span></td>
-				</tr>
-			
-				<tr>
-					<td><span class="formLabel">Last Name:</span></td>
-					<td><input name="lastName" /></td>
-					<td><span class="err lastNameErr"></span></td>
-				</tr>
-					<tr>
-					<td><span class="formLabel">Department Description:</span></td>
-					<td><input name="departmentDescription" /></td>
-					<td><span class="err departmentDescriptionErr"></span></td>
-				</tr>		
-				<tr>
-					<td><span class="formLabel">Status:</span></td>
-					<td>
-						<select name="status">
-							
-							<webthing:employeeStatus />
-						</select>
-					</td>
-					<td><span class="err statusErr"></span></td>
-				</tr>
-				<tr>
-					<td><span class="formLabel">Termination Date:</span></td>
-					<td><input type="date" name="terminationDate" /></td>
-					<td><span class="err terminationErr"></span></td>
-				</tr>
-					<tr>
-					
-					<td class="form-label">Union Member:</td>
-					<td><input name="unionMember"  type="checkbox" value="1" /></td>
-					<td><span class="err unionMemberErr"></span></td>
-			
-				</tr>
-				<tr>
-					<td><span class="formLabel">Union Code:</span></td>
-					<td><input name="unionCode" class="unionInput" type="text" /></td>
-					<td><span class="err unionCodeErr"></span></td>
-				</tr>
-				<tr>
-					<td><span class="formLabel">Union Rate:</span></td>
-					<td><input name="unionRate" class="unionInput" type="text"/></td>
-					<td><span class="err unionRateErr"></span></td>
-				</tr>
-				<tr>
-					<td><span class="formLabel">Notes:</span></td>
-					<td><input name="notes" /></td>
-					<td><span class="err notesErr"></span></td>
-				</tr>
-			</table>
-			
-		</div> --%> 
+
+
 		<jsp:include page="employeeCrudForm.jsp">
 			<jsp:param name="id" value="employee-modal" />
 		</jsp:include>

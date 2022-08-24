@@ -616,9 +616,13 @@
 	           			xhr.onload = function() {
 	           				if ( xhr.status == 200 ) {
 	           					var $data = JSON.parse(this.response);
-								TIMESHEET_IMPORT.processUpload200($data);	           					
+								TIMESHEET_IMPORT.processUpload200($data);
+	           				} else if ( xhr.status == 403 ) {
+	           					$("#globalMsg").html("Session Expired").show();
+	           					$(".thinking").hide();	
            					} else {
-           						$("#globalMsg").html("Response Code " + xhr.status + ". Contact Support");
+           						$("#globalMsg").html("Response Code " + xhr.status + ". Contact Support").show();
+           						$(".thinking").hide();	
            					}
            				};
            			
