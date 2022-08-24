@@ -929,7 +929,7 @@
     				$("#bcr_new_claim_modal .err").html("");
     				$("#bcr_new_claim_modal input[name='ticketId']").val($ticketId);
     				$("#bcr_new_claim_modal input[name='dlAmt']").val($data.data.ticketDetail.remainingDlAmt.toFixed(2));
-    				$("#bcr_new_claim_modal input[name='volumeClaimed']").val($data.data.claimDetail.volume_remaining.toFixed(2));
+    				$("#bcr_new_claim_modal input[name='volumeClaimed']").val($data.data.remainingPricePerCleaning.toFixed(2));
     				$("#bcr_new_claim_modal .ticketId").html($ticketId);
     				$("#bcr_new_claim_modal input[name='serviceTypeId']").val($serviceTypeId);
     				$("#bcr_new_claim_modal .serviceTagId").html($serviceTagId);
@@ -2858,8 +2858,8 @@
         			$("#bcr_quick_claim_modal .jobId").html("Job: " + $data.data.ticketDetail.jobId);
         			$("#bcr_quick_claim_modal .jobSite").html($data.data.ticketDetail.jobSiteAddress.name);
         			$("#bcr_quick_claim_modal .ticketAmt").html($data.data.ticketDetail.actDlAmt);
-        			$("#bcr_quick_claim_modal .available_volume_claimed").html($data.data.claimDetail.volume_remaining.toFixed(2));
-        			$("#bcr_quick_claim_modal .available_emp_volume_claimed").html($data.data.claimDetail.volume_remaining.toFixed(2));
+        			$("#bcr_quick_claim_modal .available_volume_claimed").html($data.data.remainingPricePerCleaning.toFixed(2));
+        			$("#bcr_quick_claim_modal .available_emp_volume_claimed").html($data.data.remainingPricePerCleaning.toFixed(2));
         			
         			
         			var $ticketId = $passThruData["ticketId"];
@@ -2909,7 +2909,7 @@
     						var $volumeClaimedSelector = "#bcr_quick_claim_modal .employee" + $index + " input[name='volumeClaimed']";
     						var $employeePct = $($pctSelector).val();    						
     						var $dlAmt = (parseFloat($employeePct)/100.0) * parseFloat($actDlAmt);
-    						var $volumeClaimed = (parseFloat($employeePct)/100.0) * $data.data.claimDetail.volume_remaining;
+    						var $volumeClaimed = (parseFloat($employeePct)/100.0) * $data.data.remainingPricePerCleaning;
     						$($dlAmtSelector).val( $dlAmt.toFixed(2) );
     						$($volumeClaimedSelector).val( $volumeClaimed.toFixed(2) );
     						
