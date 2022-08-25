@@ -701,6 +701,11 @@
 								statusCode: {
 									200: function($data) {
 										console.log("Got the quote");
+										
+										if ( $data.data.webMessages != null ) && $data.data.webMessages.hasOwnProperty("GLOBAL_MESSAGE" )) {
+											$("#globalMsg").html( $data.data.webMessages["GLOBAL_MESSAGE"][0]).show();
+										}
+										
 										QUOTEMAINTENANCE.quote = $data.data.quote;
 										QUOTEMAINTENANCE.populateQuotePanels($data.data);	
 										if ( QUOTEMAINTENANCE.quote.canEdit == true ) {
