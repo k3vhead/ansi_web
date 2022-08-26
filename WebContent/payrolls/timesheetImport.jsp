@@ -431,6 +431,7 @@
 	           				if ( ! $("#confirm-modal").hasClass("ui-dialog-content")) {
 	           					TIMESHEET_IMPORT.makeConfirmModal();
 	           				}
+	           				console.log("confirm modal open 434");
 	           				$("#confirm-modal").dialog("open");	 
 	           			});
 	           			
@@ -514,6 +515,8 @@
                					},{
                						id:  "confirm-save",
                						click: function($event) {
+               							console.log("confirms-save click: Closing dialog");
+               							$( "#confirm-modal" ).dialog("close");
                							TIMESHEET_IMPORT.saveTimesheet();
                						}
                					}
@@ -581,6 +584,7 @@
                 					id:  "save-employee-cancel",
                 					click: function($event) {
                 						$( "#save-all-modal" ).dialog("close");
+                						$( "#confirm-modal").dialog("close");
                 						console.log("Errors: " + TIMESHEET_IMPORT.updateErrorCount);
                 						if ( TIMESHEET_IMPORT.updateErrorCount == 0 ) {
                 							// all updates are complete and successful so do a page reset
@@ -589,7 +593,7 @@
                 						} else {
                 							// some updates failed, so reload the spreadsheet and see where we're at
                 							$("#globalMsg").html("Update failed. Reloading").show().fadeOut(6000);
-                							$("#save-button").click();
+                							$("#data-header input[name='reloadButton']").click();
                 						}
                 					}
                 				}

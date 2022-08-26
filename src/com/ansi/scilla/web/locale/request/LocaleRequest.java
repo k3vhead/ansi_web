@@ -4,6 +4,7 @@ import java.sql.Connection;
 
 import com.ansi.scilla.common.db.Locale;
 import com.ansi.scilla.common.db.PayrollTaxProfile;
+import com.ansi.scilla.common.utils.LocaleType;
 import com.ansi.scilla.web.common.request.AbstractRequest;
 import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.WebMessages;
@@ -79,7 +80,14 @@ public class LocaleRequest extends AbstractRequest {
 		RequestValidator.validateState(webMessages, STATE_NAME, this.stateName, true);
 		RequestValidator.validateLocaleType(webMessages, LOCALE_TYPE_ID, this.localeTypeId, true);
 		RequestValidator.validateString(webMessages, ABBREVIATION, this.abbreviation, 3, false, null);
-		RequestValidator.validateId(conn, webMessages, "locale", Locale.LOCALE_ID, PARENT_ID, this.parentId, false);
+		boolean localeRequiresParent = false;
+		if ( ! webMessages.containsKey( LOCALE_TYPE_ID )) {
+			LocaleType localeType = LocaleType.valueOf(this.localeTypeId);
+			if ( localeType.getParentTypes().length > 0 ) {
+				localeRequiresParent = true;
+			}
+		}
+		RequestValidator.validateId(conn, webMessages, "locale", Locale.LOCALE_ID, PARENT_ID, this.parentId, localeRequiresParent);
 		RequestValidator.validateId(conn, webMessages, PayrollTaxProfile.TABLE, PayrollTaxProfile.PROFILE_ID, PROFILE_ID, this.profileId, false);
 		if ( isDuplicate(conn)) {
 			webMessages.addMessage(NAME, "Duplicate Entry");
@@ -96,7 +104,14 @@ public class LocaleRequest extends AbstractRequest {
 		RequestValidator.validateState(webMessages, STATE_NAME, this.stateName, true);
 		RequestValidator.validateLocaleType(webMessages, LOCALE_TYPE_ID, this.localeTypeId, true);
 		RequestValidator.validateString(webMessages, ABBREVIATION, this.abbreviation, 3, false, null);
-		RequestValidator.validateId(conn, webMessages, "locale", Locale.LOCALE_ID, PARENT_ID, this.parentId, false);
+		boolean localeRequiresParent = false;
+		if ( ! webMessages.containsKey( LOCALE_TYPE_ID )) {
+			LocaleType localeType = LocaleType.valueOf(this.localeTypeId);
+			if ( localeType.getParentTypes().length > 0 ) {
+				localeRequiresParent = true;
+			}
+		}
+		RequestValidator.validateId(conn, webMessages, "locale", Locale.LOCALE_ID, PARENT_ID, this.parentId, localeRequiresParent);
 		
 		return webMessages;
 	}

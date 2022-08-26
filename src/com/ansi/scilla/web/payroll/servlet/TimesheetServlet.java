@@ -131,6 +131,7 @@ public class TimesheetServlet extends AbstractServlet {
 				}
 			} catch ( RecordNotFoundException e) {
 				logger.log(Level.DEBUG, "RecordNotFoundException");
+				e.printStackTrace();
 				super.sendNotFound(response);
 			} catch (com.ansi.scilla.web.common.exception.InvalidFormatException e) {
 				String fieldName = super.findBadField(e.getMessage());

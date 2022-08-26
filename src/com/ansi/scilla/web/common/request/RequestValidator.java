@@ -254,6 +254,7 @@ public class RequestValidator {
 			ps.setString(1, value.toLowerCase());
 			ps.setString(2, state);
 			logger.log(Level.DEBUG, sql);
+			logger.log(Level.DEBUG, value.toLowerCase() + " | " + state);
 			ResultSet rs = ps.executeQuery();
 			if ( rs.next() ) {
 				if ( rs.getInt("record_count") == 0 ) {
