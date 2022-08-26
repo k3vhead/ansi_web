@@ -240,17 +240,17 @@
         					var $newPct = null;
         					if ( $employeePct == null || $employeePct == '' ) {
         						$newPct = $defaultPct;
-        						$($pctSelector).val(parseFloat($defaultPct).toFixed(2));
+        						$($pctSelector).val(parseFloat($defaultPct).toFixed(6));
         					} else {
         						$newPct = $employeePct;
-        						$($pctSelector).val(parseFloat($employeePct).toFixed(2));
+        						$($pctSelector).val(parseFloat($employeePct).toFixed(6));
         					}
         					if ( $dlAmt == null || $dlAmt == '' ) {
         						$($dlSelector).val( (parseFloat($availableDL)*(parseFloat($newPct)/100)).toFixed(2) );
         					}
         					if ( $volumeClaimed == null || $volumeClaimed == '' ) {
         						$($volSelector).val( (parseFloat($availableVol)*(parseFloat($newPct)/100)).toFixed(2) );
-        					}
+      						}
         				}
         			} );
 					$("#bcr_quick_claim_modal .total_pct").html( BUDGETCONTROL.makeQuickClaimTotal("employeePct").toFixed(2) );
@@ -288,7 +288,7 @@
 					var $volumeClaimed = $employeePct * parseFloat($availableVolume);
 					
 					$($selector + " input[name='dlAmt']").val( parseFloat($dlAmt).toFixed(2) );
-					$($selector + " input[name='employeePct']").val( ($employeePct*100.0).toFixed(2) );
+					$($selector + " input[name='employeePct']").val( ($employeePct*100.0).toFixed(6) );
 					$($selector + " input[name='volumeClaimed']").val( $volumeClaimed.toFixed(2) );
 					
 					$("#bcr_quick_claim_modal .total_pct").html( (BUDGETCONTROL.makeQuickClaimTotal("employeePct")).toFixed(2) );
@@ -321,8 +321,8 @@
 					var $availableVolume = $("#bcr_quick_claim_modal .available_emp_volume_claimed").html().replace("$","").replace(",","");
 					var $employeePct = $($selector + " input[name='employeePct']").val();
 					
-					$($selector + " input[name='dlAmt']").val( (parseFloat($employeePct)/100 * parseFloat($availableDL)).toFixed(2) );
-					$($selector + " input[name='volumeClaimed']").val( (parseFloat($employeePct)/100 * parseFloat($availableVolume)).toFixed(2) );	
+					$($selector + " input[name='dlAmt']").val( ((parseFloat($employeePct) * parseFloat($availableDL))/100).toFixed(2) );
+					$($selector + " input[name='volumeClaimed']").val( ((parseFloat($employeePct) * parseFloat($availableVolume))/100).toFixed(2) );	
 					
 					$("#bcr_quick_claim_modal .total_pct").html( (BUDGETCONTROL.makeQuickClaimTotal("employeePct")).toFixed(2) );
 					$("#bcr_quick_claim_modal .total_direct_labor").html( (BUDGETCONTROL.makeQuickClaimTotal("dlAmt")).toFixed(2) );
@@ -429,7 +429,7 @@
         				var $employeePct = $($pctSelector).val();
         				if ( $employeeName != null && $employeeName != '' ) {        					
 	        				if ( $remainingPct > 0 && ($employeePct == null || $employeePct == '') ) {
-	        					$($pctSelector).val($defaultPct.toFixed(2));
+	        					$($pctSelector).val($defaultPct.toFixed(6));
 	        				}
         				}
         			} );
@@ -453,7 +453,7 @@
         				var $volumeClaimed = $($volSelector).val();
         				if ( $employeePct != null && $employeePct != '' ) {
         					try {        						
-        						$($pctSelector).val(parseFloat($employeePct).toFixed(2));
+        						$($pctSelector).val(parseFloat($employeePct).toFixed(6));
         					} catch(err) {
         						// we don't care that much
         					}
@@ -477,7 +477,7 @@
         				}
         			} );
 
-        			$("#bcr_quick_claim_modal .total_pct").html($totalPct.toFixed(2));
+        			$("#bcr_quick_claim_modal .total_pct").html($totalPct.toFixed(4));
         			$("#bcr_quick_claim_modal .total_direct_labor").html($totalDL.toFixed(2));
         			$("#bcr_quick_claim_modal .total_volume_claimed").html($totalVol.toFixed(2));
         		},
@@ -929,7 +929,7 @@
     				$("#bcr_new_claim_modal .err").html("");
     				$("#bcr_new_claim_modal input[name='ticketId']").val($ticketId);
     				$("#bcr_new_claim_modal input[name='dlAmt']").val($data.data.ticketDetail.remainingDlAmt.toFixed(2));
-    				$("#bcr_new_claim_modal input[name='volumeClaimed']").val($data.data.claimDetail.volume_remaining.toFixed(2));
+    				$("#bcr_new_claim_modal input[name='volumeClaimed']").val($data.data.ticketDetail.remainingPricePerCleaning.toFixed(2));
     				$("#bcr_new_claim_modal .ticketId").html($ticketId);
     				$("#bcr_new_claim_modal input[name='serviceTypeId']").val($serviceTypeId);
     				$("#bcr_new_claim_modal .serviceTagId").html($serviceTagId);
@@ -2857,9 +2857,9 @@
         			console.log("quickTicketSuccess");
         			$("#bcr_quick_claim_modal .jobId").html("Job: " + $data.data.ticketDetail.jobId);
         			$("#bcr_quick_claim_modal .jobSite").html($data.data.ticketDetail.jobSiteAddress.name);
-        			$("#bcr_quick_claim_modal .ticketAmt").html($data.data.ticketDetail.actDlAmt);
-        			$("#bcr_quick_claim_modal .available_volume_claimed").html($data.data.claimDetail.volume_remaining.toFixed(2));
-        			$("#bcr_quick_claim_modal .available_emp_volume_claimed").html($data.data.claimDetail.volume_remaining.toFixed(2));
+        			$("#bcr_quick_claim_modal .ticketAmt").html($data.data.ticketDetail.remainingDlAmt);
+        			$("#bcr_quick_claim_modal .available_volume_claimed").html($data.data.ticketDetail.remainingPricePerCleaning.toFixed(2));
+        			$("#bcr_quick_claim_modal .available_emp_volume_claimed").html($data.data.ticketDetail.remainingPricePerCleaning.toFixed(2));
         			
         			
         			var $ticketId = $passThruData["ticketId"];
@@ -2908,8 +2908,8 @@
     						var $dlAmtSelector = "#bcr_quick_claim_modal .employee" + $index + " input[name='dlAmt']";
     						var $volumeClaimedSelector = "#bcr_quick_claim_modal .employee" + $index + " input[name='volumeClaimed']";
     						var $employeePct = $($pctSelector).val();    						
-    						var $dlAmt = (parseFloat($employeePct)/100.0) * parseFloat($actDlAmt);
-    						var $volumeClaimed = (parseFloat($employeePct)/100.0) * $data.data.claimDetail.volume_remaining;
+    						var $dlAmt = (parseFloat($employeePct)/100.0) * parseFloat($data.data.ticketDetail.remainingDlAmt);
+    						var $volumeClaimed = (parseFloat($employeePct)/100.0) * $data.data.ticketDetail.remainingPricePerCleaning;
     						$($dlAmtSelector).val( $dlAmt.toFixed(2) );
     						$($volumeClaimedSelector).val( $volumeClaimed.toFixed(2) );
     						
