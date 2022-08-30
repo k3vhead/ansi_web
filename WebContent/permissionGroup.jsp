@@ -24,56 +24,12 @@
     
     <tiles:put name="headextra" type="string">
         <style type="text/css">
-			#displayTable {
-				width:100%;
-			}
-			#addFormDiv {
+        	#addFormDiv {
 				display:none;
 				background-color:#FFFFFF;
 				color:#000000;
 				width:350px;
 				padding:15px;
-			}
-			.prettyWideButton {
-				height:30px;
-				min-height:30px;
-			}
-			select	{
-				width:80px !important;
-				max-width:80px !important;
-			}
-			.print-link {
-				cursor:pointer;
-			}
-			.editJob {
-				cursor:pointer;
-				text-decoration:underline;
-			}
-			.jobLink {
-				color:#000000;
-			}
-			.overrideAction {
-				cursor:pointer;
-				text-decoration:none;
-				color:#000000;
-			}
-			#editPanel {
-				display:none;
-			}
-			#permissions option {
-				width: 150px;
-			}
-			.formHdr {
-				font-weight:bold;				
-			}
-			.editAction {
-				cursor:pointer;
-			}
-			.showNew {
-				cursor:pointer;
-			}
-			.center{
-			  	text-align: center;
 			}
 			#confirmDelete {
 				display:none;
@@ -83,6 +39,60 @@
 				text-align:center;
 				padding:15px;
 			}
+			#deleteModal {
+        		display:none;
+        	}
+			#displayTable {
+				width:100%;
+			}
+			#editPanel {
+				display:none;
+			}
+			#modalMessage-wrapper {
+				height:18px;
+			}
+			#permissionsModal {
+				width: 1248px;
+				margin: 0 auto;
+				position: relative;
+			}
+			#permissionTable {
+				width:1224px;
+			}
+			.center{
+			  	text-align: center;
+			}
+			.display-none{
+    			display: none;
+			}
+			.editJob {
+				cursor:pointer;
+				text-decoration:underline;
+			}
+			.jobLink {
+				color:#000000;
+			}
+			.maxWidth {
+				width:100%;
+			}
+			.permission-selector-text {
+				font-size:85%;
+			}
+			.prettyWideButton {
+				height:30px;
+				min-height:30px;
+			}
+			.overrideAction {
+				cursor:pointer;
+				text-decoration:none;
+				color:#000000;
+			}
+			.editAction {
+				cursor:pointer;
+			}
+			.formHdr {
+				font-weight:bold;				
+			}
 			.panel-button-container {
 				float:right; 
 				margin-right:8px;
@@ -91,14 +101,18 @@
 				border:solid 1px #404040; 
 				text-align:center;
 			}
-			#permissionsModal {
-				width: 1248px;
-				margin: 0 auto;
-				position: relative;
+			.perm {
+				display:none;
 			}
-			.display-none{
-    			display: none;
+			.print-link {
+				cursor:pointer;
 			}
+			.showNew {
+				cursor:pointer;
+			}
+			
+			
+			
 	
 			#main_menu > li{
 			    position: relative;
@@ -137,9 +151,7 @@
 			td:hover {
 				cursor: pointer;
 			}
-			.perm {
-				display:none;
-			}
+			
         </style>
         
         <script type="text/javascript">    
@@ -149,6 +161,7 @@
         	;PERMISSIONGROUP = {
 					ansiModal : '<c:out value="${ANSI_MODAL}" />',
 					dataTable : null,
+					permissionTable : null,		// this is the permission edit table
         			
         	
         			init : function (){
@@ -318,10 +331,12 @@
 				});
 			},
 						
-			doPost : function ($id, $permissionName, $active){
-	    		var $url = 'permission/' + $id;
+			doPost : function ($permissionGroupId, $functionalArea, $newPermission){
+				console.log("doPost");
+				console.log($permissionGroupId + "\t" + $functionalArea + "\t" + $newPermission)
+	    		var $url = 'permission/' + $permissionGroupId;
 				//console.log("YOU PASSED ROW ID:" + $rowid);
-				$outbound = {"permissionName": $permissionName, "permissionIsActive": $active};
+				$outbound = {"functionalArea": $functionalArea, "permission": $newPermission};
 				
 				var jqxhr = $.ajax({
 					type: 'POST',
@@ -329,7 +344,12 @@
 					data: JSON.stringify($outbound),				
 					statusCode: {
 						200: function($data) {
-							$("#modalMessage").html("Success!").show().fadeOut(3000);
+							if ( $data.responseHeader.responseCode == "EDIT_FAILURE" ) {
+								$("#modalMessage").html($data.data.webMessages.GLOBAL_MESSAGE[0]).show().fadeOut(3000);
+							} else {
+								$("#modalMessage").html("Success!").show().fadeOut(3000);
+							}
+							
 						},
 						403: function($data) {
 							$("permissionsModal").dialog("close");
@@ -361,7 +381,6 @@
 					statusCode: {
 						200: function($data) {
 							PERMISSIONGROUP.makeTable($permissionGroupId, $data.data);
-							PERMISSIONGROUP.makeClickers();
 							$("#permissionsModal").dialog("option","title","Set Permissions for " + $name).dialog("open");
 						},					
 						403: function($data) {
@@ -379,35 +398,7 @@
 			},
 			
 			
-			makeClickers : function () {
-			    $(".funcarea").click(function($event) {
-			        var $id = $(this).attr("data-id");
-			       	var $permissionGroupId = $(this).attr("data-permissionGroupId")
-			        $(".funcarea").removeClass("hilite");
-			        $(this).addClass("hilite");
-			        $(".perm").hide();
-			        $selector = "." + $id;
-			        $($selector).show();
-			    });
 			
-			    $(".perm").click(function($event) {
-			    	$permissionGroupId = $("#permissionsModal").attr("data-permissionGroupId");
-			        var $permissionName = $(this).attr("data-permissionname");
-			        if ( $(this).hasClass("hilite")) {
-			            $(this).removeClass("hilite");
-			           	$active = false;
-			          	PERMISSIONGROUP.doPost($permissionGroupId, $permissionName, false);
-			        } else {
-			            var $selector1 = "." + $permissionName;
-			            $(".perm").removeClass("hilite");
-			            $($selector1).removeClass("hilite");
-			            $(this).addClass("hilite");
-			        	$active = true;
-			        	PERMISSIONGROUP.doPost($permissionGroupId, $permissionName, true);
-			        }
-			        
-			    });
-			},
 			
 			
 			makeEditPanel : function() {	
@@ -476,28 +467,97 @@
 		
 			
 	    	makePermissionsModal : function() {
-			$( "#permissionsModal" ).dialog({
-				autoOpen: false,
-				height: 450,
-				width: 650,
-				modal: true,
-				closeOnEscape:true,
-				buttons: [
-					{
-						id: "permissionsCancelButton",
-						click: function($event) {
-							$( "#permissionsModal" ).dialog("close");
-						}
-					},
-				]
-			});	
-			$("#permissionsCancelButton").button('option', 'label', 'Done');
+				$( "#permissionsModal" ).dialog({
+					autoOpen: false,
+					height: 450,
+					width: 1224,
+					modal: true,
+					closeOnEscape:true,
+					buttons: [
+						{
+							id: "permissionsCancelButton",
+							click: function($event) {
+								$( "#permissionsModal" ).dialog("close");
+							}
+						},
+					]
+				});	
+				$("#permissionsCancelButton").button('option', 'label', 'Done');
 	    	},	
 			
 
+	    	makeSelect : function($permissionGroupId, $functionalArea, $permissionList) {
+	    		var $select = $("<select>");
+	    		$select.addClass("permission-selector");
+	    		$select.attr("data-functionalArea",$functionalArea);
+	    		$select.attr("data-permissionGroupId",$permissionGroupId);
+	    		$select.append(new Option("",""));
+				$.each($permissionList, function(index, val) {
+					//var $option = new Option(val["permissionName"], val["permissionName"]);
+					var $option = $("<option>");
+					$option.attr("value",val["permissionName"]);
+					if ( val.included == true ) {
+						$option.attr("selected","selected");	
+					}
+					$option.append(val["permissionName"]);
+				    $select.append($option);
+				});	    		
+				var $html = $($select).prop('outerHTML');
+	    		return $html;
+	    	},
+	    	
+	    	
+	    	makeTable : function ($permissionGroupId, $data) {
+	    		console.log($data);
+	    		$tableData = [];
+	    		$.each($data.functionalAreas, function($key, $value) {
+	    			var $row = {};
+	    			$row["functionalArea"] = $value.permissionName;
+	    			$row["description"] = $value.description;
+	    			$row["permissionList"] = $data.permissionList[$value.permissionName];
+	    			$tableData.push($row);
+	    		});
+	    		console.log($tableData);
+	    		
+	    		PERMISSIONGROUP.permissionTable = $("#permissionTable").DataTable( {
+	    			data : $tableData,
+	    			pageLength : 50,
+	    			autoWidth : false,
+        	        deferRender : true,
+        	        destroy : true,		// this lets us reinitialize the table for different permission groups
+	    			columns : [
+	    				{ width:"225px", title:"Functional Area", className:"dt-head-left",	data:'functionalArea', orderable:true, },
+	    				{ width:"550px", title:"Description",     className:"dt-head-left",	data:'description', 	 orderable:true, 	defaultContent: "<i>N/A</i>"},
+	    				{ 
+	    					width:"225px", 
+	    					title:"Permission", 
+	    					className:"dt-head-left",
+	    					defaultContent:"<i>N/A</i>",
+	    					data: function ( $row, $type, $set ) { 	
+			            		return PERMISSIONGROUP.makeSelect($permissionGroupId, $row.functionalArea, $row.permissionList);
+			            	}
+	    				},	    				
+	    			],
+	    			"drawCallback": function( settings ) {
+	    				$("#permissionTable_wrapper").addClass("maxWidth");
+	    				$(".permission-selector").change(function($event) {
+	    					var $that = $(this);
+	    					var $permissionGroupId = $that.attr("data-permissiongroupid");
+	    					var $functionalArea = $that.attr("data-functionalarea");
+	    					var $newPermission = $that.val();
+	    					PERMISSIONGROUP.doPost($permissionGroupId, $functionalArea, $newPermission);	    					
+	    				});
+		            },
+	    		});
+	    		
+	    	},
+	    	
+	    	
+	    	
+	    	
 
 
-			makeTable : function ($permissionGroupId, $data) {
+			makeTableXXXX : function ($permissionGroupId, $data) {
 				$("#permissionsModal").html('<div id="modalMessage" class="err"></div>');
 				$("#permissionsModal").attr("data-permissionGroupId", $permissionGroupId);
 				
@@ -511,7 +571,6 @@
 					var $funcAreaTD = $("<td>");
 					$funcAreaTD.attr("class","funcarea");
 					$funcAreaTD.attr("data-id",$value[0].permissionName);
-					console.log("Working row: " + $value[0].permissionName)
 					$funcAreaTD.append($value[0].permissionName);
 					
 					$funcAreaTR.append($funcAreaTD);    
@@ -743,7 +802,11 @@
 	    	
 	    	
 	    <div id="permissionsModal">
-    		
+	    	<div id="modalMessage-wrapper">
+				<span id="modalMessage" class="err"></span>
+			</div>
+			<div id="modalMessage" class="err"></div>
+    		<table id="permissionTable"></table>
 		</div>
    
 	    <webthing:scrolltop />

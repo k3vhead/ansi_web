@@ -123,7 +123,7 @@ public class LoadPayrollWorksheets extends Loader {
 	private void processFile(Connection conn, String fileName, PreparedStatement washerSql, Date now) throws FileNotFoundException, Exception {
 		String[] bits = fileName.split("/");
 		System.out.println("Processing file: " + bits[bits.length-1]);
-		PayrollWorksheetParser parser = new PayrollWorksheetParser(fileName);
+		PayrollWorksheetParser parser = new PayrollWorksheetParser(conn, fileName);
 		PayrollWorksheetHeader worksheetHeader = parser.getHeader();
 		String file = parser.getFileName();
 		Integer divNbr = Integer.valueOf( worksheetHeader.getDivisionNbr() );

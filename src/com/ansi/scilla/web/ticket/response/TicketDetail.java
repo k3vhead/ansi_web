@@ -89,6 +89,7 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 	private String fleetmaticsId;
 //	private Integer actDivisionId;
 	private String ticketType;
+	private String ticketTypeId;
 	// Tax stuff:
 //	private BigDecimal taxRateAmount;
 //	private Date taxRateEffectiveDate;
@@ -168,6 +169,7 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 		this.fleetmaticsId = ticket.getFleetmaticsId();
 //		this.actDivisionId = ticket.getActDivisionId();
 		this.ticketType = TicketType.lookup(ticket.getTicketType()).display();
+		this.ticketTypeId = TicketType.lookup(ticket.getTicketType()).name();
 		this.actTaxRateId = ticket.getActTaxRateId();
 		 
 		
@@ -541,7 +543,13 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 		this.ticketType = ticketType;
 	}
 
+	public String getTicketTypeId() {
+		return ticketTypeId;
+	}
 
+	public void setTicketTypeId(String ticketTypeId) {
+		this.ticketTypeId = ticketTypeId;
+	}
 
 //	public BigDecimal getTaxRateAmount() {
 //		return taxRateAmount;

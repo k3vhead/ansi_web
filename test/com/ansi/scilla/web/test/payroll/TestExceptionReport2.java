@@ -40,7 +40,8 @@ public class TestExceptionReport2 extends AbstractTester {
 	protected void go(Connection conn) throws Exception {
 		Transformer<HashMap<String, Object>, HashMap<String, Object>> itemTransformer = new ItemTransformer();
 		List<SessionDivision> divisionList = super.makeDivisionList(conn);
-		LookupQuery lookup = new ExceptionReportQuery(5, divisionList, 12);
+		Boolean errorsOnly = false;
+		LookupQuery lookup = new ExceptionReportQuery(5, divisionList, 12, errorsOnly);
 		lookup.setSearchTerm("");
 		List<HashMap<String, Object>> dataList = new ArrayList<HashMap<String, Object>>();
 		ResultSet rs = lookup.select(conn, 0, 100);

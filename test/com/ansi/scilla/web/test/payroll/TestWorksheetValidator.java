@@ -38,7 +38,7 @@ public class TestWorksheetValidator {
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDevConn();
-			PayrollWorksheetParser parser = new PayrollWorksheetParser(fileName);
+			PayrollWorksheetParser parser = new PayrollWorksheetParser(conn, fileName);
 			testValidator(conn, parser);
 //			System.out.println("**********************************");
 //			System.out.println("**********************************");

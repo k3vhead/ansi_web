@@ -90,9 +90,9 @@ public class RachelServletTester extends TestServlet {
 		String url = "/ansi_web/permission/2196";
 
 		PermissionRequest request = new PermissionRequest();
-		request.setPermissionName(Permission.CONTACT_WRITE.name());
+//		request.setPermissionName(Permission.CONTACT_WRITE.name());
 		// request.setPermissionName("xxx");
-		request.setPermissionIsActive(false);
+//		request.setPermissionIsActive(false);
 		String json = AppUtils.object2json(request);
 		logger.log(Level.DEBUG, json);
 		String results = super.doPost(sessionCookie, url, json);

@@ -252,6 +252,9 @@ public abstract class LookupQuery extends ApplicationObject {
 		String wherePhrase = selectType.equals(SelectType.COUNTALL) ? baseWhereClause : makeWhereClause(searchPhrase);
 		String filterPhrase = makeFilterPhrase(wherePhrase);
 		
+		if ( this.logger == null ) {
+			this.logger = LogManager.getLogger(LookupQuery.class);
+		}
 		this.logger.log(Level.DEBUG, "wherePhrase: " + wherePhrase);
 		this.logger.log(Level.DEBUG, "filterPhrase: " + filterPhrase);
 		this.logger.log(Level.DEBUG, "orderByPhrase: " + orderByPhrase);

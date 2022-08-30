@@ -13,7 +13,7 @@ public class TestWorksheetEmployeeUpdate extends AbstractTester {
 	@Override
 	protected void go(Connection conn) throws Exception {
 		conn.setAutoCommit(false);
-		PayrollWorksheetParser parser = new PayrollWorksheetParser(fileName);
+		PayrollWorksheetParser parser = new PayrollWorksheetParser(conn, fileName);
 		PayrollWorksheetEmployee omar = null;
 		for ( PayrollWorksheetEmployee employee : parser.getTimesheetRecords() ) {
 			if ( employee.getEmployeeName().equalsIgnoreCase("OMAR DIAZ")) {

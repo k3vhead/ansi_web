@@ -411,6 +411,8 @@
 	    <attribute><name>format</name><required>true</required><rtexprvalue>true</rtexprvalue></attribute>
 	    <attribute><name>name</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
 	</tag>
+	
+	
 	<tag>
     	<name>divisionSelect</name>
     	<tagclass>com.ansi.scilla.web.tags.DivisionSelect</tagclass>
@@ -446,6 +448,17 @@
     	<info>Displays an option list of state Locales</info>
 	    <attribute><name>format</name><required>true</required><rtexprvalue>true</rtexprvalue></attribute>
 	</tag>
+
+
+	<tag>
+		<name>ticketType</name>
+		<tagclass>com.ansi.scilla.web.tags.TicketTypeSelect</tagclass>
+		<bodycontent>empty</bodycontent>
+		<info>
+			Options for a select tag to choose a ticket type
+		</info>
+	</tag>
+	
 	
 </taglib>
 

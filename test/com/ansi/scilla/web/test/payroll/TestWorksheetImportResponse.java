@@ -35,7 +35,7 @@ public class TestWorksheetImportResponse {
 			
 			List<ValidatedWorksheetEmployee> validatedEmployees = new ArrayList<ValidatedWorksheetEmployee>();
 
-			PayrollWorksheetParser parser = new PayrollWorksheetParser(fileName);
+			PayrollWorksheetParser parser = new PayrollWorksheetParser(conn, fileName);
 //			PayrollWorksheetParser parser = new PayrollWorksheetParser(requestFile.getName(), requestFile.getInputStream());
 			
 			ValidatedWorksheetHeader header = HeaderValidator.validateHeader(conn, parser.getHeader());

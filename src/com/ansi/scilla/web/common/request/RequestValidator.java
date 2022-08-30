@@ -799,9 +799,9 @@ public class RequestValidator {
 	}
 
 	
-	public static void validateId(Connection conn, WebMessages webMessages, String dbTableName, String dbFieldName,
+	public static boolean validateId(Connection conn, WebMessages webMessages, String dbTableName, String dbFieldName,
 			String fieldName, Integer value, boolean required) throws Exception {
-		validateId(conn, webMessages, dbTableName, dbFieldName, fieldName, value, required, null);
+		return validateId(conn, webMessages, dbTableName, dbFieldName, fieldName, value, required, null);
 	}
 	
 	
@@ -817,12 +817,14 @@ public class RequestValidator {
 	 * @param label Optional String value to be incorporated into the error message. Useful for those cases where the message is not displayed next to the field being validated
 	 * @throws Exception
 	 */
-	public static void validateId(Connection conn, WebMessages webMessages, String dbTableName, String dbFieldName,
+	public static boolean validateId(Connection conn, WebMessages webMessages, String dbTableName, String dbFieldName,
 			String fieldName, Integer value, boolean required, String label) throws Exception {
+		boolean valid = true;
 		if (value == null) {
 			if (required) {
 				String message = StringUtils.isBlank(label) ? "Required Value" : label + " is required";
 				webMessages.addMessage(fieldName, message);
+				valid = false;
 			}
 		} else {
 			String sql = "select * from " + dbTableName + " where " + dbFieldName + "=?";
@@ -832,8 +834,10 @@ public class RequestValidator {
 			if (!rs.next()) {
 				String message = StringUtils.isBlank(label) ? "Invalid Value" : label + " is invalid";
 				webMessages.addMessage(fieldName, message);
+				valid = false;
 			}
 		}
+		return valid;
 	}
 
 	public static void validateInteger(WebMessages webMessages, String fieldName, Integer value, Integer minValue,
