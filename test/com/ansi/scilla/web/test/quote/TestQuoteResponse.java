@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.test;
+package com.ansi.scilla.web.test.quote;
 
 import java.sql.Connection;
 import java.util.Arrays;

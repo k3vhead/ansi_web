@@ -1,7 +1,9 @@
-package com.ansi.scilla.web.test;
+package com.ansi.scilla.web.test.quote;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.ansi.scilla.web.test.TesterUtils;
 
 //import com.ansi.scilla.web.common.AppUtils;
 

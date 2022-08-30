@@ -30,6 +30,7 @@ public enum Menu {
 	
 	
 	REPORTS("Reports", null, null,"#"),
+	BATCH_LOG(          "Batch Log",            REPORTS, Permission.BATCH_LOG_READ, "batchLog.html"),
 	DRV30(				"30 Day DRV",			REPORTS, Permission.TICKET_READ,	"ticketView.html"),
 	PAST_DUE(			"Past Due",				REPORTS, Permission.TECH_ADMIN,		"pastDueReport.html"),
 	
