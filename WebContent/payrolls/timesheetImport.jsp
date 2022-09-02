@@ -10,6 +10,7 @@
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-tiles.tld" prefix="tiles"%>
 <%@ taglib tagdir="/WEB-INF/tags/webthing" prefix="webthing"%>
+<%@ taglib tagdir="/WEB-INF/tags/payroll" prefix="payroll"%>
 <%@ taglib uri="/WEB-INF/theTagThing.tld" prefix="ansi"%>
 
 <tiles:insert page="../layout.jsp" flush="true">
@@ -366,16 +367,29 @@
 	           		
 	           		
 	           		formatFloat : function (numberAsString) {
-						value = null;
-						if (numberAsString == null || numberAsString == "") {
-							value="";
-						} else if ( isNaN(numberAsString) ) {
-							value="";
+						//value = null;
+						//if (numberAsString == null || numberAsString == "") {
+						//	value="";
+						//} else if ( isNaN(numberAsString) ) {
+						//	value="";
+						//} else {
+						//	x = parseFloat(numberAsString);
+						//	value = x.toFixed(2);
+						//}
+						
+						//return value;
+						var $formattedValue = '<payroll:errorFound>Invalid Value: ' + numberAsString + '</payroll:errorFound>'
+						if ( numberAsString == null || numberAsString == "" ) {
+							$formattedValue = "0.00!";
 						} else {
-							x = parseFloat(numberAsString);
-							value = x.toFixed(2);
+							try	{
+								$formattedValue = numberAsString.toFixed(2);
+							} catch ( $exception ) {
+								console.log($exception);
+								$formattedValue = '<payroll:errorFound>Invalid Value: ' + $exception + '</payroll:errorFound>'
+							}					
 						}
-						return value;
+						return $formattedValue;
 					},
 					
 					
@@ -542,8 +556,51 @@
 	           		},
 	           		
 	           		
-	           		
+	           		makeEmployeeNumber : function ($value, $messageList) {
+	           			var $formatMsg = null;
+	           			var $formattedValue = null;
+	           			if ( $value == null ) {
+	           				$value = 0.0
+	           			}
+						try	{
+							$formattedValue = $value.toFixed(2);
+						} catch ( $exception ) {
+							console.log($exception);
+							$formatMsg = $exception
+						}					
+	           			
+	           			
+	           			// <span class="red tooltip"><span class="tooltiptext">Expense Claim<br />YTD Expense Ptc</span>$48.23</span>
+	           			var $errorList = [];
+	           			var $employeeValue = $value;
+	           			var $errorLevel = "WARNING";  // set to warning because we don't use this if max error level is OK
+	           			var $msgColor = {"WARNING":"orange-bold", "ERROR":"red-bold"};
+	           			$.each( $messageList, function($index, $msgValue) {
+	           				if ( $msgValue.ok == false ) {
+	           					$errorList.push($msgValue.errorMessage.message);
+	           					if ( $msgValue.errorMessage.errorLevel == "ERROR" ) {
+	           						$errorLevel = "ERROR";
+	           					} 
+	           				}
+	           			});
+	           			if ( $errorList.length > 0 ) {
+	           				var $message = $errorList.join("<br />");
+	           				if ( $formatMsg != null ) {
+	           					$message = $message + "<br />" + $formatMsg;
+	           				}
+	           				$employeeValue = '<span class="'+ $msgColor[$errorLevel]+' tooltip"><span class="tooltiptext">'+$message+'</span>'+(parseFloat($value)).toFixed(2)+'</span>';
+	           			} else {
+	           				if ( $formatMsg == null ) {
+	           					$employeeValue = $formattedValue;
+	           				} else {
+	           					$employeeValue = '<payroll:errorFound>'+$formatMsg + ' ('+$value+')</payroll:errorFound>'
+	           				}
+	           			}
+	           			return $employeeValue;
+	           		},
 
+	           		
+	           		
 	           		makeEmployeeValue : function ($value, $messageList) {
 	           			// <span class="red tooltip"><span class="tooltiptext">Expense Claim<br />YTD Expense Ptc</span>$48.23</span>
 	           			var $errorList = [];
@@ -705,40 +762,40 @@
 	           						data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeValue(row.employeeName, row.messageList['employeeName']);  }
 	           					},
 	           					{ title : "Reg Hrs", searchable:true, "defaultContent": "",
-           							data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeValue(row.regularHours.toFixed(2), row.messageList['regularHours']);  }
+           							data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeNumber(row.regularHours, row.messageList['regularHours']);  }
 	           					},
 	           					{ title : "Reg Pay", searchable:true, "defaultContent": "", 
-           							data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeValue(row.regularPay.toFixed(2), row.messageList['regularPay']);  }
+           							data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeNumber(row.regularPay, row.messageList['regularPay']);  }
 	           					},
 	           					{ title : "Exp", searchable:true, "defaultContent": "", 
-           							data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeValue(row.expenses.toFixed(2), row.messageList['expenses']);  }
+           							data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeNumber(row.expenses, row.messageList['expenses']);  }
 	           					},
 	           					{ title : "OT Hrs", searchable:true, "defaultContent": "", 
-           							data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeValue(row.otHours.toFixed(2), row.messageList['otHours']);  }
+           							data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeNumber(row.otHours, row.messageList['otHours']);  }
 	           					},
 	           					{ title : "OT Pay", searchable:true, "defaultContent": "", 
-           							data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeValue(row.otPay.toFixed(2), row.messageList['otPay']);  }
+           							data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeNumber(row.otPay, row.messageList['otPay']);  }
 	           					},
 	           					{ title : "Vac Pay", searchable:true, "defaultContent": "", 
-           							data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeValue(row.vacationPay.toFixed(2), row.messageList['vacationPay']);  }
+           							data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeNumber(row.vacationPay, row.messageList['vacationPay']);  }
 	           					},
 	           					{ title : "Hol Pay", searchable:true, "defaultContent": "", 
-           							data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeValue(row.holidayPay.toFixed(2), row.messageList['holidayPay']);  }
+           							data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeNumber(row.holidayPay, row.messageList['holidayPay']);  }
 	           					},
 	           					{ title : "Gross Pay", searchable:true, "defaultContent": "",  
-           							data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeValue(row.grossPay.toFixed(2), row.messageList['grossPay']);  }
+           							data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeNumber(row.grossPay, row.messageList['grossPay']);  }
 	           					},
 	           					{ title : "Exp Smt'd", searchable:true, "defaultContent": "", 
-           							data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeValue(row.expensesSubmitted.toFixed(2), row.messageList['expensesSubmitted']);  }
+           							data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeNumber(row.expensesSubmitted, row.messageList['expensesSubmitted']);  }
 	           					},
 	           					{ title : "Exp All'd", searchable:true, "defaultContent": "", 
-           							data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeValue(row.expensesAllowed.toFixed(2), row.messageList['expensesAllowed']);  }
+           							data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeNumber(row.expensesAllowed, row.messageList['expensesAllowed']);  }
 	           					},
 	           					{ title : "Volume", searchable:true, "defaultContent": "", 
-	           						data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeValue(row.volume.toFixed(2), row.messageList['volume']);  }
+	           						data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeNumber(row.volume, row.messageList['volume']);  }
 	           					},
 	           					{ title : "Direct Labor", searchable:true, "defaultContent": "",
-	           						data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeValue(row.directLabor.toFixed(2), row.messageList['directLabor']);  }
+	           						data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeNumber(row.directLabor, row.messageList['directLabor']);  }
 	           					},
 	           					//{ title : "Prod %", searchable:true, "defaultContent": "", 
 	           					//	data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeValue(row.productivity.toFixed(2), row.messageList['productivity']);  }
