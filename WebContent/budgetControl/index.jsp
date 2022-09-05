@@ -52,6 +52,17 @@
 			#bcr_panels .display {
 				display:none;
 			}
+        	#filter-container {
+        		width:402px;
+        		float:right;
+        	}
+        	#ndl-crud-form {
+        		display:none;
+        		background-color:#FFFFFF;
+				color:#000000;
+				width:400px;
+				padding:15px;
+        	}
 			#session_expire_modal {
 				display:none;
 			}
@@ -98,14 +109,25 @@
 				padding:5px; 
 				background-color:#FFFFFF;
 			}
+			.column-header {
+				text-align:center;
+				font-weight:bold;
+				background-color:#CCCCCC;
+			}
+			.column-subheader {
+				text-align:center;
+				font-weight:bold;
+				background-color:#EEEEEE;
+			}
+			.expenseDetails {
+				display:none;
+			}	
+			
 			.field-container {
 				cursor:pointer;
 			}
         	.form-label {
 				font-weight:bold;
-			}	
-			.expenseDetails {
-				display:none;
 			}	
 			.new-bcr {
 				cursor:pointer;
@@ -116,6 +138,7 @@
 			.table-header {
 				text-align:center;
 				font-weight:bold;
+				font-size:110%;
 			}
 			.ticket-week-display {
 				display:none;
@@ -128,17 +151,7 @@
 				cursor:pointer;
 			}
 			
-        	#filter-container {
-        		width:402px;
-        		float:right;
-        	}
-        	#ndl-crud-form {
-        		display:none;
-        		background-color:#FFFFFF;
-				color:#000000;
-				width:400px;
-				padding:15px;
-        	}
+
 			
 			
 			.prettyWideButton {
@@ -195,6 +208,279 @@
         			$("#globalMsg").html("Unknown system error. Contact Support").show();
         		},
         		
+        		
+        		
+        		calcEmployeeCount : function() {
+        			console.log("calcEmployeeCount");	
+        			var $employeeCount = 0;        			
+        			var $employeeCount = BUDGETCONTROL.makeQuickClaimCount("employee", true);
+        			$("#bcr_quick_claim_modal .washer_count").html($employeeCount);
+        		},
+        		
+				calcQuickClaimByPct : function() {
+					console.log("calcQuickClaimByPct");	
+					var $employeeCount = BUDGETCONTROL.makeQuickClaimCount("employee", true);
+					var $pctEmptyCount = BUDGETCONTROL.makeQuickClaimCount("employeePct", false); 
+					var $pctTotal = BUDGETCONTROL.makeQuickClaimTotal("employeePct");
+					var $defaultPct = (100.0 - $pctTotal)/parseFloat($pctEmptyCount);
+					
+					var $availableDL = $("#bcr_quick_claim_modal .quick-claim-available .ticketAmt").text().replace("$","").replace(",","");
+					var $availableVol = $("#bcr_quick_claim_modal .quick-claim-available .available_emp_volume_claimed").text().replace("$","").replace(",","");
+
+					$.each( $("#bcr_quick_claim_modal .quick-claim-employee"), function($index, $value) {
+        				var $pctSelector = "#bcr_quick_claim_modal .employee" + $index + " input[name='employeePct']";
+        				var $employeeSelector = "#bcr_quick_claim_modal .employee" + $index + " input[name='employee']";
+        				var $dlSelector = "#bcr_quick_claim_modal .employee" + $index + " input[name='dlAmt']";
+        				var $volSelector = "#bcr_quick_claim_modal .employee" + $index + " input[name='volumeClaimed']";
+        				var $employeeName = $($employeeSelector).val();
+        				var $employeePct = $($pctSelector).val();
+        				var $dlAmt = $($dlSelector).val();
+        				var $volumeClaimed = $($volSelector).val();
+        				if ( $employeeName != null && $employeeName != '' ) {
+        					var $newPct = null;
+        					if ( $employeePct == null || $employeePct == '' ) {
+        						$newPct = $defaultPct;
+        						$($pctSelector).val(parseFloat($defaultPct).toFixed(6));
+        					} else {
+        						$newPct = $employeePct;
+        						$($pctSelector).val(parseFloat($employeePct).toFixed(6));
+        					}
+        					if ( $dlAmt == null || $dlAmt == '' ) {
+        						$($dlSelector).val( (parseFloat($availableDL)*(parseFloat($newPct)/100)).toFixed(2) );
+        					}
+        					if ( $volumeClaimed == null || $volumeClaimed == '' ) {
+        						$($volSelector).val( (parseFloat($availableVol)*(parseFloat($newPct)/100)).toFixed(2) );
+      						}
+        				}
+        			} );
+					$("#bcr_quick_claim_modal .total_pct").html( BUDGETCONTROL.makeQuickClaimTotal("employeePct").toFixed(2) );
+					$("#bcr_quick_claim_modal .total_direct_labor").html( BUDGETCONTROL.makeQuickClaimTotal("dlAmt").toFixed(2) );
+					$("#bcr_quick_claim_modal .total_volume_claimed").html( BUDGETCONTROL.makeQuickClaimTotal("volumeClaimed").toFixed(2) );
+				},
+				
+				
+				
+				calcQuickClaimDlChg : function($click) {
+					console.log("calcQuickClaimDlChg");
+					var $foundIt = false;
+					var $row = $($click).parent();
+					// .parents() or .parentsUntil() seems reasonable here, but I kept getting recursion errors.
+					// So ... roll your own.
+					while ( ! $foundIt) {
+						$foundIt = $row.hasClass("quick-claim-employee");
+						if ( ! $foundIt ) {
+							$row = $row.parent();
+						}
+					}
+					var $rowIndex = null;
+					$.each( $row.attr("class").split(" "), function($index, $className) {
+						if ( $className.startsWith("employee") ) {
+							$rowIndex = $className.substring("employee".length);
+						}
+					});
+					var $selector = "#bcr_quick_claim_modal .employee" + $rowIndex;
+					var $availableDL = $("#bcr_quick_claim_modal .ticketAmt").html().replace("$","").replace(",","");
+					var $availableVolume = $("#bcr_quick_claim_modal .available_emp_volume_claimed").html().replace("$","").replace(",","");
+					var $selector = "#bcr_quick_claim_modal .employee" + $rowIndex;
+
+					var $dlAmt = $($selector + " input[name='dlAmt']").val();
+					var $employeePct = parseFloat($dlAmt)/parseFloat($availableDL);
+					var $volumeClaimed = $employeePct * parseFloat($availableVolume);
+					
+					$($selector + " input[name='dlAmt']").val( parseFloat($dlAmt).toFixed(2) );
+					$($selector + " input[name='employeePct']").val( ($employeePct*100.0).toFixed(6) );
+					$($selector + " input[name='volumeClaimed']").val( $volumeClaimed.toFixed(2) );
+					
+					$("#bcr_quick_claim_modal .total_pct").html( (BUDGETCONTROL.makeQuickClaimTotal("employeePct")).toFixed(2) );
+					$("#bcr_quick_claim_modal .total_direct_labor").html( (BUDGETCONTROL.makeQuickClaimTotal("dlAmt")).toFixed(2) );
+					$("#bcr_quick_claim_modal .total_volume_claimed").html( (BUDGETCONTROL.makeQuickClaimTotal("volumeClaimed")).toFixed(2) );
+				},
+				
+				
+				
+				calcQuickClaimPctChg : function($click) {
+					console.log("calcQuickClaimPctChg");
+					var $foundIt = false;
+					var $row = $($click).parent();
+					// .parents() or .parentsUntil() seems reasonable here, but I kept getting recursion errors.
+					// So ... roll your own.
+					while ( ! $foundIt) {
+						$foundIt = $row.hasClass("quick-claim-employee");
+						if ( ! $foundIt ) {
+							$row = $row.parent();
+						}
+					}
+					var $rowIndex = null;
+					$.each( $row.attr("class").split(" "), function($index, $className) {
+						if ( $className.startsWith("employee") ) {
+							$rowIndex = $className.substring("employee".length);
+						}
+					});
+					var $selector = "#bcr_quick_claim_modal .employee" + $rowIndex;
+					var $availableDL = $("#bcr_quick_claim_modal .ticketAmt").html().replace("$","").replace(",","");
+					var $availableVolume = $("#bcr_quick_claim_modal .available_emp_volume_claimed").html().replace("$","").replace(",","");
+					var $employeePct = $($selector + " input[name='employeePct']").val();
+					
+					$($selector + " input[name='dlAmt']").val( ((parseFloat($employeePct) * parseFloat($availableDL))/100).toFixed(2) );
+					$($selector + " input[name='volumeClaimed']").val( ((parseFloat($employeePct) * parseFloat($availableVolume))/100).toFixed(2) );	
+					
+					$("#bcr_quick_claim_modal .total_pct").html( (BUDGETCONTROL.makeQuickClaimTotal("employeePct")).toFixed(2) );
+					$("#bcr_quick_claim_modal .total_direct_labor").html( (BUDGETCONTROL.makeQuickClaimTotal("dlAmt")).toFixed(2) );
+					$("#bcr_quick_claim_modal .total_volume_claimed").html( (BUDGETCONTROL.makeQuickClaimTotal("volumeClaimed")).toFixed(2) );
+				},
+				
+				
+				
+				
+				calcQuickClaimVolChg : function($click) {
+					console.log("calcQuickClaimVolChg");
+					var $foundIt = false;
+					var $row = $($click).parent();
+					// .parents() or .parentsUntil() seems reasonable here, but I kept getting recursion errors.
+					// So ... roll your own.
+					while ( ! $foundIt) {
+						$foundIt = $row.hasClass("quick-claim-employee");
+						if ( ! $foundIt ) {
+							$row = $row.parent();
+						}
+					}
+					var $rowIndex = null;
+					$.each( $row.attr("class").split(" "), function($index, $className) {
+						if ( $className.startsWith("employee") ) {
+							$rowIndex = $className.substring("employee".length);
+						}
+					});
+					var $selector = "#bcr_quick_claim_modal .employee" + $rowIndex;
+					var $volumeClaimed = $($selector + " input[name='volumeClaimed']").val();
+					
+					$($selector + " input[name='volumeClaimed']").val( parseFloat($volumeClaimed).toFixed(2) );	
+					
+					$("#bcr_quick_claim_modal .total_volume_claimed").html( (BUDGETCONTROL.makeQuickClaimTotal("volumeClaimed")).toFixed(2) );
+				},
+				
+				
+				
+				
+				makeQuickClaimCount : function($fieldName, $countPopulated) {
+					// if $countPopulated is true : count up the number of rows where the named field is populated
+					// if $countPopulated is false : count up the number of rows where an employee is populated but the named field is not
+					var $count = 0;
+					$.each( $("#bcr_quick_claim_modal .quick-claim-employee"), function($index, $value) {
+        				var $selector = "#bcr_quick_claim_modal .employee" + $index + " input[name='"+$fieldName+"']";
+        				var $employeeSelector = "#bcr_quick_claim_modal .employee" + $index + " input[name='employee']";
+        				var $employeeName = $($employeeSelector).val();
+        				if ( $employeeName == null || $employeeName == '' ) {
+        					$("#bcr_quick_claim_modal .employee" + $index + " input[name='employeePct']").val('');
+        					$("#bcr_quick_claim_modal .employee" + $index + " input[name='dlAmt']").val('');
+        					$("#bcr_quick_claim_modal .employee" + $index + " input[name='volumeClaimed']").val('');
+        					$("#bcr_quick_claim_modal .employee" + $index + " input[name='laborNotes']").val('');
+        				}
+        				var $fieldValue = $($selector).val();
+        				if ( $countPopulated == true && ($fieldValue != null && $fieldValue != '') ) {
+        					$count = $count + 1;
+        				} 
+        				if ( $countPopulated == false && ($employeeName != null && $employeeName != '') && ($fieldValue == null || $fieldValue == '') ) {
+        					$count = $count + 1;
+        				} 
+        			} );
+					return $count;
+				},
+				
+				
+				makeQuickClaimTotal : function($fieldName) {
+					var $total = 0;
+					$.each( $("#bcr_quick_claim_modal .quick-claim-employee"), function($index, $value) {
+        				var $selector = "#bcr_quick_claim_modal .employee" + $index + " input[name='"+$fieldName+"']";
+        				var $fieldValue = $($selector).val();
+        				if ( $fieldValue != null && $fieldValue != '' ) {
+        					$total = $total + parseFloat($fieldValue);
+        				} 
+        			} );
+					return $total;
+				},
+				
+				
+        		calcQuickClaimPct : function() {
+        			console.log("calcQuickClaimPct");	
+        			var $employeeCount = 0;
+        			var $blankPctCount = 0;
+        			var $remainingPct = 100.0;
+        			$.each( $("#bcr_quick_claim_modal .quick-claim-employee"), function($index, $value) {
+        				var $employeeSelector = "#bcr_quick_claim_modal .employee" + $index + " input[name='employee']";
+        				var $employeeName = $($employeeSelector).val();
+        				if ( $employeeName != null && $employeeName != '' ) {
+        					$employeeCount = $employeeCount + 1;
+        				}
+        				var $pctSelector = "#bcr_quick_claim_modal .employee" + $index + " input[name='employeePct']";
+        				var $employeePct = $($pctSelector).val();
+        				if ( $employeePct == null || $employeePct == '' ) {
+        					if ( $employeeName != null && $employeeName != '' ) {
+        						$blankPctCount = $blankPctCount + 1;
+        					}
+        				} else {
+        					$remainingPct = $remainingPct - parseFloat($employeePct);
+        				}
+        			} );
+        			var $defaultPct = $remainingPct / parseFloat($blankPctCount);
+        			$.each( $("#bcr_quick_claim_modal .quick-claim-employee"), function($index, $value) {
+        				var $employeeSelector = "#bcr_quick_claim_modal .employee" + $index + " input[name='employee']";
+        				var $employeeName = $($employeeSelector).val();        				
+        				var $pctSelector = "#bcr_quick_claim_modal .employee" + $index + " input[name='employeePct']";
+        				var $employeePct = $($pctSelector).val();
+        				if ( $employeeName != null && $employeeName != '' ) {        					
+	        				if ( $remainingPct > 0 && ($employeePct == null || $employeePct == '') ) {
+	        					$($pctSelector).val($defaultPct.toFixed(6));
+	        				}
+        				}
+        			} );
+        			
+        			BUDGETCONTROL.calcQuickClaimTotals();
+        		},
+        		
+        		
+
+        		calcQuickClaimTotals : function() {
+        			console.log("calcQuickClaimTotals");	
+        			var $totalPct = 0.0;
+        			var $totalDL = 0.0;
+        			var $totalVol = 0.0;
+        			$.each( $("#bcr_quick_claim_modal .quick-claim-employee"), function($index, $value) {
+        				var $pctSelector = "#bcr_quick_claim_modal .employee" + $index + " input[name='employeePct']";
+        				var $dlSelector = "#bcr_quick_claim_modal .employee" + $index + " input[name='dlAmt']";
+        				var $volSelector = "#bcr_quick_claim_modal .employee" + $index + " input[name='volumeClaimed']";
+        				var $employeePct = $($pctSelector).val();
+        				var $dlAmt = $($dlSelector).val();
+        				var $volumeClaimed = $($volSelector).val();
+        				if ( $employeePct != null && $employeePct != '' ) {
+        					try {        						
+        						$($pctSelector).val(parseFloat($employeePct).toFixed(6));
+        					} catch(err) {
+        						// we don't care that much
+        					}
+        					$totalPct = $totalPct + parseFloat($employeePct);
+        				}
+        				if ( $dlAmt != null && $dlAmt != '' ) {
+        					try {        						
+        						$($dlSelector).val(parseFloat($dlAmt).toFixed(2));
+        					} catch(err) {
+        						// we don't care that much
+        					}
+        					$totalDL = $totalDL + parseFloat($dlAmt);
+        				}
+        				if ( $volumeClaimed != null && $volumeClaimed != '' ) {
+        					try {        						
+        						$($volSelector).val(parseFloat($volumeClaimed).toFixed(2));
+        					} catch(err) {
+        						// we don't care that much
+        					}
+        					$totalVol = $totalVol + parseFloat($volumeClaimed);
+        				}
+        			} );
+
+        			$("#bcr_quick_claim_modal .total_pct").html($totalPct.toFixed(4));
+        			$("#bcr_quick_claim_modal .total_direct_labor").html($totalDL.toFixed(2));
+        			$("#bcr_quick_claim_modal .total_volume_claimed").html($totalVol.toFixed(2));
+        		},
         		
         		
         		
@@ -341,8 +627,13 @@
         				var $serviceTypeId = $(this).attr("data-servicetypeid");
         				var $serviceTagId = $(this).attr("data-servicetagid");
         				console.log("New claim: " + $ticketId + " " + $serviceTypeId + " " + $serviceTagId); 
-        				var $url = "ticket/" + $ticketId;
-        				ANSI_UTILS.doServerCall("GET", $url, $outbound, BUDGETCONTROL.getClaimPrefillSuccess, BUDGETCONTROL.getClaimPrefillFail, null, {"ticketId":$ticketId, "serviceTypeId":$serviceTypeId, "serviceTagId":$serviceTagId});
+						var $claimParms = {
+							divisionId:BUDGETCONTROL.divisionId,
+							workYear:BUDGETCONTROL.workYear,
+							workWeeks:BUDGETCONTROL.workWeek
+						};
+        				var $url = "bcr/ticketClaimDetail/" + $ticketId;
+        				ANSI_UTILS.doServerCall("GET", $url, $claimParms, BUDGETCONTROL.getClaimPrefillSuccess, BUDGETCONTROL.getClaimPrefillFail, null, {"ticketId":$ticketId, "serviceTypeId":$serviceTypeId, "serviceTagId":$serviceTagId});
         			});
 
         			$(".zeroClaimButton").on("click", function($clickevent) {
@@ -1868,7 +2159,7 @@
         				title:'New Claim',
         				autoOpen: false,
         				height: 420,
-        				width: 750,
+        				width: 800,
         				modal: true,
         				closeOnEscape:true,
         				open: function(event, ui) {
@@ -1903,8 +2194,8 @@
         			$("#bcr_quick_claim_modal").dialog({
         				title:'Quick Claim',
         				autoOpen: false,
-        				height: 420,
-        				width: 850,
+        				height: 530,
+        				width: 1000,
         				modal: true,
         				closeOnEscape:true,
         				open: function(event, ui) {
@@ -1912,6 +2203,11 @@
         				},
         				buttons: [
         					{
+        						id:  "bcr_quick_claim_reset",
+        						click: function($event) {
+        							BUDGETCONTROL.resetQuickClaim();     							
+        						}
+        					},{
         						id:  "bcr_quick_claim_cancel",
         						click: function($event) {
         							$("#bcr_quick_claim_modal").dialog("close");      							
@@ -1924,11 +2220,51 @@
         					}
         				]
         			});
+        			$("#bcr_quick_claim_reset").button('option', 'label', 'Reset');
         			$("#bcr_quick_claim_cancel").button('option', 'label', 'Cancel');
         			$("#bcr_quick_claim_save").button('option', 'label', 'Save');
         			//$("#bcr_new_claim_cancel").attr("tabIndex", "9");
         			//$("#bcr_new_claim_save").attr("tabIndex", "10");
         			BUDGETCONTROL.makeEmployeeAutoComplete("#bcr_quick_claim_modal input[name='employee']");
+        			// if an expense type is selected, default the expense volume
+        			$("#bcr_quick_claim_modal select[name='expenseType']").change( function($event) {
+        				var $expenseType = $("#bcr_quick_claim_modal select[name='expenseType']").val();
+        				if ( $expenseType == null || $expenseType == '' ) {
+        					$("#bcr_quick_claim_modal input[name='expenseVolume']").val("");
+        					$("#bcr_quick_claim_modal .available_emp_volume_claimed").html( $("#bcr_quick_claim_modal .available_volume_claimed").html() );
+        				} else {
+        					var $expenseVolume = $("#bcr_quick_claim_modal input[name='expenseVolume']").val();
+        					if ( $expenseVolume == null || $expenseVolume == '' ) {
+        						$("#bcr_quick_claim_modal input[name='expenseVolume']").val("0.00");
+        						$("#bcr_quick_claim_modal .available_emp_volume_claimed").html( $("#bcr_quick_claim_modal .available_volume_claimed").html() );
+        					}
+        				}
+        			});
+        			// if the expense volume is changed, set the employee available volume
+        			$("#bcr_quick_claim_modal input[name='expenseVolume']").blur( function($event) {
+        				var $availableVolume = parseFloat($("#bcr_quick_claim_modal .available_volume_claimed").html().replace("$","").replace(",",""));
+        				var $expenseVolume = $("#bcr_quick_claim_modal input[name='expenseVolume']").val();
+        				if ( $expenseVolume == null || $expenseVolume == '' ) {
+        					$expenseVolume = 0.0;
+        				} else {
+        					$("#bcr_quick_claim_modal input[name='expenseVolume']").val( parseFloat($expenseVolume).toFixed(2) );
+        				}
+        				var $employeeVolumeAvailable = parseFloat($availableVolume) - parseFloat($expenseVolume);
+        				$("#bcr_quick_claim_modal .available_emp_volume_claimed").html( $employeeVolumeAvailable.toFixed(2) );
+        			});
+					$("#bcr_quick_claim_modal input[name='employee']").blur( function($event) {BUDGETCONTROL.calcEmployeeCount();} );
+        			$("#bcr_quick_claim_modal input[name='employeePct']").focus( function($event) {BUDGETCONTROL.calcQuickClaimByPct();} );
+        			$("#bcr_quick_claim_modal input[name='employeePct']").blur( function($event) {BUDGETCONTROL.calcQuickClaimPctChg(this);} );
+        			$("#bcr_quick_claim_modal input[name='dlAmt']").blur( function($event) {BUDGETCONTROL.calcQuickClaimDlChg(this);} );
+        			$("#bcr_quick_claim_modal input[name='volumeClaimed']").blur( function($event) {BUDGETCONTROL.calcQuickClaimVolChg(this);} );
+        			
+
+
+            		
+            		
+            		
+            		
+            		
         			//BUDGETCONTROL.saveOnEnter(); 
         		},
         		
@@ -2010,6 +2346,26 @@
         			var $workYear = BUDGETCONTROL.workYear; 
         			var $workWeeks = BUDGETCONTROL.workWeek;
         			
+        			var $employeeClaimList = [];
+        			$.each( $("#bcr_quick_claim_modal .quick-claim-employee"), function($index, $row) {
+        				var $claimIt = false;
+        				var $rowSelector = "#bcr_quick_claim_modal .employee" + $index;
+        				var $employeeName = $($rowSelector + " input[name='employee']").val();
+        				var $dlAmt = $($rowSelector + " input[name='dlAmt']").val();
+    					var $volumeClaimed = $($rowSelector + " input[name='volumeClaimed']").val();
+    					var $laborNotes = $($rowSelector + " input[name='laborNotes']").val();
+        				if ( $employeeName != null && $employeeName != '' ) { $claimIt = true; }
+        				if ( $dlAmt != null && $dlAmt != '' ) { $claimIt = true; }
+        				if ( $volumeClaimed != null && $volumeClaimed != '' ) { $claimIt = true; }
+        				if ( $laborNotes != null && $laborNotes != '' ) { $claimIt = true; }
+        				
+        				if ( $claimIt ) {
+        					$employeeClaimList.push(
+        						{"index":$index, "employee":$employeeName,"dlAmt":$dlAmt,"volumeClaimed":$volumeClaimed,"laborNotes":$laborNotes}
+        					);
+        				}
+        			});
+        			
         			var $outbound = {
             				"divisionId":BUDGETCONTROL.divisionId,
                     		"workYear":BUDGETCONTROL.workYear, 
@@ -2018,26 +2374,43 @@
             				"ticketId":$("#bcr_quick_claim_modal input[name='ticketId']").val(),
             				"serviceTypeId":$("#bcr_quick_claim_modal input[name='serviceTypeId']").val(),
             				"claimWeek":$("#bcr_quick_claim_modal select[name='claimWeek']").val(),
-            				"dlAmt":$("#bcr_quick_claim_modal input[name='dlAmt']").val().replace(/,/g,''),
+            				//"dlAmt":$("#bcr_quick_claim_modal input[name='dlAmt']").val().replace(/,/g,''),
             				"expenseVolume":$("#bcr_quick_claim_modal input[name='expenseVolume']").val().replace(/,/g,''),
-            				"volumeClaimed":$("#bcr_quick_claim_modal input[name='volumeClaimed']").val().replace(/,/g,''),
+            				//"volumeClaimed":$("#bcr_quick_claim_modal input[name='volumeClaimed']").val().replace(/,/g,''),
             				"expenseType":$("#bcr_quick_claim_modal select[name='expenseType']").val(),
-            				"employee":$("#bcr_quick_claim_modal input[name='employee']").val(),
-            				"laborNotes":$("#bcr_quick_claim_modal input[name='laborNotes']").val(),
-            				"expenseNotes":$("#bcr_quick_claim_modal input[name='expenseNotes']").val(), 
+            				//"employee":$("#bcr_quick_claim_modal input[name='employee']").val(),
+            				//"laborNotes":$("#bcr_quick_claim_modal input[name='laborNotes']").val(),
+            				"expenseNotes":$("#bcr_quick_claim_modal input[name='expenseNotes']").val(),
+            				"employeeClaims":$employeeClaimList,
             			};
         			
         			console.log(JSON.stringify($outbound));
-        			ANSI_UTILS.doServerCall("POST", "bcr/newClaim", JSON.stringify($outbound), BUDGETCONTROL.makeQuickClaimSuccess, BUDGETCONTROL.makeQuickClaimFail);
+        			ANSI_UTILS.doServerCall("POST", "bcr/splitClaim", JSON.stringify($outbound), BUDGETCONTROL.makeQuickClaimSuccess, BUDGETCONTROL.makeQuickClaimFail);
 
         		},
         		
         		
+        		
+        		
+        		
+        		
         		makeQuickClaimFail : function($data, $passthru) {
         			console.log("makeQuickClaimFail");
-        			$.each($data.data.webMessages, function($index, $value) {
-        				var $loc = "#bcr_quick_claim_modal ." + $index + "Err";
-        				$($loc).html($value[0]);
+        			$.each( $data.data.webMessages, function($index, $messageList) {
+        				var $selector = "." + $index + "Err";
+        				$($selector).html( $messageList[0]);
+        			});
+        			$.each( $data.data.expenseMessages, function($index, $messageList) {
+        				var $selector = "#bcr_quick_claim_modal ." + $index + "Err";
+        				var $message = '<webthing:ban>' + $messageList[0] + '</webthing:ban>';
+        				$($selector).html( $message );
+        			});
+        			$.each( $data.data.laborMessages, function($rowNumber, $messageMap) {
+        				$.each($messageMap, function($fieldName, $messageList) {
+        					var $selector = "#bcr_quick_claim_modal .employee" + $rowNumber + " ." + $fieldName + "Err";
+        					var $message = '<webthing:ban>' + $messageList[0] + '</webthing:ban>';
+        					$($selector).html( $message );
+        				});
         			});
         		},
         		
@@ -2047,21 +2420,29 @@
         			console.log("makeQuickClaimSuccess");
         			BUDGETCONTROL.refreshPanels($data);
         			
+        			$("#bcr_quick_claim_modal .err").html("");
+        			
         			$("#bcr_quick_claim_modal .jobId").html("");
         			$("#bcr_quick_claim_modal .jobSite").html("");
         			$("#bcr_quick_claim_modal .ticketAmt").html("");
+        			$("#bcr_quick_claim_modal .serviceTagId").html("");
         			
         			
-        			$("#bcr_quick_claim_modal input[name='ticketId']").val(""),
-    				$("#bcr_quick_claim_modal input[name='serviceTypeId']").val(""),
-    				//$("#bcr_quick_claim_modal select[name='claimWeek']").val(),
-    				$("#bcr_quick_claim_modal input[name='dlAmt']").val(""),
-    				$("#bcr_quick_claim_modal input[name='expenseVolume']").val(''),
-    				$("#bcr_quick_claim_modal input[name='volumeClaimed']").val(''),
-    				$("#bcr_quick_claim_modal select[name='expenseType']").val(''),
-    				//$("#bcr_quick_claim_modal input[name='employee']").val(),
-    				//$("#bcr_quick_claim_modal input[name='laborNotes']").val(),
-    				//$("#bcr_quick_claim_modal input[name='expenseNotes']").val(), 
+        			$("#bcr_quick_claim_modal input[name='ticketId']").val("");
+    				$("#bcr_quick_claim_modal input[name='serviceTypeId']").val("");
+    				//$("#bcr_quick_claim_modal select[name='claimWeek']").val();
+    				$("#bcr_quick_claim_modal input[name='dlAmt']").val("");
+    				$("#bcr_quick_claim_modal input[name='expenseVolume']").val('');
+    				$("#bcr_quick_claim_modal input[name='volumeClaimed']").val('');
+    				$("#bcr_quick_claim_modal select[name='expenseType']").val('');
+    				//$("#bcr_quick_claim_modal input[name='employee']").val();
+    				//$("#bcr_quick_claim_modal input[name='laborNotes']").val();
+    				$("#bcr_quick_claim_modal input[name='expenseNotes']").val('');
+    				
+    				$("#bcr_quick_claim_modal .available_volume_claimed").html("");
+    				$("#bcr_quick_claim_modal .available_emp_volume_claimed").html("");
+    				$("#bcr_quick_claim_modal .total_volume_claimed").html("");
+    				$("#bcr_quick_claim_modal .total_direct_labor").html("");
         			
         			$("#bcr_quick_claim_modal .newClaimErr").html("Update Successful").show().fadeOut(6000);
         		},
@@ -2363,6 +2744,8 @@
 					$("#bcr_summary .quick-claim").click(function($event) {
 						$("#bcr_quick_claim_modal").dialog("open");
 						
+						$("#bcr_quick_claim_modal .err").html("");
+						
 						$("#bcr_quick_claim_modal .jobId").html("");
 	        			$("#bcr_quick_claim_modal .jobSite").html("");
 	        			$("#bcr_quick_claim_modal .ticketAmt").html("");
@@ -2428,7 +2811,7 @@
 				                }
 							}).data('ui-autocomplete');
 							
-							
+							<%-- 
 							$("#bcr_quick_claim_modal input").keydown(function($event) {
 								if ( $event.which == 13 ) {
 									// when you hit "enter" on an input, click the go button
@@ -2443,6 +2826,7 @@
 			 						$("#bcr_quick_claim_save").click();
 								}
 							});
+							--%>
 						}
 					});
 					
@@ -2473,7 +2857,9 @@
         			console.log("quickTicketSuccess");
         			$("#bcr_quick_claim_modal .jobId").html("Job: " + $data.data.ticketDetail.jobId);
         			$("#bcr_quick_claim_modal .jobSite").html($data.data.ticketDetail.jobSiteAddress.name);
-        			$("#bcr_quick_claim_modal .ticketAmt").html($data.data.ticketDetail.actDlAmt);
+        			$("#bcr_quick_claim_modal .ticketAmt").html($data.data.ticketDetail.remainingDlAmt);
+        			$("#bcr_quick_claim_modal .available_volume_claimed").html($data.data.ticketDetail.remainingPricePerCleaning.toFixed(2));
+        			$("#bcr_quick_claim_modal .available_emp_volume_claimed").html($data.data.ticketDetail.remainingPricePerCleaning.toFixed(2));
         			
         			
         			var $ticketId = $passThruData["ticketId"];
@@ -2482,23 +2868,21 @@
         			var $actDlAmt = $data.data.ticketDetail.actDlAmt.replace("$","").replace(",","");
         			var $actPricePerCleaning = $data.data.ticketDetail.actPricePerCleaning.replace("$","").replace(",","");
         			
-    				//$("#bcr_quick_claim_modal input").val("");
-    				//$("#bcr_quick_claim_modal select").val("");
     				$("#bcr_quick_claim_modal select[name='expenseType']").val("");
     				$("#bcr_quick_claim_modal .err").html("");
-    				//$("#bcr_new_claim_modal input[name='ticketId']").val($ticketId);
-    				$("#bcr_quick_claim_modal input[name='dlAmt']").val($data.data.ticketDetail.remainingDlAmt.toFixed(2));
-    				$("#bcr_quick_claim_modal input[name='volumeClaimed']").val($data.data.ticketDetail.remainingPricePerCleaning.toFixed(2));
-    				//$("#bcr_new_claim_modal .ticketId").html($ticketId);
+    				//$("#bcr_quick_claim_modal .total_pct").html("0.00");
+    				$("#bcr_quick_claim_modal .total_direct_labor").html("0.00");
+    				$("#bcr_quick_claim_modal .total_volume_claimed").html("0.00");
+    				//$("#bcr_quick_claim_modal .washer_count").html("0");
     				$("#bcr_quick_claim_modal input[name='serviceTypeId']").val($serviceTypeId);
     				$("#bcr_quick_claim_modal .serviceTagId").html($serviceTagId);
     				$("#bcr_edit_modal").attr("serviceTagId",$serviceTagId);
     				
     				if ( BUDGETCONTROL.lastEmployeeEntered != null ) {
-    					$("#bcr_quick_claim_modal input[name='employee']").val(BUDGETCONTROL.lastEmployeeEntered);
+    					$("#bcr_quick_claim_modal .employee0 input[name='employee']").val(BUDGETCONTROL.lastEmployeeEntered);
     				}
     				if ( BUDGETCONTROL.lastNoteEntered != null ) {
-    					$("#bcr_quick_claim_modal input[name='notes']").val(BUDGETCONTROL.lastNoteEntered);
+    					$("#bcr_quick_claim_modal .employee0 input[name='notes']").val(BUDGETCONTROL.lastNoteEntered);
     				}
     				
     				if ( BUDGETCONTROL.lastWorkWeekEntered != null ) {
@@ -2513,7 +2897,30 @@
         				}
     				}
 
+    				// populate labor claims based on previously entered percentages
+   					var $totalDirectLabor = 0.0;
+   					var $totalVolumeClaimed = 0.0;
+    				$.each( $("#bcr_quick_claim_modal .quick-claim-employee"), function($index, $value) {
+    					var $employeeSelector = "#bcr_quick_claim_modal .employee" + $index + " input[name='employee']";
+    					var $employeeName = $($employeeSelector).val();
+    					if ( $employeeName != null && $employeeName != '' ) {    						
+    						var $pctSelector = "#bcr_quick_claim_modal .employee" + $index + " input[name='employeePct']";
+    						var $dlAmtSelector = "#bcr_quick_claim_modal .employee" + $index + " input[name='dlAmt']";
+    						var $volumeClaimedSelector = "#bcr_quick_claim_modal .employee" + $index + " input[name='volumeClaimed']";
+    						var $employeePct = $($pctSelector).val();    						
+    						var $dlAmt = (parseFloat($employeePct)/100.0) * parseFloat($data.data.ticketDetail.remainingDlAmt);
+    						var $volumeClaimed = (parseFloat($employeePct)/100.0) * $data.data.ticketDetail.remainingPricePerCleaning;
+    						$($dlAmtSelector).val( $dlAmt.toFixed(2) );
+    						$($volumeClaimedSelector).val( $volumeClaimed.toFixed(2) );
+    						
+    						$totalDirectLabor = $totalDirectLabor + $dlAmt;
+    						$totalVolumeClaimed = $totalVolumeClaimed + $volumeClaimed;
+    					}
+    				});
     				
+    				$("#bcr_quick_claim_modal .total_direct_labor").html($totalDirectLabor.toFixed(2));
+    				$("#bcr_quick_claim_modal .total_volume_claimed").html($totalVolumeClaimed.toFixed(2));
+
     				// this bit handles the display/hide of panels in the new claim modal    				
     				//$("#bcr_new_claim_modal .directLaborDetail select[name='claimWeek']").focus();
         		},
@@ -2540,6 +2947,25 @@
         			});
         		},
 
+        		
+        		
+        		resetQuickClaim : function() {
+        			console.log("resetQuickClaim");
+        			$("#bcr_quick_claim_modal select[name='expenseType']").val('');
+        			$("#bcr_quick_claim_modal input[name='expenseVolume']").val('');
+        			$("#bcr_quick_claim_modal input[name='expenseNotes']").val('');
+        			$("#bcr_quick_claim_modal .available_emp_volume_claimed").html( $("#bcr_quick_claim_modal .available_volume_claimed").html() );
+       				$.each(['employee','employeePct','dlAmt','volumeClaimed','laborNotes'], function($index, $fieldName) {
+       					var $selector = "#bcr_quick_claim_modal input[name='"+$fieldName+"']";
+       					$($selector).val('');
+       				});
+       				$("#bcr_quick_claim_modal .washer_count").html("0");
+       				$("#bcr_quick_claim_modal .total_pct").html("0.00");
+       				$("#bcr_quick_claim_modal .total_direct_labor").html("0.00");
+       				$("#bcr_quick_claim_modal .total_volume_claimed").html("0.00");
+       				$("#bcr_quick_claim_modal .err").html("");
+        		},
+        		
         		
         		
         		saveNewClaim : function() {
@@ -3110,6 +3536,172 @@
 	    	<div style="width:100%; height:25px;">
 	    		<span class="newClaimErr err"></span>
 	    	</div>	    	
+	    	<table style="width:100%;border-top:solid 1px #404040;">
+				<colgroup>
+		        	<col style="width:16%;" />
+		        	<col style="width:16%;" />
+		        	<col style="width:16%;" />
+		        	<col style="width:2%;" />
+		        	<col style="width:2%;" />
+		        	<col style="width:16%;" />
+		        	<col style="width:16%;" />
+		        	<col style="width:16%;" />
+				</colgroup>
+				<tr>
+   					<td class="form-label">Ticket:</td>
+   					<td><input type="text" name="ticketId" /></td>
+   					<td colspan="2"><span class="err ticketIdErr"></span></td>
+   					<td colspan="4"><span class="jobId"></span></td>
+   				</tr>
+   				<tr>
+   					<td class="form-label">Service Type:</td>
+   					<td><span class="serviceTagId"></span><input type="hidden" name="serviceTypeId" /></td>
+   					<td colspan="2"><span class="err serviceTagIdErr"></span></td>
+   					<td colspan="4"><span class="jobSite"></span></td>
+   				</tr>
+   				<tr style="border-bottom:solid 1px #404040;">
+   					<td class="form-label">Claim Week:</td>
+   					<td><select name="claimWeek" tabindex="1"></select></td>
+   					<td colspan="2"><span class="claimWeekErr err"></span></td>
+   					<td colspan="4">&nbsp; <%-- <span class="ticketAmt"></span>--%></td>
+   				</tr>
+  			</table>
+			<table style="width:100%;border-top:solid 1px #404040;">
+	    		<colgroup>
+		        	<col style="width:17%;" />
+					<col style="width:3%;" />
+		        	<col style="width:40%;" />		        	
+		        	<col style="width:17%;" />
+					<col style="width:3%;" />
+		        	<col style="width:17%;" />
+					<col style="width:3%;" />
+				</colgroup>
+	    		<tr class="table-header">
+	    			<td colspan="7" >Expense</td>
+	    		</tr>
+	    		<tr style="background-color:#CCCCCC;">
+	    			<td class="column-header" colspan="2">Expense Type</td>
+	    			<td class="column-header">&nbsp;</td>
+	    			<td class="column-header" colspan="2">Expense Volume Claimed</td>
+	    			<td class="column-header" colspan="2">Notes</td>
+	    		</tr>
+				<tr class="column-subheader quick-claim-available">
+	    			<td style="text-align:left;" colspan="2">Available</td>
+	    			<td style="text-align:left;">&nbsp;</td>
+	    			<td style="text-align:left;" colspan="2"><span class="available_volume_claimed"></span></td>
+	    			<td style="text-align:left;" colspan="2">&nbsp;</td>
+	    		</tr>
+	    		<tr>
+	    			<td><select name="expenseType" tabindex="3"></select></td>
+					<td><span class="err expenseTypeErr"></span></td>
+	    			<td>&nbsp;</td>
+	    			<td><input type="number" step=".01" name="expenseVolume"  tabindex="4"/></td>
+					<td><span class="err expenseVolumeErr"></span></td>
+	    			<td><input type="text" name="expenseNotes" tabindex="5" /></td>
+					<td><span class="err expenseNotesErr"></span></td>
+	    		</tr>
+    		</table>
+	    	<table style="width:100%;border-top:solid 1px #404040;">
+				<colgroup>
+		        	<col style="width:17%;" />
+					<col style="width:3%;" />
+		        	<col style="width:17%;" />
+					<col style="width:3%;" />
+		        	<col style="width:17%;" />
+					<col style="width:3%;" />
+		        	<col style="width:17%;" />
+					<col style="width:3%;" />
+		        	<col style="width:17%;" />
+					<col style="width:3%;" />
+				</colgroup>
+	    		<tr class="table-header">
+	    			<td colspan="10" >Direct Labor</td>
+	    		</tr>
+	    		<tr style="background-color:#CCCCCC;">
+	    			<td class="column-header" colspan="2">Employee</td>
+	    			<td class="column-header" colspan="2">Pct</td>
+	    			<td class="column-header" colspan="2">Direct Labor</td>
+	    			<td class="column-header" colspan="2">Volume Claimed</td>
+	    			<td class="column-header" colspan="2">Notes</td>
+	    		</tr>
+	    		<tr class="column-subheader quick-claim-available">
+	    			<td style="text-align:left;" colspan="2">Available</td>
+	    			<td style="text-align:left;" colspan="2">&nbsp;</td>
+	    			<td style="text-align:left;" colspan="2"><span class="ticketAmt"></span></span></td>
+	    			<td style="text-align:left;" colspan="2"><span class="available_emp_volume_claimed"></span></td>
+	    			<td style="text-align:left;" colspan="2">&nbsp;</td>
+	    		</tr>
+	    		<tr class="quick-claim-employee employee0">
+   					<td><input type="text" name="employee" tabindex="6" style="width:95%;" /></td>
+					<td><span class="err employeeErr"></span></td>
+   					<td><input type="number" name="employeePct" step=".01" tabindex="11" style="width:95%;"  /></td>
+					<td><span class="err employeePctErr"></span></td>
+   					<td><input type="number" name="dlAmt" step=".01" tabindex="16" style="width:95%;"  /></td>
+					<td><span class="err dlAmtErr"></span></td>
+   					<td><input type="number" name="volumeClaimed" step=".01" tabindex="21" style="width:95%;"  /></td>
+					<td><span class="err volumeClaimedErr"></span></td>
+   					<td><input type="text" name="laborNotes" tabindex="26" style="width:95%;"  /></td>
+					<td><span class="err laborNotesErr"></span></td>
+	    		</tr>
+	    		<tr class="quick-claim-employee employee1">
+   					<td><input type="text" name="employee" tabindex="7" style="width:95%;" /></td>
+					<td><span class="err employeeErr"></span></td>
+   					<td><input type="number" name="employeePct" step=".01" tabindex="12" style="width:95%;"  /></td>
+					<td><span class="err employeePctErr"></span></td>
+   					<td><input type="number" name="dlAmt" step=".01" tabindex="17" style="width:95%;"  /></td>
+					<td><span class="err dlAmtErr"></span></td>
+   					<td><input type="number" name="volumeClaimed" step=".01" tabindex="22" style="width:95%;"  /></td>
+					<td><span class="err volumeClaimedErr"></span></td>
+   					<td><input type="text" name="laborNotes" tabindex="27" style="width:95%;"  /></td>
+					<td><span class="err laborNotesErr"></span></td>
+	    		</tr>
+	    		<tr class="quick-claim-employee employee2">
+   					<td><input type="text" name="employee" tabindex="8" style="width:95%;"  /></td>
+					<td><span class="err employeeErr"></span></td>
+   					<td><input type="number" name="employeePct" step=".01" tabindex="13" style="width:95%;"  /></td>
+					<td><span class="err employeePctErr"></span></td>
+   					<td><input type="number" name="dlAmt" step=".01" tabindex="18" style="width:95%;"  /></td>
+					<td><span class="err dlAmtErr"></span></td>
+   					<td><input type="number" name="volumeClaimed" step=".01" tabindex="23" style="width:95%;"  /></td>
+					<td><span class="err volumeClaimedErr"></span></td>
+   					<td><input type="text" name="laborNotes" tabindex="28" style="width:95%;"  /></td>
+					<td><span class="err laborNotesErr"></span></td>
+	    		</tr>
+	    		<tr class="quick-claim-employee employee3">
+   					<td><input type="text" name="employee" tabindex="9" style="width:95%;"  /></td>
+					<td><span class="err employeeErr"></span></td>
+   					<td><input type="number" name="employeePct" step=".01" tabindex="14" style="width:95%;"  /></td>
+					<td><span class="err employeePctErr"></span></td>
+   					<td><input type="number" name="dlAmt" step=".01" tabindex="19" style="width:95%;"  /></td>
+					<td><span class="err dlAmtErr"></span></td>
+   					<td><input type="number" name="volumeClaimed" step=".01" tabindex="24" style="width:95%;"  /></td>
+					<td><span class="err volumeClaimedErr"></span></td>
+   					<td><input type="text" name="laborNotes" tabindex="29" style="width:95%;"  /></td>
+					<td><span class="err laborNotesErr"></span></td>
+	    		</tr>
+	    		<tr class="quick-claim-employee employee4">
+   					<td><input type="text" name="employee" tabindex="10" style="width:95%;"  /></td>
+					<td><span class="err employeeErr"></span></td>
+   					<td><input type="number" name="employeePct" step=".01" tabindex="15" style="width:95%;"  /></td>
+					<td><span class="err employeePctErr"></span></td>
+   					<td><input type="number" name="dlAmt" step=".01" tabindex="20" style="width:95%;"  /></td>
+					<td><span class="err dlAmtErr"></span></td>
+   					<td><input type="number" name="volumeClaimed" step=".01" tabindex="25" style="width:95%;"  /></td>
+					<td><span class="err volumeClaimedErr"></span></td>
+   					<td><input type="text" name="laborNotes" tabindex="30" style="width:95%;"  /></td>
+					<td><span class="err laborNotesErr"></span></td>
+	    		</tr>
+	    		<tr class="column-subheader">
+	    			<td style="text-align:left;" colspan="2"><span style="float:right; margin-right:8px;" class="washer_count">0</span> Total</td>
+	    			<td style="text-align:left;" colspan="2"><span class="total_pct"></span></td>
+	    			<td style="text-align:left;" colspan="2"><span class="total_direct_labor"></span></td>
+	    			<td style="text-align:left;" colspan="2"><span class="total_volume_claimed"></span></td>
+	    			<td style="text-align:left;" colspan="2">&nbsp;</td>
+	    		</tr>
+	    	</table>
+	    	
+
+			<%--
 			<table style="width:100%;border-top:solid 1px #404040;">
 				<colgroup>
 		        	<col style="width:16%;" />
@@ -3193,7 +3785,7 @@
    					<td><span class="expenseNotesErr err"></span></td>
    				</tr>
    			</table>
-			
+			 --%>
 			
 	    </div>
     </tiles:put>

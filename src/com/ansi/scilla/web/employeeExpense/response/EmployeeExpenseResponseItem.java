@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import com.ansi.scilla.common.jsonFormat.AnsiBigDecimalFormatter;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 

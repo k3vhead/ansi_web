@@ -154,6 +154,18 @@
 		<attribute><name>styleClass</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
 		<attribute><name>id</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
 	</tag>
+	
+	
+	<tag>
+		<name>isSuperUser</name>
+		<tagclass>com.ansi.scilla.web.tags.IsSuperUser</tagclass>
+		<bodycontent>JSP</bodycontent>
+		<info>
+			Displays tag body if user is superuser
+		</info>		
+	</tag>
+	
+	
 
 	<tag>
 		<name>password</name>
@@ -282,6 +294,68 @@
 	</tag>
 	
 	
+	
+	
+	<tag>
+		<name>selectOrganization</name>
+		<tagclass>com.ansi.scilla.web.tags.SelectOrganization</tagclass>
+		<bodycontent>JSP</bodycontent>
+		<info>
+			Displays the options for a division or division_group selector/dropdown. Must be surrounded by "select" tag
+		</info>
+		<attribute>
+			<name>active</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<attribute>
+			<name>type</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+	</tag>
+	
+	
+	
+	<tag>
+		<name>selectParentOrganization</name>
+		<tagclass>com.ansi.scilla.web.tags.SelectParentOrganization</tagclass>
+		<bodycontent>JSP</bodycontent>
+		<info>
+			Displays the options for a parent of a division or division_group selector/dropdown. Must be surrounded by "select" tag
+		</info>
+		<attribute>
+			<name>active</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<attribute>
+			<name>type</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+	</tag>
+	
+	
+	
+	
+	<tag>
+		<name>selectPayrollCompany</name>
+		<tagclass>com.ansi.scilla.web.tags.SelectPayrollCompany</tagclass>
+		<bodycontent>JSP</bodycontent>
+		<info>
+			Displays the options for a payroll company selector/dropdown. Must be surrounded by "select" tag
+		</info>
+		<attribute>
+			<name>active</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+	</tag>
+	
+	
+	
+	
 	<tag>
 		<name>text</name>
 		<tagclass>com.ansi.scilla.web.tags.Text</tagclass>
@@ -326,6 +400,66 @@
 		<attribute><name>styleClass</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
 		<attribute><name>id</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
 	</tag>
+	
+	
+	
+	<tag>
+    	<name>companyCodeSelect</name>
+    	<tagclass>com.ansi.scilla.web.tags.CompanyCodeSelect</tagclass>
+	    <bodycontent>JSP</bodycontent>
+    	<info>Displays an option list of all Company Codes in the payroll_employee table</info>
+	    <attribute><name>format</name><required>true</required><rtexprvalue>true</rtexprvalue></attribute>
+	    <attribute><name>name</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+	</tag>
+	
+	
+	<tag>
+    	<name>divisionSelect</name>
+    	<tagclass>com.ansi.scilla.web.tags.DivisionSelect</tagclass>
+	    <bodycontent>JSP</bodycontent>
+    	<info>Displays an option list of all Divisions</info>
+	    <attribute><name>format</name><required>true</required><rtexprvalue>true</rtexprvalue></attribute>
+	    <attribute><name>name</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+	</tag>
+	
+	
+	<tag>
+    	<name>taxProfileSelect</name>
+    	<tagclass>com.ansi.scilla.web.tags.TaxProfileSelect</tagclass>
+	    <bodycontent>JSP</bodycontent>
+    	<info>Displays an option list of all Payroll Tax Profiles</info>
+	    <attribute><name>format</name><required>true</required><rtexprvalue>true</rtexprvalue></attribute>
+	    <attribute><name>name</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+	</tag>
+	
+	<tag>
+    	<name>localeSelect</name>
+    	<tagclass>com.ansi.scilla.web.tags.LocaleSelect</tagclass>
+	    <bodycontent>JSP</bodycontent>
+    	<info>Displays an option list of all Locales, based on type</info>
+	    <attribute><name>format</name><required>true</required><rtexprvalue>true</rtexprvalue></attribute>
+	    <attribute><name>type</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+	</tag>
+	
+	<tag>
+    	<name>localeStateSelect</name>
+    	<tagclass>com.ansi.scilla.web.tags.LocaleStateSelect</tagclass>
+	    <bodycontent>JSP</bodycontent>
+    	<info>Displays an option list of state Locales</info>
+	    <attribute><name>format</name><required>true</required><rtexprvalue>true</rtexprvalue></attribute>
+	</tag>
+
+
+	<tag>
+		<name>ticketType</name>
+		<tagclass>com.ansi.scilla.web.tags.TicketTypeSelect</tagclass>
+		<bodycontent>empty</bodycontent>
+		<info>
+			Options for a select tag to choose a ticket type
+		</info>
+	</tag>
+	
+	
 </taglib>
 
 

@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.ansi.scilla.web.common.servlet.AbstractAutoCompleteItem;
+import com.ansi.scilla.web.common.response.AbstractAutoCompleteItem;
 import com.ansi.scilla.web.common.servlet.AbstractAutoCompleteServlet;
 import com.ansi.scilla.web.common.utils.Permission;
 

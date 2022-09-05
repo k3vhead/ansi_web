@@ -38,7 +38,7 @@ public class SixMonthRollingVolumeWebReport extends CompoundReport {
 
 	@Override
 	public String makeFileName(String arg0, Calendar arg1, Division arg2, Calendar arg3, Calendar arg4) {
-		throw new RuntimeException("I don't think this method is called");
+		throw new RuntimeException("This is only here to make the compiler happy");
 	}
 
 

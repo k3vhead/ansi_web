@@ -1,14 +1,13 @@
 package com.ansi.scilla.web.job.response;
 
 import java.math.BigDecimal;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
 import com.ansi.scilla.common.jsonFormat.AnsiCurrencyFormatter;
 import com.ansi.scilla.common.queries.JobSearch;
-import com.ansi.scilla.common.queries.ReportQuery;
 import com.ansi.scilla.common.queries.JobSearch.JobSearchContact;
+import com.ansi.scilla.common.queries.ReportQuery;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.thewebthing.commons.db2.DBColumn;

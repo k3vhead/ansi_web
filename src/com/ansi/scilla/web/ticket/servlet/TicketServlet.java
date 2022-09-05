@@ -288,12 +288,14 @@ public class TicketServlet extends AbstractServlet {
 				job.setJobId(ticket.getJobId());
 				job.selectOne(conn);
 				if (job.getTaxExempt().equals( Job.TAX_EXEMPT_IS_NO)) {
-					TaxRate taxRate = JobUtils.getTaxRate( conn, ticket.getJobId(), ticketReturnRequest.getProcessDate(), sessionUser.getUserId());
-					ticket.setActTaxAmt(ticket.getActPricePerCleaning().multiply(taxRate.getRate()));
-					ticket.setActTaxRateId(taxRate.getTaxRateId());
+					BigDecimal taxRate = JobUtils.getTaxRate( conn, ticket.getJobId(), ticketReturnRequest.getProcessDate(), sessionUser.getUserId());
+					ticket.setActTaxAmt(ticket.getActPricePerCleaning().multiply(taxRate));
+//					ticket.setActTaxRateId(taxRate.getTaxRateId());
+					ticket.setActTaxRate(taxRate);
 				} else {
 					ticket.setActTaxAmt(new BigDecimal( "0.00" ));
-					ticket.setActTaxRateId(0);
+//					ticket.setActTaxRateId(0);
+					ticket.setActTaxRate(BigDecimal.ZERO);
 				}
 				//optional fields
 				if(StringUtils.isBlank(ticketReturnRequest.getProcessNotes())){

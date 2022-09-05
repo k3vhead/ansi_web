@@ -1,13 +1,9 @@
 package com.ansi.scilla.web.payment.request;
 import java.math.BigDecimal;
-import java.util.Date;
 
 import com.ansi.scilla.common.jsonFormat.AnsiCurrencyFormatter;
-import com.ansi.scilla.common.jsonFormat.AnsiDateFormatter;
 import com.ansi.scilla.common.queries.ReportQuery;
-import com.ansi.scilla.common.queries.TicketPaymentTotals;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class PayTicketRequestItem extends ReportQuery {
 

@@ -14,6 +14,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Transformer;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.ApplicationObject;
@@ -240,7 +241,7 @@ public abstract class LookupQuery extends ApplicationObject {
 		return returnCount;
 	}
 
-	private String makeSQL(SelectType selectType, Integer offset, Integer rowCount) {
+	protected String makeSQL(SelectType selectType, Integer offset, Integer rowCount) {
 		String searchSQL =	selectType.equals(SelectType.DATA) ? sql : sqlCount;
 
 		String offsetPhrase = makeOffset(selectType, offset);
@@ -250,6 +251,9 @@ public abstract class LookupQuery extends ApplicationObject {
 		String wherePhrase = selectType.equals(SelectType.COUNTALL) ? baseWhereClause : makeWhereClause(searchPhrase);
 		String filterPhrase = makeFilterPhrase(wherePhrase);
 		
+		if ( this.logger == null ) {
+			this.logger = LogManager.getLogger(LookupQuery.class);
+		}
 		this.logger.log(Level.DEBUG, "wherePhrase: " + wherePhrase);
 		this.logger.log(Level.DEBUG, "filterPhrase: " + filterPhrase);
 		this.logger.log(Level.DEBUG, "orderByPhrase: " + orderByPhrase);
@@ -295,19 +299,22 @@ public abstract class LookupQuery extends ApplicationObject {
 	 * @param rowCount Number of rows to return. -1 indicates "all of them"
 	 * @return
 	 */
-	private String makeFetch(SelectType selectType, Integer rowCount) {
+	protected String makeFetch(SelectType selectType, Integer rowCount) {
 		return selectType.equals(SelectType.DATA) && rowCount > 0 ? "\n FETCH NEXT " + rowCount + " ROWS ONLY " : "";
 	}
 
 	
-	private String makeOffset(SelectType selectType, Integer offset) {
+	protected String makeOffset(SelectType selectType, Integer offset) {
 		return selectType.equals(SelectType.DATA) ? "\n OFFSET " + offset + " ROWS " :"";
 	}
 	
 	
 	
-	private PreparedStatement makePreparedStatement(Connection conn, SelectType selectType, String searchSQL) throws SQLException {
+	protected PreparedStatement makePreparedStatement(Connection conn, SelectType selectType, String searchSQL) throws SQLException {
 		PreparedStatement ps = conn.prepareStatement(searchSQL);
+		Logger myLogger = LogManager.getLogger(LookupQuery.class);
+		myLogger.log(Level.DEBUG, "SelectType: " + selectType.name());
+		myLogger.log(Level.DEBUG, "SearchSQL: " + searchSQL);
 		if ( this.baseFilterValue != null && this.baseFilterValue.size() > 0 ) {
 			int idx = 1;
 			for ( Object o : this.baseFilterValue ) {

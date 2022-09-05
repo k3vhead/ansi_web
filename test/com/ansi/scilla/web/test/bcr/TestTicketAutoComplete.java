@@ -8,7 +8,7 @@ import java.util.List;
 import com.ansi.scilla.common.utils.AppUtils;
 import com.ansi.scilla.web.bcr.query.BcrTicketLookupQuery;
 import com.ansi.scilla.web.common.query.LookupQuery;
-import com.ansi.scilla.web.common.servlet.AbstractAutoCompleteItem;
+import com.ansi.scilla.web.common.response.AbstractAutoCompleteItem;
 import com.ansi.scilla.web.common.struts.SessionDivision;
 import com.ansi.scilla.web.common.utils.ColumnFilter;
 import com.ansi.scilla.web.test.TesterUtils;
