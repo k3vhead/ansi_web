@@ -15,12 +15,8 @@ public class BcrNewClaimRequest extends AbstractRequest {
 	public static final String TICKET_ID = "ticketId";
 	public static final String SERVICE_TYPE_ID = "serviceTypeId";
 	public static final String CLAIM_WEEK = "claimWeek";
-	public static final String DL_AMT = "dlAmt";
 	public static final String EXPENSE_VOLUME = "expenseVolume";
-	public static final String VOLUME_CLAIMED = "volumeClaimed";
 	public static final String EXPENSE_TYPE = "expenseType";
-	public static final String EMPLOYEE = "employee";
-	public static final String LABOR_NOTES = "laborNotes";
 	public static final String EXPENSE_NOTES = "expenseNotes";
 	public static final String DIVISION_ID = "divisionId";
 	public static final String WORK_YEAR = "workYear";

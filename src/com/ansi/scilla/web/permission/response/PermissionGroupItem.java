@@ -2,10 +2,7 @@ package com.ansi.scilla.web.permission.response;
 
 import java.lang.reflect.InvocationTargetException;
 
-import org.apache.commons.beanutils.PropertyUtils;
-
 import com.ansi.scilla.common.ApplicationObject;
-import com.ansi.scilla.common.db.PermissionGroupLevel;
 
 /**
  * 

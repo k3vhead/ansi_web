@@ -21,7 +21,6 @@ import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
-import com.ansi.scilla.web.division.response.DivisionListResponse;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.MissingRequiredDataException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;

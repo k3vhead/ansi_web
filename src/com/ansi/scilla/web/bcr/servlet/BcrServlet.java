@@ -24,6 +24,7 @@ public class BcrServlet extends AbstractServlet {
 	public static final String INIT = "init";
 	public static final String KEEP_ALIVE = "keepAlive";
 	public static final String NEW_CLAIM = "newClaim";
+	public static final String SPLIT_CLAIM = "splitClaim";
 	public static final String TICKET = "ticket";
 	public static final String TICKET_AUTOCOMPLETE = "ticketAutoComplete";
 	public static final String TICKET_CLAIM = "ticketClaim";
@@ -139,6 +140,9 @@ public class BcrServlet extends AbstractServlet {
 			break;
 		case NEW_CLAIM:
 			new BcrNewClaimServlet().doPost(request, response);
+			break;
+		case SPLIT_CLAIM:
+			new BcrSplitClaimServlet().doPost(request, response);
 			break;
 		case TICKET:
 			new BcrTicketServlet().doPost(request, response);

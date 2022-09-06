@@ -5,7 +5,6 @@ import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.utils.PropertyNames;
 import com.ansi.scilla.web.common.struts.SessionUser;
-import com.ansi.scilla.web.common.utils.AppUtils;
 
 public class TestLogger {
 

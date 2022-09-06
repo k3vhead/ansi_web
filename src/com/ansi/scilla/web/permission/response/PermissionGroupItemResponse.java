@@ -3,13 +3,10 @@ package com.ansi.scilla.web.permission.response;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.apache.commons.beanutils.PropertyUtils;
 
-import com.ansi.scilla.common.db.PermissionGroup;
 import com.ansi.scilla.web.common.response.MessageResponse;
 
 public class PermissionGroupItemResponse extends MessageResponse implements Serializable {

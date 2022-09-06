@@ -700,11 +700,10 @@
     
     <tiles:put name="content" type="string">
 
-
-	 	<table id="codeTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;">
-	       
+		<h1>Codes</h1>
+	 	<table id="codeTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;">	       
 	    </table>
-    				<webthing:scrolltop />
+  		<webthing:scrolltop />
 		<ansi:hasPermission permissionRequired="SYSADMIN">
 			<ansi:hasWrite>
     			<div class="addButtonDiv">
@@ -714,140 +713,140 @@
 		</ansi:hasPermission>
     	
     	<div id="deleteModal">
+   			<table>
+   				<tr>
+   					<td><span class="formLabel">Table:</span></td>
+   					<td><input type="text" name="table_name" style="border-style: hidden" readOnly /></td>
+   				</tr>
+   				<tr>
+   					<td><span class="formLabel">Field:</span></td>
+   					<td><input type="text" name="field_name" style="border-style: hidden" readOnly /></td>
+   				</tr>
+   				<tr>
+   					<td><span class="formLabel">Value:</span></td>
+   					<td><input type="text" name="value" style="border-style: hidden" readOnly /></td>
+   				</tr>
+   			</table>
+    	</div>
+	    	
+		    	
+    	<div id="addFormDiv">
+    		<h2 id="addFormTitle"></h2>
+    		<div id="addFormMsg" class="err"></div>
+    		<form action="#" method="post" id="addForm">
     			<table>
     				<tr>
-    					<td><span class="formLabel">Table:</span></td>
-    					<td><input type="text" name="table_name" style="border-style: hidden" readOnly /></td>
+    					<td><span class="required">*</span><span class="formLabel">Table:</span></td>
+    					<td>
+    						<%--
+    						<input type="text" name="tableName" data-required="true" data-valid="validTable" />		    						
+    						 --%>
+    						 <select name="tableName" data-required="true" data-valid="validTableName">
+    						 	<option value=""></option>
+    						 </select>
+    					</td>
+  							<td><span class="err" id="tableNameErr"></span></td>
     				</tr>
     				<tr>
-    					<td><span class="formLabel">Field:</span></td>
-    					<td><input type="text" name="field_name" style="border-style: hidden" readOnly /></td>
+    					<td><span class="required">*</span><span class="formLabel">Field:</span></td>
+    					<td>
+    						<select name="fieldName" data-required="true" data-valid="validFieldName">
+    							<option value=""></option>
+    						</select>
+    					</td>
+  							<td><span class="err" id="fieldNameErr"></span></td>
     				</tr>
     				<tr>
-    					<td><span class="formLabel">Value:</span></td>
-    					<td><input type="text" name="value" style="border-style: hidden" readOnly /></td>
+    					<td><span class="required">*</span><span class="formLabel">Value:</span></td>
+    					<td><input type="text" name="value" data-required="true" data-valid="validValue" /></td>
+  							<td><span class="err" id="valueErr"></span></td>
+    				</tr>
+    				<tr>
+    					<td><span class="required">*</span><span class="formLabel">Display:</span></td>
+    					<td><input type="text" name="displayValue" /></td>
+  							<td><span class="err displayValueErr"></span></td>
+    				</tr>
+    				<tr>
+    					<td><span class="required">*</span><span class="formLabel">Sequence:</span></td>
+    					<td>
+    						<select name="seq">
+    							<% for (int i = 1; i < 21; i++ ) { %>
+    							<option value="<%= i %>"><%= i %></option>
+    							<% } %>
+    						</select>
+    					</td>
+  							<td><span class="err" id="seqErr"></span></td>
+    				</tr>
+    				<tr>
+    					<td><span class="formLabel">Description:</span></td>
+    					<td><input type="text" name="description" /></td>
+    				</tr>
+    				<tr>
+    					<td><span class="required">*</span><span class="formLabel">Status:</span></td>
+    					<td>
+    						<select name="status">
+    							<option value="1">Active</option>
+    							<option value="0">Inactive</option>
+    						</select>
+    					</td>
     				</tr>
     			</table>
-	    	</div>
+    		</form>
+    	</div>
 	    	
 		    	
-		    	<div id="addFormDiv">
-		    		<h2 id="addFormTitle"></h2>
-		    		<div id="addFormMsg" class="err"></div>
-		    		<form action="#" method="post" id="addForm">
-		    			<table>
-		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Table:</span></td>
-		    					<td>
-		    						<%--
-		    						<input type="text" name="tableName" data-required="true" data-valid="validTable" />		    						
-		    						 --%>
-		    						 <select name="tableName" data-required="true" data-valid="validTableName">
-		    						 	<option value=""></option>
-		    						 </select>
-		    					</td>
-    							<td><span class="err" id="tableNameErr"></span></td>
-		    				</tr>
-		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Field:</span></td>
-		    					<td>
-		    						<select name="fieldName" data-required="true" data-valid="validFieldName">
-		    							<option value=""></option>
-		    						</select>
-		    					</td>
-    							<td><span class="err" id="fieldNameErr"></span></td>
-		    				</tr>
-		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Value:</span></td>
-		    					<td><input type="text" name="value" data-required="true" data-valid="validValue" /></td>
-    							<td><span class="err" id="valueErr"></span></td>
-		    				</tr>
-		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Display:</span></td>
-		    					<td><input type="text" name="displayValue" /></td>
-    							<td><span class="err displayValueErr"></span></td>
-		    				</tr>
-		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Sequence:</span></td>
-		    					<td>
-		    						<select name="seq">
-		    							<% for (int i = 1; i < 21; i++ ) { %>
-		    							<option value="<%= i %>"><%= i %></option>
-		    							<% } %>
-		    						</select>
-		    					</td>
-    							<td><span class="err" id="seqErr"></span></td>
-		    				</tr>
-		    				<tr>
-		    					<td><span class="formLabel">Description:</span></td>
-		    					<td><input type="text" name="description" /></td>
-		    				</tr>
-		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Status:</span></td>
-		    					<td>
-		    						<select name="status">
-		    							<option value="1">Active</option>
-		    							<option value="0">Inactive</option>
-		    						</select>
-		    					</td>
-		    				</tr>
-		    			</table>
-		    		</form>
-		    	</div>
-	    	
-		    	
-		    	<div id="editFormDiv">
-		    		<h2 id="editFormTitle"></h2>
-		    		<div id="editFormMsg" class="err"></div>
-		    		<form action="#" method="post" id="editForm">
-		    			<table>
-		    				<tr>
-		    					<td><span class="required"></span><span class="formLabel">Table:</span></td>
-		    					<td><input type="text" name="tableName" style="border-style: hidden" readOnly /></td>		    					
-    							<td><span class="err" id="tableNameErr"></span></td>
-		    				</tr>
-		    				<tr>
-		    					<td><span class="required"></span><span class="formLabel">Field:</span></td>
-		    					<td><input type="text" name="fieldName" style="border-style: hidden" readOnly /></td>
-		    					<td><span class="err" id="fieldNameErr"></span></td>
-		    				</tr>
-		    				<tr>
-		    					<td><span class="required"></span><span class="formLabel">Value:</span></td>
-		    					<td><input type="text" name="value" style="border-style: hidden" readOnly /></td>
-    							<td><span class="err" id="valueErr"></span></td>
-		    				</tr>
-		    				<tr>
-		    					<td><span class="required"></span><span class="formLabel">Display:</span></td>
-		    					<td><input type="text" name="displayValue"/></td>
-    							<td><span class="err" id="displayValueErr"></span></td>
-		    				</tr>
-		    				<tr>
-		    					<td><span class="required"></span><span class="formLabel">Sequence:</span></td>
-		    					<td>
-		    						<select name="seq">
-		    							<% for (int i = 1; i < 21; i++ ) { %>
-		    							<option value="<%= i %>"><%= i %></option>
-		    							<% } %>
-		    						</select>
-		    					</td>
-    							<td><span class="err" id="seqErr"></span></td>
-		    				</tr>
-		    				<tr>
-		    					<td><span class="formLabel">Description:</span></td>
-		    					<td><input type="text" name="description" /></td>
-		    				</tr>
-		    				<tr>
-		    					<td><span class="formLabel">Status:</span></td>
-		    					<td>
-		    						<select name="status">
-		    							<option value="1">Active</option>
-		    							<option value="0">Inactive</option>
-		    						</select>
-		    					</td>
-		    				</tr>
-		    			</table>
-		    		</form>
-		    	</div>
+    	<div id="editFormDiv">
+    		<h2 id="editFormTitle"></h2>
+    		<div id="editFormMsg" class="err"></div>
+    		<form action="#" method="post" id="editForm">
+    			<table>
+    				<tr>
+    					<td><span class="required"></span><span class="formLabel">Table:</span></td>
+    					<td><input type="text" name="tableName" style="border-style: hidden" readOnly /></td>		    					
+  							<td><span class="err" id="tableNameErr"></span></td>
+    				</tr>
+    				<tr>
+    					<td><span class="required"></span><span class="formLabel">Field:</span></td>
+    					<td><input type="text" name="fieldName" style="border-style: hidden" readOnly /></td>
+    					<td><span class="err" id="fieldNameErr"></span></td>
+    				</tr>
+    				<tr>
+    					<td><span class="required"></span><span class="formLabel">Value:</span></td>
+    					<td><input type="text" name="value" style="border-style: hidden" readOnly /></td>
+  							<td><span class="err" id="valueErr"></span></td>
+    				</tr>
+    				<tr>
+    					<td><span class="required"></span><span class="formLabel">Display:</span></td>
+    					<td><input type="text" name="displayValue"/></td>
+  							<td><span class="err" id="displayValueErr"></span></td>
+    				</tr>
+    				<tr>
+    					<td><span class="required"></span><span class="formLabel">Sequence:</span></td>
+    					<td>
+    						<select name="seq">
+    							<% for (int i = 1; i < 21; i++ ) { %>
+    							<option value="<%= i %>"><%= i %></option>
+    							<% } %>
+    						</select>
+    					</td>
+  							<td><span class="err" id="seqErr"></span></td>
+    				</tr>
+    				<tr>
+    					<td><span class="formLabel">Description:</span></td>
+    					<td><input type="text" name="description" /></td>
+    				</tr>
+    				<tr>
+    					<td><span class="formLabel">Status:</span></td>
+    					<td>
+    						<select name="status">
+    							<option value="1">Active</option>
+    							<option value="0">Inactive</option>
+    						</select>
+    					</td>
+    				</tr>
+    			</table>
+    		</form>
+    	</div>
 		    	
 		    	
     </tiles:put>

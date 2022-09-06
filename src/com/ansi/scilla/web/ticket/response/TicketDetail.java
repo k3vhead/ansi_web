@@ -19,7 +19,6 @@ import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.claims.TicketClaimTotals;
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.Job;
-import com.ansi.scilla.common.db.TaxRate;
 import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.common.invoice.InvoiceStyle;
 import com.ansi.scilla.common.invoice.InvoiceTerm;
@@ -90,11 +89,12 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 	private String fleetmaticsId;
 //	private Integer actDivisionId;
 	private String ticketType;
+	private String ticketTypeId;
 	// Tax stuff:
-	private BigDecimal taxRateAmount;
-	private Date taxRateEffectiveDate;
-	private String taxRateLocation;
-	private BigDecimal taxRate;
+//	private BigDecimal taxRateAmount;
+//	private Date taxRateEffectiveDate;
+//	private String taxRateLocation;
+//	private BigDecimal taxRate;
 	private String poNumber;
 	private String actPoNumber;
 
@@ -169,19 +169,23 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 		this.fleetmaticsId = ticket.getFleetmaticsId();
 //		this.actDivisionId = ticket.getActDivisionId();
 		this.ticketType = TicketType.lookup(ticket.getTicketType()).display();
+		this.ticketTypeId = TicketType.lookup(ticket.getTicketType()).name();
 		this.actTaxRateId = ticket.getActTaxRateId();
 		 
 		
 		this.billToAddress = new AddressDetail(conn, ticketPaymentTotals.getBillToAddressId());
 		this.jobSiteAddress = new AddressDetail(conn, ticketPaymentTotals.getJobSiteAddressId());
 		
-		TaxRate taxRate = new TaxRate();
-		taxRate.setTaxRateId(ticket.getActTaxRateId());
-		taxRate.selectOne(conn);
-		this.taxRateAmount = taxRate.getAmount();
-		this.taxRateEffectiveDate = taxRate.getEffectiveDate();
-		this.taxRateLocation = taxRate.getLocation();
-		this.taxRate = taxRate.getRate();
+//		These fields are not used in the JSP
+//		TaxRate taxRate = new TaxRate();
+//		taxRate.setTaxRateId(ticket.getActTaxRateId());
+//		taxRate.selectOne(conn);
+//		this.taxRateAmount = taxRate.getAmount();
+//		this.taxRateEffectiveDate = taxRate.getEffectiveDate();
+//		this.taxRateLocation = taxRate.getLocation();
+//		this.taxRate = taxRate.getRate();
+		
+		
 		this.poNumber = job.getPoNumber();
 		// populate actual po with actual if we have one.
 		// else populate with job's po if we have one
@@ -539,40 +543,46 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 		this.ticketType = ticketType;
 	}
 
-
-
-	public BigDecimal getTaxRateAmount() {
-		return taxRateAmount;
+	public String getTicketTypeId() {
+		return ticketTypeId;
 	}
 
-	public void setTaxRateAmount(BigDecimal taxRateAmount) {
-		this.taxRateAmount = taxRateAmount;
-	}
-	
-	@JsonSerialize(using=AnsiDateFormatter.class)
-	public Date getTaxRateEffectiveDate() {
-		return taxRateEffectiveDate;
+	public void setTicketTypeId(String ticketTypeId) {
+		this.ticketTypeId = ticketTypeId;
 	}
 
-	public void setTaxRateEffectiveDate(Date taxRateEffectiveDate) {
-		this.taxRateEffectiveDate = taxRateEffectiveDate;
-	}
-
-	public String getTaxRateLocation() {
-		return taxRateLocation;
-	}
-
-	public void setTaxRateLocation(String taxRateLocation) {
-		this.taxRateLocation = taxRateLocation;
-	}
-
-	public BigDecimal getTaxRate() {
-		return taxRate;
-	}
-
-	public void setTaxRate(BigDecimal taxRate) {
-		this.taxRate = taxRate;
-	}
+//	public BigDecimal getTaxRateAmount() {
+//		return taxRateAmount;
+//	}
+//
+//	public void setTaxRateAmount(BigDecimal taxRateAmount) {
+//		this.taxRateAmount = taxRateAmount;
+//	}
+//	
+//	@JsonSerialize(using=AnsiDateFormatter.class)
+//	public Date getTaxRateEffectiveDate() {
+//		return taxRateEffectiveDate;
+//	}
+//
+//	public void setTaxRateEffectiveDate(Date taxRateEffectiveDate) {
+//		this.taxRateEffectiveDate = taxRateEffectiveDate;
+//	}
+//
+//	public String getTaxRateLocation() {
+//		return taxRateLocation;
+//	}
+//
+//	public void setTaxRateLocation(String taxRateLocation) {
+//		this.taxRateLocation = taxRateLocation;
+//	}
+//
+//	public BigDecimal getTaxRate() {
+//		return taxRate;
+//	}
+//
+//	public void setTaxRate(BigDecimal taxRate) {
+//		this.taxRate = taxRate;
+//	}
 
 	public String getPoNumber() {
 		return poNumber;

@@ -49,7 +49,6 @@ import com.thewebthing.commons.db2.RecordNotFoundException;
  * parameters in the JSON
  * 
  * 
- * @author dclewis editer: jwlewis
  */
 public class DivisionServlet extends AbstractServlet {
 
@@ -370,6 +369,7 @@ public class DivisionServlet extends AbstractServlet {
 		division.setOvertimeRate(divisionRequest.getOvertimeRate());
 		division.setWeekendIsOt(divisionRequest.getWeekendIsOt());
 		division.setHourlyRateIsFixed(divisionRequest.getHourlyRateIsFixed());
+		division.setMinimumHourlyPay(divisionRequest.getMinHourlyRate());
 
 		return division;
 	}

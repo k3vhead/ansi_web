@@ -2,8 +2,8 @@ package com.ansi.scilla.web.specialOverride.common;
 
 import java.math.BigDecimal;
 
-import com.ansi.scilla.common.jobticket.TicketStatus;
 import com.ansi.scilla.common.jobticket.JobStatus;
+import com.ansi.scilla.common.jobticket.TicketStatus;
 import com.ansi.scilla.web.common.utils.Permission;
 
 public enum SpecialOverrideType {

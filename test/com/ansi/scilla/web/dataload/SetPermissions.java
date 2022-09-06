@@ -2,9 +2,7 @@ package com.ansi.scilla.web.dataload;
 
 import java.sql.Connection;
 
-import com.ansi.scilla.common.db.PermissionGroup;
 import com.ansi.scilla.common.db.PermissionGroupLevel;
-import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
 
