@@ -18,7 +18,7 @@ public class TestOrgChildList {
 			conn = AppUtils.getDevConn();
 			List<Organization> childList = OrganizationType.COMPANY.children(conn);
 			for ( Organization org : childList ) {
-				System.out.println(org.getOrganizationId() + "\t" + org.getName() + "\t" + org.getParentName());
+//				System.out.println(org.getOrganizationId() + "\t" + org.getName() + "\t" + org.getParentName());
 			}
 //			CollectionUtils.filter(childList, new ParentPredicate(7));
 		} finally {
