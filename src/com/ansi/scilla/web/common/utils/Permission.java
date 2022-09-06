@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.list.SetUniqueList;
 
+
 /**, ""
  * Enumerates permissions. These are the permissions that will be grouped to make a
  * permission group. Each function will have Read/Write/None privilege
@@ -69,9 +70,10 @@ public enum Permission {
 	USER_ADMIN_WRITE(USER_ADMIN_READ, true, "Add/Edit users; reset passwords"),		// this is for backwards compatibility
 	USER_ADMIN_PAYROLL(USER_ADMIN_WRITE, true, "Administer payroll info for users"),
 	
-	TAX_READ(null, false, "Read-only access to Taxes"),
-	TAX_WRITE(TAX_READ, true, "Can write and Update Taxes"),
-	TAX_OVERRIDE(TAX_WRITE, true, "Can delete Taxes"),
+	TAX(null, false, "Functional Area: Taxes"),
+	TAX_READ(TAX, false, "Read-only access to Taxes"),
+	TAX_WRITE(TAX_READ, false, "Can add to taxes and update them"),
+	TAX_OVERRIDE(TAX_WRITE, false, "Can delete taxes"),
 	
 	TECH_ADMIN(null, false, "Functional Area: Technical Admin"),
 	TECH_ADMIN_READ(TECH_ADMIN, true, "See technical system parameters"),		// this is for backwards compatibility
@@ -264,6 +266,20 @@ public enum Permission {
 		}
 	}
 	
+	/**
+	 * Make a list of all permissions in this functional area
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Permission> makeFunctionalAreaTree() {
+		List<Permission> functionalAreaList = new ArrayList<Permission>();
+		CollectionUtils.addAll(functionalAreaList, makeChildTree().iterator());
+		CollectionUtils.addAll(functionalAreaList, makeParentList().iterator());
+		// remove duplicate values (this permission will be in both lists)
+		List<Permission> uniqueList = SetUniqueList.decorate(new ArrayList<Permission>()); 
+		uniqueList.addAll(functionalAreaList);
+		return uniqueList;
+	}
 	
 	/**
 	 * Make a list of all permissions in this functional area

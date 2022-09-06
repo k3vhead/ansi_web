@@ -23,6 +23,9 @@
 		<Logger name="ansi_stress_stop_log" level="debug">
 			<appender-ref ref="stress_stop_log" level="debug" />
 		</Logger>
+		<Logger name="com.ansi.scilla.common.payroll.PayrollWorksheetParser" level="info">
+			<appender-ref ref="STDOUT" level="info" />
+		</Logger>
 		<Logger name="com.ansi.scilla" level="debug">
 			<appender-ref ref="STDOUT" level="debug" />
 		</Logger>

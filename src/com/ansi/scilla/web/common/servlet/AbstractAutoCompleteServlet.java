@@ -10,6 +10,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ansi.scilla.web.common.response.AbstractAutoCompleteItem;
 import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AppUtils;
@@ -31,32 +32,38 @@ public abstract class AbstractAutoCompleteServlet extends AbstractServlet {
 	 * you're trying to auto-complete
 	 * @param permission
 	 */
+	protected AbstractAutoCompleteServlet() {
+		super();
+	}
+	
 	protected AbstractAutoCompleteServlet(Permission permission) {
+		this();
 		this.permission = permission;
 	}
 	
 	
+	
 	@Override
-	protected void doDelete(HttpServletRequest request, HttpServletResponse response)
+	public void doDelete(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		super.sendNotAllowed(response);
 	}
 	
 	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		super.sendNotAllowed(response);
 	}
 	
 	
 	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
-			SessionData sessionData = AppUtils.validateSession(request, this.permission);
+			SessionData sessionData = this.permission == null ? AppUtils.validateSession(request) : AppUtils.validateSession(request, this.permission);
 			SessionUser user = sessionData.getUser();
 			processRequest(conn, user, request, response);
 

@@ -77,7 +77,7 @@ public class BudgetControlLookupQuery extends ClaimsQuery {
 			+ "	, isnull(ticket_claim_totals.claimed_volume,0.00)+ISNULL(ticket_claim_passthru_totals.passthru_volume,0.00)"
 			+ "     as claimed_volume_total"
 			+ "	, job.price_per_cleaning - "
-			+ "(isnull(ticket_claim_totals.claimed_volume,0.00)+ISNULL(ticket_claim_passthru_totals.passthru_volume,0.00))"
+			+ "(isnull(ticket_claim_totals.claimed_volume,0.00)+isnull(rolling_totals.total_volume,isnull(ticket_claim_totals.claimed_total_volume,0.00)))"
 			+ "		as volume_remaining"
 			+ "	, isnull(invoice_totals.invoiced_amount,0.00) as billed_amount"
 			+ "	, (isnull(ticket_claim_totals.claimed_volume,0.00)+ISNULL(ticket_claim_passthru_totals.passthru_volume,0.00))"

@@ -225,7 +225,8 @@ public class ApplyPaymentServlet extends AbstractServlet {
 			ticket.setActPricePerCleaning(BigDecimal.ZERO);
 		}
 		ticket.setActTaxAmt(BigDecimal.ZERO);
-		ticket.setActTaxRateId(0);
+//		ticket.setActTaxRateId(0);
+		ticket.setActTaxRate(BigDecimal.ZERO);
 		ticket.setAddedBy(sessionUser.getUserId());
 //		ticket.setAddedDate(addedDate);		// added by super
 		ticket.setBillSheet(Ticket.BILL_SHEET_IS_NO);

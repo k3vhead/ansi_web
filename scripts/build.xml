@@ -99,6 +99,7 @@
         </copy>
     </target>
     
+
     
     <target name="build" depends="init, git, centerpoint_ui" description="Build everything">
 		<path id="asana.classpath">
@@ -128,7 +129,6 @@
 				<length string="${git.revision}" trim="yes" length="0" when="greater" />
 			</and>
 		</condition>
-			
 			
         <path id="ui.classpath">
             <path refid="compile.classpath"/>

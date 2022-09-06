@@ -15,11 +15,9 @@ import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.PrintHistory;
 import com.ansi.scilla.common.db.Quote;
 import com.ansi.scilla.common.db.User;
-import com.ansi.scilla.common.jsonFormat.AnsiDateFormatter;
 import com.ansi.scilla.web.address.response.AddressResponseRecord;
 import com.ansi.scilla.web.common.response.MessageResponse;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 
 public class QuoteResponseRecord extends MessageResponse {

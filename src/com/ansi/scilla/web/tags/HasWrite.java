@@ -28,7 +28,7 @@ public class HasWrite extends ConditionalTagSupport {
 
 		SessionData sessionData = (SessionData)session.getAttribute(SessionData.KEY);
 		if ( sessionData != null ) {
-			if ( sessionData.getUser().getSuperUser().equals(new Integer(1)) ) {
+			if ( sessionData.getUser().getSuperUser().equals(Integer.valueOf(1)) ) {
 				canWrite = true;
 			} else {
 				String writePermission = permissionRequired + "_WRITE";
@@ -37,7 +37,7 @@ public class HasWrite extends ConditionalTagSupport {
 						canWrite = true;
 					}
 //					if ( userPermission.getPermissionName().equalsIgnoreCase(permissionRequired)) {
-//						if ( userPermission.getLevel().equals(new Integer(1))) {
+//						if ( userPermission.getLevel().equals(Integer.valueOf(1))) {
 //							canWrite = true;
 //						}
 //					}

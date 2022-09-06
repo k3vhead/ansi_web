@@ -347,7 +347,7 @@ public class SubscriptionResponse2 extends MessageResponse {
 			this.name = group.getName();
 		}
 		public Group(Organization org) {
-			this.id = org.getGroupId();
+			this.id = org.getOrganizationId();
 			this.name = org.getName();
 		}
 		public Integer getId() {

@@ -1,8 +1,5 @@
 package com.ansi.scilla.web.test.bcr;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-
 import com.ansi.scilla.common.utils.WorkYear;
 
 public class TestDateTrunc {

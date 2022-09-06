@@ -61,6 +61,12 @@
             <forward name="login" path="/login.jsp" />            
         </action>
         <action
+            path="/batchLog"
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
+            <forward name="valid" path="/reports/batchLog.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+        <action
             path="/budgetControl"
             type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
             <forward name="valid" path="/budgetControl/index.jsp" />
@@ -170,6 +176,24 @@
             <forward name="login" path="/login.jsp" />            
         </action>
         <action
+            path="/companies"
+            type="com.ansi.scilla.web.organization.action.OrganizationAction">
+            <forward name="valid" path="/organizations/index.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+        <action
+            path="/regions"
+            type="com.ansi.scilla.web.organization.action.OrganizationAction">
+            <forward name="valid" path="/organizations/index.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+        <action
+            path="/groups"
+            type="com.ansi.scilla.web.organization.action.OrganizationAction">
+            <forward name="valid" path="/organizations/index.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+        <action
             path="/documentLookup"
             type="com.ansi.scilla.web.common.action.SessionPageDisplayAction"
             scope="request">            
@@ -253,6 +277,19 @@
             <forward name="login" path="/login.jsp" />            
         </action>
 		<action
+            path="/localeLookup"
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
+            <forward name="valid" path="/taxes/localeLookup.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+        <action
+            path="/localeDivisionLookup"
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
+            <forward name="valid" path="/taxes/localeDivisionLookup.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+     	
+        <action
             path="/jobTagLookup"
             type="com.ansi.scilla.web.common.action.SessionPageDisplayAction"
             scope="request">
@@ -324,6 +361,48 @@
             <forward name="login" path="/login.jsp" />
         </action>
 		<action
+            path="/payrollEmployeeImport"
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
+            <forward name="valid" path="/payrolls/employeeImport.jsp" />
+            <forward name="login" path="/login.jsp" />
+        </action>
+        <action
+            path="/payrollEmployeeLookup"
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
+            <forward name="valid" path="/payrolls/employeeLookup.jsp" />
+            <forward name="login" path="/login.jsp" />
+        </action>
+        <action
+            path="/payrollTaxProfileLookup"
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
+            <forward name="valid" path="/payrolls/taxProfileLookup.jsp" />
+            <forward name="login" path="/login.jsp" />
+        </action>
+		<action
+            path="/payrollTimesheetImport"
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
+            <forward name="valid" path="/payrolls/timesheetImport.jsp" />
+            <forward name="login" path="/login.jsp" />
+        </action>
+		<action
+            path="/payrollTimesheetLookup"
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
+            <forward name="valid" path="/payrolls/timesheetLookup.jsp" />
+            <forward name="login" path="/login.jsp" />
+        </action>
+		<action
+            path="/payrollExceptionReport"
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
+            <forward name="valid" path="/payrolls/exceptionReport.jsp" />
+            <forward name="login" path="/login.jsp" />
+        </action>
+		<action
+            path="/payrollExport"
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
+            <forward name="valid" path="/payrolls/export.jsp" />
+            <forward name="login" path="/login.jsp" />
+        </action>
+		<action
             path="/permissionGroup"
             type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
             <forward name="valid" path="/permissionGroup.jsp" />
@@ -378,10 +457,20 @@
             <forward name="login" path="/login.jsp" />            
         </action>
 		
+
          <action
             path="/specialOverride"
             type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
             <forward name="valid" path="/specialOverride/specialOverride.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+        <action
+            path="/taxRateLookup"
+            type="com.ansi.scilla.web.tax.action.TaxRateLookupAction"
+            name="idForm"
+            input="/invoiceLookup.jsp"
+            scope="request">
+            <forward name="valid" path="/taxes/localeTaxRateLookup.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
         <action

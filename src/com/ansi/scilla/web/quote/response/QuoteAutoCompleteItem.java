@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.ansi.scilla.web.common.servlet.AbstractAutoCompleteItem;
+import com.ansi.scilla.web.common.response.AbstractAutoCompleteItem;
 
 public class QuoteAutoCompleteItem extends AbstractAutoCompleteItem {
 

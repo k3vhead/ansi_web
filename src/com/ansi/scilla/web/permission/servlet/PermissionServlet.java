@@ -218,6 +218,7 @@ public class PermissionServlet extends AbstractServlet {
 		
 		// remove report subscriptions 
 		SubscriptionUtils.cureReportSubscriptions(conn, permissionGroupId);
+//		SubscriptionUtils.cureReportSubscriptions(conn, permissionGroupId);
 		conn.commit();
 
 		PermissionListResponse data = new PermissionListResponse(conn, permissionGroupId);
