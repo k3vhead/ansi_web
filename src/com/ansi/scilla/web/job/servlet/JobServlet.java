@@ -22,7 +22,6 @@ import com.ansi.scilla.common.exceptions.InvalidJobStatusException;
 import com.ansi.scilla.common.jobticket.JobFrequency;
 import com.ansi.scilla.common.jobticket.JobStatus;
 import com.ansi.scilla.common.jobticket.JobUtils;
-import com.ansi.scilla.web.address.response.AddressResponse;
 import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.MessageKey;
 import com.ansi.scilla.web.common.response.ResponseCode;

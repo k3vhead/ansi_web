@@ -16,6 +16,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -39,6 +40,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.tomcat.dbcp.dbcp2.BasicDataSource;
 
+import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.db.ApplicationProperties;
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.User;
@@ -355,6 +357,15 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 	}
 
 
+	/** 
+	 * Return a calendar object with the standard (midwest) ansi timezone
+	 * @return
+	 */
+	public static Calendar getToday() {
+		return Calendar.getInstance(new AnsiTime());
+	}
+	
+	
 	
 	/**
 	 * Ensure that a user is logged in. There is no permission/level requirement

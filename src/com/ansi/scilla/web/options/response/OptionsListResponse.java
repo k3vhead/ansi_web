@@ -23,6 +23,7 @@ import com.ansi.scilla.common.jobticket.JobTagStatus;
 import com.ansi.scilla.common.jobticket.JobTagType;
 import com.ansi.scilla.common.jobticket.TicketStatus;
 import com.ansi.scilla.common.payment.PaymentMethod;
+import com.ansi.scilla.common.utils.LocaleType;
 import com.ansi.scilla.web.common.response.MessageResponse;
 import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.utils.Permission;
@@ -44,6 +45,8 @@ public class OptionsListResponse extends MessageResponse {
 	private List<ReportTypeOption> reportType;
 	private List<WorkHoursTypeOption> workHoursType;
 	private List<ExpenseTypeOption> expenseType;
+	private List<LocaleTypeOption> localeType;
+	
 	private List<DocumentTypeOption> documentType;
 	private List<JobTagStatusOption> jobTagStatus;
 	private List<JobTagTypeOption> jobTagType;
@@ -86,6 +89,9 @@ public class OptionsListResponse extends MessageResponse {
 		}
 		if ( options.contains(ResponseOption.EXPENSE_TYPE)) {
 			makeExpenseTypeList(sessionData);
+		}
+		if ( options.contains(ResponseOption.LOCALE_TYPE)) {
+			makeLocaleTypeList(sessionData);
 		}
 		if ( options.contains(ResponseOption.DOCUMENT_TYPE)) {
 			makeDocumentTypeList();
@@ -208,6 +214,15 @@ public class OptionsListResponse extends MessageResponse {
 
 	}
 	
+	private void makeLocaleTypeList(SessionData sessionData) throws ClassNotFoundException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException  {
+		this.localeType = new ArrayList<LocaleTypeOption>();
+		for ( LocaleType localeType : LocaleType.values()) {
+			this.localeType.add(new LocaleTypeOption(localeType));
+		}
+		Collections.sort(this.localeType);
+
+	}
+
 	private void makeDocumentTypeList() {
 		this.documentType = new ArrayList<DocumentTypeOption>();
 		for ( DocumentType documentType : DocumentType.values()) {
@@ -331,6 +346,14 @@ public class OptionsListResponse extends MessageResponse {
 		this.expenseType = expenseType;
 	}
 
+	public List<LocaleTypeOption> getLocaleType() {
+		return localeType;
+	}
+
+	public void setLocaleType(List<LocaleTypeOption> localeType) {
+		this.localeType = localeType;
+	}
+	
 	public List<DocumentTypeOption> getDocumentType() {
 		return documentType;
 	}

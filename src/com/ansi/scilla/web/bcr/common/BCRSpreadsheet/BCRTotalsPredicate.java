@@ -1,7 +1,6 @@
 package com.ansi.scilla.web.bcr.common.BCRSpreadsheet;
 
 import org.apache.commons.collections4.Predicate;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

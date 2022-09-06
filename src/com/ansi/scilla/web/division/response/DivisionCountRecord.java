@@ -3,8 +3,6 @@ package com.ansi.scilla.web.division.response;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 
-import org.apache.commons.beanutils.BeanUtils;
-
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.queries.DivisionUserCount;
@@ -30,6 +28,7 @@ public class DivisionCountRecord extends ApplicationObject implements Comparable
     private BigDecimal overtimeRate;
     private Integer weekendIsOt;
     private Integer hourlyRateIsFixed;
+    private BigDecimal minHourlyRate;
 	
 	
 	public DivisionCountRecord() {
@@ -63,6 +62,7 @@ public class DivisionCountRecord extends ApplicationObject implements Comparable
 		} else { 
 			this.status = null;
 		}
+		this.minHourlyRate = divisionUserCount.getDivision().getMinimumHourlyPay();
 	}
 
 	public Integer getDivisionNbr() {
@@ -167,6 +167,14 @@ public class DivisionCountRecord extends ApplicationObject implements Comparable
 
 	public void setHourlyRateIsFixed(Integer hourlyRateIsFixed) {
 		this.hourlyRateIsFixed = hourlyRateIsFixed;
+	}
+
+	public BigDecimal getMinHourlyRate() {
+		return minHourlyRate;
+	}
+
+	public void setMinHourlyRate(BigDecimal minHourlyRate) {
+		this.minHourlyRate = minHourlyRate;
 	}
 
 	@Override
