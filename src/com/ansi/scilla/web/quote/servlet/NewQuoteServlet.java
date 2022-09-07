@@ -11,6 +11,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
@@ -75,9 +76,10 @@ public class NewQuoteServlet extends AbstractQuoteServlet {
 			String action = jsonNode1.get("action").asText();
 			
 			if ( action.equalsIgnoreCase(NewQuoteRequest.ACTION_IS_VALIDATE)) {
+				List<String> fieldNameList = IteratorUtils.toList(jsonNode1.fieldNames());
 				NewQuoteRequest quoteRequest = StringUtils.isBlank(jsonString) ? new NewQuoteRequest() : new NewQuoteRequest(jsonString);
 				logger.log(Level.DEBUG, quoteRequest);
-				doValidateQuote(conn, response, sessionData, quoteRequest);
+				doValidateQuote(conn, response, sessionData, quoteRequest, fieldNameList);
 			} else if ( action.equalsIgnoreCase(NewQuoteRequest.ACTION_IS_SAVE) ) {
 				NewQuoteRequest quoteRequest = StringUtils.isBlank(jsonString) ? new NewQuoteRequest() : new NewQuoteRequest(jsonString);
 				
@@ -133,71 +135,21 @@ public class NewQuoteServlet extends AbstractQuoteServlet {
 		
 	}
 
-	private void doValidateQuote(Connection conn, HttpServletResponse response, SessionData sessionData, NewQuoteRequest quoteRequest) throws Exception {
+	private void doValidateQuote(Connection conn, HttpServletResponse response, SessionData sessionData, NewQuoteRequest quoteRequest, List<String> fieldNameList) throws Exception {
 		WebMessages webMessages = new WebMessages();
 		
-		if ( quoteRequest.getJobSiteAddressId() != null ) {
-			try {
-				NewQuoteAddressResponse jobSiteAddressResponse = new NewQuoteAddressResponse();
-				jobSiteAddressResponse.makeJobSiteAddressResponse(conn, quoteRequest.getJobSiteAddressId());
-				super.sendResponse(conn, response, ResponseCode.SUCCESS, jobSiteAddressResponse);
-			} catch (RecordNotFoundException e) {
-				webMessages.addMessage(QuoteRequest.JOB_SITE_ADDRESS_ID, "Invalid address");
-				NewQuoteAddressResponse jobSiteAddressResponse = new NewQuoteAddressResponse();
-				jobSiteAddressResponse.setWebMessages(webMessages);
-				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, jobSiteAddressResponse);
-			}
-		} else if ( quoteRequest.getBillToAddressId() != null ) {
-			try {
-				NewQuoteAddressResponse jobSiteAddressResponse = new NewQuoteAddressResponse();
-				jobSiteAddressResponse.makeBillToAddressResponse(conn, quoteRequest.getBillToAddressId());
-				super.sendResponse(conn, response, ResponseCode.SUCCESS, jobSiteAddressResponse);
-			} catch (RecordNotFoundException e) {
-				webMessages.addMessage(QuoteRequest.BILL_TO_ADDRESS_ID, "Invalid address");
-				NewQuoteAddressResponse jobSiteAddressResponse = new NewQuoteAddressResponse();
-				jobSiteAddressResponse.setWebMessages(webMessages);
-				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, jobSiteAddressResponse);
-			}
-		} else if ( quoteRequest.getJobContactId() != null ) {
-			try {
-				NewQuoteContactResponse contactResponse = new NewQuoteContactResponse(conn, quoteRequest.getJobContactId());
-				super.sendResponse(conn, response, ResponseCode.SUCCESS, contactResponse);
-			} catch (RecordNotFoundException e) {
-				webMessages.addMessage(QuoteRequest.JOB_CONTACT_ID, "Invalid contact");
-				NewQuoteAddressResponse jobSiteAddressResponse = new NewQuoteAddressResponse();
-				jobSiteAddressResponse.setWebMessages(webMessages);
-				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, jobSiteAddressResponse);
-			}
-		} else if ( quoteRequest.getSiteContact() != null ) {
-			try {
-				NewQuoteContactResponse contactResponse = new NewQuoteContactResponse(conn, quoteRequest.getSiteContact());
-				super.sendResponse(conn, response, ResponseCode.SUCCESS, contactResponse);
-			} catch (RecordNotFoundException e) {
-				webMessages.addMessage(QuoteRequest.SITE_CONTACT, "Invalid contact");
-				NewQuoteAddressResponse jobSiteAddressResponse = new NewQuoteAddressResponse();
-				jobSiteAddressResponse.setWebMessages(webMessages);
-				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, jobSiteAddressResponse);
-			}
-		} else if ( quoteRequest.getContractContactId() != null ) {
-			try {
-				NewQuoteContactResponse contactResponse = new NewQuoteContactResponse(conn, quoteRequest.getContractContactId());
-				super.sendResponse(conn, response, ResponseCode.SUCCESS, contactResponse);
-			} catch (RecordNotFoundException e) {
-				webMessages.addMessage(QuoteRequest.CONTRACT_CONTACT_ID, "Invalid contact");
-				NewQuoteAddressResponse jobSiteAddressResponse = new NewQuoteAddressResponse();
-				jobSiteAddressResponse.setWebMessages(webMessages);
-				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, jobSiteAddressResponse);
-			}
-		} else if ( quoteRequest.getBillingContactId() != null ) {
-			try {
-				NewQuoteContactResponse contactResponse = new NewQuoteContactResponse(conn, quoteRequest.getBillingContactId());
-				super.sendResponse(conn, response, ResponseCode.SUCCESS, contactResponse);
-			} catch (RecordNotFoundException e) {
-				webMessages.addMessage(QuoteRequest.BILLING_CONTACT_ID, "Invalid contact");
-				NewQuoteAddressResponse jobSiteAddressResponse = new NewQuoteAddressResponse();
-				jobSiteAddressResponse.setWebMessages(webMessages);
-				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, jobSiteAddressResponse);
-			}
+		if ( fieldNameList.contains(QuoteRequest.JOB_SITE_ADDRESS_ID)) {
+			processAddressValidationRequest(conn, response, sessionData, QuoteRequest.JOB_SITE_ADDRESS_ID, quoteRequest.getJobSiteAddressId());
+		} else if ( fieldNameList.contains(QuoteRequest.BILL_TO_ADDRESS_ID)) {
+			processAddressValidationRequest(conn, response, sessionData, QuoteRequest.BILL_TO_ADDRESS_ID, quoteRequest.getBillToAddressId());
+		} else if ( fieldNameList.contains(QuoteRequest.JOB_CONTACT_ID)) {
+			processContactValidationRequest(conn, response, sessionData, QuoteRequest.JOB_CONTACT_ID, quoteRequest.getJobContactId());
+		} else if ( fieldNameList.contains(QuoteRequest.SITE_CONTACT)) {
+			processContactValidationRequest(conn, response, sessionData, QuoteRequest.SITE_CONTACT, quoteRequest.getSiteContact());
+		} else if ( fieldNameList.contains(QuoteRequest.CONTRACT_CONTACT_ID)) {
+			processContactValidationRequest(conn, response, sessionData, QuoteRequest.CONTRACT_CONTACT_ID, quoteRequest.getContractContactId());
+		} else if ( fieldNameList.contains(QuoteRequest.BILLING_CONTACT_ID)) {
+			processContactValidationRequest(conn, response, sessionData, QuoteRequest.BILLING_CONTACT_ID, quoteRequest.getBillingContactId());
 		} else if ( quoteRequest.hasJobUpdates() || quoteRequest.hasQuoteHeaderUpdates() ) {
 			validateQuoteHeader(conn, sessionData, response, quoteRequest);
 		} else {
@@ -205,11 +157,58 @@ public class NewQuoteServlet extends AbstractQuoteServlet {
 			QuoteResponse quoteResponse = new QuoteResponse();
 			quoteResponse.setWebMessages(webMessages);
 			super.sendResponse(conn, response, ResponseCode.SYSTEM_FAILURE, quoteResponse);
-	
 		}
-	
 	}
 
+	private void processAddressValidationRequest(Connection conn, HttpServletResponse response, SessionData sessionData,
+			String fieldName, Integer addressId) throws Exception {
+		WebMessages webMessages = new WebMessages();
+		NewQuoteAddressResponse jobSiteAddressResponse = new NewQuoteAddressResponse();
+		ResponseCode responseCode = null;
+		if ( addressId == null ) {
+			webMessages.addMessage(fieldName, "Invalid Value");
+			responseCode = ResponseCode.EDIT_FAILURE;
+		} else {
+			try {
+				jobSiteAddressResponse.makeJobSiteAddressResponse(conn, addressId);
+				responseCode = ResponseCode.SUCCESS;
+			} catch (RecordNotFoundException e) {
+				webMessages.addMessage(fieldName, "Invalid address");
+				responseCode = ResponseCode.EDIT_FAILURE;
+			}	
+		}
+		jobSiteAddressResponse.setWebMessages(webMessages);
+		super.sendResponse(conn, response, responseCode, jobSiteAddressResponse);
+	}
+
+	
+	
+	private void processContactValidationRequest(Connection conn, HttpServletResponse response, SessionData sessionData,
+			String fieldName, Integer contactId)  throws Exception {
+		WebMessages webMessages = new WebMessages();
+		NewQuoteContactResponse contactResponse = new NewQuoteContactResponse();
+		ResponseCode responseCode = null;
+		if ( contactId == null ) {
+			webMessages.addMessage(fieldName, "Invalid Value");
+			responseCode = ResponseCode.EDIT_FAILURE;
+		} else {
+			try {
+				contactResponse = new NewQuoteContactResponse(conn, contactId);
+				responseCode = ResponseCode.SUCCESS;
+			} catch (RecordNotFoundException e) {
+				webMessages.addMessage(fieldName, "Invalid contact");
+				responseCode = ResponseCode.EDIT_FAILURE;
+			}	
+		}
+		contactResponse.setWebMessages(webMessages);
+		super.sendResponse(conn, response, responseCode, contactResponse);
+	}	
+
+	
+	
+	
+
+	
 	private void validateQuoteHeader(Connection conn, SessionData sessionData, HttpServletResponse response, NewQuoteRequest quoteRequest) throws Exception {
 		WebMessages webMessages = quoteRequest.validateQuoteHeader(conn);
 
