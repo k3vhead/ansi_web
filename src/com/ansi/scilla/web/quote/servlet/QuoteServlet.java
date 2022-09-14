@@ -386,7 +386,7 @@ public class QuoteServlet extends AbstractQuoteServlet {
 		Code leadType = new Code();
 		leadType.setTableName("quote");
 		leadType.setFieldName("lead_type");
-		leadType.setValue(item.getAccountType());
+		leadType.setValue(item.getLeadType());
 		try {
 			leadType.selectOne(conn);
 			if ( leadType.getStatus().intValue() != Code.STATUS_IS_ACTIVE.intValue() ) {
