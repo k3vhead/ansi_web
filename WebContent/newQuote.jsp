@@ -159,6 +159,47 @@
 						$("#job-edit-modal input[name='job-activation-equipment']").val("BASIC");
 						$("#job-edit-modal select[name='job-activation-schedule']").val("auto");
 	    				$("#job-edit-modal").dialog("open");
+	    				
+	    				
+	    				
+	    				// calculate DL stufff
+	    				$("#job-edit-modal .activation input[name='job-activation-dl-pct']").off("blur"); // make sure we don't do double-work
+	    				$("#job-edit-modal .activation input[name='job-activation-dl-budget']").off("blur"); // make sure we don't do double-work
+	    				NEWQUOTE.previousDlPct = $("#job-edit-modal .activation input[name='job-activation-dl-pct']").val();
+	    				NEWQUOTE.previousDlBudget = $("#job-edit-modal .activation input[name='job-activation-dl-budget']").val();
+		            	$("#job-edit-modal .activation input[name='job-activation-dl-pct']").blur(function($event) {
+		            		console.log("Calculate DL Stufff - dl%");
+		            		var currentDlPct = $("#job-edit-modal .activation input[name='job-activation-dl-pct']").val();
+		            		var ppc = parseFloat($("#job-edit-modal input[name='job-proposal-ppc']").val());
+		            		if ( NEWQUOTE.previousDlPct != currentDlPct ) {
+		            			newDlBudget = (currentDlPct / 100 ) * ppc;
+		            			if ( newDlBudget != Math.floor(newDlBudget)) { // if new value is not a whole number, limit to 2 decimals
+		            				newDlBudget = newDlBudget.toFixed(2);	
+		            			}
+		            			$("#job-edit-modal .activation input[name='job-activation-dl-budget']").val(newDlBudget);
+		            			NEWQUOTE.previousDlPct = currentDlPct;
+		            			NEWQUOTE.previousDlBudget = newDlBudget;
+		            		}		            		
+		            	});
+		            	$("#job-edit-modal .activation input[name='job-activation-dl-budget']").blur(function($event) {
+		            		console.log("Calculate DL Stufff - dl budget");
+		            		var currentDlBudget = $("#job-edit-modal .activation input[name='job-activation-dl-budget']").val();
+		            		var ppc = parseFloat($("#job-edit-modal input[name='job-proposal-ppc']").val());
+		            		if ( NEWQUOTE.previousDlBudget != currentDlBudget ) {
+		            			newDlPct = (currentDlBudget/ppc) * 100;
+		            			if ( newDlPct != Math.floor(newDlPct)) {    // if new value is not a whole number, limit to 2 decimals
+		            				newDlPct = newDlPct.toFixed(2);	
+		            			}
+		            			$("#job-edit-modal .activation input[name='job-activation-dl-pct']").val(newDlPct);
+		            			NEWQUOTE.previousDlPct = newDlPct;
+		            			NEWQUOTE.previousDlBudget = currentDlBudget;
+		            		}
+		            	});
+	    				
+	    				
+		            	
+		            	
+	    				
 						$("#job-edit-modal input[name='job-proposal-ppc']").focus();
 	    			},
 	    			
