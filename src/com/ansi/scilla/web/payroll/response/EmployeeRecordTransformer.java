@@ -49,10 +49,12 @@ public class EmployeeRecordTransformer implements Transformer<EmployeeImportReco
 				
 			}
 			
+			
+			
 			Integer employeeCode = Integer.valueOf( arg0.getEmployeeCode() );
 			if ( employeeMap.containsKey(employeeCode) ) {
-//				PayrollEmployee employee = employeeMap.get(employeeCode);
-//				rec.setFieldList( rec.makeFieldList(employee) );
+				PayrollEmployee employee = employeeMap.get(employeeCode);
+				rec.setFieldList( rec.makeFieldList(employee) );
 				rec.setNewEmployee(false);
 				rec.setRecordMatches( rec.getFieldList() == null || rec.getFieldList().size() == 0 );
 			} else {
