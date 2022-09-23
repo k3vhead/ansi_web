@@ -1,13 +1,12 @@
 package com.ansi.scilla.web.invoice.servlet;
 
-import java.io.IOException;
 import java.sql.Connection;
+import java.io.IOException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
@@ -32,7 +31,7 @@ public class InvoiceServlet extends AbstractServlet {
 		try {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
-			AppUtils.validateSession(request, Permission.INVOICE, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+			AppUtils.validateSession(request, Permission.INVOICE_READ);
 			url = new AnsiURL(request, "invoice", (String[])null);
 			if ( url.getId() == null ) {
 				super.sendNotFound(response);

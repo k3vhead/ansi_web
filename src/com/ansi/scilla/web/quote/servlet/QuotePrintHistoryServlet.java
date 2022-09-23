@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ansi.scilla.common.db.Address;
-import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.db.Quote;
 import com.ansi.scilla.common.queries.QuotePrintHistory;
 import com.ansi.scilla.web.address.response.AddressDetail;
@@ -38,7 +37,7 @@ public class QuotePrintHistoryServlet extends AbstractServlet {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
 			ansiURL = new AnsiURL(request, "quotePrintHistory", (String[])null); 
-			AppUtils.validateSession(request, Permission.QUOTE, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+			AppUtils.validateSession(request, Permission.QUOTE_READ);
 			Integer quoteId = ansiURL.getId();
 
 			try {

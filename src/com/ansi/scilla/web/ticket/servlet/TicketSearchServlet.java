@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
-import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.utils.AppUtils;
@@ -79,7 +78,7 @@ public class TicketSearchServlet extends AbstractServlet {
 					Connection conn = null;
 					try {
 						conn = AppUtils.getDBCPConn();
-						AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+						AppUtils.validateSession(request, Permission.TICKET_READ);
 
 						TicketSearchListResponse ticketSearchListResponse = doGetWork(conn, myString, queryString);
 						super.sendResponse(conn, response, ResponseCode.SUCCESS, ticketSearchListResponse);
@@ -105,7 +104,7 @@ public class TicketSearchServlet extends AbstractServlet {
 
 			try {
 				conn = AppUtils.getDBCPConn();
-				AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+				AppUtils.validateSession(request, Permission.TICKET_READ);
 				TicketSearchListResponse ticketSearchListQueryResponse = doGetWork(conn, queryString);
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, ticketSearchListQueryResponse);
 			} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
