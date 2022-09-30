@@ -542,6 +542,36 @@
 	           		
 	           		
 	           		
+	           		makeEmployee : function($employee) {
+	           			var $outbound = {};
+	           			$outbound["row"] = $employee.row
+	           			$outbound["weekEnding"] = new Date(TIMESHEET_IMPORT.worksheetHeader.weekEnding).toISOString().slice(0, 10);
+	           			if ( TIMESHEET_IMPORT.worksheetHeader.locale.localeTypeId == "CITY" ) {
+           					$outbound["city"] = TIMESHEET_IMPORT.worksheetHeader.locale.name;
+	           			}
+        				$outbound["employeeCode"] = $employee.employeeCode;
+   						$outbound["employeeName"] = $employee.employeeName
+        				$outbound["regularHours"] = $employee.regularHours
+        				$outbound["regularPay"] = $employee.regularPay
+        				$outbound["expenses"] = $employee.expenses
+        				$outbound["otHours"] = $employee.otHours
+        				$outbound["otPay"] = $employee.otPay
+        				$outbound["vacationHours"] = $employee.vacationHours
+        				$outbound["vacationPay"] = $employee.vacationPay
+        				$outbound["holidayHours"] = $employee.holidayHours
+        				$outbound["holidayPay"] = $employee.holidayPay
+        				$outbound["grossPay"] = $employee.grossPay
+        				$outbound["expensesSubmitted"] = $employee.expensesSubmitted
+        				$outbound["expensesAllowed"] = $employee.expensesAllowed
+        				$outbound["volume"] = $employee.volume
+        				$outbound["directLabor"] = $employee.directLabor
+        				$outbound["productivity"] = $employee.productivity
+        				$outbound["divisionId"] = $employee.divisionId
+        				$outbound["state"] = TIMESHEET_IMPORT.worksheetHeader.locale.stateName;
+   						return $outbound;
+	           		},
+	           		
+	           		
 	           		
 	           		makeEmployeeMap : function($data){
 	           			console.log("makeEmployeeMap");
@@ -1066,11 +1096,69 @@
 	           		
 	           		
 	           		
+	           		saveAllEmployees : function($employeeList) {
+	           			console.log("saveAllEmployees");
+	           			var $outboundEmployeeList = [];
+	           			$.each($employeeList, function($index, $employee) {
+	           				var $outboundEmployee = TIMESHEET_IMPORT.makeEmployee($employee);	           				
+	           				$outboundEmployeeList.push($outboundEmployee);
+	           				var $selector = "#save-all-modal .emp" + $employee.employeeCode;
+		           			$($selector).html(TIMESHEET_IMPORT.statusIsPending);
+	           			});
+	           			
+	           			var $outbound = {"employeeList":$outboundEmployeeList};
+	           			
+	           			var $callbacks = {
+	        				200:TIMESHEET_IMPORT.saveAllEmployeeSuccess,
+	        				403:TIMESHEET_IMPORT.saveAllEmployeeErrors,
+	           				404:TIMESHEET_IMPORT.saveAllEmployeeErrors,
+	           				405:TIMESHEET_IMPORT.saveAllEmployeeErrors,
+	           				500:TIMESHEET_IMPORT.saveAllEmployeeErrors,
+	        			};
+	           			var $passThru = {};
+	           			ANSI_UTILS.makeServerCall("POST", "payroll/timesheetSave", JSON.stringify($outbound), $callbacks, $passThru);
+	           			
+	           		},
+	           		
+
+	           		saveAllEmployeeErrors : function($data, $passthru) {
+	           			console.log("saveAllEmployeeErrors");	
+	           			$("#save-all-err").html("Unexpected response. Please contact support").show();
+	           			$("#save-employee-cancel").prop('disabled',false);
+	           		},
+
+	           		
+	           		
+	           		saveAllEmployeeSuccess : function($data, $passthru) {
+	           			console.log("saveAllEmployeeSuccess");
+	           			$.each($data.data.timesheetList, function($index, $record) {
+	           				var $selector = "#save-all-modal .emp" + $record.data.employeeCode;
+	           				if ( $record.responseCode == 'SUCCESS' || $record.responseCode == 'EDIT_WARNING' ) {
+								$($selector).html('<webthing:checkmark>Success</webthing:checkmark>');
+								TIMESHEET_IMPORT.updateSuccessCount = TIMESHEET_IMPORT.updateSuccessCount + 1;
+							} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE' ) {
+								TIMESHEET_IMPORT.updateErrorCount = TIMESHEET_IMPORT.updateErrorCount + 1;
+								var $errFields = [];
+								$.each( $record.data.webMessages, function($index, $value) {
+									$errFields.push($index);
+								});
+								$($selector).html('<webthing:ban>Validation Errors: '+ $errFields.join("<br />")+'</webthing:ban>');
+							} else {
+								TIMESHEET_IMPORT.updateErrorCount = TIMESHEET_IMPORT.updateErrorCount + 1;
+								$($selector).html('<webthing:ban>Unexpected Response ('+$data.responseHeader.responseCode+') Contact Support</webthing:ban>');
+							}
+	           			});	           			
+	           			
+	           			$("#save-employee-cancel").prop('disabled',false);
+	           		},
+	           		
+	           		
+	           		
 	           		saveEmployee : function($employee) {
 	           			console.log("saveEmployee: " + $employee.employeeCode);
 	           			var $selector = "#save-all-modal .emp" + $employee.employeeCode;
 	           			$($selector).html(TIMESHEET_IMPORT.statusIsPending);
-	           			$outbound = {};
+	           			$outbound = TIMESHEET_IMPORT.makeEmployee($employee);
 	           			
 	           			$outbound["action"]="ADD";
 	           			// check if this is a duplicate upload
@@ -1079,31 +1167,6 @@
 	           					$outbound["action"]="UPDATE";
 	           				}
 	           			});
-
-	           			$outbound["row"] = $employee.row
-	           			$outbound["weekEnding"] = new Date(TIMESHEET_IMPORT.worksheetHeader.weekEnding).toISOString().slice(0, 10);
-	           			if ( TIMESHEET_IMPORT.worksheetHeader.locale.localeTypeId == "CITY" ) {
-           					$outbound["city"] = TIMESHEET_IMPORT.worksheetHeader.locale.name;
-	           			}
-        				$outbound["employeeCode"] = $employee.employeeCode;
-   						$outbound["employeeName"] = $employee.employeeName
-        				$outbound["regularHours"] = $employee.regularHours
-        				$outbound["regularPay"] = $employee.regularPay
-        				$outbound["expenses"] = $employee.expenses
-        				$outbound["otHours"] = $employee.otHours
-        				$outbound["otPay"] = $employee.otPay
-        				$outbound["vacationHours"] = $employee.vacationHours
-        				$outbound["vacationPay"] = $employee.vacationPay
-        				$outbound["holidayHours"] = $employee.holidayHours
-        				$outbound["holidayPay"] = $employee.holidayPay
-        				$outbound["grossPay"] = $employee.grossPay
-        				$outbound["expensesSubmitted"] = $employee.expensesSubmitted
-        				$outbound["expensesAllowed"] = $employee.expensesAllowed
-        				$outbound["volume"] = $employee.volume
-        				$outbound["directLabor"] = $employee.directLabor
-        				$outbound["productivity"] = $employee.productivity
-        				$outbound["divisionId"] = $employee.divisionId
-        				$outbound["state"] = TIMESHEET_IMPORT.worksheetHeader.locale.stateName;
 
 	           			var $callbacks = {
 	        				200:TIMESHEET_IMPORT.saveEmployeeSuccess,
@@ -1188,9 +1251,7 @@
 	           			
 	           			var $employeeList = Object.values( TIMESHEET_IMPORT.employeeMap );
 	           			
-	           			$.each( $employeeList, function($index, $employee) {
-           					TIMESHEET_IMPORT.saveEmployee($employee);
-	           			});
+         				TIMESHEET_IMPORT.saveAllEmployees($employeeList);
 	           			
 	           			$("#save-all-table .save-emp-row").mouseover(function() { $(this).addClass("grayback"); });
 						$("#save-all-table .save-emp-row").mouseout(function() { $(this).removeClass("grayback"); });
@@ -1389,6 +1450,7 @@
 		
 		
 		<div id="save-all-modal">
+			<div id="save-all-err" class="err"></div>
 			<table id="save-all-table">
 				<thead>
 					<tr>

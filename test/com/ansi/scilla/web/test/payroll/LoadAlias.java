@@ -53,7 +53,7 @@ public class LoadAlias extends Loader {
 
 	private void processFile(Connection conn, String fileName) throws FileNotFoundException, Exception {
 		PayrollWorksheetParser parser = new PayrollWorksheetParser(conn, fileName);
-		for ( PayrollWorksheetEmployee employee : parser.getEmployeeRecordList()) {
+		for ( PayrollWorksheetEmployee employee : parser.getTimesheetRecords()) {
 			if ( StringUtils.isBlank(employee.getEmployeeName()) || (StringUtils.split(employee.getEmployeeName(),",").length < 2 && StringUtils.split(employee.getEmployeeName()," ").length < 2)) {
 				System.err.println("Empty name field: [" + employee.getEmployeeName() + "]");
 			} else {				
