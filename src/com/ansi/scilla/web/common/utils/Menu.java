@@ -65,7 +65,6 @@ public enum Menu {
 	
 	
 	SETTINGS("Settings", null, Permission.SYSADMIN_READ,"#"),
-
 	// TAX_MAINTENANCE(	"Tax Rate Archive",		SETTINGS,	Permission.SYSADMIN_READ,	"taxRateMaintenance.html"),
 	TAX_MAINTENANCE(	"Tax Maintenance",		SETTINGS,	Permission.SYSADMIN_READ,	"taxRateMaintenance.html"),
 	CODES(				"Codes",				SETTINGS,	Permission.SYSADMIN_READ,	"codeMaintenance.html"),
@@ -81,7 +80,7 @@ public enum Menu {
 	
 	MY_ANSI("My ANSI", null, null,"#"),
 	MY_ACCOUNT(         "My Account",           MY_ANSI,    null,                       "myAccount.html"),
-	MY_REPORTS(         "Report Subscriptions", MY_ANSI,    Permission.REPORT_SUBSCRIPTION_WRITE, "reportSubscription.html"),
+//	MY_REPORTS(         "Report Subscriptions", MY_ANSI,    Permission.REPORT_SUBSCRIPTION_WRITE, "reportSubscription.html"),
 	LOGOFF(             "Logoff",               MY_ANSI,    null,                       "logoff.html"),
 	
 	;

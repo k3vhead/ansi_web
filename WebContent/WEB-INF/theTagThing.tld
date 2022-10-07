@@ -404,6 +404,13 @@
 	
 	
 	<tag>
+    	<name>batchReports</name>
+    	<tagclass>com.ansi.scilla.web.tags.BatchReportSelect</tagclass>
+	    <bodycontent>JSP</bodycontent>
+    	<info>Displays an option list of all Rerports available for subscription via admin</info>
+	</tag>
+	
+	<tag>
     	<name>companyCodeSelect</name>
     	<tagclass>com.ansi.scilla.web.tags.CompanyCodeSelect</tagclass>
 	    <bodycontent>JSP</bodycontent>

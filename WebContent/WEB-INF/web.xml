@@ -417,6 +417,14 @@
         <url-pattern>/divisionClose</url-pattern>
     </servlet-mapping>
     
+    <servlet>
+        <servlet-name>divisionList</servlet-name>
+        <servlet-class>com.ansi.scilla.web.division.servlet.DivisionListServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>divisionList</servlet-name>
+        <url-pattern>/divisionList</url-pattern>
+    </servlet-mapping>
 
     <servlet>
     	<servlet-name>divisionLookup</servlet-name>
@@ -995,6 +1003,15 @@
 		<url-pattern>/reports/subscription</url-pattern>
 	</servlet-mapping>
 	
+	<servlet>
+		<servlet-name>reportSubscriptionAdmin</servlet-name>
+		<servlet-class>com.ansi.scilla.web.report.servlet.SubscriptionAdminServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>reportSubscriptionAdmin</servlet-name>
+		<url-pattern>/reports/subscriptionAdmin/*</url-pattern>
+		<url-pattern>/reports/subscriptionAdmin</url-pattern>
+	</servlet-mapping>
 
 
 	<servlet>
