@@ -31,6 +31,9 @@
         	.label {
         		font-weight:bold;
         	}
+        	#newSubscriberModal {
+        		display:none;
+        	}
         	#subscriptionLookupContainer {
         		margin-top:15px;
         	}
@@ -112,6 +115,40 @@
         		},
         		                
         		
+        		
+        		doNewSubscription : function() {
+        			var $userId = $("#newSubscriberModal input[name='userId']").val();
+        			var $divisionId = $("#newSubscriberModal select[name='newDivisionId']").val();
+        			var $reportId = $("#newSubscriberModal input[name='reportId']").val();
+        			console.log("doSubscription: " + $userId + " " + $divisionId + " " + $reportId);
+    				$url = "reports/subscriptionAdmin/" + $reportId;
+       				$type = "POST";        			
+        			ANSI_UTILS.makeServerCall($type, $url, JSON.stringify({"userId":$userId,"divisionId":$divisionId}), {200:SUBSCRIPTION_ADMIN.doNewSubscriptionSuccess}, {});
+        		},
+        		
+        		
+        		doNewSubscriptionSuccess : function($data, $passthru) {
+        			console.log("doSubscriptionSuccess");
+        			if ( $data.responseHeader.responseCode == "SUCCESS" ) {
+        				$("#subscriptionLookup").DataTable().ajax.reload();
+        				$("#globalMsg").html("Success!").show().fadeOut(4000);
+        				$("#newSubscriberModal").dialog("close");
+        			} else if ($data.responseHeader.responseCode == "EDIT_FAILURE" ) {
+        				if ( $data.data.webMessages.divisionId != null ) {
+        					$("#newSubscriberModal .newDivisionIdErr").html($data.data.webMessages.divisionId[0]);
+        				}
+        				if ( $data.data.webMessages.userId != null ) {
+        					$("#newSubscriberModal .newSubscriberErr").html($data.data.webMessages.userId[0]);
+        				}
+        			} else {
+        				$("#globalMsg").html("Unexpected response code: " + $data.responseHeader.responseCode + ". Contact Support").show();
+        				$("#newSubscriberModal").dialog("close");
+        			}
+        		},
+        		
+        		
+        		
+        		
         		doSubscription : function($userId, $divisionId, $isChecked) {
         			console.log("doSubscription: " + $userId + " " + $divisionId + " " + $isChecked);
     				$url = "reports/subscriptionAdmin/" + $("#reportSelector select[name='reportId']").val();
@@ -153,6 +190,66 @@
         		},
 
         		
+        		makeNewSubscriber : function() {
+        			console.log("makeNewSubscriber");
+        			
+        			if ( ! $("#newSubscriberModal").hasClass("ui-dialog-content") ) {
+       					$( "#newSubscriberModal" ).dialog({
+               				title:'New Report Subscriber',
+               				autoOpen: false,
+               				height: 250,
+               				width: 500,
+               				modal: true,
+               				closeOnEscape:true,
+               				//open: function(event, ui) {
+               				//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+               				//},
+               				buttons: [
+               					{
+               						id:  "newSubscriberCancel",
+               						click: function($event) {
+             							$( "#newSubscriberModal" ).dialog("close");
+               						}
+               					},{
+               						id:  "newSubscriberSave",
+               						click: function($event) {
+               							SUBSCRIPTION_ADMIN.doNewSubscription();
+               						}
+               					}
+               				]
+               			});	
+               			$("#newSubscriberCancel").button('option', 'label', 'Cancel');  
+               			$("#newSubscriberSave").button('option', 'label', 'Confirm');
+               			
+               			var $ansiDisplaySelector = $("#newSubscriberModal input[name='newSubscriber']");          			
+               			$( $ansiDisplaySelector ).autocomplete({
+    						'source':"ansiUserAutoComplete?",
+    						position:{my:"left top", at:"left bottom",collision:"none"},
+    						appendTo:"#node-crud-form",
+    						select: function( event, ui ) {
+    							$('#newSubscriberModal input[name="userId"]').val(ui.item.id);
+    							if ( ui.item.value == null || ui.item.value.trim() == "" ) {
+    								$($contactDisplaySelector).val(ui.item.label);
+    							}
+           			      	},
+           			      	response: function(event, ui) {
+    							if (ui.content.length === 0) {
+    								alert("Nobody here by that name");
+    								$('#newSubscriberModal input[name="userId"]').val("");
+    							}
+    						}
+           			 	});
+       				}
+        			
+        			$("#newSubscriberModal .err").html("");
+        			$("#newSubscriberModal .reportId").html($("#reportSelector select[name='reportId'] option:selected").text());
+        			$("#newSubscriberModal input[name='reportId']").val($("#reportSelector select[name='reportId']").val());
+        			$("#newSubscriberModal input[name='userId']").val("");
+        			$("#newSubscriberModal input[name='newSubscriber']").val("");
+        			$("#newSubscriberModal").dialog("open");
+        		},
+        		
+        		
         		
         		makeSubscriptionTable : function() {
         			var $reportId = $("#reportSelector select[name='reportId']").val();
@@ -188,6 +285,12 @@
    	        	        		text:'Refresh',
    	        	        		action: function(e, dt, node, config) {
    	        	        			$("#subscriptionLookup").DataTable().ajax.reload();      	        			
+   	        	        		}
+   	        	        	},
+              	       		{
+   	        	        		text:'New',
+   	        	        		action: function(e, dt, node, config) {
+   	        	        			SUBSCRIPTION_ADMIN.makeNewSubscriber();
    	        	        		}
    	        	        	}
                	        ],
@@ -252,6 +355,29 @@
     	
     	<webthing:scrolltop />
     	
+    	<div id="newSubscriberModal">
+    		<div class="label reportId" style="width:100%; text-align:center;"></div>
+    		<br />
+    		<table>
+    			<tr>
+    				<td><span class="label">Subscriber: </span></td>
+    				<td><input type="text" name="newSubscriber" /></td>
+    				<td><span class="err newSubscriberErr"></span></td>
+    			</tr>
+    			<tr>
+    				<td><span class="label">Division: </span></td>
+    				<td>
+    					<select name="newDivisionId">
+    						<option value=""></option>
+    						<ansi:selectOrganization type="division" active="true" />    						
+    					</select>
+    				</td>
+    				<td><span class="err newDivisionIdErr"></span></td>
+    			</tr>
+    		</table>
+    		<input type="hidden" name="reportId" /><br />
+    		<input type="hidden" name="userId" /><br />
+    	</div>
     </tiles:put>
 		
 </tiles:insert>

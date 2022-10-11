@@ -295,7 +295,7 @@
 	
 	
 	
-	
+	<!-- types: "DIVISION" | "COMPANY" | "REGION" | "GROUP" -->
 	<tag>
 		<name>selectOrganization</name>
 		<tagclass>com.ansi.scilla.web.tags.SelectOrganization</tagclass>
