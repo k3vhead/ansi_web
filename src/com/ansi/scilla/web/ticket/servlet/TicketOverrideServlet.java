@@ -67,6 +67,7 @@ public class TicketOverrideServlet extends TicketServlet {
 	public static final String FIELDNAME_ACT_PO_NUMBER = "actPoNumber";
 	public static final String FIELDNAME_DIVISION_ID = "divisionId";
 	public static final String FIELDNAME_TICKET_TYPE = "ticketType";
+	public static final String FIELDNAME_DL_AMT = "dlAmt";
 	
 	private final String MESSAGE_SUCCESS = "Success";
 	private final String MESSAGE_NOT_PROCESSED = "Not Processed";
@@ -85,6 +86,7 @@ public class TicketOverrideServlet extends TicketServlet {
 	private final String MESSAGE_MISSING_VALUE_PPC = "Missing required value: Actual Price Per Cleaning";
 	private final String MESSAGE_MISSING_VALUE_PO = "Missing required value: PO Number";
 	private final String MESSAGE_MISSING_TICKET_TYPE = "Missing required value: Ticket Type";
+	private final String MESSAGE_MISSING_VALUE_DL = "Missing required value: DL Amt";
 	
 	
 	
@@ -392,6 +394,35 @@ public class TicketOverrideServlet extends TicketServlet {
 	
 	
 	
+	public OverrideResult doDLAmt(Connection conn, Ticket ticket, HashMap<String, String> values, SessionUser sessionUser) throws Exception {
+		logger.log(Level.DEBUG, "processing doDLAmt");
+		Boolean success = null;
+		String message = null;
+		
+
+		if ( values.containsKey(FIELDNAME_DL_AMT) ) {
+			try {
+				String value = values.get(FIELDNAME_DL_AMT);
+				Double dlAmt = Double.valueOf(value);
+				ticket.setActDlAmt(new BigDecimal(dlAmt));
+				Double actDlPct = dlAmt / ticket.getActPricePerCleaning().doubleValue();
+				ticket.setActDlPct( new BigDecimal( actDlPct * 100.0D ) );
+				
+				success = true;
+				message = MESSAGE_SUCCESS;
+			} catch ( NumberFormatException e ) {
+				success = false;
+				message = MESSAGE_INVALID_FORMAT + ": Must be numeric";
+			}
+		} else {
+			success = false;
+			message = MESSAGE_MISSING_VALUE_DL;
+		}
+		return new OverrideResult(success, message, ticket, true);
+	}
+	
+	
+	
 	
 	public OverrideResult doPoNumber(Connection conn, Ticket ticket, HashMap<String, String> values, SessionUser sessionUser) throws Exception {
 		logger.log(Level.DEBUG, "processing PO Number");
@@ -504,6 +535,7 @@ public class TicketOverrideServlet extends TicketServlet {
 		ACT_PO_NUMBER("actPoNumber","doPoNumber", Permission.TICKET),
 		DIVISION_ID("divisionId","doDivisionId",Permission.TICKET_OVERRIDE),
 		TICKET_TYPE("ticketType","doTicketType", Permission.TICKET_OVERRIDE),
+		DL_AMT("dlAmt","doDLAmt",Permission.TICKET_OVERRIDE),
 		;
 		
 		private final String id;
