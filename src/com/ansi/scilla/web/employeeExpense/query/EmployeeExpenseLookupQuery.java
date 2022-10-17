@@ -194,8 +194,6 @@ public class EmployeeExpenseLookupQuery extends ApplicationObject {
 	 * Returns data, based on stuff that has been entered into the object
 	 * 
 	 * @param conn
-	 * @param offset
-	 * @param rowCount
 	 * @return
 	 */
 	public List<EmployeeExpenseResponseItem> select(Connection conn) throws Exception {

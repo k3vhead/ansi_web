@@ -21,7 +21,7 @@ import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.contact.request.ContactRequest;
 import com.ansi.scilla.web.contact.response.ContactListResponse;
 import com.ansi.scilla.web.contact.response.ContactResponse;
@@ -32,17 +32,17 @@ import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 /**
- * The url for delete will be of the form /contact/<contactId>
+ * The url for delete will be of the form /contact/&lt;contactId&gt;
  * 
  * The url for get will be one of:
  * 		/contact/list  			(retrieves everything)
- * 		/contact/<contactId>	(retrieves a single record)
+ * 		/contact/&lt;contactId&gt;	(retrieves a single record)
  * 
  * The url for adding a new record will be a POST to:
  * 		/contact/add   with parameters in the JSON
  * 
  * The url for update will be a POST to:
- * 		/contact/<contactId> with parameters in the JSON
+ * 		/contact/&lt;contactId&gt; with parameters in the JSON
  * 
  * 
  * @author gagroce

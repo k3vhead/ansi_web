@@ -20,7 +20,7 @@ import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.document.request.DocumentUploadRequest;
 import com.ansi.scilla.web.document.response.DocumentUploadResponse;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;

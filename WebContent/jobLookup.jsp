@@ -29,7 +29,8 @@
        	<script type="text/javascript" src="js/ansi_utils.js"></script>
     	<script type="text/javascript" src="js/lookup.js"></script> 
     	<script type="text/javascript" src="js/callNote.js"></script>  
-    
+		<link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/3.1.8/css/fixedHeader.dataTables.min.css" type="text/css" />
+		<script type="text/javascript" src="https://cdn.datatables.net/fixedheader/3.1.8/js/dataTables.fixedHeader.min.js"></script>  
         <style type="text/css">
 			#displayTable {
 				width:90%;
@@ -110,6 +111,7 @@
             	        "deferRender": 		true,
             	        "scrollCollapse": 	true,
             	        "scrollX": 			true,
+						"fixedHeader":      true,
             	        rowId: 				'dt_RowId',
             	        dom: 				'Bfrtip',
             	        "searching": 		true,

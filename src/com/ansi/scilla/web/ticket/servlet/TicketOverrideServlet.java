@@ -38,7 +38,7 @@ import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
@@ -517,7 +517,7 @@ public class TicketOverrideServlet extends TicketServlet {
 	 * ticket update.
 	 * 
 	 * id - the string identifying what kind of override we're doing
-	 * processor - the method in the servlet that process the request. Must have signature: methodName(Integer ticketId, HashMap<String, String> values)
+	 * processor - the method in the servlet that process the request. Must have signature: methodName(Integer ticketId, HashMap&lt;String, String&gt; values)
 	 * permission - any permission required beyond the TICKET that is minimum required to do this update. (Yes, we're checking
 	 * 		for "ticket" twice, but it's at minimal cost, and it makes the code easier)
 	 * 

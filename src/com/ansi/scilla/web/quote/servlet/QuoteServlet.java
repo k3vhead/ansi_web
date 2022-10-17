@@ -31,7 +31,7 @@ import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.common.utils.UserPermission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
@@ -45,7 +45,7 @@ import com.ansi.scilla.web.quote.response.QuoteResponseItemDetail;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 /**
- * The url for delete will be of the form /quote/&lt;quoteId&gt;/<quoteNumber>/<revision>
+ * The url for delete will be of the form /quote/&lt;quoteId&gt;/&lt;quoteNumber&gt;/&lt;revision&gt;
  * 
  * The url for get will be one of:
  * 		/quote    (retrieves everything)

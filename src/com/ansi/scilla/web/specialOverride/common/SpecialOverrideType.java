@@ -4,7 +4,8 @@ import java.math.BigDecimal;
 
 import com.ansi.scilla.common.jobticket.JobStatus;
 import com.ansi.scilla.common.jobticket.TicketStatus;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
+
 
 public enum SpecialOverrideType {
 	
@@ -191,6 +192,45 @@ public enum SpecialOverrideType {
 			"Make sure to reschedule the job using the existing start date to get the tickets back.",
 			Permission.QUOTE_OVERRIDE
 		),
+
+
+	SET_DIVISION_ACTUAL_CLOSE_DATE(
+			"Set Division Actual Close Date",
+			"select division_id, concat(division_nbr,'-',division_code) as div, description, act_close_date from division where division_id=?",
+			new ParameterType[] { 
+					new ParameterType("Division Id", "division_id", Integer.class),  
+				},
+			"update division set act_close_date=? where division_id=?",
+			new ParameterType[] { 
+					new ParameterType("Actual Close Date", "act_close_date", java.sql.Date.class), 
+					new ParameterType("Division Id", "division_id", Integer.class),  
+				},
+			"select division_id, concat(division_nbr,'-',division_code) as div, description, act_close_date from division where division_id=?",
+			new ParameterType[] { 
+					new ParameterType("Division Id", "division_id", Integer.class),  
+				},
+			"Success",
+			Permission.DIVISION_CLOSE_OVERRIDE
+		),
+
+	REMOVE_DIVISION_ACTUAL_CLOSE_DATE(
+			"Remove Division Actual Close Date",
+			"select division_id, concat(division_nbr,'-',division_code) as div, description, act_close_date from division where division_id=?",
+			new ParameterType[] { 
+					new ParameterType("Division Id", "division_id", Integer.class),  
+				},
+			"update division set act_close_date=null where division_id=?",
+			new ParameterType[] { 
+					new ParameterType("Division Id", "division_id", Integer.class),  
+				},
+			"select division_id, concat(division_nbr,'-',division_code) as div, description, act_close_date from division where division_id=?",
+			new ParameterType[] { 
+					new ParameterType("Division Id", "division_id", Integer.class),  
+				},
+			"Date Removed - Division has never been closed",
+			Permission.DIVISION_CLOSE_OVERRIDE
+		),
+
 	
 	UNREJECT_TICKETS(
 			"Unreject a Ticket",

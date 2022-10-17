@@ -6,6 +6,8 @@ import java.util.Calendar;
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.report.reportBuilder.reportType.AbstractReport;
 import com.ansi.scilla.report.reportBuilder.reportType.CompoundReport;
+import com.ansi.scilla.report.reportBuilder.reportBy.ReportByDivMonthYear;
+import com.ansi.scilla.report.reportBuilder.reportBy.ReportByDivision;
 import com.ansi.scilla.report.sixMonthRollingVolume.SixMonthRollingVolumeReport;
 
 /**
@@ -14,7 +16,7 @@ import com.ansi.scilla.report.sixMonthRollingVolume.SixMonthRollingVolumeReport;
  * @author dclewis
  *
  */
-public class SixMonthRollingVolumeWebReport extends CompoundReport {
+public class SixMonthRollingVolumeWebReport extends CompoundReport implements ReportByDivMonthYear, ReportByDivision {
 
 	private static final long serialVersionUID = 1L;
 	public static final String REPORT_TITLE = "6-Month Rolling Volume";
@@ -35,7 +37,7 @@ public class SixMonthRollingVolumeWebReport extends CompoundReport {
 	}
 
 
-	@Override
+	
 	public String makeFileName(String arg0, Calendar arg1, Division arg2, Calendar arg3, Calendar arg4) {
 		throw new RuntimeException("This is only here to make the compiler happy");
 	}

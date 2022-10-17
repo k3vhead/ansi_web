@@ -79,7 +79,6 @@ public class PassthruExpenseLookupQuery extends ClaimsQuery {
 	 * 
 	 * @param queryTerm
 	 * @return 
-	 * @throws Exception
 	 */
 	protected String makeWhereClause(String queryTerm)  {
 		String whereClause = PassthruExpenseLookupQuery.baseWhereClause;

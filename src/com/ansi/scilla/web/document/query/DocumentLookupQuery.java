@@ -106,7 +106,6 @@ public class DocumentLookupQuery extends LookupQuery {
 	 * 
 	 * @param queryTerm
 	 * @return 
-	 * @throws Exception
 	 */
 	protected String makeWhereClause(String queryTerm)  {
 		String whereClause = super.getBaseWhereClause();

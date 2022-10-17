@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.db.User;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.ansiUser.AnsiUserResponse;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
@@ -22,11 +23,11 @@ import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
+import com.ansi.scilla.web.report.common.SubscriptionUtils;
 import com.ansi.scilla.web.user.request.AnsiUserRequest;
 import com.ansi.scilla.web.user.response.UserResponse;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
@@ -126,7 +127,7 @@ public class AnsiUserServlet extends AbstractServlet {
 			conn = AppUtils.getDBCPConn();
 			AnsiURL url = new AnsiURL(request, REALM, new String[] {FILTER_IS_LIST,FILTER_IS_MANAGER});	
 			String sortField = request.getParameter("sortBy");
-			logger.log(Level.DEBUG, "Sortig by: " + sortField);
+			logger.log(Level.DEBUG, "Sorting by: " + sortField);
 			if ( ! StringUtils.isBlank(sortField)) {
 				if ( ! ArrayUtils.contains(UserResponse.VALID_SORT_FIELDS, sortField) ) {
 					sortField = null;
@@ -135,13 +136,10 @@ public class AnsiUserServlet extends AbstractServlet {
 			logger.log(Level.DEBUG, "Still sorting by: " + sortField);
 	
 			if( url.getId() == null && StringUtils.isBlank(url.getCommand())) {
-				logger.log(Level.DEBUG, "user servlet 43");
 				throw new ResourceNotFoundException();
 			} else if (url.getId() != null) {
-				logger.log(Level.DEBUG, "user servlet 46");
 				userResponse = new UserResponse(conn, url.getId());
 			} else if ( ! StringUtils.isBlank(url.getCommand())) {
-				logger.log(Level.DEBUG, "user servlet 49");
 				UserResponse.UserListType listType = UserResponse.UserListType.valueOf(url.getCommand().toUpperCase());
 				userResponse = new UserResponse(conn, listType);
 			} else {
@@ -220,6 +218,12 @@ public class AnsiUserServlet extends AbstractServlet {
 				key.setUserId(userRequest.getUserId());
 				user.update(conn, key);
 				conn.commit();
+
+				// we update subscriptions after committing the user change so the user shows up
+				// in the list of group members for whom we need to check subscriptions.
+				SubscriptionUtils.cureReportSubscriptions(conn, userRequest.getPermissionGroupId());
+				conn.commit();
+
 				if ( ! StringUtils.isBlank(userRequest.getPassword())) {
 					updatePassword(conn, userRequest.getUserId(), userRequest.getPassword());
 					conn.commit();
@@ -266,6 +270,9 @@ public class AnsiUserServlet extends AbstractServlet {
 		user.setZip(userRequest.getZip());
 		user.setMinimumHourlyPay(userRequest.getMinimumHourlyPay());
 	}
+
+	
+
 
 	private void updatePassword(Connection conn, Integer userId, String password) throws Exception {
 		String encryptedPassword = AppUtils.encryptPassword(password, userId);

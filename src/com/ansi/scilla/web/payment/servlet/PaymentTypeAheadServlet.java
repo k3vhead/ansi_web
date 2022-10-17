@@ -30,7 +30,7 @@ import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
@@ -50,7 +50,7 @@ import com.thewebthing.commons.lang.StringUtils;
  * 
  * The url for get will be one of:
  * 		/PaymentTypeAhead?term=					(returns not found)
- * 		/PaymentTypeAhead?term=<searchTerm>		(returns all records containing <searchTerm>)
+ * 		/PaymentTypeAhead?term=&lt;searchTerm&gt;		(returns all records containing &lt;searchTerm&gt;)
  * 
  * The servlet will return 404 Not Found if there is no "term=" found.
  * 
