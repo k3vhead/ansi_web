@@ -95,7 +95,7 @@ public	class EmployeeImportResponseRec extends EmployeeImportRecord implements A
 				new AnsiComparison("divisionId","divisionId", new IntComparison()),
 				new AnsiComparison("notes","notes", new StringComparison(false)),
 				new AnsiComparison("terminationDate","employeeTerminationDate", new String2DateComparison(EmployeeImportRecord.EMPLOYEE_RECORD_DATE_FORMAT)),
-				new AnsiComparison("unionRate","unionRate", new String2NumberComparison()),
+				new AnsiComparison("unionRate","unionRate", new UnionRateComparison()),
 
 				//new AnsiComparison("recordStatus","", new StringComparison(false)),
 				//new AnsiComparison("fieldList","", new StringComparison(false)),
@@ -110,6 +110,37 @@ public	class EmployeeImportResponseRec extends EmployeeImportRecord implements A
 
 
 
+	/**
+	 * We need to handle circumstance when a number is prepended with currency symbol
+	 * @author dclewis
+	 *
+	 */
+	public class UnionRateComparison extends String2NumberComparison {
+
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public boolean fieldsAreEqual(Object obj1, Object obj2) throws Exception {
+			Object test1 = normalizeString(obj1);
+			Object test2 = normalizeString(obj2);
+			
+			if ( test1 instanceof String) {
+				String stringValue = (String)test1;
+				if ( stringValue.startsWith("$") ) {
+					test1 = stringValue.substring(1);
+				}
+			}
+			if ( test2 instanceof String) {
+				String stringValue = (String)test2;
+				if ( stringValue.startsWith("$") ) {
+					test2 = stringValue.substring(1);
+				}
+			}
+			return super.fieldsAreEqual(test1, test2);
+
+		}
+		
+	}
 
 	
 

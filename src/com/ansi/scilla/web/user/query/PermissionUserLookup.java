@@ -19,7 +19,7 @@ import org.apache.logging.log4j.Logger;
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.common.utils.WhereFieldLikeTransformer;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 
 /**
  * List of all users with a given permission.  (Use UserLookup for users within a permission group)
@@ -244,8 +244,6 @@ public class PermissionUserLookup extends ApplicationObject {
 	/**
 	 * Returns data, based on stuff that has been entered into the object
 	 * @param conn
-	 * @param offset
-	 * @param rowCount
 	 * @return
 	 */
 	public List<UserLookupItem> select(Connection conn) throws Exception {
@@ -266,8 +264,6 @@ public class PermissionUserLookup extends ApplicationObject {
 	/**
 	 * Returns data, based on stuff that has been entered into the object
 	 * @param conn
-	 * @param offset
-	 * @param rowCount
 	 * @return
 	 */
 	public List<UserLookupItem> selectAll(Connection conn) throws Exception {

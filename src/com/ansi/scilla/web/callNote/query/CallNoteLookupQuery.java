@@ -96,7 +96,6 @@ public class CallNoteLookupQuery extends LookupQuery {
 	 * 
 	 * @param queryTerm
 	 * @return 
-	 * @throws Exception
 	 */
 	protected String makeWhereClause(String queryTerm)  {
 		String whereClause = CallNoteLookupQuery.baseWhereClause;

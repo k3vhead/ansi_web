@@ -42,7 +42,7 @@ import au.com.bytecode.opencsv.CSVWriter;
 
 public class RosterServlet extends HttpServlet {
 	private static final long serialVersionUID = -4517355213952698359L;
-
+/*
 	private static HashMap<RosterReportType, ReportConfig> configMap = new HashMap<RosterReportType, ReportConfig>();
 	
 	static {
@@ -441,5 +441,5 @@ public class RosterServlet extends HttpServlet {
 		CSV,
 		XLS;
 	}
-
+*/
 }

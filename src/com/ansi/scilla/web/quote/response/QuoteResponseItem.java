@@ -21,7 +21,7 @@ import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.web.address.query.AddressResponseQuery;
 import com.ansi.scilla.web.address.response.AddressResponseItem;
 import com.ansi.scilla.web.common.response.MessageResponse;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.common.utils.UserPermission;
 import com.ansi.scilla.web.job.query.ContactItem;
 import com.ansi.scilla.web.job.query.JobContact;

@@ -20,12 +20,12 @@ import com.ansi.scilla.common.payroll.validator.worksheet.ValidatedWorksheet;
 import com.ansi.scilla.common.payroll.validator.worksheet.ValidatedWorksheetEmployee;
 import com.ansi.scilla.common.payroll.validator.worksheet.ValidatedWorksheetHeader;
 import com.ansi.scilla.common.utils.ErrorLevel;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
 //import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
@@ -62,7 +62,7 @@ public class TimesheetImportServlet extends AbstractServlet {
 					ValidatedWorksheetHeader header = HeaderValidator.validateHeader(conn, parser.getHeader());
 					
 					if ( ! header.maxErrorLevel().equals(ErrorLevel.ERROR)) {
-						validatedEmployees = ValidatorUtils.validatePayrollEmployees(conn, header, parser.getEmployeeRecordList());
+						validatedEmployees = ValidatorUtils.validatePayrollEmployees(conn, header, parser.getTimesheetRecords());
 					}
 					//logger.log(Level.DEBUG, "TimesheetImportServlet: employeeMsgs = " + employeeMsgs);
 

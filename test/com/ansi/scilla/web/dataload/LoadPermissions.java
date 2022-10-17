@@ -7,7 +7,7 @@ import java.util.List;
 
 import com.ansi.scilla.common.db.PermissionGroupLevel;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.thewebthing.commons.db2.AbstractDBTable;
 
 public class LoadPermissions {

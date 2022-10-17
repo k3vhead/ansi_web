@@ -12,6 +12,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.bcr.query.BcrTicketLookupQuery;
 import com.ansi.scilla.web.common.query.LookupQuery;
 import com.ansi.scilla.web.common.response.AbstractAutoCompleteItem;
@@ -19,7 +20,6 @@ import com.ansi.scilla.web.common.servlet.AbstractAutoCompleteServlet;
 import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionDivision;
 import com.ansi.scilla.web.common.utils.ColumnFilter;
-import com.ansi.scilla.web.common.utils.Permission;
 
 public class BcrTicketAutoCompleteServlet extends AbstractAutoCompleteServlet {
 
