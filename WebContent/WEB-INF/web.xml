@@ -131,6 +131,15 @@
 	</servlet-mapping>
 
 
+	<servlet>
+        <servlet-name>batchLogLookup</servlet-name>
+        <servlet-class>com.ansi.scilla.web.batch.servlet.BatchLogLookupServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>batchLogLookup</servlet-name>
+        <url-pattern>/batch/batchLogLookup</url-pattern>
+    </servlet-mapping>
+    
     
     <servlet>
         <servlet-name>budgetControlLookup</servlet-name>
@@ -155,6 +164,20 @@
 
 
 
+	<servlet>
+        <servlet-name>calendarLookup</servlet-name>
+        <servlet-class>com.ansi.scilla.web.calendar.servlet.CalendarServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>calendarLookup</servlet-name>
+        <url-pattern>/calendar/ansiCalendar/*</url-pattern>
+        <url-pattern>/calendar/ansiCalendar</url-pattern>
+    </servlet-mapping>
+
+
+
+
+	
 
 	<servlet>
         <servlet-name>callNote</servlet-name>
@@ -384,6 +407,24 @@
         <servlet-name>division</servlet-name>
         <url-pattern>/division/*</url-pattern>
     </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>divisionClose</servlet-name>
+        <servlet-class>com.ansi.scilla.web.division.servlet.DivisionCloseServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>divisionClose</servlet-name>
+        <url-pattern>/divisionClose</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>divisionList</servlet-name>
+        <servlet-class>com.ansi.scilla.web.division.servlet.DivisionListServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>divisionList</servlet-name>
+        <url-pattern>/divisionList</url-pattern>
+    </servlet-mapping>
 
     <servlet>
     	<servlet-name>divisionLookup</servlet-name>
@@ -404,6 +445,15 @@
     	<url-pattern>/divisionTypeAhead/*</url-pattern>
     </servlet-mapping>
     
+    
+    <servlet>
+        <servlet-name>divisionUnclose</servlet-name>
+        <servlet-class>com.ansi.scilla.web.division.servlet.DivisionUncloseServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>divisionUnclose</servlet-name>
+        <url-pattern>/divisionUnclose</url-pattern>
+    </servlet-mapping>
     
     <servlet>
         <servlet-name>divisionUser</servlet-name>
@@ -942,6 +992,38 @@
 		<servlet-name>report</servlet-name>
 		<url-pattern>/report/*</url-pattern>
 	</servlet-mapping>
+	
+	
+	<servlet>
+		<servlet-name>reportSubscription</servlet-name>
+		<servlet-class>com.ansi.scilla.web.report.servlet.SubscriptionServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>reportSubscription</servlet-name>
+		<url-pattern>/reports/subscription</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>reportSubscriptionAdmin</servlet-name>
+		<servlet-class>com.ansi.scilla.web.report.servlet.SubscriptionAdminServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>reportSubscriptionAdmin</servlet-name>
+		<url-pattern>/reports/subscriptionAdmin/*</url-pattern>
+		<url-pattern>/reports/subscriptionAdmin</url-pattern>
+	</servlet-mapping>
+
+
+	<servlet>
+		<servlet-name>reportSubscriptionCSV</servlet-name>
+		<servlet-class>com.ansi.scilla.web.report.servlet.ReportSubscriptionCSVServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>reportSubscriptionCSV</servlet-name>
+		<url-pattern>/reports/subscriptionCSV</url-pattern>
+	</servlet-mapping>
+	
+	
 	
 	<servlet>
 		<servlet-name>specialOverrides</servlet-name>

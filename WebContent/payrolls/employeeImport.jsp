@@ -445,7 +445,8 @@
 								for (var i = 0; i < $data.length; i++){                   				                 				
 									if ($data[i].recordMatches == false){
 										$("#display-div input[name='saveAllButton']").show();
-										document.getElementById($data[i].rowId).classList.add("highlight");
+										console.log("drawcallback rowId: " + $data[i].rowId);
+										document.getElementById($data[i].rowId).classList.add("highlight");										
 									}
 								}    
 							}
@@ -462,7 +463,7 @@
                			EMPLOYEE_IMPORT.savedEditEmployee = $row
                 			
                			var terminationDisplay = $row['terminationDate'];
-               			console.log(terminationDisplay);
+               			console.log("terminationDisplay: " + terminationDisplay);
                			if (terminationDisplay !== "" && terminationDisplay != null){
                				const b = new Date(terminationDisplay);
                				terminationDisplay = b.toISOString().substring(0,10);
@@ -490,7 +491,13 @@
        					}
         					       					
                			$("#employee-modal input[name='unionCode']").val($row['unionCode']);
-               			$("#employee-modal input[name='unionRate']").val($row['unionRate']);
+               			console.log("UnionRate: " + $row['unionRate']);
+               			if ( $row['unionRate'].startsWith("$") ) {
+               				$("#employee-modal input[name='unionRate']").val($row['unionRate'].substring(1));
+               			} else {
+               				$("#employee-modal input[name='unionRate']").val($row['unionRate']);
+               			}
+               			
                			$("#employee-modal input[name='notes']").val($row['notes']);
                			
                			if ( $row.status == "ACTIVE"){

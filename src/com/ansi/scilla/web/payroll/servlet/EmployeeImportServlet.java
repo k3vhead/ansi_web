@@ -20,12 +20,12 @@ import com.ansi.scilla.common.payroll.common.EmployeeStatus;
 import com.ansi.scilla.common.payroll.exceptions.NotAnEmployeeFileException;
 import com.ansi.scilla.common.payroll.parser.employee.EmployeeImportParser;
 import com.ansi.scilla.common.payroll.parser.employee.EmployeeImportRecord;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
@@ -58,17 +58,8 @@ public class EmployeeImportServlet extends AbstractServlet {
 			data.setWebMessages(webMessages);
 			
 			if ( webMessages.isEmpty() ) {
-				List<Division> divisionList = Division.cast( new Division().selectAll(conn) );
-				HashMap<Integer, Division> divMap = new HashMap<Integer, Division>();
-				for ( Division d : divisionList ) {
-					divMap.put(d.getDivisionNbr(), d );
-				}
-				
-				EmployeeStatus[] employeeStatusList = EmployeeStatus.values();
-				HashMap<String, EmployeeStatus> employeeStatusMap = new HashMap<String, EmployeeStatus>();
-				for ( EmployeeStatus s : employeeStatusList ) {
-					employeeStatusMap.put(s.display(), s );
-				}
+				HashMap<Integer, Division> divMap = makeDivMap(conn);
+				HashMap<String, EmployeeStatus> employeeStatusMap = makeEmployeeStatusMap();
 				
 				try {
 					
@@ -116,7 +107,29 @@ public class EmployeeImportServlet extends AbstractServlet {
 
 	
 
-	private HashMap<Integer, PayrollEmployee> makeEmployeeMap(Connection conn) throws Exception {
+	protected HashMap<Integer, Division> makeDivMap(Connection conn) throws Exception {
+		List<Division> divisionList = Division.cast( new Division().selectAll(conn) );
+		HashMap<Integer, Division> divMap = new HashMap<Integer, Division>();
+		for ( Division d : divisionList ) {
+			divMap.put(d.getDivisionNbr(), d );
+		}
+		return divMap;
+	}
+
+
+
+	protected HashMap<String, EmployeeStatus> makeEmployeeStatusMap() {
+		EmployeeStatus[] employeeStatusList = EmployeeStatus.values();
+		HashMap<String, EmployeeStatus> employeeStatusMap = new HashMap<String, EmployeeStatus>();
+		for ( EmployeeStatus s : employeeStatusList ) {
+			employeeStatusMap.put(s.display(), s );
+		}
+		return employeeStatusMap;
+	}
+
+
+
+	protected HashMap<Integer, PayrollEmployee> makeEmployeeMap(Connection conn) throws Exception {
 		HashMap<Integer, PayrollEmployee> employeeMap = new HashMap<Integer, PayrollEmployee>();
 		List<PayrollEmployee> employeeList = PayrollEmployee.cast(new PayrollEmployee().selectAll(conn));
 		for ( PayrollEmployee employee : employeeList ) {

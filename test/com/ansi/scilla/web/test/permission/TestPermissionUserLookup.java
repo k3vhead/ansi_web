@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.util.List;
 
 import com.ansi.scilla.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.user.query.PermissionUserLookup;
 import com.ansi.scilla.web.user.query.UserLookupItem;
 

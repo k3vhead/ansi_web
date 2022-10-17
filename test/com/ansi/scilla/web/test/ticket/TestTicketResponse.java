@@ -2,9 +2,9 @@ package com.ansi.scilla.web.test.ticket;
 
 import java.sql.Connection;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.utils.AppUtils;
 import com.ansi.scilla.web.ticket.response.TicketDetail;

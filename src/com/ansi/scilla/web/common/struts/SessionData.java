@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.web.common.utils.ApplicationWebObject;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.common.utils.UserPermission;
 import com.ansi.scilla.web.login.response.LoginResponse;
 

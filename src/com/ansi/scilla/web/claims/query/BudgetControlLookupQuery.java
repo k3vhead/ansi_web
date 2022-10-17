@@ -190,7 +190,6 @@ public class BudgetControlLookupQuery extends ClaimsQuery {
 	 * 
 	 * @param queryTerm
 	 * @return 
-	 * @throws Exception
 	 */
 	protected String makeWhereClause(String queryTerm)  {
 		String whereClause = BudgetControlLookupQuery.baseWhereClause;

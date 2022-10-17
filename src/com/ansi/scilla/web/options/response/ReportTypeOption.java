@@ -1,6 +1,6 @@
 package com.ansi.scilla.web.options.response;
 
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 
 public class ReportTypeOption extends WebOption  {
 	private static final long serialVersionUID = 1L;

@@ -91,6 +91,9 @@
 			#editActualPPCModal {
 				display:none;
 			}
+			#editDLModal {
+				display:none;
+			}
 			#editPoNumberModal {
 				display:none;
 			}
@@ -207,6 +210,9 @@
         			});
         			$(".editTicketType").click(function($event) {
         				TICKET_OVERRIDE.doEditTicketType($event);	
+        			});
+        			$(".editDL").click(function($event) {
+        				TICKET_OVERRIDE.doEditDL($event);	
         			});
         			$("#generateInvoice").checkboxradio();
 					$("#generateInvoice").click(function($event) {
@@ -494,6 +500,31 @@
 
             		
             		
+            		$("#editDLModal").dialog({
+        				title:'Edit Direct Labor Amount',
+        				autoOpen: false,
+        				height: 300,
+        				width: 400,
+        				modal: true,
+        				buttons: [
+        					{
+        						id: "cancelDLModal",
+        						click: function() {
+        							$("#editDLModal").dialog( "close" );
+        						}
+        					},{
+        						id: "saveDLModal",
+        						click: function($event) {
+        							TICKET_OVERRIDE.saveNewDL();
+        						}
+        					}
+        				],
+        				close: function() {
+        					$("#editDLModal").dialog( "close" );
+        				}
+        			});
+            		$('#saveDLModal').button('option', 'label', 'Save');
+            		$('#cancelDLModal').button('option', 'label', 'Cancel');
             		
             		
             		
@@ -757,6 +788,12 @@
                		console.log("doEditTicketType");
                		$("#editTicketTypeModal select[name='ticketType']").val( GLOBAL_DATA['globalTicket'].ticketTypeId);
                		$("#editTicketTypeModal").dialog("open");
+               	},
+               	
+               	doEditDL : function($event) {
+               		console.log("doEditDL");
+               		$('#editDLModal').find('input[name="overrideDLAmt"]').val(GLOBAL_DATA['globalTicket'].actDlAmt.substring(1));
+    				$("#editDLModal").dialog("open");
                	},
                	
                	
@@ -1082,6 +1119,17 @@
     				var $overrideList =[ {'actPricePerCleaning':$newActualPPC}];
     				TICKET_OVERRIDE.doOverride($('#editActualPPCModal'), $overrideType, $overrideList);
     			},
+    			
+    			
+    			saveNewDL : function() {
+    				console.log("saveNewDL");
+    				var $overrideType = "dlAmt";
+    				var $newDL = $('#editDLModal input[name="overrideDLAmt"]').val();
+    				
+    				var $overrideList =[ {'dlAmt':$newDL}];
+    				TICKET_OVERRIDE.doOverride($('#editDLModal'), $overrideType, $overrideList);
+    			},
+    			
     			
     			
     			saveNewPoNumber : function() {
@@ -1515,7 +1563,7 @@
 		   			<td style="border-bottom:solid 1px #000000; width:9%;"><span id="totalTaxPaid"></span></td>
 		   			<td style="border-bottom:solid 1px #000000; width:9%;"><span id="ticketBalance"></span></td>
 		   			<td style="border-bottom:solid 1px #000000; width:9%;"><span id="ticketType"></span><webthing:edit styleClass="editTicketType action-link">Edit</webthing:edit></td>
-		   			<td style="border-bottom:solid 1px #000000; width:8%;"><span id="actDlAmt"></span></td>
+		   			<td style="border-bottom:solid 1px #000000; width:8%;"><span id="actDlAmt"></span><webthing:edit styleClass="editDL action-link">Edit</webthing:edit></td>
 		   			<td style="border-bottom:solid 1px #000000; width:9%;"><span id="actDlPct"></span></td>
 		   			<td style="border-bottom:solid 1px #000000; white-space:nowrap; width:10%;">
 		   				<span id="startDate"></span>
@@ -1700,6 +1748,19 @@
 					<tr>
 						<td style="width:100px;"><span class="formLabel">Ticket Amt:</span></td>
 						<td><input type="text" name="overrideActualPPC" id="overrideActualPPC" /></td>
+					</tr>  
+				</table>
+			</div> 			
+ 		</ansi:hasPermission>
+ 		
+ 		
+ 		<ansi:hasPermission permissionRequired="TICKET_OVERRIDE">
+			<div id="editDLModal">
+				<div class="err modalErr" ></div>
+				<table>		    			
+					<tr>
+						<td style="width:100px;"><span class="formLabel">DL Amt:</span></td>
+						<td><input type="number" name="overrideDLAmt" id="overrideDLAmt" step=".01"/></td>
 					</tr>  
 				</table>
 			</div> 			

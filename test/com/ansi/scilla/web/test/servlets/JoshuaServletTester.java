@@ -8,7 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.permission.request.PermissionRequest;
 import com.ansi.scilla.web.test.TestServlet;
 import com.ansi.scilla.web.user.request.DivisionUserRequest;
@@ -108,7 +108,7 @@ public class JoshuaServletTester extends TestServlet {
 		String url = "/ansi_web/permission/2196";
 		
 		PermissionRequest request = new PermissionRequest();
-//		request.setPermissionName(Permission.CONTACT_WRITE.name());
+		request.setPermission(Permission.CONTACT_WRITE.name());
 		//request.setPermissionName("xxx");
 //		request.setPermissionIsActive(false);
 		String json = AppUtils.object2json(request);

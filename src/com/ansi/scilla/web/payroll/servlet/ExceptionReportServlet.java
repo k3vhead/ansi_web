@@ -19,22 +19,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.payroll.common.EmployeeStatus;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.common.query.LookupQuery;
-import com.ansi.scilla.web.common.response.ResponseCode;
-import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractLookupServlet;
 import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionDivision;
-import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.division.query.DivisionLookupQuery;
-import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.InvalidParameterException;
-import com.ansi.scilla.web.exceptions.NotAllowedException;
-import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.payroll.query.ExceptionReportQuery;
-import com.ansi.scilla.web.payroll.response.ExceptionReportResponse;
-import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class ExceptionReportServlet extends AbstractLookupServlet {
 

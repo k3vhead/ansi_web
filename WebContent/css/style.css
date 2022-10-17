@@ -21,13 +21,13 @@ h1 {
 	min-height:25px;
 }
 #pageContainer {
-	width:1400px;
+	width:1650px;
 	margin-left:20px;
 	background-color:#e5e5e5;
 	border:solid 1px #000000;
 }
 .blue {
-	color:#0000FF;
+	color:#3333FF;
 }
 .call-note-action-link {
 	cursor:pointer;

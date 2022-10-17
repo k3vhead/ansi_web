@@ -14,7 +14,7 @@ import com.ansi.scilla.web.common.response.AbstractAutoCompleteItem;
 import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
@@ -27,6 +27,11 @@ public abstract class AbstractAutoCompleteServlet extends AbstractServlet {
 	protected Permission permission;
 	
 
+	/**
+	 * Standard constructor: requires a permission to make sure you're actually allowed to see what
+	 * you're trying to auto-complete
+	 * @param permission
+	 */
 	protected AbstractAutoCompleteServlet() {
 		super();
 	}

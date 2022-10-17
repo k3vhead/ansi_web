@@ -15,6 +15,7 @@ import org.apache.commons.collections4.Transformer;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.bcr.common.BcrTicketSql;
 import com.ansi.scilla.web.bcr.query.BcrTicketLookupQuery;
 import com.ansi.scilla.web.bcr.query.BcrWeeklyTicketLookupQuery;
@@ -23,7 +24,6 @@ import com.ansi.scilla.web.common.servlet.AbstractLookupServlet;
 import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionDivision;
 import com.ansi.scilla.web.common.struts.SessionUser;
-import com.ansi.scilla.web.common.utils.Permission;
 
 public abstract class AbstractBcrTicketLookupServlet extends AbstractLookupServlet {
 	

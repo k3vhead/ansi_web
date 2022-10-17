@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.util.List;
 
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.common.utils.UserPermission;
 
 public class TestPermission {
@@ -20,7 +20,7 @@ public class TestPermission {
 	}
 
 	private void testTransformer() {
-		List<Permission> plist = Permission.QUOTE_PROPOSE.makeFunctionalAreaList();
+		List<Permission> plist = Permission.QUOTE_PROPOSE.makeFunctionalAreaTree();
 //		QMarkTransformer x = new QMarkTransformer();
 //		List<String> qmarks = (List<String>)CollectionUtils.collect(plist, x);
 //		String whereClause = "(" + StringUtils.join(qmarks, ",") + ")";
@@ -36,7 +36,7 @@ public class TestPermission {
 		List<Permission> childList = Permission.QUOTE_PROPOSE.makeChildList();
 		List<Permission> childTree = Permission.QUOTE_PROPOSE.makeChildTree();
 		List<Permission> parentList = Permission.QUOTE_PROPOSE.makeParentList();
-		List<Permission> faList = Permission.QUOTE_PROPOSE.makeFunctionalAreaList();
+		List<Permission> faList = Permission.QUOTE_PROPOSE.makeFunctionalAreaTree();
 		
 		
 		System.out.println("**childlist");

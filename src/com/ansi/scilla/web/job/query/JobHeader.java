@@ -17,7 +17,7 @@ import com.ansi.scilla.common.jobticket.JobFrequency;
 import com.ansi.scilla.common.jobticket.JobStatus;
 import com.ansi.scilla.common.jobticket.JobUtils;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.common.utils.UserPermission;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.thewebthing.commons.lang.StringUtils;
@@ -238,10 +238,10 @@ public class JobHeader extends ApplicationObject implements Comparable<JobHeader
 	/**
 	 * Get basic job information for display on quote maintenance screen.
 	 * @param conn
-	 * @param quoteId
-	 * @param permissionList 
+	 * @param quote
+	 * @param permissionList
 	 * @return
-	 * @throws SQLException
+	 * @throws Exception
 	 */
 	public static List<JobHeader> getJobHeaderList(Connection conn, Quote quote, List<UserPermission> permissionList) throws Exception {
 		Integer quoteId = quote.getQuoteId();

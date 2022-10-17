@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
@@ -37,7 +37,7 @@ import com.thewebthing.commons.lang.StringUtils;
  * 
  * The url for get will be one of:
  * 		/addressSearch    						(retrieves all records from address table)
- * 		/addressSearch?term=<searchTerm>		(returns all records containing <searchTerm>)
+ * 		/addressSearch?term=&lt;searchTerm&gt;		(returns all records containing &lt;searchTerm&gt;)
  * 
  * The servlet will return all records if there is no "term=" is found.
  * 

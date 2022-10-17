@@ -30,7 +30,7 @@ import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
@@ -38,6 +38,7 @@ import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.permission.request.PermissionRequest;
 import com.ansi.scilla.web.permission.response.PermissionGroupResponse;
 import com.ansi.scilla.web.permission.response.PermissionListResponse;
+import com.ansi.scilla.web.report.common.SubscriptionUtils;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 /**
@@ -216,6 +217,7 @@ public class PermissionServlet extends AbstractServlet {
 		}
 		
 		// remove report subscriptions 
+		SubscriptionUtils.cureReportSubscriptions(conn, permissionGroupId);
 //		SubscriptionUtils.cureReportSubscriptions(conn, permissionGroupId);
 		conn.commit();
 
