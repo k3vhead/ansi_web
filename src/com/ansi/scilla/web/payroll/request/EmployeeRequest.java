@@ -208,14 +208,26 @@ public class EmployeeRequest extends AbstractRequest {
 	private void validateTerminationDate(WebMessages webMessages) {
 		if ( ! webMessages.containsKey(STATUS)) {
 			EmployeeStatus employeeStatus = EmployeeStatus.valueOf(status);
-			if ( employeeStatus.equals(EmployeeStatus.ACTIVE)) {
+			switch ( employeeStatus ) {
+			case ACTIVE:
 				if ( terminationDate != null ) {
 					webMessages.addMessage(TERMINATION_DATE, "Employee is active");
 				}
-			} else {
+				break;
+			case DECEASED:
+				break;
+			case ON_LEAVE:
+				if ( terminationDate != null ) {
+					webMessages.addMessage(TERMINATION_DATE, "Employee is on leave");
+				}
+				break;
+			case TERMINATED:
 				RequestValidator.validateDate(webMessages, TERMINATION_DATE, terminationDate, true, null, null);
-			}
-			
+				break;
+			default:
+				webMessages.addMessage(STATUS, "Unexpected employee status: " + employeeStatus.name());
+				break;			
+			}						
 		}		
 	}
 	

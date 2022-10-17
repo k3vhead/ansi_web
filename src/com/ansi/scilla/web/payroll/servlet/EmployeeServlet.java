@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.sql.Connection;
 import java.util.Calendar;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -18,13 +19,13 @@ import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.EmployeeAlias;
 import com.ansi.scilla.common.db.PayrollEmployee;
 import com.ansi.scilla.common.payroll.common.EmployeeStatus;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
@@ -103,7 +104,19 @@ public class EmployeeServlet extends AbstractServlet {
 		Connection conn = null;
 
 		try {
-			conn = AppUtils.getDBCPConn();
+			// this servlet will get called multiple times at (very) short intervals from the employee import
+			// so we're going to to handle the connection pool running dry:
+			int connCount = 0;
+			while ( conn == null && connCount < 3 ) {
+				conn = AppUtils.getDBCPConn();
+				if ( conn == null ) {
+					TimeUnit.SECONDS.sleep(7);
+				}
+				connCount++;
+			}
+			if ( conn == null ) {
+				throw new ServletException("Connection pool ran dry; we DDoS'd ourselves");
+			}
 			conn.setAutoCommit(false);
 			try {
 				String uri = request.getRequestURI();
@@ -139,13 +152,21 @@ public class EmployeeServlet extends AbstractServlet {
 			} finally {
 				conn.close();
 			}
-		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
 			super.sendForbidden(response);
+		} catch ( IOException | ServletException e ) {
+			AppUtils.logException(e);
+			throw e;
 		} catch ( Exception e) {
 			AppUtils.logException(e);
-			AppUtils.rollbackQuiet(conn);
 			throw new ServletException(e);
+		} finally {
+			if ( conn != null ) {
+				AppUtils.rollbackQuiet(conn);
+				AppUtils.closeQuiet(conn);
+			}
 		}
+		
 	}
 
 	
@@ -267,8 +288,8 @@ public class EmployeeServlet extends AbstractServlet {
 		employee.setEmployeeLastName(StringUtils.trimToNull(employeeRequest.getLastName()));
 		employee.setEmployeeMi(StringUtils.trimToNull(employeeRequest.getMiddleInitial()));
 		employee.setEmployeeStatus(StringUtils.trimToNull(employeeRequest.getStatus()));
-		EmployeeStatus employeeStatus = EmployeeStatus.valueOf(employeeRequest.getStatus());
-		if ( employeeStatus.equals(EmployeeStatus.ACTIVE)) {
+//		EmployeeStatus employeeStatus = EmployeeStatus.valueOf(employeeRequest.getStatus());
+		if ( employeeRequest.getTerminationDate() == null ) {
 			employee.setEmployeeTerminationDate(null);
 		} else {
 			employee.setEmployeeTerminationDate(employeeRequest.getTerminationDate().getTime());

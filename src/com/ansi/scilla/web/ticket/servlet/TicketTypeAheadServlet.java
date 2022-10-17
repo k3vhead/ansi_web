@@ -20,7 +20,7 @@ import org.apache.logging.log4j.Level;
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
@@ -40,7 +40,7 @@ import com.thewebthing.commons.lang.StringUtils;
  * 
  * The url for get will be one of:
  * 		/ticketTypeAhead?term=					(returns not found)
- * 		/ticketTypeAhead?term=<searchTerm>		(returns all records containing <searchTerm>)
+ * 		/ticketTypeAhead?term=&lt;searchTerm&gt;		(returns all records containing&lt;searchTerm&gt;)
  * 
  * The servlet will return 404 Not Found if there is no "term=" found.
  * 

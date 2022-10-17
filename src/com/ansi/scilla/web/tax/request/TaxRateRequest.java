@@ -20,27 +20,27 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 /**
- * Used to request data from the TaxRate table<br />
- * <br />
- * To get a list of all taxRates:<br />
- * <br />
- * 	Request object is not used (GET /taxRate/list)<br />
- *  A TaxRateListResponse is returned<br />
- *   <br />
- * To get a particluar tax Rate:<br />
- * 	Request object is not used (GET /taxRate/&lt;taxRateId&gt;)<br />
- *  A TaxRateListResponse is returned<br />
- *  <br />
- * To add a new tax Rate:<br />
- *  POST /taxRate/add with POSTED json string like:<br />
- *  	{"location":"Webthing HQ","rate":123.45,"taxAmount":0.03,"effectiveDate":"12/01/2016"}<br />
- *  A TaxRateResponse is returned<br />
- *  <br />
- * To upate an existing tax Rate:<br />
- * 	POST /taxRate/&lt;taxRateId&gt; with POSTED json string like:<br />
- * 		{"taxRateId":123,"location":"Webthing HQ","rate":123.45,"taxAmount":0.03,"effectiveDate":"12/01/2016"}<br />
- *  A TaxRateResponse is returned<br />
- * <br />
+ * Used to request data from the TaxRate table
+ * 
+ * To get a list of all taxRates:
+ * 
+ * 	Request object is not used (GET /taxRate/list)
+ *  A TaxRateListResponse is returned
+ *   
+ * To get a particluar tax Rate:
+ * 	Request object is not used (GET /taxRate/&lt;taxRateId&gt;)
+ *  A TaxRateListResponse is returned
+ *  
+ * To add a new tax Rate:
+ *  POST /taxRate/add with POSTED json string like:
+ *  	{"location":"Webthing HQ","rate":123.45,"taxAmount":0.03,"effectiveDate":"12/01/2016"}
+ *  A TaxRateResponse is returned
+ *  
+ * To upate an existing tax Rate:
+ * 	POST /taxRate/&lt;taxRateId&gt; with POSTED json string like:
+ * 		{"taxRateId":123,"location":"Webthing HQ","rate":123.45,"taxAmount":0.03,"effectiveDate":"12/01/2016"}
+ *  A TaxRateResponse is returned
+ * 
  * @author gagroce
  *
  */
@@ -65,9 +65,9 @@ public class TaxRateRequest extends AbstractRequest {
 	}
 	
 	/**
-	 * Generate a TaxRateRequest from expected JSON string as defined above<br />
-	 * Exceptions are thrown when the JSON string does not match expectations<br />
-	 * <br />
+	 * Generate a TaxRateRequest from expected JSON string as defined above
+	 * Exceptions are thrown when the JSON string does not match expectations
+	 * 
 	 * @param jsonString
 	 * @throws InstantiationException 
 	 * @throws IllegalAccessException
@@ -94,7 +94,7 @@ public class TaxRateRequest extends AbstractRequest {
 
 	/**
 	 * Flat tax amount.
-	 * One of amount or rate is required for add/update<br />
+	 * One of amount or rate is required for add/update
 	 * @param amount
 	 */
 	public void setAmount(BigDecimal amount) {
@@ -104,7 +104,7 @@ public class TaxRateRequest extends AbstractRequest {
 	/**
 	 * Date that this tax rate becomes effective. Expecting "MM/DD/yyyy" in the json string.
 	 * Required for adding a new rate, or updating an existing rate
-	 * <br />
+	 * 
 	 * @return
 	 */
 	@RequiredForAdd

@@ -52,32 +52,32 @@ public class LoadAlias extends Loader {
 	}
 
 	private void processFile(Connection conn, String fileName) throws FileNotFoundException, Exception {
-		PayrollWorksheetParser parser = new PayrollWorksheetParser(conn, fileName);
-		for ( PayrollWorksheetEmployee employee : parser.getEmployeeRecordList()) {
-			if ( StringUtils.isBlank(employee.getEmployeeName()) || (StringUtils.split(employee.getEmployeeName(),",").length < 2 && StringUtils.split(employee.getEmployeeName()," ").length < 2)) {
-				System.err.println("Empty name field: [" + employee.getEmployeeName() + "]");
-			} else {				
-				EmployeeName employeeName = new EmployeeName(StringUtils.trimToNull(employee.getEmployeeName()));
-				if ( hasExactMatch(employeeName)) {
-					System.out.println("Eact Match: " + employee.getEmployeeName());				
-				} else {
-					if ( hasAliasMatch(employee.getEmployeeName())) {
-						System.out.println("Alias Match: " + employee.getEmployeeName());
-					} else {
-						List<AliasOption> optionList = makeOptionList(employeeName);
-						if ( optionList.isEmpty() ) {
-							System.err.println("No Match: " + employee.getEmployeeName());
-						} else {
-							System.out.println(employee.getEmployeeName());
-							for ( AliasOption option : optionList ) {
-								System.out.println( "\t" + option);
-							}
-						}
-					}
-				}
-			}
-		}
-		
+//		PayrollWorksheetParser parser = new PayrollWorksheetParser(conn, fileName);
+//		for ( PayrollWorksheetEmployee employee : parser.getEmployeeRecordList()) {
+//			if ( StringUtils.isBlank(employee.getEmployeeName()) || (StringUtils.split(employee.getEmployeeName(),",").length < 2 && StringUtils.split(employee.getEmployeeName()," ").length < 2)) {
+//				System.err.println("Empty name field: [" + employee.getEmployeeName() + "]");
+//			} else {				
+//				EmployeeName employeeName = new EmployeeName(StringUtils.trimToNull(employee.getEmployeeName()));
+//				if ( hasExactMatch(employeeName)) {
+//					System.out.println("Eact Match: " + employee.getEmployeeName());				
+//				} else {
+//					if ( hasAliasMatch(employee.getEmployeeName())) {
+//						System.out.println("Alias Match: " + employee.getEmployeeName());
+//					} else {
+//						List<AliasOption> optionList = makeOptionList(employeeName);
+//						if ( optionList.isEmpty() ) {
+//							System.err.println("No Match: " + employee.getEmployeeName());
+//						} else {
+//							System.out.println(employee.getEmployeeName());
+//							for ( AliasOption option : optionList ) {
+//								System.out.println( "\t" + option);
+//							}
+//						}
+//					}
+//				}
+//			}
+//		}
+//		
 	}
 
 	private boolean hasExactMatch(EmployeeName employeeName) throws SQLException {

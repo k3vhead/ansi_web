@@ -8,6 +8,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.bcr.response.BcrInitResponse;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
@@ -15,7 +16,6 @@ import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.division.response.DivisionListResponse;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;

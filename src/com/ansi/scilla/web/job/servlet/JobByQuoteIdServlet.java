@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
@@ -26,8 +26,8 @@ import com.thewebthing.commons.lang.StringUtils;
 
 /**
  * 
- * The url for get will be one of: /getJobs?quoteId=<searchTerm> (returns all
- * job records containing <quoteId>)
+ * The url for get will be one of:						
+ * 		/getJobs?quoteId=&lt;searchTerm&gt;		(returns all job records containing &lt;quoteId&gt;)
  * 
  * The url for delete will return methodNotAllowed
  * 

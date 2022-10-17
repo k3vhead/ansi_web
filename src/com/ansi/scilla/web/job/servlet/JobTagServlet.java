@@ -20,7 +20,7 @@ import com.ansi.scilla.web.common.servlet.AbstractCrudServlet;
 import com.ansi.scilla.web.common.servlet.PermittedAction;
 import com.ansi.scilla.web.common.utils.FieldMap;
 import com.ansi.scilla.web.common.utils.JsonFieldFormat;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 
 public class JobTagServlet extends AbstractCrudServlet {
 

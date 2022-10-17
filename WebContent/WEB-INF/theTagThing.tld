@@ -295,7 +295,7 @@
 	
 	
 	
-	
+	<!-- types: "DIVISION" | "COMPANY" | "REGION" | "GROUP" -->
 	<tag>
 		<name>selectOrganization</name>
 		<tagclass>com.ansi.scilla.web.tags.SelectOrganization</tagclass>
@@ -402,6 +402,13 @@
 	</tag>
 	
 	
+	
+	<tag>
+    	<name>batchReports</name>
+    	<tagclass>com.ansi.scilla.web.tags.BatchReportSelect</tagclass>
+	    <bodycontent>JSP</bodycontent>
+    	<info>Displays an option list of all Rerports available for subscription via admin</info>
+	</tag>
 	
 	<tag>
     	<name>companyCodeSelect</name>

@@ -3,5 +3,6 @@ build
 centerpoint_ui
 clean
 deploy
+git
 init
 war

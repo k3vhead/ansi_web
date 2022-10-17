@@ -82,7 +82,6 @@ public class DirectLaborLookupQuery extends ClaimsQuery {
 	 * 
 	 * @param queryTerm
 	 * @return 
-	 * @throws Exception
 	 */
 	protected String makeWhereClause(String queryTerm)  {
 		String whereClause = DirectLaborLookupQuery.baseWhereClause;

@@ -11,10 +11,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections4.Transformer;
 
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.batch.query.BatchLogQuery;
 import com.ansi.scilla.web.common.query.LookupQuery;
 import com.ansi.scilla.web.common.servlet.AbstractLookupServlet;
-import com.ansi.scilla.web.common.utils.Permission;
 
 public class BatchLogServlet extends AbstractLookupServlet {
 
