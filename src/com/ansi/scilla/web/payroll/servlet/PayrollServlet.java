@@ -167,6 +167,9 @@ public class PayrollServlet extends AbstractServlet {
 		case TIMESHEET_IMPORT:
 			new TimesheetImportServlet().doPost(request, response);
 			break;
+		case TimesheetSaveServlet.REALM:
+			new TimesheetSaveServlet().doPost(request, response);
+			break;
 		default:
 			super.sendNotFound(response);
 		}

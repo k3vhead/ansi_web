@@ -40,16 +40,16 @@ public class TestWorksheetImportResponse {
 			
 			ValidatedWorksheetHeader header = HeaderValidator.validateHeader(conn, parser.getHeader());
 			
-//			if ( ! header.maxErrorLevel().equals(ErrorLevel.ERROR)) {
-//				validatedEmployees = ValidatorUtils.validatePayrollEmployees(conn, header, parser.getEmployeeRecordList());
-//			}
-//			
-//			PayrollWorksheetEmployee before = parser.getEmployeeRecordList().get(0);
-//			for ( ValidatedWorksheetEmployee after : validatedEmployees ) {
-//				String json = AppUtils.object2json(after, true);
-//				System.out.println(json);
-//				System.out.println("***************");
-//			}
+			if ( ! header.maxErrorLevel().equals(ErrorLevel.ERROR)) {
+				validatedEmployees = ValidatorUtils.validatePayrollEmployees(conn, header, parser.getTimesheetRecords());
+			}
+			
+			PayrollWorksheetEmployee before = parser.getTimesheetRecords().get(0);
+			for ( ValidatedWorksheetEmployee after : validatedEmployees ) {
+				String json = AppUtils.object2json(after, true);
+				System.out.println(json);
+				System.out.println("***************");
+			}
 			
 
 //			ValidatedWorksheet validatedWorksheet = new ValidatedWorksheet(header, validatedEmployees);

@@ -33,6 +33,7 @@ import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.locale.common.LocaleUtils;
 import com.ansi.scilla.web.payroll.common.PayrollValidation;
 import com.ansi.scilla.web.payroll.request.TimesheetRequest;
+import com.ansi.scilla.web.payroll.response.TimesheetResponseEmployee;
 import com.ansi.scilla.web.payroll.response.TimesheetEmployee;
 import com.ansi.scilla.web.payroll.response.TimesheetResponse;
 import com.ansi.scilla.web.payroll.response.TimesheetValidationResponse;
@@ -41,6 +42,7 @@ import com.thewebthing.commons.db2.RecordNotFoundException;
 public class TimesheetServlet extends AbstractServlet {
 
 	private static final long serialVersionUID = 1L;
+	
 
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -108,7 +110,8 @@ public class TimesheetServlet extends AbstractServlet {
 				switch ( timesheetRequest.getAction() ) {
 				case TimesheetRequest.ACTION_IS_ADD:
 					logger.log(Level.DEBUG, "msg from the TimesheetServlet - TimesheetRequest.ACTION_IS_ADD");
-					processAdd(conn, response, timesheetRequest, sessionData);
+					TimesheetResponseEmployee postResponse = processAdd(conn, response, timesheetRequest, sessionData);
+					super.sendResponse(conn, response, postResponse.responseCode, postResponse.data);
 					break;
 				case TimesheetRequest.ACTION_IS_VALIDATE:
 					logger.log(Level.DEBUG, "msg from the TimesheetServlet - TimesheetRequest.ACTION_IS_VALIDATE");
@@ -116,14 +119,16 @@ public class TimesheetServlet extends AbstractServlet {
 					break;
 				case TimesheetRequest.ACTION_IS_UPDATE:
 					try {
-						processUpdate(conn, response, timesheetRequest, sessionData);
+						TimesheetResponseEmployee updateResponse = processUpdate(conn, response, timesheetRequest, sessionData);
+						super.sendResponse(conn, response, updateResponse.responseCode, updateResponse.data);
 					} catch ( RecordNotFoundException e ) {
 						logger.log(Level.DEBUG, "Updating non-existing record, so we add it");
 						logger.log(Level.DEBUG, "Employee: " + timesheetRequest.getEmployeeCode());
 						logger.log(Level.DEBUG, "Division: " + timesheetRequest.getDivisionId());
 						logger.log(Level.DEBUG, "Location: " + timesheetRequest.getCity() + ", " + timesheetRequest.getState());
 						logger.log(Level.DEBUG, "Date: " + timesheetRequest.getWeekEnding().getTime());
-						processAdd(conn, response, timesheetRequest, sessionData);
+						TimesheetResponseEmployee addResponse = processAdd(conn, response, timesheetRequest, sessionData);
+						super.sendResponse(conn, response, addResponse.responseCode, addResponse.data);
 					}
 					break;
 				default:
@@ -247,7 +252,7 @@ public class TimesheetServlet extends AbstractServlet {
 	
 	
 	
-	private void processAdd(Connection conn, HttpServletResponse response, TimesheetRequest timesheetRequest, SessionData sessionData) throws Exception {
+	protected TimesheetResponseEmployee processAdd(Connection conn, HttpServletResponse response, TimesheetRequest timesheetRequest, SessionData sessionData) throws Exception {
 		TimesheetResponse data = new TimesheetResponse();
 		PayrollValidation validationResponse = timesheetRequest.validateAdd(conn);
 		
@@ -270,11 +275,11 @@ public class TimesheetServlet extends AbstractServlet {
 		} 
 
 		data.setWebMessages(validationResponse.getWebMessages());
-		super.sendResponse(conn, response, validationResponse.getResponseCode(), data);
+		return new TimesheetResponseEmployee(validationResponse.getResponseCode(), data);
 
 	}
 
-	private void processUpdate(Connection conn, HttpServletResponse response, TimesheetRequest timesheetRequest, SessionData sessionData) throws RecordNotFoundException, Exception {
+	protected TimesheetResponseEmployee processUpdate(Connection conn, HttpServletResponse response, TimesheetRequest timesheetRequest, SessionData sessionData) throws RecordNotFoundException, Exception {
 		TimesheetResponse data = new TimesheetResponse();
 		PayrollValidation validationResponse = timesheetRequest.validateUpdate(conn);
 		
@@ -296,7 +301,7 @@ public class TimesheetServlet extends AbstractServlet {
 		} 
 		
 		data.setWebMessages(validationResponse.getWebMessages());
-		super.sendResponse(conn, response, validationResponse.getResponseCode(), data);
+		return new TimesheetResponseEmployee(validationResponse.getResponseCode(), data);
 	}
 
 	
@@ -373,4 +378,5 @@ public class TimesheetServlet extends AbstractServlet {
 	}
 	
 
+	
 }
