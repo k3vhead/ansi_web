@@ -20,7 +20,6 @@ import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.Midnight;
 import com.ansi.scilla.common.db.Job;
 import com.ansi.scilla.common.db.JobSchedule;
-import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.jobticket.JobFrequency;
 import com.ansi.scilla.common.jobticket.TicketDateGenerator;
 import com.ansi.scilla.web.common.response.ResponseCode;

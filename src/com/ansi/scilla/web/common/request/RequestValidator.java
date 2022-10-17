@@ -25,10 +25,13 @@ import org.apache.logging.log4j.Logger;
 import com.ansi.scilla.common.callNote.CallNoteReference;
 import com.ansi.scilla.common.claims.WorkHoursType;
 import com.ansi.scilla.common.db.CallLog;
+import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.Document;
 import com.ansi.scilla.common.db.EmployeeExpense;
 import com.ansi.scilla.common.db.JobTag;
+import com.ansi.scilla.common.db.Locale;
 import com.ansi.scilla.common.db.MSTable;
+import com.ansi.scilla.common.db.PayrollEmployee;
 import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.common.document.DocumentType;
@@ -38,32 +41,41 @@ import com.ansi.scilla.common.invoice.InvoiceTerm;
 import com.ansi.scilla.common.jobticket.JobFrequency;
 import com.ansi.scilla.common.jobticket.JobTagStatus;
 import com.ansi.scilla.common.jobticket.JobTagType;
+import com.ansi.scilla.common.organization.OrganizationType;
 import com.ansi.scilla.common.payment.PaymentMethod;
+import com.ansi.scilla.common.payroll.common.EmployeeStatus;
+import com.ansi.scilla.common.utils.LocaleType;
 import com.ansi.scilla.common.utils.QMarkTransformer;
 import com.ansi.scilla.web.claims.request.ClaimEntryRequestType;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.utils.FieldMap;
 import com.ansi.scilla.web.common.utils.Permission;
 import com.thewebthing.commons.db2.DBTable;
+import com.thewebthing.commons.db2.RecordNotFoundException;
 import com.thewebthing.commons.lang.StringUtils;
 
 public class RequestValidator {
+	
+	private static final List<String> STATE_NAMES = Arrays.asList( new String[] {
+			"AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",  
+			"HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",  
+			"MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", 
+			"NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", 
+			"SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"
+	} );
 
+	
+
+	
+	
+	
 	public static void checkForDuplicates(Connection conn, WebMessages webMessages, MSTable table,
 			HashMap<String, Object> addRequest, List<FieldMap> fieldMap, SimpleDateFormat standardDateFormat)
 			throws Exception {
 		Logger logger = LogManager.getLogger(RequestValidator.class);
 		String tableName = table.getClass().getAnnotation(DBTable.class).value();
 		logger.log(Level.DEBUG, "Table: " + tableName);
-		HashMap<String, List<String>> indexMap = new HashMap<String, List<String>>(); // index
-																						// name
-																						// ->
-																						// list
-																						// of
-																						// column
-																						// in
-																						// that
-																						// index
+		HashMap<String, List<String>> indexMap = new HashMap<String, List<String>>(); // index name -> list of column in that index
 		DatabaseMetaData dbmd = conn.getMetaData();
 		ResultSet rs = dbmd.getIndexInfo(null, null, tableName, true, false);
 		while (rs.next()) {
@@ -149,6 +161,119 @@ public class RequestValidator {
 		}
 	}
 	
+	
+	/**
+	 * Ensure that a jurisdiction exists (ie. a non-state level locale record exists). 
+	 * @param conn
+	 * @param webMessages
+	 * @param fieldName
+	 * @param value
+	 * @param maxLength
+	 * @param required
+	 * @param label
+	 * @throws SQLException
+	 */
+	public static void validateCity(Connection conn, WebMessages webMessages, String fieldName, String value, int maxLength, boolean required,
+			String label) throws SQLException {
+		Logger logger = LogManager.getLogger(RequestValidator.class);
+		if ( StringUtils.isBlank(value) ) {
+			if ( required ) {
+				String message = StringUtils.isBlank(label) ? "Required Value" : label + " is required";
+				webMessages.addMessage(fieldName, message);
+			}
+		} else {
+			
+			List<String> typeList = new ArrayList<String>();
+			for ( LocaleType localeType : LocaleType.values() ) {
+				if (localeType != LocaleType.STATE) {
+					typeList.add("'" + localeType.name() + "'");
+				}
+			}
+			PreparedStatement ps = null;
+			String message = StringUtils.isBlank(label) ? "Invalid Value" : label + " is invalid";
+			String sql = "select count(*) as rec_count from locale where lower(name)=? and locale_type_id in ("+StringUtils.join(typeList, ",")+")";
+			ps = conn.prepareStatement(sql);
+			ps.setString(1, value.toLowerCase());
+			logger.log(Level.DEBUG, sql);
+			ResultSet rs = ps.executeQuery();
+			if ( rs.next() ) {
+				if (rs.getInt("rec_count") == 0) {
+					webMessages.addMessage(fieldName, message);
+				}
+			} else {
+				webMessages.addMessage(fieldName, "Validation Error; Contact Support");
+			}
+			rs.close();
+		}
+		
+	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * Ensure that a jurisdiction exists (ie. a non-state level locale record exists) and is in the right state.
+	 * @param conn
+	 * @param webMessages
+	 * @param fieldName
+	 * @param value
+	 * @param state
+	 * @param maxLength
+	 * @param required
+	 * @param label
+	 * @throws SQLException
+	 */
+	public static void validateCityState(Connection conn, WebMessages webMessages, String fieldName, String value, String state, int maxLength, boolean required,
+			String label) throws SQLException {
+		Logger logger = LogManager.getLogger(RequestValidator.class);
+		if ( StringUtils.isBlank(value) ) {
+			if ( required ) {
+				String message = StringUtils.isBlank(label) ? "Required Value" : label + " is required";
+				webMessages.addMessage(fieldName, message);
+			}
+		} else {
+			
+			List<String> typeList = new ArrayList<String>();
+			for ( LocaleType localeType : LocaleType.values() ) {
+				if (localeType != LocaleType.STATE) {
+					typeList.add("'" + localeType.name() + "'");
+				}
+			}
+			PreparedStatement ps = null;
+			String message = StringUtils.isBlank(label) ? "Invalid Value" : label + " is invalid";
+//			String sql = "select city.locale_id as city_id, city.name as city_name, city.state_name as city_state_name,\n"
+//					+ "	state.locale_id as state_id, state.name as state_name, state.state_name as state_state_name\n"
+//					+ "from locale as city\n"
+//					+ "inner join (select locale_id, name, state_name from locale) as state on state.locale_id=?\n"
+//					+ "where lower(city.name)=? and city.locale_type_id in ("+StringUtils.join(typeList, ",")+")";
+			String sql = "select count(*) as record_count from locale\n"
+					+ "where lower(name)=? and state_name=? and locale_type_id in ("+StringUtils.join(typeList, ",")+")";
+			ps = conn.prepareStatement(sql);
+			ps.setString(1, value.toLowerCase());
+			ps.setString(2, state);
+			logger.log(Level.DEBUG, sql);
+			logger.log(Level.DEBUG, value.toLowerCase() + " | " + state);
+			ResultSet rs = ps.executeQuery();
+			if ( rs.next() ) {
+				if ( rs.getInt("record_count") == 0 ) {
+					webMessages.addMessage(fieldName, message);
+				}
+			} else {
+				webMessages.addMessage(fieldName, message);
+			}
+			rs.close();
+		}
+		
+	}
+	
+	
+	
+	
+
+	
+	
 	public static void validateClaimDetailRequestType(WebMessages webMessages, String fieldName, String value, boolean required) {
 		if (StringUtils.isBlank(value)) {
 			if (required) {
@@ -220,6 +345,32 @@ public class RequestValidator {
 	}
 	
 	
+	public static void validateCompanyCode(Connection conn, WebMessages webMessages, String fieldName, String value, Boolean required, String label) throws SQLException {
+		if ( StringUtils.isBlank(value) ) {
+			if ( required ) {
+				String message = StringUtils.isBlank(label) ? "Required Value" : label + " is required";
+				webMessages.addMessage(fieldName, message);
+			}
+		} else {
+			PreparedStatement ps = conn.prepareStatement("select count(*) as record_count \n" + 
+					"from division_group \n" + 
+					"where division_group.group_type =? and company_code=?");
+			ps.setString(1, OrganizationType.COMPANY.name());
+			ps.setString(2, value);
+			ResultSet rs = ps.executeQuery();
+			boolean isValid = false;
+			if ( rs.next() ) {
+				isValid = rs.getInt("record_count") > 0;
+			}
+			rs.close();
+			if ( isValid == false ) {
+				String message = StringUtils.isBlank(label) ? "Invalid Value" : label + " is invalid";
+				webMessages.addMessage(fieldName, message);
+			}
+		}
+	}
+	
+	
 	
 	public static void validateContactType(Connection conn, WebMessages webMessages, String fieldName, String value, boolean required) throws Exception {
 		validateCode(conn, webMessages, CallLog.TABLE, CallLog.CONTACT_TYPE, fieldName, value, required, null);
@@ -279,6 +430,7 @@ public class RequestValidator {
 	}
 	
 	
+	
 	public static void validateDate(WebMessages webMessages, String fieldName, Date value, boolean required,
 			Date minValue, Date maxValue) {
 		if (value == null) {
@@ -298,6 +450,77 @@ public class RequestValidator {
 
 		}
 	}
+	
+	
+	/**
+	 * 
+	 * @param webMessages
+	 * @param fieldName
+	 * @param value
+	 * @param required
+	 * @param minValue
+	 * @param maxValue
+	 * @param dayOfWeek  eg. Calendar.FRIDAY
+	 */
+	public static void validateDay(WebMessages webMessages, String fieldName, Calendar value, boolean required,
+			Date minValue, Date maxValue, int dayOfWeek) {
+		final String[] dayString = new String[] {(String)null, "Sunday", "Monday","Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+		if (value == null) {
+			if (required) {
+				webMessages.addMessage(fieldName, "Required Value");
+			}
+		} else {
+			SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
+			if (minValue != null && value.before(minValue)) {
+				String minLabel = format.format(minValue);
+				webMessages.addMessage(fieldName, "Date must be after " + minLabel);
+			}
+			if (maxValue != null && value.after(maxValue)) {
+				String maxLabel = format.format(maxValue);
+				webMessages.addMessage(fieldName, "Date must be before " + maxLabel);
+			}
+			if ( dayOfWeek < 1 || dayOfWeek > 7 ) {
+				webMessages.addMessage(fieldName, "Invalid day of week");
+			} else {
+				if ( value.get(Calendar.DAY_OF_WEEK) != dayOfWeek ) {
+					webMessages.addMessage(fieldName, "Must be " + dayString[dayOfWeek]);
+				}
+			}
+		}
+	}
+	
+	
+	public static void validateDivisionNumber(Connection conn, WebMessages webMessages, String fieldName, String value, boolean required) throws SQLException, Exception {
+		if ( StringUtils.isBlank(value) ) {
+			if ( required == true ) {
+				webMessages.addMessage(fieldName, "Required Value");
+			}	
+		} else {
+			if ( StringUtils.isNumeric(value)) {
+				validateDivisionNumber(conn, webMessages,fieldName, Integer.valueOf(value), required);
+			} else {
+				webMessages.addMessage(fieldName, "Invalid Format");
+			}
+		}
+	}
+	
+	
+	public static void validateDivisionNumber(Connection conn, WebMessages webMessages, String fieldName, Integer value, boolean required) throws SQLException, Exception {
+		if ( value == null ) {
+			if ( required == true ) {
+				webMessages.addMessage(fieldName, "Required Value.");
+			}				
+		} else {
+			Division division = new Division();
+			division.setDivisionNbr(value);
+			try {
+				division.selectOne(conn);
+			} catch ( RecordNotFoundException e ) {
+				webMessages.addMessage(fieldName, "Invalid value");
+			}
+		}
+	}
+	
 	
 	
 	public static void validateDivisionUser(Connection conn, WebMessages webMessages, Integer divisionId, String divisionField, Integer userId, String userField, boolean required) throws SQLException {
@@ -381,6 +604,108 @@ public class RequestValidator {
 		}
 	}
 
+	
+	public static PayrollEmployee validateEmployeeCode(Connection conn, WebMessages webMessages, String fieldName,
+			Integer value, boolean required, String label) throws Exception {
+		PayrollEmployee employee = null;
+		if ( value == null ) {
+			if ( required == true ) {
+				String message = StringUtils.isBlank(label) ? "Required Value" : label + " is Required";
+				webMessages.addMessage(fieldName, message);
+			}
+		} else {
+			employee = new PayrollEmployee();
+			employee.setEmployeeCode(value);
+			try {
+				employee.selectOne(conn);
+			} catch ( RecordNotFoundException e) {
+				String message = StringUtils.isBlank(label) ? "Invalid Value" : label + " is Invalid";
+				webMessages.addMessage(fieldName, message);
+			}
+			
+			
+//			PreparedStatement ps = conn.prepareStatement("select count(*) as record_count from payroll_employee pe where pe.employee_code = ?");
+//			ps.setInt(1, value);
+//			ResultSet rs = ps.executeQuery();
+//			if ( rs.next() ) {
+//				if ( rs.getInt("record_count") == 0 ) {
+//					String message = StringUtils.isBlank(label) ? "Invalid Value" : label + " is Invalid";
+//					webMessages.addMessage(fieldName, message);
+//				}
+//			} else {
+//				String message = StringUtils.isBlank(label) ? "Invalid Value" : label + " is Invalid";
+//				webMessages.addMessage(fieldName, message);
+//			}
+//			rs.close();
+		}
+		return employee;
+		
+	}
+	
+	
+	
+	/**
+	 * Ensure that employee name can be parsed into some recognizable format:
+	 * Handles: Franklin Roosevelt
+	 *			Franklin D Roosevelt
+	 *			Franklin D. Roosevelt
+	 *			Roosevelt, Franklin
+	 *			Roosevelt, Franklin D
+	 *			Roosevelt, Franklin D.
+	 * @param conn
+	 * @param webMessages
+	 * @param fieldName
+	 * @param employeeCode
+	 * @param employeeName
+	 * @throws SQLException
+	 */
+	public static void validateEmployeeName(Connection conn, WebMessages webMessages, String fieldName, Integer employeeCode, String employeeName) throws SQLException {
+		String sql = "select count(*) as record_count from payroll_employee pe where pe.employee_code = ? \n" + 
+				"	and (\n" + 
+				"		lower(concat(pe.employee_first_name,' ',pe.employee_last_name)) = ?\n" + 
+				"		or lower(concat(pe.employee_first_name,' ',pe.employee_mi,' ',pe.employee_last_name)) = ?\n" + 
+				"		or lower(concat(pe.employee_first_name,' ',pe.employee_mi,'. ',pe.employee_last_name)) = ?\n" + 
+				"		or lower(concat(pe.employee_last_name,', ',pe.employee_first_name)) = ?\n" + 
+				"		or lower(concat(pe.employee_last_name,', ',pe.employee_first_name,' ',pe.employee_mi)) = ?\n" + 
+				"		or lower(concat(pe.employee_last_name,', ',pe.employee_first_name,' ',pe.employee_mi,'.')) = ?\n" + 
+				"	)";
+		PreparedStatement ps = conn.prepareStatement(sql);
+		ps.setInt(1, employeeCode);
+		for ( int n = 2; n < 8; n++ ) {
+			ps.setString(n, employeeName.toLowerCase());
+		}
+		ResultSet rs = ps.executeQuery();
+		if ( rs.next() ) {
+			if ( rs.getInt("record_count") == 0 ) {
+				webMessages.addMessage(fieldName, "Invalid EmployeeCode/Employee Name combination");
+			}
+		} else {
+			webMessages.addMessage(fieldName, "Error while validating");
+		}
+		rs.close();
+	}
+
+	
+	
+	
+	public static void validateEmployeeStatus(WebMessages webMessages, String fieldName, String value, boolean required) {
+		if (StringUtils.isBlank(value)) {
+			if (required) {
+				webMessages.addMessage(fieldName, "Required Value");
+			}
+		} else {
+			try {
+				EmployeeStatus employeeStatus = EmployeeStatus.valueOf(value);
+				if (employeeStatus == null) {
+					webMessages.addMessage(fieldName, "Invalid Value");
+				}
+			} catch (IllegalArgumentException e) {
+				webMessages.addMessage(fieldName, "Invalid Value");
+			}
+		}
+	}
+	
+	
 	public static void validateFloat(WebMessages webMessages, String fieldName, Float value, Float minValue,
 			Float maxValue, boolean required) {
 		if (value == null) {
@@ -566,6 +891,8 @@ public class RequestValidator {
 		}
 	}
 
+	
+	
 	public static void validateInvoiceTerms(WebMessages webMessages, String fieldName, String value, boolean required) {
 		if (StringUtils.isBlank(value)) {
 			if (required) {
@@ -583,6 +910,8 @@ public class RequestValidator {
 		}
 	}
 
+	
+	
 	public static void validateJobFrequency(WebMessages webMessages, String fieldName, String value, boolean required) {
 		if (StringUtils.isBlank(value)) {
 			if (required) {
@@ -605,6 +934,25 @@ public class RequestValidator {
 		validateCode(conn, webMessages, "quote", "lead_type", fieldName, value, required, null);
 	}
 
+	
+	public static void validateLocaleType(WebMessages webMessages, String fieldName, String value, boolean required) {
+		if (StringUtils.isBlank(value)) {
+			if (required) {
+				webMessages.addMessage(fieldName, "Required Value");
+			}
+		} else {
+			try {
+				LocaleType invoiceStyle = LocaleType.valueOf(value);
+				if (invoiceStyle == null) {
+					webMessages.addMessage(fieldName, "Invalid Value");
+				}
+			} catch (IllegalArgumentException e) {
+				webMessages.addMessage(fieldName, "Invalid Value");
+			}
+		}
+	}
+	
+	
 	public static void validateNumber(WebMessages webMessages, String fieldName, Object value, Object minValue,
 			Object maxValue, boolean required, String label) {
 		if (value == null) {
@@ -628,6 +976,35 @@ public class RequestValidator {
 	}
 
 	
+	public static void validateOrganizationId(Connection conn, WebMessages webMessages, String fieldName,
+			OrganizationType type, Integer value, boolean required) throws SQLException, RecordNotFoundException {
+		if ( value == null ) {
+			if ( required ) {
+				webMessages.addMessage(fieldName, "Organization ID is required");
+			}
+		} else {			
+			String sql = type.equals(OrganizationType.DIVISION) ?
+					"select count(*) as record_count from division where division_id=?"
+					:
+					"select count(*) as record_count from division_group where group_id=? and group_type=?";
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setInt(1, value);
+			if ( ! type.equals(OrganizationType.DIVISION)) {
+				ps.setString(2, type.name().toUpperCase());
+			}
+			ResultSet rs = ps.executeQuery();
+			if ( rs.next() ) {
+				if ( rs.getInt("record_count") == 0 ) {
+					webMessages.addMessage(fieldName, "Invalid Organization ID");
+				}				
+			} else {
+				throw new RecordNotFoundException();
+			}
+		}
+			
+		
+	}
+
 	public static void validatePassthruExpenseType(Connection conn, WebMessages webMessages, String fieldName, String value, boolean required, String label) throws Exception {
 		validateCode(conn, webMessages, "ticket_claim_passthru", "passthru_expense_type", fieldName, value, required, label);
 	}
@@ -667,7 +1044,8 @@ public class RequestValidator {
 			}
 		}
 	}
-
+	
+	
 	/**
 	 * Given a list of ID's, make sure they are all valid job_tag_id's and at least one of them is of type "SERVICE"
 	 * @param conn
@@ -721,6 +1099,64 @@ public class RequestValidator {
 			}
 		}
 		
+	}
+
+	public static void validateState(WebMessages webMessages, String fieldName, String value, boolean required, String label) {
+		String states="AL,AK,AZ,AR,CA,CO,CN,DE,FL,GA,HI,ID,IL,IN,IA,KS,KY,LA,ME,MD,MA,MI,MN,MS,MO,MO,NE,NV,NH,NJ,NM,NY,NC,ND,OH,OK,OR,PA,RI,SC,SD,TN,TX,UT,VT,VA,WA,WV,WI,WY";
+		if ( required ) {
+			if ( StringUtils.isBlank(value) ) {
+				String message = StringUtils.isBlank(label) ? "Required Value" : label + " is required";
+				webMessages.addMessage(fieldName, message);
+			}
+		} else {
+			if ( ! states.contains(value) ) {
+				String message = StringUtils.isBlank(label) ? "Invalid Value" : label + " is invalid";
+				webMessages.addMessage(fieldName, message);
+			}
+		}
+		
+	}
+
+	
+	public static void validateState(WebMessages webMessages, String fieldName, String value, boolean required) {
+		if (StringUtils.isBlank(value)) {
+			if (required) {
+				webMessages.addMessage(fieldName, "Required Value");
+			}
+		} else {
+			if ( ! STATE_NAMES.contains(value)) {
+				webMessages.addMessage(fieldName, "Invalid State");
+			}
+		}
+	}
+
+	/**
+	 * Validate that a string state abbreviation is a valid locale
+	 * @param conn
+	 * @param webMessages
+	 * @param fieldName
+	 * @param value
+	 * @param required
+	 * @param label
+	 * @throws Exception
+	 */
+	public static void validateStateLocale(Connection conn, WebMessages webMessages, String fieldName, String value, boolean required, String label) throws Exception {
+		if ( StringUtils.isBlank(value) ) {
+			if ( required ) {
+				String message = StringUtils.isBlank(label) ? "Required Value" : label + " is required";
+				webMessages.addMessage(fieldName, message);
+			}
+		} else {
+			Locale locale = new Locale();
+			locale.setStateName(value);
+			locale.setLocaleTypeId(LocaleType.STATE.name());
+			try {
+				locale.selectOne(conn);				
+			} catch (RecordNotFoundException e) {
+				String message = StringUtils.isBlank(label) ? "Invalid Value" : label + " is invalid";
+				webMessages.addMessage(fieldName, message);
+			}
+		}		
 	}
 
 	public static void validateString(WebMessages webMessages, String fieldName, String value, boolean required) {

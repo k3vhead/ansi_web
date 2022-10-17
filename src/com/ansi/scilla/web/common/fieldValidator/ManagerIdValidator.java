@@ -8,7 +8,6 @@ import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.User;
-import com.ansi.scilla.web.common.fieldValidator.FieldValidator;
 import com.ansi.scilla.web.common.response.MessageKey;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.utils.AppUtils;

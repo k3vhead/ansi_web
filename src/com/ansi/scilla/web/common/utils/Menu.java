@@ -20,11 +20,9 @@ public enum Menu {
 	INVOICES(			"Invoices", 			LOOKUPS, Permission.INVOICE_READ, 	"invoiceLookup.html"),
 	INVOICE_DETAIL(     "Invoice Detail",       LOOKUPS, Permission.INVOICE_READ,   "invoiceDetailLookup.html"),
 	PAYMENTS(			"Payments", 			LOOKUPS, Permission.PAYMENT_READ, 	"paymentLookup.html"),
-//	NON_DIRECT_LABOR(	"Non-Direct Labor", 	LOOKUPS, Permission.CLAIMS_READ, 	"nonDirectLaborLookup.html"),
-//	EMPLOYEE_EXPENSE(	"Employee Expense", 	LOOKUPS, Permission.CLAIMS_READ, 	"employeeExpenseLookup.html"),
-//	TICKET_STATUS(		"Ticket Status", 		LOOKUPS, Permission.CLAIMS_READ, 	"ticketStatusLookup.html"),
-//	BUDGET_CONTROL(		"Budget Control", 		LOOKUPS, Permission.CLAIMS_READ, 	"budgetControlLookup.html"),
-//	CLAIM_DETAIL(		"Claim Detail", 		LOOKUPS, Permission.CLAIMS_READ, 	"claimDetailLookup.html"),
+	LOCALE(             "Locale",               LOOKUPS, Permission.TAX_READ,       "localeLookup.html"),
+	//TAXRATE_LOOKUP(	    "Tax Rate Lookup",		LOOKUPS, Permission.TAX_READ,	    "taxRateLookup.html"),
+	//LOCALE_DIVISION(	"Nexus Taxed Lookup",	LOOKUPS, Permission.TAX_READ,		"localeDivisionLookup.html"),
 	CALL_NOTES(         "Call Notes",           LOOKUPS, Permission.CALL_NOTE_READ, "callNoteLookup.html"),
 	DOCUMENT_LOOKUP(	"Document", 			LOOKUPS, Permission.DOCUMENT_READ, "documentLookup.html"),
 	
@@ -53,10 +51,25 @@ public enum Menu {
 	BCR(                "Budget Control",       QUICK_LINKS, Permission.CLAIMS_WRITE,   "budgetControl.html"),
 	
 	
+	PAYROLL("Payroll", null, Permission.PAYROLL_READ, "#"),
+	PAYROLL_EMPLOYEE_LOOKUP("Employee Lookup",   PAYROLL,    Permission.PAYROLL_READ,   "payrollEmployeeLookup.html"),
+	PAYROLL_TIMESHEET_LOOKUP("Timesheet Lookup", PAYROLL,    Permission.PAYROLL_READ,   "payrollTimesheetLookup.html"),
+	PAYROLL_TAX_PROFILE_LOOKUP("Tax Profile Lookup", PAYROLL, Permission.PAYROLL_READ,  "payrollTaxProfileLookup.html"),
+	PAYROLL_EMPLOYEE_IMPORT("Employee Import",   PAYROLL,    Permission.PAYROLL_WRITE,  "payrollEmployeeImport.html"),
+	PAYROLL_WORKSHEET_IMPORT("Timesheet Import",   PAYROLL,    Permission.PAYROLL_WRITE,  "payrollTimesheetImport.html"),
+	PAYROLL_EXCEPTION_REPORT("Exception Report", PAYROLL,    Permission.PAYROLL_WRITE,  "payrollExceptionReport.html"),
+	PAYROLL_EXPORT("Payroll Export",             PAYROLL,    Permission.PAYROLL_WRITE,  "payrollExport.html"),
+	
+	
 	SETTINGS("Settings", null, Permission.SYSADMIN_READ,"#"),
+
+	// TAX_MAINTENANCE(	"Tax Rate Archive",		SETTINGS,	Permission.SYSADMIN_READ,	"taxRateMaintenance.html"),
 	TAX_MAINTENANCE(	"Tax Maintenance",		SETTINGS,	Permission.SYSADMIN_READ,	"taxRateMaintenance.html"),
 	CODES(				"Codes",				SETTINGS,	Permission.SYSADMIN_READ,	"codeMaintenance.html"),
 	DIVISIONS(			"Divisions",			SETTINGS,	Permission.SYSADMIN_READ,	"divisionAdmin.html"),
+	COMPANIES(          "Companies",            SETTINGS,   Permission.SYSADMIN_READ,   "companies.html"),
+	REGIONS(            "Regions",              SETTINGS,   Permission.SYSADMIN_READ,   "regions.html"),
+	DIVISION_GROUPS(    "Division Groups",      SETTINGS,   Permission.SYSADMIN_READ,   "groups.html"),
 	USER_LOOKUP(		"User Lookup",			SETTINGS,	Permission.SYSADMIN_READ,	"userLookup.html"),
 	PERMISSIONS(		"Permissions",			SETTINGS,	Permission.SYSADMIN_READ,	"permissionGroup.html"),
 	MOTD(               "Message of the Day",   SETTINGS,   Permission.SYSADMIN_WRITE,  "motd.html"),

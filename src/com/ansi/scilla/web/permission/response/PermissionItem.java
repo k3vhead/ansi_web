@@ -1,14 +1,12 @@
 package com.ansi.scilla.web.permission.response;
-import com.ansi.scilla.common.utils.Permission;
-
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import org.apache.commons.beanutils.PropertyUtils;
 
 import com.ansi.scilla.common.ApplicationObject;
-import com.ansi.scilla.common.db.PermissionGroupLevel;
 import com.ansi.scilla.common.db.PermissionLevel;
+import com.ansi.scilla.common.utils.Permission;
 
 /**
  * name and permission level response

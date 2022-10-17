@@ -70,9 +70,10 @@ public enum Permission {
 	USER_ADMIN_WRITE(USER_ADMIN_READ, true, "Add/Edit users; reset passwords"),		// this is for backwards compatibility
 	USER_ADMIN_PAYROLL(USER_ADMIN_WRITE, true, "Administer payroll info for users"),
 	
-	TAX_READ(null, false, "Read-only access to Taxes"),
-	TAX_WRITE(TAX_READ, true, "Can write and Update Taxes"),
-	TAX_OVERRIDE(TAX_WRITE, true, "Can delete Taxes"),
+	TAX(null, false, "Functional Area: Taxes"),
+	TAX_READ(TAX, false, "Read-only access to Taxes"),
+	TAX_WRITE(TAX_READ, false, "Can add to taxes and update them"),
+	TAX_OVERRIDE(TAX_WRITE, false, "Can delete taxes"),
 	
 	TECH_ADMIN(null, false, "Functional Area: Technical Admin"),
 	TECH_ADMIN_READ(TECH_ADMIN, true, "See technical system parameters"),		// this is for backwards compatibility
