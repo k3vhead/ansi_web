@@ -704,6 +704,10 @@
 										
 										if ( $data.data.webMessages != null && $data.data.webMessages.hasOwnProperty("GLOBAL_MESSAGE" )) {
 											$("#globalMsg").html( $data.data.webMessages["GLOBAL_MESSAGE"][0]).show();
+				    						if ( $("#propose-button").length > 0 ) {
+				    							// Button only exists for those with sufficient privileges
+				    							$("#propose-button").hide();
+				    						}
 										}
 										
 										QUOTEMAINTENANCE.quote = $data.data.quote;
@@ -2524,13 +2528,17 @@
 							});
 							
 						} else {
-							console.log("Update header success:");
+							console.log("Update header success 2528:");
 							console.log($data);
 							var $jobId = $data.data.quote.jobDetail.job.jobId;
 							QUOTEMAINTENANCE.joblist[$jobId] = $data.data.quote.jobDetail;
 							console.log("do something to populate the job panels here");
 							//var $destination = "#job" + $jobId + " .job-data-row";
     						//QUOTEMAINTENANCE.populateJobPanel($jobId, $destination, $data.data);
+    						if ( $("#propose-button").length > 0 ) {
+    							// Button only exists for those with sufficient privileges
+    							$("#propose-button").show();
+    						}
 							$("#globalMsg").html("Update Successful").show().fadeOut(3000);
 							$("#job-edit-modal").dialog("close");
 							
@@ -2594,7 +2602,7 @@
 							});
 							alert("Invalid input. Correct the indicated fields and resubmit");
 						} else {
-							console.log("Update header success:");
+							console.log("Update header success 2599:");
 							console.log($data);
 							QUOTEMAINTENANCE.quote = $data.data.quote;
 							QUOTEMAINTENANCE.populateQuotePanel(QUOTEMAINTENANCE.quote);
@@ -2607,6 +2615,10 @@
 		    				$("#edit-this-quote").show();
 		    				$("#quote-container .quote-button-container .save-quote").hide();
 		    				$("#quote-container .quote-button-container .cancel-edit").hide();
+    						if ( $("#propose-button").length > 0 ) {
+    							// Button only exists for those with sufficient privileges
+	   							$("#propose-button").show();
+    						}
 		    				$("#new-quote-button").show();
 		    				$("#lookup-button").show();
 						}
@@ -2946,7 +2958,7 @@
     
     
     <tiles:put name="content" type="string">
-    	<h1>Quote Maintenance</h1>
+    	<h1>Quote Maintenance</h1>    	
     	<%--
     	<div id="loading-container"><webthing:thinking style="width:100%" /></div>
     	<div style="width:1200px;">
