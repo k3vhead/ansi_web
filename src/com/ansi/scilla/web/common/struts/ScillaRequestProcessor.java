@@ -14,7 +14,7 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.RequestProcessor;
 
 import com.ansi.scilla.common.db.ApplicationProperties;
-import com.ansi.scilla.common.utils.ApplicationProperty;
+import com.ansi.scilla.common.utils.ApplicationPropertyName;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
@@ -52,7 +52,7 @@ public class ScillaRequestProcessor extends RequestProcessor {
 
 	private String makeDbName() throws Exception {
 		Connection conn = AppUtils.getDBCPConn();
-		ApplicationProperties dbNameProperty = ApplicationProperty.get(conn, ApplicationProperty.DBNAME);
+		ApplicationProperties dbNameProperty = ApplicationPropertyName.DBNAME.getProperty(conn);
 		conn.close();
 		return dbNameProperty.getValueString();
 	}
