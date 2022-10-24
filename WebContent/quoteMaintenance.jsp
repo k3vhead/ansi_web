@@ -51,7 +51,9 @@
 					jobTagTypeList : null,
 					leadTypeList : null,
 					managerList : null,
-					quote : null,					
+					quote : null,	
+					defaultDl : {},
+
 									
 					joblist : {},
 					
@@ -548,6 +550,8 @@
 		            	$("#job-edit-modal .activation input[name='job-activation-om-notes']").val(QUOTEMAINTENANCE.joblist[$jobId].job.omNotes);
 		            	$("#job-edit-modal .activation input[name='job-activation-billing-notes']").val(QUOTEMAINTENANCE.joblist[$jobId].job.billingNotes);
 	
+		            	
+	    				
 		            	// calculate DL stufff
 		            	QUOTEMAINTENANCE.previousDlPct = $("#job-edit-modal .activation input[name='job-activation-dl-pct']").val();
 		            	QUOTEMAINTENANCE.previousDlBudget = $("#job-edit-modal .activation input[name='job-activation-dl-budget']").val();
@@ -608,6 +612,10 @@
 							data: {},
 							statusCode: {
 								200:function($data) {
+									QUOTEMAINTENANCE.defaultDl = {};
+									$.each($data.data.divisionList, function($index, $div) {
+										QUOTEMAINTENANCE.defaultDl[$div.divisionId] = $div.defaultDirectLaborPct;
+									});
 									$callback($data.data);
 									QUOTEMAINTENANCE.incrementProgress("Division List");
 								},
@@ -1616,6 +1624,53 @@
 								TEXTEXPANDER.blur($("#job-edit-modal .proposal textarea[name='job-proposal-desc']"))
 							});
 							
+							$("#job-edit-modal input[name='job-activation-dl-pct']").off("focus");
+		    				$("#job-edit-modal input[name='job-activation-dl-pct']").focus(function() {
+		    					console.log("pct focus")
+		    					var $pct = $("#job-edit-modal input[name='job-activation-dl-pct']").val();
+		    					if ( $pct == null || $pct == "" ) {
+				    				var $divisionId = $("#quotePanel select[name='divisionId']").val();
+									$("#job-edit-modal input[name='job-activation-dl-pct']").val(QUOTEMAINTENANCE.defaultDl[$divisionId]); // set default DL Pct
+		    					}
+		    				});
+		    				
+		    				
+		    				// calculate DL stufff
+		    				$("#job-edit-modal .activation input[name='job-activation-dl-pct']").off("blur"); // make sure we don't do double-work
+		    				$("#job-edit-modal .activation input[name='job-activation-dl-budget']").off("blur"); // make sure we don't do double-work
+		    				QUOTEMAINTENANCE.previousDlPct = $("#job-edit-modal .activation input[name='job-activation-dl-pct']").val();
+		    				QUOTEMAINTENANCE.previousDlBudget = $("#job-edit-modal .activation input[name='job-activation-dl-budget']").val();
+			            	$("#job-edit-modal .activation input[name='job-activation-dl-pct']").blur(function($event) {
+			            		console.log("Calculate DL Stufff - dl%");
+			            		var currentDlPct = $("#job-edit-modal .activation input[name='job-activation-dl-pct']").val();
+			            		var ppc = parseFloat($("#job-edit-modal input[name='job-proposal-ppc']").val());
+			            		if ( QUOTEMAINTENANCE.previousDlPct != currentDlPct ) {
+			            			newDlBudget = (currentDlPct / 100 ) * ppc;
+			            			if ( newDlBudget != Math.floor(newDlBudget)) { // if new value is not a whole number, limit to 2 decimals
+			            				newDlBudget = newDlBudget.toFixed(2);	
+			            			}
+			            			$("#job-edit-modal .activation input[name='job-activation-dl-budget']").val(newDlBudget);
+			            			QUOTEMAINTENANCE.previousDlPct = currentDlPct;
+			            			QUOTEMAINTENANCE.previousDlBudget = newDlBudget;
+			            		}		            		
+			            	});
+			            	$("#job-edit-modal .activation input[name='job-activation-dl-budget']").blur(function($event) {
+			            		console.log("Calculate DL Stufff - dl budget");
+			            		var currentDlBudget = $("#job-edit-modal .activation input[name='job-activation-dl-budget']").val();
+			            		var ppc = parseFloat($("#job-edit-modal input[name='job-proposal-ppc']").val());
+			            		if ( QUOTEMAINTENANCE.previousDlBudget != currentDlBudget ) {
+			            			newDlPct = (currentDlBudget/ppc) * 100;
+			            			if ( newDlPct != Math.floor(newDlPct)) {    // if new value is not a whole number, limit to 2 decimals
+			            				newDlPct = newDlPct.toFixed(2);	
+			            			}
+			            			$("#job-edit-modal .activation input[name='job-activation-dl-pct']").val(newDlPct);
+			            			QUOTEMAINTENANCE.previousDlPct = newDlPct;
+			            			QUOTEMAINTENANCE.previousDlBudget = currentDlBudget;
+			            		}
+			            	});
+		    				
+		    				
+		    				
 		    				$("#job-edit-modal").dialog("open");
 		    			});
 	

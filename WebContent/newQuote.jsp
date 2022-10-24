@@ -61,6 +61,7 @@
 					managerList : null,
 					lastContactIdUsed : "",
 					lastContactNameUsed : "",
+					defaultDl : {},
 
 					// pieces of the quote that are required
 					jobSiteAddress : null,
@@ -104,7 +105,7 @@
 						NEWQUOTE.makeOptionLists();
 						NEWQUOTE.makeButtons();
 						NEWQUOTE.makeOtherClickables();
-						NEWQUOTE.getJobPanel();
+						NEWQUOTE.getJobPanel();						
 						QUOTE_PRINT.init_modal("#printQuoteDiv");
 						//QUOTE_PRINT_HISTORY.init("#printHistoryDiv", "#viewPrintHistory");
 						//$("#loading-container").hide();
@@ -158,10 +159,21 @@
 						$("#job-edit-modal input[name='job-proposal-job-nbr']").val(1);
 						$("#job-edit-modal input[name='job-activation-equipment']").val("BASIC");
 						$("#job-edit-modal select[name='job-activation-schedule']").val("auto");
+						
 	    				$("#job-edit-modal").dialog("open");
+
 	    				
+						
 	    				
-	    				
+	    				$("#job-edit-modal input[name='job-activation-dl-pct']").off("focus");
+	    				$("#job-edit-modal input[name='job-activation-dl-pct']").focus(function() {
+	    					var $pct = $("#job-edit-modal input[name='job-activation-dl-pct']").val();
+	    					if ( $pct == null || $pct == "" ) {
+			    				var $divisionId = $("#quotePanel select[name='divisionId']").val();
+								$("#job-edit-modal input[name='job-activation-dl-pct']").val(NEWQUOTE.defaultDl[$divisionId]); // set default DL Pct
+	    					}
+	    				});
+						
 	    				// calculate DL stufff
 	    				$("#job-edit-modal .activation input[name='job-activation-dl-pct']").off("blur"); // make sure we don't do double-work
 	    				$("#job-edit-modal .activation input[name='job-activation-dl-budget']").off("blur"); // make sure we don't do double-work
@@ -255,6 +267,10 @@
 							data: {},
 							statusCode: {
 								200:function($data) {
+									NEWQUOTE.defaultDl = {};
+									$.each($data.data.divisionList, function($index, $div) {
+										NEWQUOTE.defaultDl[$div.divisionId] = $div.defaultDirectLaborPct;
+									});
 									$callback($data.data);
 									NEWQUOTE.incrementProgress("Division List");
 								},
