@@ -3,6 +3,7 @@ package com.ansi.scilla.web.systemAdmin.servlet;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -63,7 +64,7 @@ public class ApplicationPropertyServlet extends AbstractServlet {
 				webMessages = validate(propertyId, value);
 
 				if ( webMessages.isEmpty() ) {
-					doUpdate(conn, propertyId, value, sessionData.getUser(), today);
+					doCrud(conn, propertyId, value, sessionData.getUser(), today);
 					conn.commit();
 					data = new AppPropertyLookupResponse( conn.createStatement() );
 					responseCode = ResponseCode.SUCCESS;
@@ -134,6 +135,54 @@ public class ApplicationPropertyServlet extends AbstractServlet {
 		return webMessages;
 	}
 
+	private void doCrud(Connection conn, String propertyId, String value, SessionUser user, Calendar today) throws InvalidValueException, ParseException, SQLException {
+		PreparedStatement ps = conn.prepareStatement("select count(*) as record_count from application_properties where property_id=?");
+		ps.setString(1, propertyId);
+		ResultSet rs = ps.executeQuery();
+		if ( rs.next() ) {
+			int count = rs.getInt("record_count");
+			if ( count == 0 ) {
+				doInsert(conn, propertyId, value, user, today);
+			} else {
+				doUpdate(conn, propertyId, value, user, today);
+			}
+		}
+		rs.close();
+		
+	}
+	
+	private void doInsert(Connection conn, String propertyId, String value, SessionUser user, Calendar today) throws InvalidValueException, ParseException, SQLException {
+		ApplicationPropertyName appPropertyName = ApplicationPropertyName.lookup(propertyId);
+		Object valueObj = null;
+		String fieldName = appPropertyName.fieldName();
+		switch ( appPropertyName.fieldName() ) {
+		case "value_int":
+			valueObj = Integer.parseInt(value);
+			break;
+		case "value_string":
+			valueObj = value;
+			break;
+		case "value_date":
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm");
+			valueObj = sdf.parse(value);
+			break;
+		case "value_float":
+			valueObj = Float.parseFloat(value);
+			break;
+		default:
+			throw new RuntimeException("All the checks should have been done before this: " + appPropertyName.fieldName());
+		}
+		PreparedStatement ps = conn.prepareStatement("insert into application_properties (property_id," + fieldName + ",added_by,added_date,updated_by,updated_date) values (?,?,?,?,?,?)");
+		ps.setString(1, propertyId);
+		ps.setObject(2, valueObj);
+		ps.setInt(3, user.getUserId());
+		ps.setDate(4, new java.sql.Date(today.getTime().getTime()));
+		ps.setInt(5, user.getUserId());
+		ps.setDate(6, new java.sql.Date(today.getTime().getTime()));
+		ps.executeUpdate();		
+	}
+
+	
 	private void doUpdate(Connection conn, String propertyId, String value, SessionUser user, Calendar today) throws InvalidValueException, ParseException, SQLException {
 		ApplicationPropertyName appPropertyName = ApplicationPropertyName.lookup(propertyId);
 		Object valueObj = null;
@@ -155,9 +204,11 @@ public class ApplicationPropertyServlet extends AbstractServlet {
 		default:
 			throw new RuntimeException("All the checks should have been done before this: " + appPropertyName.fieldName());
 		}
-		PreparedStatement ps = conn.prepareStatement("update application_properties set " + fieldName + "=? where property_id=?");
+		PreparedStatement ps = conn.prepareStatement("update application_properties set " + fieldName + "=?, updated_by=?, added_by=? where property_id=?");
 		ps.setObject(1, valueObj);
-		ps.setString(2, propertyId);
+		ps.setInt(2, user.getUserId());
+		ps.setDate(3, new java.sql.Date(today.getTime().getTime()));
+		ps.setString(4, propertyId);
 		ps.executeUpdate();
 	}
 
