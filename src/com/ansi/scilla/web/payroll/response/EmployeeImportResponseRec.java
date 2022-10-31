@@ -2,9 +2,6 @@ package com.ansi.scilla.web.payroll.response;
 
 import java.lang.reflect.InvocationTargetException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.ansi.scilla.common.db.PayrollEmployee;
 import com.ansi.scilla.common.exceptions.InvalidValueException;
 import com.ansi.scilla.common.payroll.parser.employee.EmployeeImportRecord;

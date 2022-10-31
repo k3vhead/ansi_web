@@ -1,20 +1,17 @@
 package com.ansi.scilla.web.test.payroll;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Transformer;
 
 import com.ansi.scilla.common.utils.AppUtils;
 import com.ansi.scilla.web.payroll.common.EmployeeRecord;
 import com.ansi.scilla.web.payroll.common.EmployeeRecordStatus;
-import com.ansi.scilla.web.payroll.response.EmployeeImportResponse;
 
 public class TestEmployeeFileParse {
 

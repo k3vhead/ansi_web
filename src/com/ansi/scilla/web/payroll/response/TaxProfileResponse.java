@@ -1,7 +1,6 @@
 package com.ansi.scilla.web.payroll.response;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 
 import org.apache.commons.beanutils.BeanUtils;
 

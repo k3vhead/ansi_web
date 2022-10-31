@@ -1,11 +1,5 @@
 package com.ansi.scilla.web.report.common;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.apache.commons.collections4.IterableUtils;
-import org.apache.commons.collections4.Predicate;
-
 import com.ansi.scilla.common.utils.Permission;
 
 /**
