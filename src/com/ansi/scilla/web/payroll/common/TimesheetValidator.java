@@ -14,7 +14,7 @@ import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.payroll.validator.common.PayrollErrorType;
 import com.ansi.scilla.common.payroll.validator.common.PayrollMessage;
 import com.ansi.scilla.common.payroll.validator.common.ValidatorUtils;
-import com.ansi.scilla.common.utils.ApplicationProperty;
+import com.ansi.scilla.common.utils.ApplicationPropertyName;
 import com.ansi.scilla.common.utils.ErrorLevel;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.utils.AppUtils;
@@ -133,7 +133,7 @@ public class TimesheetValidator {
 		if ( expensesSubmitted == null || expensesSubmitted.equals(0.0D)) {
 			isValid = true;
 		} else {
-			ApplicationProperties applicationProperties = ApplicationProperty.get(conn, ApplicationProperty.EXPENSE_MAX);
+			ApplicationProperties applicationProperties = ApplicationPropertyName.EXPENSE_MAX.getProperty(conn);
 			Double maxExpenseRate = applicationProperties.getValueFloat().doubleValue();
 			String displayRate = String.valueOf( maxExpenseRate* 100 ) + "%";
 			if ( expensesAllowed > (maxExpenseRate * grossPay) ) {

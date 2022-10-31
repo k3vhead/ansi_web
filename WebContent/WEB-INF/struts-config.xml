@@ -43,9 +43,9 @@
             <forward name="login" path="/login.jsp" />            
         </action>
 		<action
-            path="/applicationpropertyAdmin"
+            path="/applicationPropertiesLookup"
             type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
-            <forward name="valid" path="/applicationpropertyAdmin.jsp" />
+            <forward name="valid" path="/systemAdmin/appPropertyLookup.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
         <action

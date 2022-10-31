@@ -24,7 +24,7 @@ import com.ansi.scilla.common.payroll.parser.worksheet.PayrollWorksheetHeader;
 import com.ansi.scilla.common.payroll.validator.common.EmployeeValidation;
 import com.ansi.scilla.common.payroll.validator.common.PayrollMessage;
 import com.ansi.scilla.common.payroll.validator.common.YtdValues;
-import com.ansi.scilla.common.utils.ApplicationProperty;
+import com.ansi.scilla.common.utils.ApplicationPropertyName;
 import com.ansi.scilla.common.utils.ErrorLevel;
 import com.ansi.scilla.web.common.exception.InvalidFormatException;
 import com.ansi.scilla.web.common.request.AbstractRequest;
@@ -375,7 +375,7 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 			division.setDivisionId(divisionId);
 			division.selectOne(conn);
 	
-			ApplicationProperties maxExpenseProperty = ApplicationProperty.get(conn, ApplicationProperty.EXPENSE_MAX);
+			ApplicationProperties maxExpenseProperty = ApplicationPropertyName.EXPENSE_MAX.getProperty(conn);
 			Double maxExpenseRate = maxExpenseProperty.getValueFloat().doubleValue();
 	
 			// We're not validating name because the name is just used to get the code, and we validate the code before we get here
@@ -454,7 +454,7 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 		division.setDivisionId(divisionId);
 		division.selectOne(conn);
 
-		ApplicationProperties maxExpenseProperty = ApplicationProperty.get(conn, ApplicationProperty.EXPENSE_MAX);
+		ApplicationProperties maxExpenseProperty = ApplicationPropertyName.EXPENSE_MAX.getProperty(conn);
 		Double maxExpenseRate = maxExpenseProperty.getValueFloat().doubleValue();
 
 
