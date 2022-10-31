@@ -11,7 +11,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import com.ansi.scilla.common.payroll.common.PayrollUtils;
 import com.ansi.scilla.common.payroll.exceptions.NotATimesheetException;
 import com.ansi.scilla.common.payroll.parser.worksheet.PayrollWorksheetParser;
 import com.ansi.scilla.common.payroll.validator.common.ValidatorUtils;
@@ -37,6 +40,7 @@ public class TimesheetImportServlet extends AbstractServlet {
 
 	private static final long serialVersionUID = 1L;
 	public static final String REALM = "payroll/timesheetImport";
+	final Logger payrollLogger = LogManager.getLogger(PayrollUtils.PAYROLL_PARSER);
 		
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -62,12 +66,18 @@ public class TimesheetImportServlet extends AbstractServlet {
 					ValidatedWorksheetHeader header = HeaderValidator.validateHeader(conn, parser.getHeader());
 					
 					if ( ! header.maxErrorLevel().equals(ErrorLevel.ERROR)) {
+						payrollLogger.log(Level.DEBUG, "Validated Employees:");
 						validatedEmployees = ValidatorUtils.validatePayrollEmployees(conn, header, parser.getTimesheetRecords());
+						for ( ValidatedWorksheetEmployee e : validatedEmployees ) {
+							payrollLogger.log(Level.DEBUG, e);
+						}
 					}
 					//logger.log(Level.DEBUG, "TimesheetImportServlet: employeeMsgs = " + employeeMsgs);
 
 					ValidatedWorksheet validatedWorksheet = new ValidatedWorksheet(header, validatedEmployees);
+					payrollLogger.log(Level.DEBUG, validatedWorksheet);
 					data = new TimesheetImportResponse(conn, parser.getFileName(), validatedWorksheet);
+					payrollLogger.log(Level.DEBUG, data);
 					if ( validatedWorksheet.getHeader().maxErrorLevel().equals(ErrorLevel.WARNING) ) {
 						responseCode = ResponseCode.EDIT_WARNING;
 					} else {
