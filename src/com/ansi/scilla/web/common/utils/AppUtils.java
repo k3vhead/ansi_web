@@ -676,4 +676,26 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 		workbook.write(out);
 		out.close();
 	}
+	
+	
+	
+	
+	/**
+	 * Given a result set and metadata, create a hashmap (fieldname -> field value)
+	 * @param rs
+	 * @param rsmd
+	 * @return
+	 * @throws SQLException
+	 */
+	public static HashMap<String, Object> rs2Map(ResultSet rs, ResultSetMetaData rsmd) throws SQLException {
+		HashMap<String, Object> dataItem = new HashMap<String, Object>();
+		for ( int i = 0; i < rsmd.getColumnCount(); i++ ) {
+			int idx = i + 1;
+			String column = rsmd.getColumnName(idx);
+			Object value = rs.getObject(idx);
+			
+			dataItem.put(column, value);
+		}
+		return dataItem;
+	}
 }
