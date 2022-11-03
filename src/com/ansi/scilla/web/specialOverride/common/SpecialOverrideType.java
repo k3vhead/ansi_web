@@ -9,6 +9,7 @@ import com.ansi.scilla.common.utils.Permission;
 
 public enum SpecialOverrideType {
 	
+	
 	UPDATE_PAYMENT_DATE(
 		"Update Payment Date",
 		"select * from payment where payment_id=? and payment_date=?",

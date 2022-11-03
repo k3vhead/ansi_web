@@ -2,7 +2,7 @@ package com.ansi.scilla.web.specialOverride.response;
 
 import com.ansi.scilla.web.specialOverride.common.SpecialOverrideType;
 
-public class NameDescriptionResponseItem extends SpecialOverrideResponseItem {
+public class NameDescriptionResponseItem extends SpecialOverrideResponseItem implements Comparable<NameDescriptionResponseItem> {
 	
 	private static final long serialVersionUID = 1L;
 	String name, description;
@@ -15,6 +15,12 @@ public class NameDescriptionResponseItem extends SpecialOverrideResponseItem {
 		this();
 		this.name = type.name();
 		this.description = type.getDisplay();
+	}
+
+	public NameDescriptionResponseItem(String name, String description) {
+		super();
+		this.name = name;
+		this.description = description;
 	}
 
 	public String getName() {
@@ -31,6 +37,11 @@ public class NameDescriptionResponseItem extends SpecialOverrideResponseItem {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	@Override
+	public int compareTo(NameDescriptionResponseItem o) {
+		return this.name.compareTo(o.getName());
 	}
 	
 }

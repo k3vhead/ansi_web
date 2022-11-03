@@ -72,4 +72,15 @@ public class WebMessages extends HashMap<String, List<String>> {
 		 }
 	 }
 
+	 
+	 /**
+	  * The most common return message -- "everything worked"
+	  * 
+	  * @return
+	  */
+	 public static WebMessages makeGlobalSuccessMessage() {
+		 WebMessages webMessages = new WebMessages();
+		 webMessages.addMessage(GLOBAL_MESSAGE, "Success");
+		 return webMessages;
+	 }
 }
