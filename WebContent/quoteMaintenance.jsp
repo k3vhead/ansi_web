@@ -567,14 +567,20 @@
 		            	$("#job-edit-modal .activation input[name='job-activation-dl-budget']").blur(function($event) {
 		            		var currentDlBudget = $("#job-edit-modal .activation input[name='job-activation-dl-budget']").val();
 		            		var ppc = QUOTEMAINTENANCE.joblist[$jobId].job.pricePerCleaning;
-		            		if ( QUOTEMAINTENANCE.previousDlBudget != currentDlBudget ) {
-		            			newDlPct = (currentDlBudget/ppc) * 100;
-		            			if ( newDlPct != Math.floor(newDlPct)) {    // if new value is not a whole number, limit to 2 decimals
-		            				newDlPct = newDlPct.toFixed(2);	
-		            			}
-		            			$("#job-edit-modal .activation input[name='job-activation-dl-pct']").val(newDlPct);
-		            			QUOTEMAINTENANCE.previousDlPct = newDlPct;
+		            		if ( ppc == null || ppc == 0 ) {
+		            			$("#job-edit-modal .activation input[name='job-activation-dl-pct']").val(-1);
+		            			QUOTEMAINTENANCE.previousDlPct = -1;
 		            			QUOTEMAINTENANCE.previousDlBudget = currentDlBudget;
+		            		} else {
+			            		if ( QUOTEMAINTENANCE.previousDlBudget != currentDlBudget ) {
+			            			newDlPct = (currentDlBudget/ppc) * 100;
+			            			if ( newDlPct != Math.floor(newDlPct)) {    // if new value is not a whole number, limit to 2 decimals
+			            				newDlPct = newDlPct.toFixed(2);	
+			            			}
+			            			$("#job-edit-modal .activation input[name='job-activation-dl-pct']").val(newDlPct);
+			            			QUOTEMAINTENANCE.previousDlPct = newDlPct;
+			            			QUOTEMAINTENANCE.previousDlBudget = currentDlBudget;
+			            		}
 		            		}
 		            	});
 		            	

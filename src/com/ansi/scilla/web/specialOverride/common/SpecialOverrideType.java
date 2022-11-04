@@ -10,28 +10,29 @@ import com.ansi.scilla.common.utils.Permission;
 public enum SpecialOverrideType {
 	
 	
-	UPDATE_PAYMENT_DATE(
-		"Update Payment Date",
-		"select * from payment where payment_id=? and payment_date=?",
+	/*
+	CLAIM_ZERO_DOLLAR_TICKET(
+		"Claim $0 Ticket",
+		"select * from ticket_claim where ticket_id=? and ticket_id in "
+		+ "(select * from ticket t join division d on d.division_id = t.act_division_id and division_nbr=?)",
 		new ParameterType[] { 
-				new ParameterType("Payment Id", "payment_id", Integer.class), 
-				new ParameterType("Payment Date", "payment_date", java.sql.Date.class), 
-			},
-		"update payment set payment_date=? where payment_date=? and payment_id=?",
-		new ParameterType[] { 
-				new ParameterType("New Payment Date", "new_payment_date", java.sql.Date.class), 
-				new ParameterType("Payment Date", "payment_date", java.sql.Date.class), 
-				new ParameterType("Payment Id", "payment_id", Integer.class), 
-			},
-		"select * from payment where payment_date in (?,?) and payment_id=?",
+				new ParameterType("Ticket Id", "ticket_id", Integer.class), 
+				new ParameterType("Division Nbr", "division_nbr", Integer.class), 
+		},
+		"This needs to be verified -- asana task looks weird",
 		new ParameterType[] { 
 				new ParameterType("New Payment Date", "new_payment_date", java.sql.Date.class), 
 				new ParameterType("Payment Date", "payment_date", java.sql.Date.class), 
 				new ParameterType("Payment Id", "payment_id", Integer.class), 
-			},
-		"Success Update Payment Date",
-		Permission.PAYMENT_OVERRIDE
+		},
+		"select * from job where job_id=?",
+		new ParameterType[] { 
+				new ParameterType("Job Id", "job_id", Integer.class), 
+		},
+		"Success",
+		Permission.QUOTE_CREATE
 	),
+	*/
 	
 	UPDATE_TICKET_PAYMENT_TICKET(
 			"Update Ticket Payment Ticket",

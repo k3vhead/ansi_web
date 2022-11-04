@@ -402,12 +402,17 @@ public class TicketOverrideServlet extends TicketServlet {
 		
 
 		if ( values.containsKey(FIELDNAME_DL_AMT) ) {
+			double actualPPC = ticket.getActPricePerCleaning().doubleValue();			
 			try {
-				String value = values.get(FIELDNAME_DL_AMT);
-				Double dlAmt = Double.valueOf(value);
-				ticket.setActDlAmt(new BigDecimal(dlAmt));
-				Double actDlPct = dlAmt / ticket.getActPricePerCleaning().doubleValue();
-				ticket.setActDlPct( new BigDecimal( actDlPct * 100.0D ) );
+				if ( actualPPC == 0.0D ) {
+					ticket.setActDlPct( new BigDecimal( -1.0D ) );
+				} else {
+					String value = values.get(FIELDNAME_DL_AMT);
+					Double dlAmt = Double.valueOf(value);
+					ticket.setActDlAmt(new BigDecimal(dlAmt));
+					Double actDlPct = dlAmt / ticket.getActPricePerCleaning().doubleValue();
+					ticket.setActDlPct( new BigDecimal( actDlPct * 100.0D ) );
+				}
 				
 				success = true;
 				message = MESSAGE_SUCCESS;
