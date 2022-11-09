@@ -133,6 +133,9 @@
     				$("input[name='goButton']").click(function($event) {
     					JOBNOTELOOKUP.doSelectChange()
     				});
+    				$("input[name='notesOnly']").click(function($event) {
+    					JOBNOTELOOKUP.doSelectChange()
+    				});
     			},
         		
         		
@@ -165,9 +168,11 @@
         			
         			var $divisionId = $("select[name='divisionId']").val();
 					var $startMonth = $("select[name='startMonth']").val();
+					var $notesOnly = $("input[name='notesOnly']").prop("checked");
 					var $outbound = {
 						"divisionId":$divisionId,
-						"startMonth":$startMonth,						
+						"startMonth":$startMonth,
+						"notesOnly":$notesOnly,
 					};
             		JOBNOTELOOKUP.dataTable = $('#jobnote-lookup-table').DataTable( {
             			"aaSorting":		[[1,'asc']],
@@ -282,7 +287,8 @@
     	<option value=""></option>
     	<webthing:monthSelect />
     	</select>
-    	<input type="button" value="Go" name="goButton" />
+    	<input type="button" value="Go" name="goButton" /><br />
+    	<input type="checkbox" name="notesOnly" /><span class="label">Notes Only</span>
     	
     	
 	 	<webthing:lookupFilter filterContainer="filter-container" />

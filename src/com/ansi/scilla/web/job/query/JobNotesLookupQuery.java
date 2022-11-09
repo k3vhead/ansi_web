@@ -41,8 +41,8 @@ public class JobNotesLookupQuery extends LookupQuery {
 			TicketDRVQuery.INVOICE_STYLE	
 	};
 
-	public JobNotesLookupQuery(Integer userId, List<SessionDivision> divisionList, Integer divisionId, Integer startMonth, Integer startYear, Boolean includeBilling) throws Exception {
-		super(makeSelectClause(includeBilling), TicketDRVQuery.SQL_FROM_CLAUSE, TicketDRVQuery.SQL_WHERE_CLAUSE);		
+	public JobNotesLookupQuery(Integer userId, List<SessionDivision> divisionList, Integer divisionId, Integer startMonth, Integer startYear, Boolean notesOnly, Boolean includeBilling) throws Exception {
+		super(makeSelectClause(includeBilling), TicketDRVQuery.SQL_FROM_CLAUSE, makeBaseWhereClause(notesOnly, includeBilling));		
 		this.logger = LogManager.getLogger(this.getClass());
 		this.userId = userId;
 		this.startMonth = startMonth;
@@ -50,8 +50,8 @@ public class JobNotesLookupQuery extends LookupQuery {
 		super.setBaseFilterValue(Arrays.asList( new Object[] {startMonth, startYear, divisionId}));
 	}
 	
-	public JobNotesLookupQuery(Integer userId, List<SessionDivision> divisionList, Integer divisionId, Integer startMonth, Integer startYear, Boolean includeBilling, String searchTerm) throws Exception {
-		this(userId, divisionList, divisionId, startMonth, startYear, includeBilling);
+	public JobNotesLookupQuery(Integer userId, List<SessionDivision> divisionList, Integer divisionId, Integer startMonth, Integer startYear, Boolean notesOnly, Boolean includeBilling, String searchTerm) throws Exception {
+		this(userId, divisionList, divisionId, startMonth, startYear, notesOnly, includeBilling);
 		this.searchTerm = searchTerm;
 	}
 	
@@ -83,6 +83,17 @@ public class JobNotesLookupQuery extends LookupQuery {
 		return selectClause + "\n";
 	}
 
+
+	private static String makeBaseWhereClause(Boolean notesOnly, Boolean includeBilling) {
+		String whereClause = "";
+		if ( notesOnly ) {
+			whereClause = " job.om_notes is not null or job.washer_notes is not null ";
+			if ( includeBilling ) {
+				whereClause = whereClause + " or job.billing_notes is not null ";
+			}
+		}
+		return StringUtils.isBlank(whereClause) ? TicketDRVQuery.SQL_WHERE_CLAUSE : TicketDRVQuery.SQL_WHERE_CLAUSE + " and (" + whereClause + ")\n";
+	}
 
 	@Override
 	protected String makeOrderBy(SelectType selectType) {

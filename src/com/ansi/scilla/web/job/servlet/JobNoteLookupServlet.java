@@ -33,6 +33,7 @@ public class JobNoteLookupServlet extends AbstractLookupServlet {
 	public static final String REALM = "jobNoteLookup";
 	public static final String FIELD_DIVISION_ID = "divisionId";
 	public static final String FIELD_START_MONTH = "startMonth";
+	public static final String FIELD_NOTES_ONLY = "notesOnly";
 	
 	private static final String DATE_FORMAT = "MM/dd/yyyy"; 
 	
@@ -72,6 +73,8 @@ public class JobNoteLookupServlet extends AbstractLookupServlet {
 			// includeBilling stays false
 		}
 		
+		String notesParm = request.getParameter(FIELD_NOTES_ONLY);
+		boolean notesOnly = (! StringUtils.isBlank(notesParm)) && notesParm.equalsIgnoreCase("true");
 		SessionUser user = sessionData.getUser();
 		List<SessionDivision> divisionList = sessionData.getDivisionList();
 		try {
@@ -100,7 +103,7 @@ public class JobNoteLookupServlet extends AbstractLookupServlet {
 				if(request.getParameter("search[value]") != null){
 					searchTerm = request.getParameter("search[value]");
 				}
-				LookupQuery lookupQuery = new JobNotesLookupQuery(user.getUserId(), divisionList, divisionId, startMonth, startYear, includeBilling);
+				LookupQuery lookupQuery = new JobNotesLookupQuery(user.getUserId(), divisionList, divisionId, startMonth, startYear, notesOnly, includeBilling);
 				if ( searchTerm != null ) {
 					lookupQuery.setSearchTerm(searchTerm);
 				}
