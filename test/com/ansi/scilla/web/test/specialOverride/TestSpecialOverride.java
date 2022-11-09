@@ -26,7 +26,7 @@ public class TestSpecialOverride {
 			java.sql.Date oldPaymentDate = new java.sql.Date(new GregorianCalendar(2019, Calendar.AUGUST, 10).getTimeInMillis());
 			java.sql.Date newPaymentDate = new java.sql.Date(new GregorianCalendar(2019, Calendar.AUGUST, 11).getTimeInMillis());
 			
-			PreparedStatement ps = conn.prepareStatement(SpecialOverrideType.UPDATE_PAYMENT_DATE.getSelectSql());
+			PreparedStatement ps = conn.prepareStatement(SpecialOverrideType.UPDATE_PAYMENT_AMOUNT.getSelectSql());
 			ps.setInt(1, paymentId);
 			ps.setDate(2, oldPaymentDate);
 			

@@ -597,6 +597,14 @@
 		<url-pattern>/job/*</url-pattern>
 	</servlet-mapping>
 
+	<servlet>
+		<servlet-name>jobTrafficCop</servlet-name>
+		<servlet-class>com.ansi.scilla.web.job.servlet.JobsServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>jobTrafficCop</servlet-name>
+		<url-pattern>/jobInfo/*</url-pattern>
+	</servlet-mapping>
 
 	<servlet>
 		<servlet-name>jobSchedule</servlet-name>

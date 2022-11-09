@@ -16,6 +16,7 @@ public enum Menu {
 	JOBS_PAC(			"Jobs (PAC)", 			LOOKUPS, Permission.QUOTE_READ,		"jobLookup.html?type=PAC"),
 	JOBS_CONTACT(		"Jobs (Contact)", 		LOOKUPS, Permission.QUOTE_READ,		"jobLookup.html?type=CONTACT"),
 	JOBTAGS(			"Job Tags", 			LOOKUPS, Permission.QUOTE_READ,		"jobTagLookup.html"),
+	JOB_NOTE_LOOKUP(    "Job Notes",            LOOKUPS, Permission.QUOTE_READ,     "jobNoteLookup.html"),
 	TICKETS(			"Tickets", 				LOOKUPS, Permission.TICKET_READ,	"ticketLookup.html"),
 //	TICKET_ASSIGNMENT(	"Ticket Assignments",	LOOKUPS, Permission.TICKET_READ,	"ticketAssignmentLookup.html"),
 	INVOICES(			"Invoices", 			LOOKUPS, Permission.INVOICE_READ, 	"invoiceLookup.html"),

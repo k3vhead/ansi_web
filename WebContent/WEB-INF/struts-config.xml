@@ -290,6 +290,13 @@
         </action>
      	
         <action
+            path="/jobNoteLookup"
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction"
+            scope="request">
+            <forward name="valid" path="/jobs/jobNoteLookup.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+        <action
             path="/jobTagLookup"
             type="com.ansi.scilla.web.common.action.SessionPageDisplayAction"
             scope="request">

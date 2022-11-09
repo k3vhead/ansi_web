@@ -25,7 +25,7 @@ public class TestSQLParse {
 		
 //		SpecialOverrideType type = SpecialOverrideType.UNCOMPLETE_TICKET;
 //		request.put("ticket_id","811790");
-		SpecialOverrideType type = SpecialOverrideType.UPDATE_PAYMENT_DATE;
+		SpecialOverrideType type = SpecialOverrideType.UPDATE_PAYMENT_AMOUNT;
 		request.put("payment_id", "49907");
 		request.put("payment_date", "2020-01-10");
 		request.put("new_payment_date", "2020-01-09");

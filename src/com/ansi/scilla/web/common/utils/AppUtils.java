@@ -331,6 +331,7 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 	}
 
 	
+	
 
 
 	public static String getRandomQuote() {
