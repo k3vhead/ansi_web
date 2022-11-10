@@ -23,7 +23,7 @@ public class TestJobNoteLookup {
 		try {
 			conn = AppUtils.getDevConn();
 			List<SessionDivision> divList = TesterUtils.makeSessionDivisionList(conn, 5);
-			JobNotesLookupQuery query = new JobNotesLookupQuery(5,divList, 103, 11, 2022);
+			JobNotesLookupQuery query = new JobNotesLookupQuery(5,divList, 103, 11, 2022, true, true);
 			query.setSearchTerm("");
 			System.out.println("Count all: " + query.countAll(conn));
 		} finally {
