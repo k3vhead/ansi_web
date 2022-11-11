@@ -1,11 +1,17 @@
 package com.ansi.scilla.web.contact.servlet;
 
 import java.sql.Connection;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.collections4.Transformer;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Level;
+
+import com.ansi.scilla.common.contact.ContactStatus;
 import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.common.query.LookupQuery;
 import com.ansi.scilla.web.common.servlet.AbstractLookupServlet;
@@ -21,7 +27,8 @@ public class ContactLookupServlet extends AbstractLookupServlet {
 	private static final long serialVersionUID = 1L;
 	
 	public static final String REALM = "contactLookup";
-	public static final String START_TIME = "start_time";
+	public static final String STATUS_DISPLAY = "status_display";
+	public static final String FIELD_VALID_ONLY = "validOnly";
 	
 	
 	public ContactLookupServlet() {
@@ -34,8 +41,9 @@ public class ContactLookupServlet extends AbstractLookupServlet {
 				ContactLookupQuery.EMAIL,
 				ContactLookupQuery.FAX,
 				ContactLookupQuery.MOBILE_PHONE,
+				ContactLookupQuery.CONTACT_STATUS,
 				};
-//		super.itemTransformer = new ItemTransformer();
+		super.itemTransformer = new ItemTransformer();
 	}
 
 
@@ -55,7 +63,11 @@ public class ContactLookupServlet extends AbstractLookupServlet {
 			if(request.getParameter("search[value]") != null){
 				searchTerm = request.getParameter("search[value]");
 			}
-			ContactLookupQuery lookupQuery = new ContactLookupQuery(user.getUserId(), divisionList);
+			String validParm = request.getParameter(FIELD_VALID_ONLY);
+			Boolean validOnly = StringUtils.isBlank(validParm) || ! validParm.equalsIgnoreCase("false"); // if there's any doubt, go valid only
+			logger.log(Level.DEBUG, "Valid Only: [" + validParm + "][" + validOnly + "]");
+					
+			ContactLookupQuery lookupQuery = new ContactLookupQuery(user.getUserId(), divisionList, validOnly);
 			if ( searchTerm != null ) {
 				lookupQuery.setSearchTerm(searchTerm);
 			}
@@ -68,21 +80,20 @@ public class ContactLookupServlet extends AbstractLookupServlet {
 
 
 
-//	public class ItemTransformer implements Transformer<HashMap<String, Object>, HashMap<String, Object>> {
-//
-//		private final SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
-//		@Override
-//		public HashMap<String, Object> transform(HashMap<String, Object> arg0) {
-//			Timestamp startTime = (Timestamp)arg0.get(START_TIME);
-//			String display = "XXX";
-//			if ( startTime != null ) {
-//				display = sdf.format(startTime);
-//				arg0.put(START_TIME, display);
-//			}
-//			return arg0;
-//		}
-//		
-//	}
+	public class ItemTransformer implements Transformer<HashMap<String, Object>, HashMap<String, Object>> {
+
+		@Override
+		public HashMap<String, Object> transform(HashMap<String, Object> arg0) {
+			String statusDisplay = null;
+			if ( arg0.containsKey(ContactLookupQuery.CONTACT_STATUS) ) {
+				statusDisplay = ContactStatus.valueOf((String)arg0.get(ContactLookupQuery.CONTACT_STATUS)).display();				
+			}
+			arg0.put(STATUS_DISPLAY, statusDisplay);
+					
+			return arg0;
+		}
+		
+	}
 
 
 	

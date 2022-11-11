@@ -3,9 +3,13 @@ package com.ansi.scilla.web.contact.query;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 
+import com.ansi.scilla.common.contact.ContactStatus;
+import com.ansi.scilla.common.db.Contact;
 import com.ansi.scilla.common.queries.SelectType;
+import com.ansi.scilla.common.utils.AppUtils;
 import com.ansi.scilla.web.common.query.LookupQuery;
 import com.ansi.scilla.web.common.struts.SessionDivision;
 
@@ -18,11 +22,14 @@ public class ContactLookupQuery extends LookupQuery {
 	public static final String MOBILE_PHONE = "mobile_phone";
 	public static final String PREFERRED_CONTACT = "preferred_contact";
 	public static final String EMAIL = "email";
+	public static final String CONTACT_STATUS = "contact_status";
 	
 
 
 	
 	private static final long serialVersionUID = 1L;
+	
+	private boolean validOnly = true;
 
 	
 	private static final String sqlSelectClause = 
@@ -32,30 +39,43 @@ public class ContactLookupQuery extends LookupQuery {
 			+ FIRST_NAME + ", "
 			+ LAST_NAME + ", "
 			+ MOBILE_PHONE + ", "
+			+ CONTACT_STATUS + ", "
 			+ PREFERRED_CONTACT + ", "
 			+ EMAIL + " ";
 		
 
 	private static final String sqlFromClause = 
-			"from contact"; 			
+			"from " + AppUtils.makeTableName(Contact.class); 			
 
-	private static final String baseWhereClause = "";
+	private static final String sqlBaseWhereClause = "";
 	
 	
 	
-	public ContactLookupQuery(Integer userId, List<SessionDivision> divisionList) {
-		super(sqlSelectClause, sqlFromClause, baseWhereClause);
+	public ContactLookupQuery(Integer userId, List<SessionDivision> divisionList, Boolean validOnly) {
+		super(sqlSelectClause, sqlFromClause, makeBaseWhereClause(validOnly));
 		this.logger = LogManager.getLogger(this.getClass());
+		logger.log(Level.DEBUG, "Valid Only: " + validOnly);
 		this.userId = userId;	
+		this.validOnly = validOnly;
 	}
-
-	public ContactLookupQuery(Integer userId, List<SessionDivision> divisionList, String searchTerm) {
-		this(userId, divisionList);
+		
+	public ContactLookupQuery(Integer userId, List<SessionDivision> divisionList, Boolean validOnly, String searchTerm) {
+		this(userId, divisionList, validOnly);
 		this.searchTerm = searchTerm;
 	}
 
-	
-	
+	public boolean isValidOnly() {
+		return validOnly;
+	}
+	public void setValidOnly(boolean validOnly) {
+		this.validOnly = validOnly;
+	}
+
+	private static String makeBaseWhereClause(Boolean validOnly) {
+		String contact = AppUtils.makeTableName(Contact.class);
+		return validOnly ? "where "+contact+".contact_status='" + ContactStatus.VALID.name() +"'" : sqlBaseWhereClause;
+	}
+
 	@Override
 	protected String makeOrderBy(SelectType selectType) {
 		String orderBy = "";
@@ -101,15 +121,18 @@ public class ContactLookupQuery extends LookupQuery {
 
 	
 	protected String makeWhereClause(String queryTerm) {
-		String whereClause = "";
+		String whereClause = makeBaseWhereClause(this.validOnly);
 		if (! StringUtils.isBlank(queryTerm)) {
-			whereClause = "where business_phone like '%" + queryTerm + "%' "
+			queryTerm = queryTerm.toLowerCase();
+			String connector = StringUtils.isBlank(whereClause) ? " where " : " and ";
+			whereClause = whereClause + connector + " (business_phone like '%" + queryTerm + "%' "
 				+ " OR fax like '%" + queryTerm + "%'"
 				+ " OR lower(concat(first_name,' ',last_name)) like '%" + queryTerm + "%'"
 				+ " OR lower(concat(last_name,' ',first_name)) like '%" + queryTerm + "%'"
 				+ " OR lower(concat(last_name,', ',first_name)) like '%" + queryTerm + "%'"
-				+ " OR mobile_phone like '%" + queryTerm + "%'" //see if we can concatinate phone number to only numerals, eliminating "-"s. 
-				+ " OR lower(email) like '%" + queryTerm + "%'";
+				+ " OR lower(contact_status) like '%" + queryTerm + "%'"
+				+ " OR mobile_phone like '%" + queryTerm + "%'" //see if we can concatenate phone number to only numerals, eliminating "-"s. 
+				+ " OR lower(email) like '%" + queryTerm + "%')";
 		}
 		return whereClause;
 	}

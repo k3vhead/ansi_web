@@ -34,6 +34,7 @@ public class ContactRequest extends AbstractRequest {
 	public static final String LAST_NAME = "lastName";
 	public static final String MOBILE_PHONE = "mobilePhone";
 	public static final String PREFERRED_CONTACT = "preferredContact";
+	public static final String CONTACT_STATUS = "contactStatus";
 
 	private String businessPhone;
 	private Integer contactId;
@@ -43,6 +44,7 @@ public class ContactRequest extends AbstractRequest {
 	private String lastName;
 	private String mobilePhone;
 	private String preferredContact;
+	private String contactStatus;
 	
 	public ContactRequest() {
 		super();
@@ -122,6 +124,15 @@ public class ContactRequest extends AbstractRequest {
 
 	public void setPreferredContact(String preferredContact) {
 		this.preferredContact = preferredContact;
+	}
+	@RequiredForAdd
+	@RequiredForUpdate
+	public String getContactStatus() {
+		return contactStatus;
+	}
+
+	public void setContactStatus(String contactStatus) {
+		this.contactStatus = contactStatus;
 	}
 
 	public boolean isValidPreferredContact(Connection conn) throws Exception {

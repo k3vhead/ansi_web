@@ -60,7 +60,10 @@
 			}
 			.editAction {
 				cursor:pointer;
-			}
+			}			
+			.hideMe { 
+				display:none;
+			}			
 			.swap-name {
 				cursor:pointer;
 			}
@@ -71,19 +74,15 @@
         $(document).ready(function(){
         	
 	        ;CONTACTMAINTENANCE = {
+				validOnly : true,
+				validClass : "green far fa-check-square",  //<i class="showContact green far fa-check-square"></i><i class="showContact hideMe red fas fa-ban">
 				
 	    		init : function() {	
 	    			CALLNOTE.init();
-	    		//	CONTACTMAINTENANCE.clearAddForm();
-	    			//CONTACTMAINTENANCE.clearEditForm();
 	    			CONTACTMAINTENANCE.createTable();
 	    			CONTACTMAINTENANCE.getOptions();
-	    		//	CONTACTMAINTENANCE.getTableFieldList(null, $("#addForm select[name='tableName']"));
-	    		//	CONTACTMAINTENANCE.makeAddForm();
 	    			CONTACTMAINTENANCE.makeEditPanel();
 	    			CONTACTMAINTENANCE.makeClickFunctions();
-	    		//	CONTACTMAINTENANCE.makeDeleteModal();
-	    			CONTACTMAINTENANCE.showNew();
 	        		},
 				
 				makeClickFunctions : function () { 				
@@ -92,26 +91,27 @@
 						$("#editPanel input[name='firstName']").val(  $("#editPanel input[name='lastName']").val()  );
 						$("#editPanel input[name='lastName']").val($tempName);
 					});	
-					
-				},
-					
-				showNew : function () {					
 					$(".showNew").click(function($event) {
-						console.log("showNew");
 						$('#goEdit').data("contactId",null);
 		        		$('#goEdit').button('option', 'label', 'Save');
 		        		$('#closeEditPanel').button('option', 'label', 'Close');
 		        		
+		        		$("#editPanel .contactId").html("");
 						$("#editPanel input[name='businessPhone']").val("");
 						$("#editPanel input[name='fax']").val("");
 						$("#editPanel input[name='firstName']").val("");
 						$("#editPanel input[name='lastName']").val("");
 						$("#editPanel input[name='mobilePhone']").val("");
-						$("#editPanel input[name='preferredContact']").val("email");
+						$("#editPanel select[name='preferredContact']").val("email");
 						$("#editPanel input[name='email']").val("");			        		
+						$("#editPanel select[name='contactStatus']").val("");
 		        		$("#editPanel .err").html("");
 		        		$("#editPanel").dialog("open");
 					});
+				},
+					
+				showNew : function () {					
+					$(".showNew").click();
 				},
 	
 				
@@ -125,7 +125,6 @@
 						data:$outbound,
 						statusCode: {
 							200: function($data) {
-								//console.log($data);
 								$select="#editPanel select[name='preferredContact']"
 								$('option', $select).remove();
 								$.each($data.data.codeList, function($index, $code) {
@@ -148,6 +147,9 @@
 	    		
 	    		
 	    		createTable : function() {
+	    			console.log("createTable");
+	    			var $outbound = {"validOnly":CONTACTMAINTENANCE.validOnly};
+
 	    			CONTACTMAINTENANCE.dataTable = $('#contactTable').DataTable( {
 	        			"processing": 		true,
 	        	        "serverSide": 		true,
@@ -157,13 +159,32 @@
 	        	        "scrollX": 			true,
 	        	        rowId: 				'dt_RowId',
 	        	        dom: 				'Bfrtip',
+	        	        destroy:			true,
 	        	        "searching": 		true,
 	        	        lengthMenu: [
 	        	        	[ 10, 50, 100, 500, 1000 ],
 	        	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ]
 	        	        ],
 	        	        buttons: [
-	        	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();}}
+	        	        	'pageLength',
+	        	        	'copy', 
+	        	        	'csv', 
+	        	        	'excel', 
+	        	        	{extend: 'pdfHtml5', orientation: 'landscape'}, 
+	        	        	'print',
+	        	        	{extend: 'colvis',	label: function () {doFunctionBinding();}},
+	        	        	{
+	        	        		text:'Valid Only <i class="'+CONTACTMAINTENANCE.validClass+'"></i>',
+	        	        		action: function(e, dt, node, config) {	        	        			
+	        	        			CONTACTMAINTENANCE.swapTable()
+	        	        		}
+	        	        	},
+	        	        	{
+	        	        		text:'New',
+	        	        		action: function(e, dt, node, config) {
+	        	        			CONTACTMAINTENANCE.showNew();
+	        	        		}
+	        	        	}
 	        	        ],
 	        	        "columnDefs": [
 	//         	            { "orderable": false, "targets": -1 },  // Need to re-add this when we add the action column back in
@@ -174,7 +195,8 @@
 	        	        "paging": true,
 				        "ajax": {
 				        	"url": "contactLookup",
-				        	"type": "GET"
+				        	"type": "GET",
+				        	"data": $outbound
 				        	},
 				        columns: [
 				        	
@@ -225,6 +247,7 @@
 				            	}
 			            		return (value);
 				            } },
+				            { title: "Status", "defaultContent":"<i>N/A</i>", searchable:true, searchFormat:"VALID|INVALID", data:"status_display"},
 				            {width: "4%", title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {				            	
 				            	{
 				            		var $editLink = '<ansi:hasPermission permissionRequired="CONTACT_WRITE"><span class="editAction" data-id="'+ row.contact_id + '" /><webthing:edit>Edit</webthing:edit></span></ansi:hasPermission>';
@@ -234,7 +257,6 @@
 				            } }
 				            ],
 				            "initComplete": function(settings, json) {
-				            	//console.log(json);
 				            	//CONTACTMAINTENANCE.doFunctionBinding();
 				            	var myTable = this;
 				            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#contactTable", CONTACTMAINTENANCE.createTable);
@@ -245,7 +267,6 @@
 				            	
 				            	$(".editAction").off("click");
 				            	$( ".editAction" ).on("click", function($clickevent) {
-									console.log("click edit");
 									CONTACTMAINTENANCE.showEdit($clickevent);
 								});
 				            }
@@ -283,6 +304,20 @@
 				},
 				
 				
+				swapTable : function() {
+					console.log("swapTable");
+					CONTACTMAINTENANCE.validOnly = ! CONTACTMAINTENANCE.validOnly;
+					//<i class="showContact green far fa-check-square"></i><i class="showContact hideMe red fas fa-ban">
+					if ( CONTACTMAINTENANCE.validOnly ) {
+						CONTACTMAINTENANCE.validClass = "green far fa-check-square";
+					} else {
+						CONTACTMAINTENANCE.validClass = "red fas fa-ban";
+					}
+					CONTACTMAINTENANCE.createTable();
+				},
+				
+				
+				
 				updateContact : function () {
 					console.debug("Updating contact");
 					var $contactId = $("#goEdit").data("contactId");
@@ -303,7 +338,8 @@
 					$outbound['lastName'] = $("#editPanel input[name='lastName']").val();
 					$outbound['mobilePhone'] = $("#editPanel input[name='mobilePhone']").val();
 					$outbound['preferredContact'] = $("#editPanel select[name='preferredContact'] option:selected").val();
-					$outbound['email'] = $("#editPanel input[name='email']").val();			        		
+					$outbound['email'] = $("#editPanel input[name='email']").val();	
+					$outbound['contactStatus'] = $("#editPanel select[name='contactStatus']").val();
 					console.debug($outbound);
 					
 					var jqxhr = $.ajax({
@@ -367,7 +403,8 @@
 								$("#editPanel input[name='lastName']").val($contact.lastName);
 								$("#editPanel input[name='mobilePhone']").val($contact.mobilePhone);
 								$("#editPanel input[name='preferredContact']").val($contact.preferredContact);
-								$("#editPanel input[name='email']").val($contact.email);			        		
+								$("#editPanel input[name='email']").val($contact.email);		
+								$("#editPanel select[name='contactStatus']").val($contact.contactStatus);
 				        		$("#editPanel .err").html("");
 				        		$("#editPanel").dialog("open");
 							},
@@ -395,10 +432,11 @@
    <tiles:put name="content" type="string">
     	<h1><bean:message key="page.label.contact" /> <bean:message key="menu.label.lookup" /></h1>
     	<webthing:lookupFilter filterContainer="filter-container" />
-   	    <input type="button" class="prettyWideButton showNew" value="New" />
- 		<table id="contactTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:800px;width:800px;">       	
-	    </table>
-	    <input type="button" class="prettyWideButton showNew" value="New" />
+   	    <div id="table-container" style="max-width:1200px;width:1200px;">
+	 		<table id="contactTable"> <!-- style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:800px;width:800px;"> -->        	
+		    </table>
+		    <input type="button" class="prettyWideButton showNew" value="New" />
+	    </div>
 	    
 	    <webthing:scrolltop />
     
@@ -443,6 +481,16 @@
 	    			<td><span class="formHdr">Preferred Contact</span></td>
 	    			<td><select name="preferredContact"></select></td>
 	    			<td><span class="err" id="preferredContactErr"></span></td>
+	    		</tr> 
+	    		<tr>
+	    			<td><span class="formHdr">Status</span></td>
+	    			<td>
+	    				<select name="contactStatus">
+	    				<option value=""></option>
+	    				<webthing:contactStatus />
+	    				</select>
+	    			</td>
+	    			<td><span class="err" id="contactStatusErr"></span></td>
 	    		</tr>    		
 	    	</table>
 	    </div>
