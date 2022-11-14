@@ -617,44 +617,8 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 	 * @throws NotAllowedException
 	 * @throws ExpiredLoginException
 	 */
-	@Deprecated
-	public static SessionData validateSession(HttpServletRequest request, Permission requiredPermission, Integer requiredLevel) throws TimeoutException, NotAllowedException, ExpiredLoginException {
-		HttpSession session = null;
-		SessionData sessionData = null;
-		try {
-			session = request.getSession();
-			sessionData = (SessionData)session.getAttribute(SessionData.KEY);			
-		} catch ( Exception e ) {
-			logBadRequestSession(request);
-			throw new RuntimeException(e);
-		}
-		
-		// check for login
-		if ( sessionData == null || sessionData.getUser() == null ) {
-			throw new TimeoutException();
-		} 
-		
-		// check for superuser, or that user has permission
-		SessionUser user = sessionData.getUser();
-		if ( ! user.getSuperUser().equals(User.SUPER_USER_IS_YES)) {
-			boolean isAllowed = false;
-			for ( UserPermission userPermission : sessionData.getUserPermissionList()) {
-				Permission myPermission = Permission.valueOf(userPermission.getPermissionName());
-				if ( myPermission.equals(requiredPermission)) {
-					isAllowed = true;
-//					if ( userPermission.getLevel() >= requiredLevel ) {
-//						isAllowed = true;
-//					}
-				}
-			}
-			if ( ! isAllowed ) {
-	            throw new NotAllowedException();
-	        }
-		}
-		
-		return sessionData;
-	}
 	
+
 	
 	/**
 	 * Validate that a user is logged in, and is allowed to be where he's trying to go
