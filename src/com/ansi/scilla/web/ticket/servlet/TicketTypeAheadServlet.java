@@ -18,7 +18,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.ApplicationObject;
-import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.common.utils.Permission;
@@ -95,7 +94,7 @@ public class TicketTypeAheadServlet extends AbstractServlet {
 
 	private void processRequest(Connection conn, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		String term = request.getParameter("term");
-		AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+		AppUtils.validateSession(request, Permission.TICKET_READ);
 
 		if ( StringUtils.isBlank(term)) {
 			super.sendNotFound(response);

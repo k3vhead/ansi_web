@@ -460,25 +460,21 @@
     			        			}
     			        		},
     			        		{ title: "Minimum Hourly", width:"5%", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
+									var $value = $unknown;
        			        			if(row.minimum_hourly_pay != null){
-       			        			//{return "$" + (parseFloat(row.minimum_hourly_pay).toFixed(2));}
-       			        			
-        			        			//{return "$" + (parseFloat(row.expenses_submitted).toFixed(2));}
-        			        			//if(row.direct_labor != null){
-        			        				var $value = "$" + (parseFloat(row.minimum_hourly_pay).toFixed(2));
-        			        				var $bubbleHelp = []
-        			        				if ( row.under_union_min_pay != null && row.under_union_min_pay == 1 ) {
-        			        					$bubbleHelp.push("Under Union Min");
-        			        				}
-        			        				if ( row.under_govt_min_pay != null && row.under_govt_min_pay == 1 ) {
-        			        					$bubbleHelp.push("Under Govt Min");
-        			        				}
-        			        				if ( $bubbleHelp.length > 0 ) {
-    			        						$value = EXCEPTION_REPORT.makeItRed($value, $bubbleHelp);
-        			        				}
-
-        			        				return $value;
-        			        			}
+										var $value = "$" + (parseFloat(row.minimum_hourly_pay).toFixed(2));
+										var $bubbleHelp = []
+										if ( row.under_union_min_pay != null && row.under_union_min_pay == 1 ) {
+											$bubbleHelp.push("Under Union Min");
+										}
+										if ( row.under_govt_min_pay != null && row.under_govt_min_pay == 1 ) {
+											$bubbleHelp.push("Under Govt Min");
+										}
+										if ( $bubbleHelp.length > 0 ) {
+											$value = EXCEPTION_REPORT.makeItRed($value, $bubbleHelp);
+										}
+									}
+									return $value;
     			        		} },
     			        		{ title: "Under Govt Min", width:"5%", searchable:true, searchFormat: "0|1", "defaultContent": "",
     			        		data:function(row, type, set) {

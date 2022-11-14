@@ -13,7 +13,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.web.code.response.TableFieldListResponse;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
@@ -35,7 +34,7 @@ public class TableFieldListServlet extends AbstractServlet {
 		try {
 			conn = AppUtils.getDBCPConn();
 //			conn = AppUtils.getConn();
-			AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+			AppUtils.validateSession(request, Permission.SYSADMIN_READ);
 
 			List<String> resultList = doGetWork(conn, request.getRequestURI());			
 			TableFieldListResponse tableFieldListResponse = new TableFieldListResponse( resultList);
