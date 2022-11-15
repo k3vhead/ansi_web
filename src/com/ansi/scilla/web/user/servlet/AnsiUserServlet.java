@@ -58,9 +58,10 @@ public class AnsiUserServlet extends AbstractServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 
 		try {
-			AppUtils.validateSession(request);
+			AppUtils.validateSession(request, Permission.USER_ADMIN_READ);
+			//AppUtils.validateSession(request);
 			doGetWork(request, response);
-		} catch (TimeoutException e) {
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
 			super.sendForbidden(response);
 		}
 	}
