@@ -17,6 +17,7 @@ import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionDivision;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AnsiURL;
+import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.document.query.DocumentLookupQuery;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
@@ -39,8 +40,8 @@ public class DocumentLookupServlet extends AbstractLookupServlet {
 			"end";
 	public static final String XREF_TYPE_DISPLAY = "xref_type_display";
 
-	public DocumentLookupServlet() {
-		super((Permission)null);
+	public DocumentLookupServlet(Permission documentRead) {
+		super(Permission.DOCUMENT_READ);
 		cols = new String[] { 
 				DOCUMENT_ID,
 				XREF_TYPE,
@@ -65,7 +66,9 @@ public class DocumentLookupServlet extends AbstractLookupServlet {
 		
 		SessionUser user = sessionData.getUser();
 		List<SessionDivision> divisionList = sessionData.getDivisionList();
+		
 		try {
+			
 			AnsiURL url = new AnsiURL(request, REALM, (String[])null);
 			String searchTerm = null;
 			if(request.getParameter("search[value]") != null){
