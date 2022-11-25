@@ -31,14 +31,14 @@ public class DashboardFavoriteResponse extends MessageResponse {
 		
 		for ( Menu menu : Menu.values() ) {
 			if ( menu.getParent() != null && menu.getParent().equals(parent)) {
-				if ( permissionList.contains(menu.getPermissionRequired().name())) {
+				if ( menu.getPermissionRequired() == null || permissionList.contains(menu.getPermissionRequired().name())) {
 					favoriteList.add(new DashboardFavoriteItem(menu, dashboardFavoriteList.contains(menu.getLink())));
 				}
 			}
 		}
 		if ( parent.equals(Menu.REPORTS)) {
 			for ( ReportType reportType : ReportType.values() ) {
-				if ( permissionList.contains(reportType.getPermission().name())) {
+				if ( reportType.getPermission()== null || permissionList.contains(reportType.getPermission().name())) {
 					favoriteList.add(new DashboardFavoriteItem(reportType, dashboardFavoriteList.contains(reportType.getLink())));
 				}
 			}

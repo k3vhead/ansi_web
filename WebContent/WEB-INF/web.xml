@@ -669,6 +669,16 @@
 	
 	
 	
+	<servlet>
+		<servlet-name>knowledgeBase</servlet-name>
+		<servlet-class>com.ansi.scilla.web.knowledgeBase.servlet.KnowledgeBaseServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	<servlet-name>knowledgeBase</servlet-name>
+		<url-pattern>/knowledgeBase</url-pattern>
+		<url-pattern>/knowledgeBase/*</url-pattern>
+	</servlet-mapping>
+	
 	
 	<servlet>
 		<servlet-name>localeAutocomplete</servlet-name>

@@ -27,7 +27,8 @@ public enum Menu {
 	//LOCALE_DIVISION(	"Nexus Taxed Lookup",	LOOKUPS, Permission.TAX_READ,		"localeDivisionLookup.html"),
 	CALL_NOTES(         "Call Notes",           LOOKUPS, Permission.CALL_NOTE_READ, "callNoteLookup.html"),
 	CALENDAR(           "ANSI Calendar",        LOOKUPS, Permission.CALENDAR_READ,  "calendarLookup.html"),
-	DOCUMENT_LOOKUP(	"Document", 			LOOKUPS, Permission.DOCUMENT_READ, "documentLookup.html"),
+	DOCUMENT_LOOKUP(	"Document", 			LOOKUPS, Permission.DOCUMENT_READ,  "documentLookup.html"),
+	KNOWLEDGE_BASE(     "Knowledge Base",       LOOKUPS, null,                      "knowledgeBaseLookup.html"),
 
 	
 	REPORTS("Reports", null, null,"#"),

@@ -229,42 +229,6 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 
 
 	/**
-	 * Return list of divisions to which a user belongs
-	 * @param conn
-	 * @param userId
-	 * @return
-	 * @throws Exception
-	 */
-	public static List<Division> makeDivisionList(Connection conn, Integer userId) throws Exception {
-		String sql = "select division.* from division_user  " +
-				" inner join division on division.division_id=division_user.division_id " + 
-				" where division_user.user_id=?";
-		List<Division> divisionList = new ArrayList<Division>();
-		PreparedStatement ps = conn.prepareStatement(sql);
-		ps.setInt(1, userId);		
-		ResultSet rs = ps.executeQuery();
-		ResultSetMetaData rsmd = rs.getMetaData();
-		while ( rs.next() ) {
-			divisionList.add( (Division)new Division().rs2Object(rsmd, rs) ); 
-		}
-		Collections.sort(divisionList,
-	
-				new Comparator<Division>() {
-	
-			public int compare(Division o1, Division o2) {
-	
-				int ret = o1.getDivisionCode().compareTo(o2.getDivisionCode());
-				return ret;
-	
-			}
-	
-		});
-		return divisionList;
-	}
-
-
-
-	/**
 	 * Get the applcation logger (name is set in resource/config.properties)
 	 * @return
 	 */
@@ -363,6 +327,45 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 	}
 
 	
+
+	public static String getResponseText(Connection conn, ResponseCode responseCode, String defaultText) throws Exception {
+		String messageText = null;
+		ApplicationProperties message = new ApplicationProperties();
+		message.setPropertyId("ResponseCode." + responseCode.name());
+		try {
+			message.selectOne(conn);
+			messageText = message.getValueString();
+		} catch ( RecordNotFoundException e ) {
+			messageText = defaultText;
+		}	
+		return messageText;
+	}
+
+
+
+	public static SessionUser getSessionUser(HttpServletRequest request) {
+		SessionUser sessionUser = null;
+		HttpSession session = request.getSession();
+		if ( session != null ) {
+			SessionData sessionData = (SessionData)session.getAttribute(SessionData.KEY);
+			if ( sessionData != null ) {
+				sessionUser = sessionData.getUser();
+			}
+		}
+		return sessionUser;
+	}
+
+
+
+	/** 
+	 * Return a calendar object with the standard (midwest) ansi timezone
+	 * @return
+	 */
+	public static Calendar getToday() {
+		return Calendar.getInstance(new AnsiTime());
+	}
+
+
 
 	public static String jsonPost(HttpServletRequest request) throws UnsupportedEncodingException, IOException {
 		Writer writer = new StringWriter();
@@ -491,6 +494,42 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 	}
 
 	/**
+	 * Return list of divisions to which a user belongs
+	 * @param conn
+	 * @param userId
+	 * @return
+	 * @throws Exception
+	 */
+	public static List<Division> makeDivisionList(Connection conn, Integer userId) throws Exception {
+		String sql = "select division.* from division_user  " +
+				" inner join division on division.division_id=division_user.division_id " + 
+				" where division_user.user_id=?";
+		List<Division> divisionList = new ArrayList<Division>();
+		PreparedStatement ps = conn.prepareStatement(sql);
+		ps.setInt(1, userId);		
+		ResultSet rs = ps.executeQuery();
+		ResultSetMetaData rsmd = rs.getMetaData();
+		while ( rs.next() ) {
+			divisionList.add( (Division)new Division().rs2Object(rsmd, rs) ); 
+		}
+		Collections.sort(divisionList,
+	
+				new Comparator<Division>() {
+	
+			public int compare(Division o1, Division o2) {
+	
+				int ret = o1.getDivisionCode().compareTo(o2.getDivisionCode());
+				return ret;
+	
+			}
+	
+		});
+		return divisionList;
+	}
+
+
+
+	/**
 	 * Create a logger to be used by webthing utilities
 	 * @throws IOException
 	 * @deprecated
@@ -542,43 +581,31 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 
 
 
-	public static String getResponseText(Connection conn, ResponseCode responseCode, String defaultText) throws Exception {
-		String messageText = null;
-		ApplicationProperties message = new ApplicationProperties();
-		message.setPropertyId("ResponseCode." + responseCode.name());
-		try {
-			message.selectOne(conn);
-			messageText = message.getValueString();
-		} catch ( RecordNotFoundException e ) {
-			messageText = defaultText;
-		}	
-		return messageText;
-	}
-
-
-	public static SessionUser getSessionUser(HttpServletRequest request) {
-		SessionUser sessionUser = null;
-		HttpSession session = request.getSession();
-		if ( session != null ) {
-			SessionData sessionData = (SessionData)session.getAttribute(SessionData.KEY);
-			if ( sessionData != null ) {
-				sessionUser = sessionData.getUser();
-			}
-		}
-		return sessionUser;
-	}
-
-
-	/** 
-	 * Return a calendar object with the standard (midwest) ansi timezone
+	/**
+	 * Given a result set and metadata, create a hashmap (fieldname -> field value)
+	 * @param rs
+	 * @param rsmd
 	 * @return
+	 * @throws SQLException
 	 */
-	public static Calendar getToday() {
-		return Calendar.getInstance(new AnsiTime());
+	public static HashMap<String, Object> rs2Map(ResultSet rs, ResultSetMetaData rsmd) throws SQLException {
+		HashMap<String, Object> dataItem = new HashMap<String, Object>();
+		for ( int i = 0; i < rsmd.getColumnCount(); i++ ) {
+			int idx = i + 1;
+			String column = rsmd.getColumnName(idx);
+			Object value = rs.getObject(idx);
+			
+			dataItem.put(column, value);
+		}
+		return dataItem;
 	}
-	
-	
-	
+
+
+	public static String stripHtml(String source) {
+		String plainText = source.replaceAll("\\<.*?\\>", "");
+		return plainText;
+	}
+
 	/**
 	 * Ensure that a user is logged in. There is no permission/level requirement
 	 * @param request
@@ -712,27 +739,5 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 
 		workbook.write(out);
 		out.close();
-	}
-	
-	
-	
-	
-	/**
-	 * Given a result set and metadata, create a hashmap (fieldname -> field value)
-	 * @param rs
-	 * @param rsmd
-	 * @return
-	 * @throws SQLException
-	 */
-	public static HashMap<String, Object> rs2Map(ResultSet rs, ResultSetMetaData rsmd) throws SQLException {
-		HashMap<String, Object> dataItem = new HashMap<String, Object>();
-		for ( int i = 0; i < rsmd.getColumnCount(); i++ ) {
-			int idx = i + 1;
-			String column = rsmd.getColumnName(idx);
-			Object value = rs.getObject(idx);
-			
-			dataItem.put(column, value);
-		}
-		return dataItem;
 	}
 }

@@ -276,6 +276,12 @@
             <forward name="valid" path="/quoteMaintenance.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
+        <action
+            path="/knowledgeBaseLookup"
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
+            <forward name="valid" path="/kb/knowledgeBaseLookup.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
 		<action
             path="/localeLookup"
             type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
