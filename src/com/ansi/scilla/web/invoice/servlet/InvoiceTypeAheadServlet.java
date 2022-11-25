@@ -1,7 +1,7 @@
 package com.ansi.scilla.web.invoice.servlet;
 
-import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URLDecoder;
 import java.sql.Connection;
@@ -24,7 +24,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.ApplicationObject;
-import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.jsonFormat.AnsiFormat;
 import com.ansi.scilla.common.queries.InvoiceSearch;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
@@ -83,7 +82,7 @@ public class InvoiceTypeAheadServlet extends AbstractServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		try {
-			SessionData sessionData = AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+			SessionData sessionData = AppUtils.validateSession(request, Permission.TICKET_READ);
 			SessionUser user = sessionData.getUser();
 			processRequest(user, request, response);
 

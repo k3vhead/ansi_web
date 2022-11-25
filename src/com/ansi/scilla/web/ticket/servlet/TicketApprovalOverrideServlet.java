@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.Level;
 
-import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
@@ -43,7 +42,7 @@ public class TicketApprovalOverrideServlet extends AbstractServlet {
 			String jsonString = super.makeJsonString(request);
 			logger.log(Level.DEBUG, "jsonstring:"+jsonString);
 
-			SessionData sessionData = AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+			SessionData sessionData = AppUtils.validateSession(request, Permission.TICKET_WRITE);
 			
 			Ticket ticket = new Ticket();
 			try{
