@@ -121,7 +121,7 @@
     					}
     				});
     				$("#editForm select").val("");
-    				$("#editForm textarea").val("");
+    				$("#editForm textarea").html("");
     				$('.err').html("");
                 },
 
