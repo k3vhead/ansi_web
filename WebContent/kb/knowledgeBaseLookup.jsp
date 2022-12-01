@@ -535,7 +535,7 @@
     		</tr>
     		<tr>
     			<td><span class="formHdr">Language:</span></td>
-    			<td><input type="text" name="languageCode" /></td>
+    			<td><input type="text" name="languageCode" /><webthing:knowledgeBase key="KNOWLEDGEBASE_LANGUAGE">Help</webthing:knowledgeBase></td>
     			<td><span class="err languageCodeErr"></span></td>
     		</tr>
     		<tr>

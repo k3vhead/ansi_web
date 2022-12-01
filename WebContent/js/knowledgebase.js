@@ -61,7 +61,8 @@ $(function() {
 						$("#globalMsg").html("Session has expired.").show();
 					},
 					404: function($data) {
-						$("#globalMsg").html("System Error: " + $url + " 404. Contact Support").show();
+						$("#knowledgeDisplayModal").html("No help available.");
+						$("#knowledgeDisplayModal").dialog("open");
 					},
 					405: function($data) {
 						$("#globalMsg").html("Action Not Permitted").show();
