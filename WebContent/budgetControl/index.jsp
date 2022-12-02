@@ -2524,6 +2524,7 @@
     				$("#bcr_quick_claim_modal .quick_claim_err").hide();
         			
         			$("#bcr_quick_claim_modal .newClaimErr").html("Update Successful").show().fadeOut(6000);
+        			$("#bcr_quick_claim_modal input[name='ticketId']").focus();
         		},
         		
         		
