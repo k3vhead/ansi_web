@@ -60,7 +60,7 @@ public class AnsiUserServlet extends AbstractServlet {
 		try {
 			AppUtils.validateSession(request);
 			doGetWork(request, response);
-		} catch (TimeoutException e) {
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
 			super.sendForbidden(response);
 		}
 	}
