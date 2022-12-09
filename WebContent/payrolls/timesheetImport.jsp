@@ -1058,6 +1058,11 @@
 	           			console.log("processUploadWarning");
 	           			//TIMESHEET_IMPORT.displayHeaderAndHeaderMessages($data);
 	           			$(".thinking").hide();		
+	           			if ( "VERSION" in $data.data.webMessages ) {
+	           				$("#globalMsg").html( $data.data.webMessages["VERSION"][0] ).show().fadeOut(3000);
+	           			} else {
+	           				$("#globalMsg").html( "" );
+	           			}
 						TIMESHEET_IMPORT.displayHeader($data);
        					TIMESHEET_IMPORT.makeEmployeeMap($data);           					
 	           		},
