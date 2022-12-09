@@ -135,6 +135,11 @@
 			.newExpenseItem {
 				display:none;
 			}	
+			.priorityCheck {
+				float:right;
+				width:5%;
+				margin-right:8px;
+			}
 			.table-header {
 				text-align:center;
 				font-weight:bold;
@@ -266,35 +271,39 @@
 				
 				calcQuickClaimDlChg : function($click) {
 					console.log("calcQuickClaimDlChg");
-					var $foundIt = false;
-					var $row = $($click).parent();
-					// .parents() or .parentsUntil() seems reasonable here, but I kept getting recursion errors.
-					// So ... roll your own.
-					while ( ! $foundIt) {
-						$foundIt = $row.hasClass("quick-claim-employee");
-						if ( ! $foundIt ) {
-							$row = $row.parent();
-						}
-					}
-					var $rowIndex = null;
-					$.each( $row.attr("class").split(" "), function($index, $className) {
-						if ( $className.startsWith("employee") ) {
-							$rowIndex = $className.substring("employee".length);
-						}
-					});
-					var $selector = "#bcr_quick_claim_modal .employee" + $rowIndex;
-					var $availableDL = $("#bcr_quick_claim_modal .ticketAmt").html().replace("$","").replace(",","");
-					var $availableVolume = $("#bcr_quick_claim_modal .available_emp_volume_claimed").html().replace("$","").replace(",","");
-					var $selector = "#bcr_quick_claim_modal .employee" + $rowIndex;
+					if ( $("#bcr_quick_claim_modal input[name='priorityDL']").prop("checked") ) {
+						console.log("*** Priority DL ***");
 
-					var $dlAmt = $($selector + " input[name='dlAmt']").val();
-					var $employeePct = parseFloat($dlAmt)/parseFloat($availableDL);
-					var $volumeClaimed = $employeePct * parseFloat($availableVolume);
-					
-					$($selector + " input[name='dlAmt']").val( parseFloat($dlAmt).toFixed(2) );
-					$($selector + " input[name='employeePct']").val( ($employeePct*100.0).toFixed(6) );
-					$($selector + " input[name='volumeClaimed']").val( $volumeClaimed.toFixed(2) );
-					
+						var $foundIt = false;
+						var $row = $($click).parent();
+						// .parents() or .parentsUntil() seems reasonable here, but I kept getting recursion errors.
+						// So ... roll your own.
+						while ( ! $foundIt) {
+							$foundIt = $row.hasClass("quick-claim-employee");
+							if ( ! $foundIt ) {
+								$row = $row.parent();
+							}
+						}
+						var $rowIndex = null;
+						$.each( $row.attr("class").split(" "), function($index, $className) {
+							if ( $className.startsWith("employee") ) {
+								$rowIndex = $className.substring("employee".length);
+							}
+						});
+						var $selector = "#bcr_quick_claim_modal .employee" + $rowIndex;
+						var $availableDL = $("#bcr_quick_claim_modal .ticketAmt").html().replace("$","").replace(",","");
+						var $availableVolume = $("#bcr_quick_claim_modal .available_emp_volume_claimed").html().replace("$","").replace(",","");
+						var $selector = "#bcr_quick_claim_modal .employee" + $rowIndex;
+	
+						var $dlAmt = $($selector + " input[name='dlAmt']").val();
+						var $employeePct = parseFloat($dlAmt)/parseFloat($availableDL);
+						var $volumeClaimed = $employeePct * parseFloat($availableVolume);
+						
+						$($selector + " input[name='dlAmt']").val( parseFloat($dlAmt).toFixed(2) );
+						$($selector + " input[name='employeePct']").val( ($employeePct*100.0).toFixed(6) );
+						$($selector + " input[name='volumeClaimed']").val( $volumeClaimed.toFixed(2) );
+						
+					}
 					BUDGETCONTROL.displayQuickClaimPct();
 					BUDGETCONTROL.displayQuickClaimTotalDL();
 					BUDGETCONTROL.displayQuickClaimTotalVolume();
@@ -304,30 +313,33 @@
 				
 				calcQuickClaimPctChg : function($click) {
 					console.log("calcQuickClaimPctChg");
-					var $foundIt = false;
-					var $row = $($click).parent();
-					// .parents() or .parentsUntil() seems reasonable here, but I kept getting recursion errors.
-					// So ... roll your own.
-					while ( ! $foundIt) {
-						$foundIt = $row.hasClass("quick-claim-employee");
-						if ( ! $foundIt ) {
-							$row = $row.parent();
+					if ( $("#bcr_quick_claim_modal input[name='priorityPct']").prop("checked") ) {
+						console.log("*** Priority pct ***");
+						var $foundIt = false;
+						var $row = $($click).parent();
+						// .parents() or .parentsUntil() seems reasonable here, but I kept getting recursion errors.
+						// So ... roll your own.
+						while ( ! $foundIt) {
+							$foundIt = $row.hasClass("quick-claim-employee");
+							if ( ! $foundIt ) {
+								$row = $row.parent();
+							}
 						}
+						var $rowIndex = null;
+						$.each( $row.attr("class").split(" "), function($index, $className) {
+							if ( $className.startsWith("employee") ) {
+								$rowIndex = $className.substring("employee".length);
+							}
+						});
+						var $selector = "#bcr_quick_claim_modal .employee" + $rowIndex;
+						var $availableDL = $("#bcr_quick_claim_modal .ticketAmt").html().replace("$","").replace(",","");
+						var $availableVolume = $("#bcr_quick_claim_modal .available_emp_volume_claimed").html().replace("$","").replace(",","");
+						var $employeePct = $($selector + " input[name='employeePct']").val();
+						
+						$($selector + " input[name='dlAmt']").val( ((parseFloat($employeePct) * parseFloat($availableDL))/100).toFixed(2) );
+						$($selector + " input[name='volumeClaimed']").val( ((parseFloat($employeePct) * parseFloat($availableVolume))/100).toFixed(2) );	
+						
 					}
-					var $rowIndex = null;
-					$.each( $row.attr("class").split(" "), function($index, $className) {
-						if ( $className.startsWith("employee") ) {
-							$rowIndex = $className.substring("employee".length);
-						}
-					});
-					var $selector = "#bcr_quick_claim_modal .employee" + $rowIndex;
-					var $availableDL = $("#bcr_quick_claim_modal .ticketAmt").html().replace("$","").replace(",","");
-					var $availableVolume = $("#bcr_quick_claim_modal .available_emp_volume_claimed").html().replace("$","").replace(",","");
-					var $employeePct = $($selector + " input[name='employeePct']").val();
-					
-					$($selector + " input[name='dlAmt']").val( ((parseFloat($employeePct) * parseFloat($availableDL))/100).toFixed(2) );
-					$($selector + " input[name='volumeClaimed']").val( ((parseFloat($employeePct) * parseFloat($availableVolume))/100).toFixed(2) );	
-					
 					BUDGETCONTROL.displayQuickClaimPct();
 					BUDGETCONTROL.displayQuickClaimTotalDL();
 					BUDGETCONTROL.displayQuickClaimTotalVolume();
@@ -338,27 +350,31 @@
 				
 				calcQuickClaimVolChg : function($click) {
 					console.log("calcQuickClaimVolChg");
-					var $foundIt = false;
-					var $row = $($click).parent();
-					// .parents() or .parentsUntil() seems reasonable here, but I kept getting recursion errors.
-					// So ... roll your own.
-					while ( ! $foundIt) {
-						$foundIt = $row.hasClass("quick-claim-employee");
-						if ( ! $foundIt ) {
-							$row = $row.parent();
+					if ( $("#bcr_quick_claim_modal input[name='priorityVol']").prop("checked") ) {
+						console.log("*** Priority volume ***");
+
+						var $foundIt = false;
+						var $row = $($click).parent();
+						// .parents() or .parentsUntil() seems reasonable here, but I kept getting recursion errors.
+						// So ... roll your own.
+						while ( ! $foundIt) {
+							$foundIt = $row.hasClass("quick-claim-employee");
+							if ( ! $foundIt ) {
+								$row = $row.parent();
+							}
 						}
+						var $rowIndex = null;
+						$.each( $row.attr("class").split(" "), function($index, $className) {
+							if ( $className.startsWith("employee") ) {
+								$rowIndex = $className.substring("employee".length);
+							}
+						});
+						var $selector = "#bcr_quick_claim_modal .employee" + $rowIndex;
+						var $volumeClaimed = $($selector + " input[name='volumeClaimed']").val();
+						
+						$($selector + " input[name='volumeClaimed']").val( parseFloat($volumeClaimed).toFixed(2) );	
+						
 					}
-					var $rowIndex = null;
-					$.each( $row.attr("class").split(" "), function($index, $className) {
-						if ( $className.startsWith("employee") ) {
-							$rowIndex = $className.substring("employee".length);
-						}
-					});
-					var $selector = "#bcr_quick_claim_modal .employee" + $rowIndex;
-					var $volumeClaimed = $($selector + " input[name='volumeClaimed']").val();
-					
-					$($selector + " input[name='volumeClaimed']").val( parseFloat($volumeClaimed).toFixed(2) );	
-					
 					BUDGETCONTROL.displayQuickClaimTotalVolume();
 				},
 				
@@ -3701,9 +3717,9 @@
 	    		</tr>
 	    		<tr style="background-color:#CCCCCC;">
 	    			<td class="column-header" colspan="2">Employee</td>
-	    			<td class="column-header" colspan="2">Pct</td>
-	    			<td class="column-header" colspan="2">Direct Labor</td>
-	    			<td class="column-header" colspan="2">Volume Claimed</td>
+	    			<td class="column-header" colspan="2"><span class="priorityCheck tooltip"><input type="checkbox" name="priorityPct" checked="checked" /><span class="tooltiptext">Priority</span></span>Pct</td>
+	    			<td class="column-header" colspan="2"><span class="priorityCheck tooltip"><input type="checkbox" name="priorityDL" checked="checked" /><span class="tooltiptext">Priority</span></span>Direct Labor</td>
+	    			<td class="column-header" colspan="2"><span class="priorityCheck tooltip"><input type="checkbox" name="priorityVol" /><span class="tooltiptext">Priority</span></span>Volume Claimed</td>
 	    			<td class="column-header" colspan="2">Notes</td>
 	    		</tr>
 	    		<tr class="column-subheader quick-claim-available">
