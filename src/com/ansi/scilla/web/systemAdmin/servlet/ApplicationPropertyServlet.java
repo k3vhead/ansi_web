@@ -204,7 +204,9 @@ public class ApplicationPropertyServlet extends AbstractServlet {
 		default:
 			throw new RuntimeException("All the checks should have been done before this: " + appPropertyName.fieldName());
 		}
-		PreparedStatement ps = conn.prepareStatement("update application_properties set " + fieldName + "=?, updated_by=?, added_by=? where property_id=?");
+		String sql = "update application_properties set " + fieldName + "=?, updated_by=?, updated_date=? where property_id=?";
+		logger.log(Level.DEBUG, sql);
+		PreparedStatement ps = conn.prepareStatement(sql);
 		ps.setObject(1, valueObj);
 		ps.setInt(2, user.getUserId());
 		ps.setDate(3, new java.sql.Date(today.getTime().getTime()));
