@@ -7,11 +7,13 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -474,6 +476,7 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 			addMessage(PayrollWorksheetHeader.FieldLocation.WEEK_ENDING, validateLatePay(ytdValues));
 		}
 
+		
 
 		// Now we have potential for errors & warnings in getMessages()
 		// Set the message response level, then convert PayrollMessage to web messages
@@ -494,7 +497,7 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 		default:
 			throw new InvalidValueException(getErrorLevel() + " is not a valid response");
 		}
-		
+				
 		return new PayrollValidation(responseCode, webMessages);
 	}
 	
@@ -545,7 +548,7 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 			Field field = this.getClass().getDeclaredField(payrollField.fieldName());
 //			logger.log(Level.DEBUG, payrollField);
 			Double value = (Double)field.get(this);
-			RequestValidator.validateDouble(webMessages, payrollField.fieldName(), value, 0.0D, (Double)null, false, null);			
+			RequestValidator.validateDouble(webMessages, payrollField.fieldName(), value, payrollField.defaultMinValue, (Double)null, false, null);			
 		}
 //		RequestValidator.validateDouble(webMessages, PRODUCTIVITY, this.productivity, 0.0D, 1.0D, false, null);
 	}
@@ -635,25 +638,26 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 	 * 
 	 */
 	public enum PayrollField {
-			DIRECT_LABOR("directLabor", FieldLocation.DIRECT_LABOR),
-			EXPENSES("expenses", FieldLocation.EXPENSES),
-			EXPENSES_ALLOWED("expensesAllowed", FieldLocation.EXPENSES_ALLOWED),
-			EXPENSES_SUBMITTED("expensesSubmitted", FieldLocation.EXPENSES_SUBMITTED),
-			GROSS_PAY("grossPay", FieldLocation.GROSS_PAY),
-			HOLIDAY_HOURS("holidayHours", FieldLocation.HOLIDAY_HOURS),
-			HOLIDAY_PAY("holidayPay", FieldLocation.HOLIDAY_PAY),
-			OT_HOURS("otHours", FieldLocation.OT_HOURS),
-			OT_PAY("otPay", FieldLocation.OT_PAY),
-			REGULAR_HOURS("regularHours", FieldLocation.REGULAR_HOURS),
-			REGULAR_PAY("regularPay", FieldLocation.REGULAR_PAY),
-			VACATION_HOURS("vacationHours", FieldLocation.VACATION_HOURS),
-			VACATION_PAY("vacationPay", FieldLocation.VACATION_PAY),
-			VOLUME("volume", FieldLocation.VOLUME),
+			DIRECT_LABOR("directLabor", FieldLocation.DIRECT_LABOR, (Double)null),
+			EXPENSES("expenses", FieldLocation.EXPENSES, (Double)null),
+			EXPENSES_ALLOWED("expensesAllowed", FieldLocation.EXPENSES_ALLOWED, (Double)null),
+			EXPENSES_SUBMITTED("expensesSubmitted", FieldLocation.EXPENSES_SUBMITTED, (Double)null),
+			GROSS_PAY("grossPay", FieldLocation.GROSS_PAY, (Double)null),
+			HOLIDAY_HOURS("holidayHours", FieldLocation.HOLIDAY_HOURS, 0.0D),
+			HOLIDAY_PAY("holidayPay", FieldLocation.HOLIDAY_PAY, (Double)null),
+			OT_HOURS("otHours", FieldLocation.OT_HOURS, 0.0D),
+			OT_PAY("otPay", FieldLocation.OT_PAY, (Double)null),
+			REGULAR_HOURS("regularHours", FieldLocation.REGULAR_HOURS, 0.0D),
+			REGULAR_PAY("regularPay", FieldLocation.REGULAR_PAY, (Double)null),
+			VACATION_HOURS("vacationHours", FieldLocation.VACATION_HOURS, 0.0D),
+			VACATION_PAY("vacationPay", FieldLocation.VACATION_PAY, (Double)null),
+			VOLUME("volume", FieldLocation.VOLUME, (Double)null),
 			;
 		
 		
 		private String fieldName;
 		private FieldLocation wprCols;
+		private Double defaultMinValue;
 		
 		private static HashMap<FieldLocation, PayrollField> lookup;
 		
@@ -664,9 +668,10 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 			}
 		}
 		
-		private PayrollField(String fieldName, FieldLocation wprCols) {
+		private PayrollField(String fieldName, FieldLocation wprCols, Double defaultMinValue) {
 			this.fieldName = fieldName;
 			this.wprCols = wprCols;
+			this.defaultMinValue = defaultMinValue;
 		}
 		
 		public String fieldName() { return this.fieldName; }
