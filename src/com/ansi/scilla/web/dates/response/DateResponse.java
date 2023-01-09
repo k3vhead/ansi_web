@@ -8,6 +8,7 @@ import java.util.GregorianCalendar;
 
 import org.apache.commons.lang3.time.DateUtils;
 
+import com.ansi.scilla.common.exceptions.AnsiCalendarException;
 import com.ansi.scilla.common.utils.WorkYear;
 import com.ansi.scilla.web.common.response.MessageResponse;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -32,12 +33,12 @@ public class DateResponse extends MessageResponse implements Serializable {
 		super();
 	}
 	
-	public DateResponse(Connection conn, Date workDate) {
+	public DateResponse(Connection conn, Date workDate) throws AnsiCalendarException {
 		this();		
 		make(conn, DateUtils.toCalendar(workDate));
 	}
 	
-	public DateResponse(Connection conn, Calendar workDate) {
+	public DateResponse(Connection conn, Calendar workDate) throws AnsiCalendarException {
 		this();		
 		make(conn, workDate);
 	}
@@ -86,7 +87,7 @@ public class DateResponse extends MessageResponse implements Serializable {
 		return lastOfYear;
 	}
 
-	private void make(Connection conn, Calendar workDate) {
+	private void make(Connection conn, Calendar workDate) throws AnsiCalendarException {
 		this.workDate = workDate;
 		WorkYear w = new WorkYear(workDate.get(Calendar.YEAR));		
 		this.firstOfWeek = w.getFirstOfWeek(workDate);
