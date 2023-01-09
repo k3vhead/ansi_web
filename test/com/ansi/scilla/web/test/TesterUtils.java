@@ -1,6 +1,7 @@
 package com.ansi.scilla.web.test;
 
 import java.io.StringWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,7 +20,9 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
+import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.web.common.struts.SessionDivision;
+import com.ansi.scilla.web.common.struts.SessionUser;
 import com.thewebthing.commons.lang.StringUtils;
 
 public class TesterUtils {
@@ -31,6 +34,15 @@ public class TesterUtils {
 	public static void makeLoggers() {
 		
 	}
+	
+	public static SessionUser makeSessionUser(Connection conn, Integer userId) throws Exception {
+		User user = new User();
+		user.setUserId(userId);
+		user.selectOne(conn);
+		SessionUser sessionUser = new SessionUser(user);
+		return sessionUser;
+	}
+	
 	
 	public static String postJson(String url, String jsonString ) throws Exception {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
