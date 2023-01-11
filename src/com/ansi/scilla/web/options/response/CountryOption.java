@@ -3,7 +3,6 @@ package com.ansi.scilla.web.options.response;
 import java.io.IOException;
 import java.util.List;
 
-import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.address.Country;
 import com.ansi.scilla.common.address.State;
 

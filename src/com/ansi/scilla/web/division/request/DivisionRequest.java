@@ -21,6 +21,9 @@ import com.ansi.scilla.web.common.response.WebMessages;
 
 public class DivisionRequest extends AbstractRequest {
 
+	public static final String MIN_HOURLY_RATE = "minHourlyRate";
+	
+	
 	private static final long serialVersionUID = 1L;
 	
 	private Integer divisionId;	//Integer Division ID
@@ -35,6 +38,7 @@ public class DivisionRequest extends AbstractRequest {
     private BigDecimal overtimeRate;
     private Integer weekendIsOt;
     private Integer hourlyRateIsFixed;
+    private BigDecimal minHourlyRate;
 	
 	public DivisionRequest() {
 		super();
@@ -165,6 +169,16 @@ public class DivisionRequest extends AbstractRequest {
 
 	public void setHourlyRateIsFixed(Integer hourlyRateIsFixed) {
 		this.hourlyRateIsFixed = hourlyRateIsFixed;
+	}	
+
+	@RequiredForAdd
+	@RequiredForUpdate
+	public BigDecimal getMinHourlyRate() {
+		return minHourlyRate;
+	}
+
+	public void setMinHourlyRate(BigDecimal minHourlyRate) {
+		this.minHourlyRate = minHourlyRate;
 	}
 
 	public WebMessages validateAdd() {
@@ -173,6 +187,8 @@ public class DivisionRequest extends AbstractRequest {
 		RequestValidator.validateBoolean(webMessages, "hourlyRateIsFixed", this.hourlyRateIsFixed, true);
 		RequestValidator.validateInteger(webMessages, "maxRegHrsPerDay", this.maxRegHrsPerDay, 0, 24, true);
 		RequestValidator.validateInteger(webMessages, "maxRegHrsPerWeek", this.maxRegHrsPerWeek, 0, 24*7, true);
+		RequestValidator.validateBigDecimal(webMessages, MIN_HOURLY_RATE, this.minHourlyRate, BigDecimal.ZERO, null, true);
+		
 		return webMessages;		
 	}
 	

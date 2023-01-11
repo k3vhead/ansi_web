@@ -23,4 +23,7 @@
 			<span class="job-proposal-desc jobtext"></span>
 		</td>
 	</tr>
+	<tr>
+		<td colspan="4"><span class="job-proposal-jobtag"></span></td>
+	</tr>
 </table>

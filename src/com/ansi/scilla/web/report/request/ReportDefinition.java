@@ -10,10 +10,8 @@ import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
-import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -23,17 +21,15 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.db.Division;
-import com.ansi.scilla.report.reportBuilder.AnsiReport;
+import com.ansi.scilla.report.reportBuilder.reportType.AnsiReport;
+import com.ansi.scilla.report.reportBuilder.reportBy.ReportByDivision;
+import com.ansi.scilla.report.reportBuilder.reportBy.ReportByDivMonthYear;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.ApplicationWebObject;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
-import com.ansi.scilla.web.report.common.ReportJsp;
 import com.ansi.scilla.web.report.common.ReportType;
 
 /**
@@ -61,6 +57,7 @@ public class ReportDefinition extends ApplicationWebObject {
 	private Integer month;
 	private Integer year;
 	private HashMap<String, String> reportDisplay;
+	private Calendar runDate;
 
 	/*
 	<forward name="reportByDiv" path="/reportByDiv.jsp" />
@@ -72,14 +69,13 @@ public class ReportDefinition extends ApplicationWebObject {
 	
 	protected ReportDefinition() {
 		super();
+		this.runDate = Calendar.getInstance();
 	}
 	/**
 	 * Parse the URI from the given request.
 	 * Note that posted values (like the JSON in and "ADD") must be processed before invoking this constructor
 	 * 
 	 * @param request The unchanged HTTP request object, after posted values are processed 
-	 * @param expectedRealm Typically the servlet name, eg "ticket" or "division"
-	 * @param expectedCommandList A list of valid commands like "list" or "add". A null value means no commands are accepted
 	 * @throws ResourceNotFoundException Thrown if the realm is incorrect or the URI format is wrong, or if the command 
 	 * does not validate against the list of expected values.
 	 * @throws IOException 
@@ -136,6 +132,7 @@ public class ReportDefinition extends ApplicationWebObject {
 		if ( reportRequest.getReportDisplay() != null ) {
 			this.reportDisplay = reportRequest.getReportDisplay();
 		}
+		this.runDate = Calendar.getInstance();
 	}
 	
 	private void parseParameters(Map<String, String[]> queryParameterMap) throws ParseException {
@@ -178,11 +175,14 @@ public class ReportDefinition extends ApplicationWebObject {
 	public Integer getYear() {
 		return year;
 	}
-
-
 	public HashMap<String, String> getReportDisplay() {
 		return reportDisplay;
+	}	
+	public Calendar getRunDate() {
+		return runDate;
 	}
+	
+	
 	private String makeJsonString(HttpServletRequest request) throws UnsupportedEncodingException, IOException {
 		Writer writer = new StringWriter();
 		 
@@ -201,67 +201,28 @@ public class ReportDefinition extends ApplicationWebObject {
         return jsonString;        
 	}
 
-	/**
-	 * Based on the report type, effective dates and as of, make a filename.
-	 * @return
-	 */
-	public String makeReportFileName(Connection conn) throws Exception {
-		Logger logger = LogManager.getLogger(this.getClass());
-		SimpleDateFormat yyyymmdd = new SimpleDateFormat("yyyy-MM-dd");
-//		SimpleDateFormat yyyymm = new SimpleDateFormat("yyyy-MM");
-		DecimalFormat nn = new DecimalFormat("00");
-		
-		String asOf = yyyymmdd.format(new Date());
-		String startDate = this.startDate == null ? null : yyyymmdd.format(this.startDate.getTime());
-		String endDate = this.endDate == null ? null : yyyymmdd.format(this.endDate.getTime());
-		String monthYear = null;
-		if ( this.month != null && this.year != null ) {
-			monthYear = year + "-" + nn.format(this.month);
-		}
 	
-		List<String> names = new ArrayList<String>();
-		names.add(this.reportType.downloadFileName());		
-		if ( reportType.reportJsp().equals(ReportJsp.reportNoInput)) {
-			names.add("as of " + asOf);
-		} else if ( reportType.reportJsp().equals(ReportJsp.reportByDiv)) {
-			String div = makeDiv(conn, this.divisionId);
-			names.add("for Div " + div);
-			names.add("as of " + asOf);
-		} else if ( reportType.reportJsp().equals(ReportJsp.reportByStartEnd)) {
-			names.add("for " + startDate);
-			names.add("to " + endDate);
-			names.add("as of " + asOf);
-		} else if ( reportType.reportJsp().equals(ReportJsp.reportByDivEnd)) {
-			String div = makeDiv(conn, this.divisionId);
-			names.add("for Div " + div);
-			names.add("to " + endDate);
-			names.add("as of " + asOf);
-		} else if ( reportType.reportJsp().equals(ReportJsp.reportByDivMonthYear)) {
-			String div = makeDiv(conn, this.divisionId);
-			names.add("for Div " + div);
-			names.add("for " + monthYear);
-			names.add("as of " + asOf);
-		} else if ( reportType.reportJsp().equals(ReportJsp.reportByDivStartEnd)) {
-			String div = makeDiv(conn, this.divisionId);
-			names.add("for Div " + div);
-			names.add("for " + startDate);
-			names.add("to " + endDate);
-			names.add("as of " + asOf);
-		} else {
-			logger.log(Level.DEBUG, "No jsp match");
+	
+	public String makeReportFileName(Connection conn, AnsiReport report) throws Exception {
+		Division division = null;
+		if ( ReportByDivision.class.isAssignableFrom(report.getClass()) ) {
+			division = new Division();
+			division.setDivisionId(divisionId);
+			division.selectOne(conn);
 		}
 		
-		String reportFileName = StringUtils.join(names, " ");
-		logger.log(Level.DEBUG, "Filename: " + reportFileName);
-		// the attachment header sees "end of name" when it finds a space
-		return reportFileName.replaceAll(" ", "_");
+		Calendar startDate = this.startDate == null ? Calendar.getInstance() : (Calendar)this.startDate.clone();
+		if ( ReportByDivMonthYear.class.isAssignableFrom(report.getClass()) ) {
+			// When we report by division, month & year: the filename is based on start date
+			startDate.set(Calendar.YEAR, this.year);
+			startDate.set(Calendar.MONTH, this.month - 1);  // because it's zero-based and we fix it somewhere else
+		}
+		
+		String fileName = report.makeFileName(getRunDate(), division, startDate, endDate);
+		return fileName;
 	}
-	private String makeDiv(Connection conn, Integer divisionId) throws Exception {
-		Division division = new Division();
-		division.setDivisionId(divisionId);
-		division.selectOne(conn);
-		return division.getDivisionDisplay();
-	}
+	
+		
 	/**
 	 * Validate the current report definition against the validator class defined in the ReportType enum
 	 * @param conn
@@ -317,7 +278,4 @@ public class ReportDefinition extends ApplicationWebObject {
 		Method builderMethod = reportClass.getMethod("buildReport", classList);
 		AnsiReport report = (AnsiReport)builderMethod.invoke(null, objectList);
 		return report;
-	}
-
-	
-}
+	}}

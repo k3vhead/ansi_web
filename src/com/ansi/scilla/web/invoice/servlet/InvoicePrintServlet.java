@@ -20,7 +20,6 @@ import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.db.Division;
-import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.invoice.InvoiceUtils;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
@@ -28,7 +27,7 @@ import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
@@ -66,7 +65,7 @@ public class InvoicePrintServlet extends AbstractServlet {
 				InvoicePrintRequest invoicePrintRequest = new InvoicePrintRequest();
 				AppUtils.json2object(jsonString, invoicePrintRequest);
 //				ansiURL = new AnsiURL(request, "invoiceGeneration", (String[])null); //  .../ticket/etc
-				SessionData sessionData = AppUtils.validateSession(request, Permission.INVOICE, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+				SessionData sessionData = AppUtils.validateSession(request, Permission.INVOICE_WRITE);
 				
 				SessionUser sessionUser = sessionData.getUser(); 
 				List<String> addErrors = super.validateRequiredAddFields(invoicePrintRequest);
@@ -159,7 +158,7 @@ public class InvoicePrintServlet extends AbstractServlet {
 		printCalendar.setTime(printDate);
 		Calendar dueCalendar = Calendar.getInstance(new AnsiTime());
 		dueCalendar.setTime(dueDate);
-		ByteArrayOutputStream baos = InvoiceUtils.printInvoices(conn, divisionList, printCalendar, dueCalendar);
+		ByteArrayOutputStream baos = InvoiceUtils.printInvoices(conn, divisionList, printCalendar, dueCalendar, sessionUser.getUserId());
 		
 		
 		FileOutputStream os = new FileOutputStream(new File(invoicePathName + "/" + invoiceFileName));

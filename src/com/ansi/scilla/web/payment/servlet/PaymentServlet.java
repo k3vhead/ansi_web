@@ -19,7 +19,6 @@ import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.db.Payment;
-import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.common.payment.PaymentType;
 import com.ansi.scilla.web.common.response.ResponseCode;
@@ -29,7 +28,7 @@ import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
@@ -57,19 +56,19 @@ import com.thewebthing.commons.db2.RecordNotFoundException;
  * 
  * 
  * The url for get will be one of:
- * 		/payment?paymentId=<paymentId>  (returns payment totals for paymentId)
- * 		/payment?invoiceId=<invoiceId>
- * 		/payment?invoiceId=<invoiceId>&amount=<availablePayment>
+ * 		/payment?paymentId=&lt;paymentId&gt;  (returns payment totals for paymentId)
+ * 		/payment?invoiceId=&lt;invoiceId&gt;
+ * 		/payment?invoiceId=&lt;invoiceId&gt;&amp;amount=&lt;availablePayment&gt;
  * 
  * The url for update will be a POST to:
- * 		/ticketReturn/<ticket>/<action> with parameters in the JSON
+ * 		/ticketReturn/&lt;ticket&gt;/&lt;action&gt; with parameters in the JSON
  * 			Action 		Parameters
- * 			complete	<processDate><processNotes><actualPricePerCleaning>
- * 						<actualDirectLaborPct><actualDirectLabor>
- * 						<customerSignature><billSheet><managerApproval>
- * 			skip		<processDate><processNotes>
- * 			void		<processDate><processNotes>
- * 			reject		<processDate><processNotes>
+ * 			complete	&lt;processDate&gt;&lt;processNotes&gt;&lt;actualPricePerCleaning&gt;
+ * 						&lt;actualDirectLaborPct&gt;&lt;actualDirectLabor&gt;
+ * 						&lt;customerSignature&gt;&lt;billSheet&gt;&lt;managerApproval&gt;
+ * 			skip		&lt;processDate&gt;&lt;processNotes&gt;
+ * 			void		&lt;processDate&gt;&lt;processNotes&gt;
+ * 			reject		&lt;processDate&gt;&lt;processNotes&gt;
  * 			re-queue	-none-
  * 
  * 
@@ -87,7 +86,7 @@ public class PaymentServlet extends AbstractServlet {
 		AnsiURL url = null;
 		try {
 			conn = AppUtils.getDBCPConn();
-			AppUtils.validateSession(request, Permission.PAYMENT, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+			AppUtils.validateSession(request, Permission.PAYMENT);
 			url = new AnsiURL(request, "payment", (String[])null);
 			if ( url.getId() != null ) {
 				PaymentResponse data = new PaymentResponse(conn, url.getId());
@@ -123,7 +122,7 @@ public class PaymentServlet extends AbstractServlet {
 				AppUtils.json2object(jsonString, paymentRequest);
 				logger.log(Level.DEBUG, paymentRequest);
 				url = new AnsiURL(request, "payment", new String[] {PaymentRequestType.ADD.name().toLowerCase()});
-				SessionData sessionData = AppUtils.validateSession(request, Permission.PAYMENT, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+				SessionData sessionData = AppUtils.validateSession(request, Permission.PAYMENT_WRITE);
 				SessionUser sessionUser = sessionData.getUser();
 				
 				if ( ! StringUtils.isBlank(url.getCommand())) {

@@ -21,7 +21,7 @@ import org.apache.logging.log4j.Level;
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
@@ -47,8 +47,8 @@ import com.thewebthing.commons.lang.StringUtils;
  * 
  * The url for get will be one of:
  * 		/contactSearch?term=					(returns all records)
- * 		/contactSearch?term=<searchTerm>		(returns all records containing <searchTerm>)
- * 		/contactSearch?id=<contactId>			(returns the record for <contactId>)
+ * 		/contactSearch?term=&lt;searchTerm&gt;	(returns all records containing &lt;searchTerm&gt;)
+ * 		/contactSearch?id=&lt;contactId&gt;		(returns the record for &lt;contactId&gt;)
  * 
  * The servlet will return 404 Not Found if there is no "term=" found.
  * 
@@ -97,7 +97,7 @@ public class ContactTypeAheadServlet extends AbstractServlet {
 						queryTerm = URLDecoder.decode(queryTerm, "UTF-8");
 						queryTerm = StringUtils.trimToNull(queryTerm);
 						if ( ! StringUtils.isBlank(queryTerm)) {
-							term = queryTerm.toLowerCase();
+							term = StringUtils.trim(queryTerm.toLowerCase());
 						}
 					}
 					try {
@@ -107,19 +107,19 @@ public class ContactTypeAheadServlet extends AbstractServlet {
 						List<ReturnItem> resultList = new ArrayList<ReturnItem>();
 						String sql = "select contact_id, "
 //								+ " concat(last_name,', ',first_name) as name, "
-								+ " concat(first_name, ' ', last_name) as name, "
+								+ " concat(LTRIM(RTRIM(first_name)), ' ', LTRIM(RTRIM(last_name))) as name, "
 								+ " business_phone, mobile_phone, email, fax, preferred_contact "
 								+ " from contact where lower(business_phone) like '%" + term + "%'"
 								+ " OR lower(fax) like '%" + term + "%'"
-								+ " OR lower(concat(first_name,' ',last_name)) like '%" + term + "%'"
-								+ " OR lower(concat(last_name,' ',first_name)) like '%" + term + "%'"
-								+ " OR lower(concat(last_name,', ',first_name)) like '%" + term + "%'"
+								+ " OR lower(concat(LTRIM(RTRIM(first_name)),' ',LTRIM(RTRIM(last_name)))) like '%" + term + "%'"
+								+ " OR lower(concat(LTRIM(RTRIM(last_name)),' ',LTRIM(RTRIM(first_name)))) like '%" + term + "%'"
+								+ " OR lower(concat(LTRIM(RTRIM(last_name)),', ',LTRIM(RTRIM(first_name)))) like '%" + term + "%'"
 								+ " OR lower(mobile_phone) like '%" + term + "%'"
 								+ " OR lower(email) like '%" + term + "%'"
-								+ " ORDER BY concat(first_name, ' ', last_name) "
+								+ " ORDER BY concat(LTRIM(RTRIM(first_name)), ' ', LTRIM(RTRIM(last_name))) "
 //								+ " ORDER BY concat(last_name,', ',first_name) "
 								+ " OFFSET 0 ROWS"
-								+ " FETCH NEXT 500 ROWS ONLY";
+								+ " FETCH NEXT 250 ROWS ONLY";
 						
 						Statement s = conn.createStatement();
 						ResultSet rs = s.executeQuery(sql);

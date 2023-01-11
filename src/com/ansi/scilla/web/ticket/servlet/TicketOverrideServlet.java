@@ -26,10 +26,10 @@ import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Address;
 import com.ansi.scilla.common.db.Invoice;
 import com.ansi.scilla.common.db.Job;
-import com.ansi.scilla.common.db.TaxRate;
 import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.common.invoice.InvoiceUtils;
 import com.ansi.scilla.common.jobticket.JobUtils;
+import com.ansi.scilla.common.jobticket.TicketType;
 import com.ansi.scilla.common.jobticket.TicketUtils;
 import com.ansi.scilla.common.utils.PropertyNames;
 import com.ansi.scilla.web.common.response.ResponseCode;
@@ -38,7 +38,7 @@ import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
@@ -65,6 +65,8 @@ public class TicketOverrideServlet extends TicketServlet {
 	public static final String FIELDNAME_ACT_PRICE_PER_CLEANING = "actPricePerCleaning";
 	public static final String FIELDNAME_ACT_PO_NUMBER = "actPoNumber";
 	public static final String FIELDNAME_DIVISION_ID = "divisionId";
+	public static final String FIELDNAME_TICKET_TYPE = "ticketType";
+	public static final String FIELDNAME_DL_AMT = "dlAmt";
 	
 	private final String MESSAGE_SUCCESS = "Success";
 	private final String MESSAGE_NOT_PROCESSED = "Not Processed";
@@ -82,6 +84,8 @@ public class TicketOverrideServlet extends TicketServlet {
 	private final String MESSAGE_MISSING_START_DATE = "Missing required value: start date";
 	private final String MESSAGE_MISSING_VALUE_PPC = "Missing required value: Actual Price Per Cleaning";
 	private final String MESSAGE_MISSING_VALUE_PO = "Missing required value: PO Number";
+	private final String MESSAGE_MISSING_TICKET_TYPE = "Missing required value: Ticket Type";
+	private final String MESSAGE_MISSING_VALUE_DL = "Missing required value: DL Amt";
 	
 	
 	
@@ -362,17 +366,19 @@ public class TicketOverrideServlet extends TicketServlet {
 				job.setJobId(ticket.getJobId());
 				job.selectOne(conn);
 				if (job.getTaxExempt().equals( Job.TAX_EXEMPT_IS_NO)) {
-					TaxRate taxRate = null;
+					BigDecimal taxRate = null;
 					if ( ticket.getProcessDate() == null ) {
 						taxRate = JobUtils.getTaxRate( conn, ticket.getJobId(), ticket.getStartDate(), sessionUser.getUserId());
 					} else {
 						taxRate = JobUtils.getTaxRate( conn, ticket.getJobId(), ticket.getProcessDate(), sessionUser.getUserId());
 					}
-					ticket.setActTaxAmt(ticket.getActPricePerCleaning().multiply(taxRate.getRate()));
-					ticket.setActTaxRateId(taxRate.getTaxRateId());
+					ticket.setActTaxAmt(ticket.getActPricePerCleaning().multiply(taxRate));
+//					ticket.setActTaxRateId(taxRate.getTaxRateId());
+					ticket.setActTaxRate(taxRate);
 				} else {
 					ticket.setActTaxAmt(new BigDecimal( "0.00" ));
-					ticket.setActTaxRateId(0);
+//					ticket.setActTaxRateId(0);
+					ticket.setActTaxRate(BigDecimal.ZERO);
 				}
 				success = true;
 				message = MESSAGE_SUCCESS;
@@ -383,6 +389,35 @@ public class TicketOverrideServlet extends TicketServlet {
 		} else {
 			success = false;
 			message = MESSAGE_MISSING_VALUE_PPC;
+		}
+		return new OverrideResult(success, message, ticket, true);
+	}
+	
+	
+	
+	public OverrideResult doDLAmt(Connection conn, Ticket ticket, HashMap<String, String> values, SessionUser sessionUser) throws Exception {
+		logger.log(Level.DEBUG, "processing doDLAmt");
+		Boolean success = null;
+		String message = null;
+		
+
+		if ( values.containsKey(FIELDNAME_DL_AMT) ) {
+			try {
+				String value = values.get(FIELDNAME_DL_AMT);
+				Double dlAmt = Double.valueOf(value);
+				ticket.setActDlAmt(new BigDecimal(dlAmt));
+				Double actDlPct = dlAmt / ticket.getActPricePerCleaning().doubleValue();
+				ticket.setActDlPct( new BigDecimal( actDlPct * 100.0D ) );
+				
+				success = true;
+				message = MESSAGE_SUCCESS;
+			} catch ( NumberFormatException e ) {
+				success = false;
+				message = MESSAGE_INVALID_FORMAT + ": Must be numeric";
+			}
+		} else {
+			success = false;
+			message = MESSAGE_MISSING_VALUE_DL;
 		}
 		return new OverrideResult(success, message, ticket, true);
 	}
@@ -437,6 +472,26 @@ public class TicketOverrideServlet extends TicketServlet {
 	}
 	
 	
+	public OverrideResult doTicketType(Connection conn, Ticket ticket, HashMap<String, String> values, SessionUser sessionUser) throws Exception {
+		logger.log(Level.DEBUG, "processing TicketType");
+		Boolean success = null;
+		String message = null;
+		
+		if ( values.containsKey(FIELDNAME_TICKET_TYPE) && ! StringUtils.isBlank(values.get(FIELDNAME_TICKET_TYPE))) {
+			String value = values.get(FIELDNAME_TICKET_TYPE);
+			TicketType ticketType = TicketType.valueOf(value);
+			ticket.setTicketType(ticketType.code());
+			success = true;
+			message = MESSAGE_SUCCESS;
+		} else {
+			success = false;
+			message = MESSAGE_MISSING_TICKET_TYPE;
+		}
+		
+		return new OverrideResult(success, message, ticket, true);
+	}
+	
+	
 	
 	private boolean isSameBillTo(Connection conn, Integer ticketId, Integer newInvoiceId) throws Exception {
 		try {
@@ -462,7 +517,7 @@ public class TicketOverrideServlet extends TicketServlet {
 	 * ticket update.
 	 * 
 	 * id - the string identifying what kind of override we're doing
-	 * processor - the method in the servlet that process the request. Must have signature: methodName(Integer ticketId, HashMap<String, String> values)
+	 * processor - the method in the servlet that process the request. Must have signature: methodName(Integer ticketId, HashMap&lt;String, String&gt; values)
 	 * permission - any permission required beyond the TICKET that is minimum required to do this update. (Yes, we're checking
 	 * 		for "ticket" twice, but it's at minimal cost, and it makes the code easier)
 	 * 
@@ -480,6 +535,8 @@ public class TicketOverrideServlet extends TicketServlet {
 		ACT_PRICE_PER_CLEANING("actPricePerCleaning","doPricePerCleaning", Permission.TICKET_OVERRIDE),
 		ACT_PO_NUMBER("actPoNumber","doPoNumber", Permission.TICKET),
 		DIVISION_ID("divisionId","doDivisionId",Permission.TICKET_OVERRIDE),
+		TICKET_TYPE("ticketType","doTicketType", Permission.TICKET_OVERRIDE),
+		DL_AMT("dlAmt","doDLAmt",Permission.TICKET_OVERRIDE),
 		;
 		
 		private final String id;

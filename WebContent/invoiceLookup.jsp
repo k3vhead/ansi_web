@@ -40,6 +40,9 @@
 				width:400px;
 				padding:15px;
 			}
+			.invoicePrint {
+				cursor:pointer;
+			}
 			.prettyWideButton {
 				height:30px;
 				min-height:30px;
@@ -168,7 +171,7 @@
 				            ],
 				            "initComplete": function(settings, json) {
 				            	//console.log(json);
-				            	doFunctionBinding();
+				            	//doFunctionBinding();
 				            },
 				            "drawCallback": function( settings ) {
 				            	doFunctionBinding();
@@ -191,23 +194,18 @@
             }; 
         	
         	        	
-//        	$.each($('input'), function () {
-//		        $(this).css("height","20px");
-//		        $(this).css("max-height", "20px");
-//		    });
-        	
-
 			function doFunctionBinding() {
+				$( ".invoicePrint" ).off( "click");  // make sure we don't get a double call
 				$( ".invoicePrint" ).on( "click", function($clickevent) {
 					invoicePrint($clickevent);
 				});
 			}
-				
-				
-				function invoicePrint($clickevent) {
-					var $invoiceId = $clickevent.currentTarget.attributes['data-invoiceId'].value;
-					INVOICE_PRINT.reprintInvoice($invoiceId);
-				}
+			
+			
+			function invoicePrint($clickevent) {
+				var $invoiceId = $clickevent.currentTarget.attributes['data-invoiceId'].value;
+				INVOICE_PRINT.reprintInvoice($invoiceId);
+			}
         });
         </script>
         <script type="text/javascript" src="js/invoicePrint.js"></script>        

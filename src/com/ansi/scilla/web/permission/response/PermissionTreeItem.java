@@ -6,7 +6,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
 
 import com.ansi.scilla.common.ApplicationObject;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 
 public class PermissionTreeItem extends ApplicationObject {
 

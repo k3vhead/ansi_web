@@ -1,9 +1,9 @@
 package com.ansi.scilla.web.permission.response;
 
 import com.ansi.scilla.common.ApplicationObject;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 
-public class PermissionDisplayItem extends ApplicationObject {
+public class PermissionDisplayItem extends ApplicationObject implements Comparable<PermissionDisplayItem> {
 
 	private static final long serialVersionUID = 1L;
 
@@ -45,6 +45,11 @@ public class PermissionDisplayItem extends ApplicationObject {
 
 	public void setIncluded(Boolean included) {
 		this.included = included;
+	}
+
+	@Override
+	public int compareTo(PermissionDisplayItem o) {
+		return this.getPermissionName().compareTo(o.getPermissionName());
 	}
 	
 	

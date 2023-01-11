@@ -1,12 +1,6 @@
 package com.ansi.scilla.web.ansiUser;
 
-import java.lang.reflect.InvocationTargetException;
-
-import org.apache.commons.beanutils.BeanUtils;
-
 import com.ansi.scilla.common.ApplicationObject;
-import com.ansi.scilla.common.db.PermissionGroupLevel;
-import com.ansi.scilla.web.permission.response.PermissionItem;
 
 public class AnsiUserItem extends ApplicationObject {
 	

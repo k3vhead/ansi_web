@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.web.callNote.response.CallNoteResponse;
 import com.ansi.scilla.web.callNote.response.ContactNoteResponse;
+import com.ansi.scilla.web.common.struts.SessionUser;
 
 public class ContactNoteServlet extends AbstractCallNoteServlet {
 
@@ -14,9 +15,9 @@ public class ContactNoteServlet extends AbstractCallNoteServlet {
 	public static final String REALM = "contactNote";
 	
 	@Override
-	protected CallNoteResponse makeResponse(Connection conn, String xrefType, Integer xrefId) throws Exception {
+	protected CallNoteResponse makeResponse(Connection conn, String xrefType, Integer xrefId, SessionUser user) throws Exception {
 		logger.log(Level.DEBUG, "CallNoteResponse");
-		ContactNoteResponse response = new ContactNoteResponse(conn, xrefType, Integer.valueOf(xrefId));
+		ContactNoteResponse response = new ContactNoteResponse(conn, xrefType, Integer.valueOf(xrefId), user);
 		logger.log(Level.DEBUG, response);
 		return response;
 	}

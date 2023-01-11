@@ -36,11 +36,11 @@ public class MenuItem extends ApplicationObject {
 	
 	
 	
-	public static void main(String[] args ) {
-		MenuItem menuItem = new MenuItem(Menu.CLAIM_ENTRY);
-		for ( MenuItem x : menuItem.getSubMenu() ) {
-			System.out.println(x.getMenu().getDisplayText());
-		}
-	}
+//	public static void main(String[] args ) {
+//		MenuItem menuItem = new MenuItem(Menu.CLAIM_ENTRY);
+//		for ( MenuItem x : menuItem.getSubMenu() ) {
+//			System.out.println(x.getMenu().getDisplayText());
+//		}
+//	}
 	
 }

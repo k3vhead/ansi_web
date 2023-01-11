@@ -7,8 +7,14 @@ $( document ).ready(function() {
 	;JOB_UTILS = {
 		pageInit:function($jobId) {
 
-			$optionData = ANSI_UTILS.getOptions('JOB_FREQUENCY,JOB_STATUS,INVOICE_TERM,INVOICE_GROUPING,INVOICE_STYLE,COUNTRY');
+			ANSI_UTILS.getOptionList('COUNTRY,INVOICE_GROUPING,INVOICE_STYLE,INVOICE_TERM',JOB_UTILS.populateOptionList);
 			//console.log($optionData);
+			
+			
+		},
+		
+		
+		populateOptionList : function ($optionData) {	
 			
 			JOB_DATA.jobFrequencyList = $optionData.jobFrequency;
 			JOB_DATA.jobStatusList = $optionData.jobStatus;
@@ -24,10 +30,9 @@ $( document ).ready(function() {
 			JOB_DATA.jobId = $jobId;
 			
 			JOB_UTILS.panelLoad("0",$jobId);
-			
-			
-		},
-			
+	   	},
+	   	
+	   	
 		panelLoad:function($namespace,$jobId) {			
 			var $jobDetail = null;			
 			var $quoteDetail = null;
@@ -218,6 +223,19 @@ $( document ).ready(function() {
 			});
 		},
 		
+		populatePanelLoadQuoteList : function ($optionData) {
+
+			JOB_DATA.jobFrequencyList = $optionData.jobFrequency;
+			JOB_DATA.jobStatusList = $optionData.jobStatus;
+			JOB_DATA.invoiceTermList = $optionData.invoiceTerm;
+			JOB_DATA.invoiceGroupingList = $optionData.invoiceGrouping;
+			JOB_DATA.invoiceStyleList = $optionData.invoiceStyle;
+
+			JOB_DATA.divisionList = ANSI_UTILS.getDivisionList();
+			JOB_DATA.buildingTypeList = ANSI_UTILS.makeBuildingTypeList();
+			
+		},
+		
 		panelLoadQuote:function($namespace, $jobId, $index, $quoteData) {
 			var $page = "JOB";
 			
@@ -225,16 +243,8 @@ $( document ).ready(function() {
 				$page = "QUOTE";
 			}
 			if($index == 0){
-				$optionData = ANSI_UTILS.getOptions('JOB_FREQUENCY,JOB_STATUS,INVOICE_TERM,INVOICE_GROUPING,INVOICE_STYLE');
+				ANSI_UTILS.getOptionList('JOB_FREQUENCY,JOB_STATUS,INVOICE_TERM,INVOICE_GROUPING,INVOICE_STYLE',JOB_UTILS.populatePanelLoadQuoteList);
 				
-				JOB_DATA.jobFrequencyList = $optionData.jobFrequency;
-				JOB_DATA.jobStatusList = $optionData.jobStatus;
-				JOB_DATA.invoiceTermList = $optionData.invoiceTerm;
-				JOB_DATA.invoiceGroupingList = $optionData.invoiceGrouping;
-				JOB_DATA.invoiceStyleList = $optionData.invoiceStyle;
-
-				JOB_DATA.divisionList = ANSI_UTILS.getDivisionList();
-				JOB_DATA.buildingTypeList = ANSI_UTILS.makeBuildingTypeList();
 			}
 			
 			QUOTE_DATA.data = $quoteData;

@@ -21,7 +21,7 @@ import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
@@ -127,8 +127,8 @@ public class ClaimEntryServlet extends AbstractServlet {
 				ticketClaim.setTicketId(ticketId);
 				ticketClaim.setUpdatedBy(sessionData.getUser().getUserId());
 				ticketClaim.setVolume(new BigDecimal(claimEntryRequest.getVolume()));
-				ticketClaim.setWasherId(claimEntryRequest.getWasherId());
-				ticketClaim.setWorkDate(claimEntryRequest.getWorkDate());
+//				ticketClaim.setWasherId(claimEntryRequest.getWasherId());
+//				ticketClaim.setWorkDate(claimEntryRequest.getWorkDate());
 				ticketClaim.insertWithKey(conn);
 				
 				conn.commit();

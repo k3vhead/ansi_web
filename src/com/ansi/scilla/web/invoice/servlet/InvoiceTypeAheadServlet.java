@@ -1,7 +1,7 @@
 package com.ansi.scilla.web.invoice.servlet;
 
-import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URLDecoder;
 import java.sql.Connection;
@@ -24,14 +24,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.ApplicationObject;
-import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.jsonFormat.AnsiFormat;
 import com.ansi.scilla.common.queries.InvoiceSearch;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
@@ -51,7 +50,7 @@ import com.thewebthing.commons.lang.StringUtils;
  * 
  * The url for get will be one of:
  * 		/invoiceTypeAhead?term=					(returns not found)
- * 		/invoiceTypeAhead?term=<searchTerm>		(returns all records containing <searchTerm>)
+ * 		/invoiceTypeAhead?term=&lt;searchTerm&gt;		(returns all records containing &lt;searchTerm&gt;)
  * 
  * The servlet will return 404 Not Found if there is no "term=" found.
  * 
@@ -83,7 +82,7 @@ public class InvoiceTypeAheadServlet extends AbstractServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		try {
-			SessionData sessionData = AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+			SessionData sessionData = AppUtils.validateSession(request, Permission.TICKET_READ);
 			SessionUser user = sessionData.getUser();
 			processRequest(user, request, response);
 
@@ -143,7 +142,8 @@ public class InvoiceTypeAheadServlet extends AbstractServlet {
 
 		Integer billToAddressId = StringUtils.isNumeric(billTo) ? Integer.valueOf(billTo) : null;
 
-		String sql = InvoiceSearch.sql + InvoiceSearch.generateWhereClause(conn, term, billToAddressId);
+		String sql = InvoiceSearch.sql + InvoiceSearch.generateWhereClause(conn, term, billToAddressId) 
+			+ " ORDER BY invoice_id DESC OFFSET 0 ROWS FETCH NEXT 250 ROWS ONLY";
 		logger.log(Level.DEBUG, "******");
 		logger.log(Level.DEBUG, "Invoice SQL:\n" + sql);
 		logger.log(Level.DEBUG, "******");

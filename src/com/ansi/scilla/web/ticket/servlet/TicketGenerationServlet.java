@@ -15,7 +15,6 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.AnsiTime;
-import com.ansi.scilla.common.db.PermissionLevel;
 //import com.ansi.scilla.batch.scheduling.GenerateTickets;
 import com.ansi.scilla.common.jobticket.JobUtils;
 import com.ansi.scilla.web.common.response.ResponseCode;
@@ -24,7 +23,7 @@ import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
@@ -63,7 +62,7 @@ public class TicketGenerationServlet extends AbstractServlet{
 				TicketGenerationRequest generateTicketRequest = new TicketGenerationRequest();
 				AppUtils.json2object(jsonString, generateTicketRequest);
 //				ansiURL = new AnsiURL(request, "invoiceGeneration", (String[])null); //  .../ticket/etc
-				SessionData sessionData = AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+				SessionData sessionData = AppUtils.validateSession(request, Permission.TICKET_WRITE);
 				
 				SessionUser sessionUser = sessionData.getUser(); 
 				List<String> addErrors = super.validateRequiredAddFields(generateTicketRequest);

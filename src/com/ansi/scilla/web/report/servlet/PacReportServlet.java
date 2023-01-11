@@ -14,17 +14,16 @@ import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.Midnight;
-import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.report.pac.PacActivationListReport;
 import com.ansi.scilla.report.pac.PacCancelledListReport;
 import com.ansi.scilla.report.pac.PacDetailReport;
 import com.ansi.scilla.report.pac.PacProposedListReport;
 import com.ansi.scilla.report.pac.PacSummaryReport;
-import com.ansi.scilla.report.reportBuilder.HTMLBuilder;
+import com.ansi.scilla.report.reportBuilder.htmlBuilder.HTMLBuilder;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
@@ -44,7 +43,7 @@ public class PacReportServlet extends AbstractServlet {
 		try {
 			String jsonString = super.makeJsonString(request);
 			ansiURL = new AnsiURL(request, REALM, (String[])null); 
-			AppUtils.validateSession(request, Permission.QUOTE, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+			AppUtils.validateSession(request, Permission.QUOTE_READ);
 			Connection conn = null;
 			try {
 				conn = AppUtils.getDBCPConn();
