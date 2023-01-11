@@ -214,19 +214,19 @@
     			            { width:"10%", title: "Address", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.job_site_address != null){return (row.job_site_address+"");}
     			            } },
-    			            { width:"4%", title: "Start Date", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { width:"4%", title: "Start Date", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "YYYY-MM-dd", data: function ( row, type, set ) {
     			            	if(row.view_start_date != null){return (row.view_start_date);}
     			            } },
     			            { width:"8%", title: "Freq" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {    			            	
     			            	if(row.job_frequency != null){return '<span class="tooltip">' + row.job_frequency+'<span class="tooltiptext">'+row.frequency_desc+'</span></span>';}
     			            } },
-    			            { width:"8%", title: "PPC", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { width:"8%", title: "PPC", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
     			            	if(row.price_per_cleaning != null){return (row.price_per_cleaning.toFixed(2)+"");}
     			            } },
     			            { width:"8%", title: "<bean:message key="field.label.jobId" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.view_job_id != null){return '<ansi:hasPermission permissionRequired="QUOTE_READ"><a href="jobMaintenance.html?id='+ row.view_job_id +'" class="jobLink"></ansi:hasPermission>'+row.view_job_id+'<ansi:hasPermission permissionRequired="QUOTE_READ"></a></ansi:hasPermission>';}
     			            } },
-    			            { width:"7%", title: "Washer",  "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { width:"7%", title: "Washer",  "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "Last, First Name", data: function ( row, type, set ) {
     			            	if(row.washer != null){return row.washer;}
     			            } },
     			            { width:"5%", title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {

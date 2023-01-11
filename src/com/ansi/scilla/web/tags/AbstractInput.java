@@ -79,12 +79,12 @@ public abstract class AbstractInput extends BodyTagSupport {
 	protected boolean canEdit(SessionData sessionData, String permissionRequired) throws JspTagException {
 		boolean canWrite = false;
 		if ( sessionData != null ) {
-			if ( sessionData.getUser().getSuperUser().equals(new Integer(1)) ) {
+			if ( sessionData.getUser().getSuperUser().equals(Integer.valueOf(1)) ) {
 				canWrite = true;
 			} else {
 				for ( UserPermission userPermission : sessionData.getUserPermissionList() ) {
 					if ( userPermission.getPermissionName().equalsIgnoreCase(permissionRequired)) {
-						if ( userPermission.getLevel().equals(new Integer(1))) {
+						if ( userPermission.getLevel().equals(Integer.valueOf(1))) {
 							canWrite = true;
 						}
 					}

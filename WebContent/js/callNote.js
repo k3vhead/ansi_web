@@ -2,6 +2,9 @@ $(function() {
 	;CALLNOTE = {
 		callTypeList : null,	
 		callNoteAccordion : false,
+		defaultVals : null,
+		defaultAddressName : null,
+		defaultAnsiContactName : null,
 		
 		
 		init : function() {
@@ -41,10 +44,20 @@ $(function() {
 					$("#note-crud-form input[name='addressId']").val($xrefId);
 				}
 			}
-			//if ( $data.contactId != null && $data.contactId != '' ) {
-			//	$("#note-crud-form input[name='contactId']").val($data.contactId);
-			//	$("#note-crud-form input[name='contact']").val(($data.firstName + " " + $data.lastName).trim());
-			//}
+
+			if (CALLNOTE.defaultVals != null ) {
+				console.log("Populating defaults");
+				console.log(CALLNOTE.defaultVals);
+				$("#note-crud-form input[name='addressId']").val(CALLNOTE.defaultVals['addressId']);
+				$("#note-crud-form input[name='address']").val(CALLNOTE.defaultAddressName);
+				$("#note-crud-form input[name='ansi']").val(CALLNOTE.ansiContactName);
+				$("#note-crud-form input[name='userId']").val(CALLNOTE.defaultVals['userId']);
+				$("#note-crud-form input[name='startDate']").val(CALLNOTE.defaultVals['startDate']);
+				$("#note-crud-form input[name='startTime']").val(CALLNOTE.defaultVals['startTime']);
+				$("#note-crud-form select[name='contactType']").val(CALLNOTE.defaultVals['contactType']);
+			} else {
+				console.log("Not poulating defaults");
+			}
 		},
 		
 		
@@ -68,24 +81,26 @@ $(function() {
 					statusCode: {
 						200: function($data) {
 							//$callback(200, $data);
+							CALLNOTE.defaultVals = $data.data.defaultVals;
+							CALLNOTE.defaultAddressName = $data.data.defaultAddressName;
+							CALLNOTE.ansiContactName = $data.data.ansiContactName;
 							if ( $data.data.noteList.length == 0 ) {
 								CALLNOTE.openNoteForm($xrefType, $xrefId, $xrefName)
 							} else {
 								CALLNOTE.showListModal($data.data, $xrefName);
 							}
-							console.log($data);
 						},
 						403: function($data) {
-							$callback(403, $data);
+							$("#globalMsg").html("Session expired/Invalid request. Log in and try again").show();
 						},
 						404: function($data) {
-							$callback(404, $data);
+							$("#globalMsg").html("System error 404. Contact Support").show();
 						},
 						405: function($data) {
-							$callback(405, $data);
+							$("#globalMsg").html("System error 405. Contact Support").show();
 						},
 						500: function($data) {
-							$callback(500, $data);
+							$("#globalMsg").html("System error 500. Contact Support").show();
 						} 
 					},
 					dataType: 'json'

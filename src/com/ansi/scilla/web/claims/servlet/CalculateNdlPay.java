@@ -23,7 +23,7 @@ import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
@@ -117,10 +117,10 @@ public class CalculateNdlPay extends AbstractServlet {
 	private void validateInput(Connection conn, JsonNode jsonNode) throws InvalidNdlException {
 		WebMessages webMessages = new WebMessages();
 		try {
-			RequestValidator.validateId(conn, webMessages, User.class.getAnnotation(DBTable.class).value(), User.USER_ID, WASHER_ID, jsonNode.get(WASHER_ID).asInt(), true);
-			RequestValidator.validateId(conn, webMessages, Division.TABLE, Division.DIVISION_ID, DIVISION_ID, jsonNode.get(DIVISION_ID).asInt(), true);
+			RequestValidator.validateId(conn, webMessages, User.class.getAnnotation(DBTable.class).value(), User.USER_ID, WASHER_ID, jsonNode.get(WASHER_ID).asInt(), true, null);
+			RequestValidator.validateId(conn, webMessages, Division.TABLE, Division.DIVISION_ID, DIVISION_ID, jsonNode.get(DIVISION_ID).asInt(), true, null);
 			RequestValidator.validateDate(webMessages, WORK_DATE, jsonNode.get(WORK_DATE).asText(), "MM/dd/yyyy", true, null, null);
-			RequestValidator.validateNumber(webMessages, HOURS, jsonNode.get(HOURS).asDouble(), null, null, true);
+			RequestValidator.validateNumber(webMessages, HOURS, jsonNode.get(HOURS).asDouble(), null, null, true, null);
 			RequestValidator.validateWorkHoursType(webMessages, HOURS_TYPE, jsonNode.get(HOURS_TYPE).asText(), true);
 		} catch ( Exception e ) {
 			AppUtils.logException(e);

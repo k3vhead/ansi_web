@@ -31,6 +31,7 @@ public class QuoteTableReturnItem extends ReportQuery {
 		public static final String DIVISION_CODE = "division_code";
 		public static final String QUOTE_NUMBER = "quote_number";
 		public static final String REVISION = "revision";
+		public static final String DOCUMENT_COUNT = "document_count";
 
 		
 		private Integer quoteId;
@@ -50,6 +51,7 @@ public class QuoteTableReturnItem extends ReportQuery {
 		private String divisionCode;
 		private Integer quoteNumber;
 		private String revision;
+		private Integer documentCount;
 		
 		public QuoteTableReturnItem() throws SQLException {
 			super();
@@ -73,7 +75,7 @@ public class QuoteTableReturnItem extends ReportQuery {
 			this.divisionNbr = rs.getInt(DIVISION_NBR);
 			this.divisionCode = rs.getString(DIVISION_CODE);
 			this.DT_RowId = rs.getInt(QUOTE_ID)+"";
-
+			this.documentCount = rs.getInt(DOCUMENT_COUNT);
 		}
 
 		public QuoteTableReturnItem(QuoteSearch qs) {
@@ -95,6 +97,7 @@ public class QuoteTableReturnItem extends ReportQuery {
 			this.divisionNbr = qs.getDivision().getDivisionNbr();
 			this.divisionCode = qs.getDivision().getDivisionCode();
 			this.DT_RowId = qs.getQuote().getQuoteId()+"";
+			this.documentCount = qs.getDocumentCount();
 		}
 		
 		@DBColumn(QUOTE_ID)
@@ -245,6 +248,14 @@ public class QuoteTableReturnItem extends ReportQuery {
 		@DBColumn(DIVISION_CODE)
 		public void setDivisionCode(String divisionCode) {
 			this.divisionCode = divisionCode;
+		}
+		@DBColumn(DOCUMENT_COUNT)
+		public Integer getDocumentCount() {
+			return documentCount;
+		}
+		@DBColumn(DOCUMENT_COUNT)
+		public void setDocumentCount(Integer documentCount) {
+			this.documentCount = documentCount;
 		}
 
 	}

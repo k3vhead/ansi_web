@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.db.Job;
+import com.ansi.scilla.common.db.JobTagXref;
 import com.ansi.scilla.common.db.Quote;
 import com.ansi.scilla.common.exceptions.ActionNotPermittedException;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
@@ -21,6 +22,7 @@ import com.ansi.scilla.common.exceptions.InvalidJobStatusException;
 import com.ansi.scilla.common.jobticket.JobFrequency;
 import com.ansi.scilla.common.jobticket.JobStatus;
 import com.ansi.scilla.common.jobticket.JobUtils;
+import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.MessageKey;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
@@ -29,7 +31,7 @@ import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.common.utils.UserPermission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
@@ -39,6 +41,7 @@ import com.ansi.scilla.web.job.request.JobRequest;
 import com.ansi.scilla.web.job.request.JobRequestAction;
 import com.ansi.scilla.web.job.response.JobDetailResponse;
 import com.ansi.scilla.web.quote.response.QuoteResponse;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class JobServlet extends AbstractServlet {
@@ -126,10 +129,10 @@ public class JobServlet extends AbstractServlet {
 			if ( url.getId() != null ) {
 				job = selectJob(conn, url.getId());
 			}
-			logger.log(Level.DEBUG, jsonString);
-			JobRequest jobRequest = new JobRequest(jsonString);
-			
 			try {
+				logger.log(Level.DEBUG, jsonString);
+				JobRequest jobRequest = new JobRequest(jsonString);
+			
 				Quote quote = selectQuote(conn, job, jobRequest);
 				trafficCop(conn, response, sessionData, job, quote, jobRequest);					
 				
@@ -143,6 +146,19 @@ public class JobServlet extends AbstractServlet {
 //					quoteResponse = new QuoteResponse(conn, url.getId(), permissionList);
 //					quoteResponse.getQuote().setJobDetail(jobDetail);
 //				}
+			} catch (InvalidFormatException e) {
+				String badField = super.findBadField(e.toString());
+				QuoteResponse data = new QuoteResponse();
+				WebMessages messages = new WebMessages();
+				messages.addMessage(badField, "Invalid Format");
+				data.setWebMessages(messages);
+				try {
+					super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
+				} catch (Exception e2) {
+					AppUtils.logException(e2);
+					AppUtils.rollbackQuiet(conn);
+					throw new ServletException(e2);
+				}
 			} catch ( JobProcessException e ) {
 				conn.rollback();
 				responseCode = ResponseCode.SYSTEM_FAILURE;
@@ -234,10 +250,11 @@ public class JobServlet extends AbstractServlet {
 		ResponseCode responseCode = null;
 		
 		try {
-			webMessages = jobRequest.validateProposalUpdate();
+			webMessages = jobRequest.validateProposalUpdate(conn);
 			if ( webMessages.isEmpty() ) {
 				populateJobProposal(job, jobRequest);
 				updateJob(conn, user, job);
+				updateJobTags(conn, user, job.getJobId(), jobRequest);
 				conn.commit();
 				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
 				responseCode = ResponseCode.SUCCESS;
@@ -267,12 +284,34 @@ public class JobServlet extends AbstractServlet {
 	}
 
 	
+	private void updateJobTags(Connection conn, SessionUser user, Integer jobId, JobRequest jobRequest) throws Exception {
+		JobTagXref xref = new JobTagXref();
+		xref.setJobId(jobId);
+		try {
+			xref.delete(conn);
+		} catch ( RecordNotFoundException e) {
+			// we don't care
+		}
+		
+		if ( jobRequest.getJobtags() != null && jobRequest.getJobtags().length > 0 ) {
+			for ( Integer tagId : jobRequest.getJobtags() ) {
+				xref = new JobTagXref();
+				xref.setAddedBy(user.getUserId());
+	//			xref.setAddedDate(addedDate);
+				xref.setJobId(jobId);
+				xref.setTagId(tagId);
+				xref.setUpdatedBy(user.getUserId());
+	//			xref.setUpdatedDate(updatedDate);
+				xref.insertWithNoKey(conn);			
+			}
+		}
+		
+	}
 
 	
 	
 	
 	
-
 	
 	private void makeActivationUpdate(Connection conn, HttpServletResponse response, SessionUser user, Job job, JobRequest jobRequest, List<UserPermission> permissionList) throws Exception {
 		WebMessages webMessages = new WebMessages();
@@ -430,14 +469,22 @@ public class JobServlet extends AbstractServlet {
 		Integer newJobId = null;
 		
 		try {
-			webMessages = jobRequest.validateNewJob(conn);
+			webMessages = validateAdd(conn, jobRequest);
+//			logger.log(Level.DEBUG, "makeNewJob:validateAdd.webMessages:" + webMessages);
 			if ( webMessages.isEmpty() ) {
-				populateNewJob(job, jobRequest);
-				newJobId = insertJob(conn, user, job);
-				conn.commit();
-				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
-				responseCode = ResponseCode.SUCCESS;
-				jobDetailResponse = new JobDetailResponse(conn, newJobId, permissionList);
+				webMessages = jobRequest.validateNewJob(conn);
+//				logger.log(Level.DEBUG, "makeNewJob:validateNewJob.webMessages:" + webMessages);
+				if ( webMessages.isEmpty() ) {
+					populateNewJob(job, jobRequest);
+					newJobId = insertJob(conn, user, job);
+					updateJobTags(conn, user, newJobId, jobRequest);
+					conn.commit();
+					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
+					responseCode = ResponseCode.SUCCESS;
+					jobDetailResponse = new JobDetailResponse(conn, newJobId, permissionList);
+				} else {
+					responseCode = ResponseCode.EDIT_FAILURE;
+				}
 			} else {
 				responseCode = ResponseCode.EDIT_FAILURE;
 			}
@@ -737,7 +784,7 @@ public class JobServlet extends AbstractServlet {
 	}
 	*/
 	
-	
+// As far as I can tell, this code is never called. GAG 8/6/2020	
 	protected Job doAdd(Connection conn, JobRequest jobRequest, SessionUser sessionUser, List<UserPermission> permissionList, HttpServletResponse response) throws Exception {
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
 		ResponseCode responseCode = null;
@@ -745,6 +792,7 @@ public class JobServlet extends AbstractServlet {
 		Job job = new Job();
 
 		WebMessages webMessages = validateAdd(conn, jobRequest);
+//		logger.log(Level.DEBUG, "doAdd.validateAdd:" + webMessages);
 		if(jobRequest.getQuoteId() != null && jobRequest.getQuoteId() ==0){
 			responseCode = ResponseCode.EDIT_FAILURE;
 			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "No Quote ID, Try saving quote first");
@@ -1087,11 +1135,16 @@ public class JobServlet extends AbstractServlet {
 	protected WebMessages validateAdd(Connection conn, JobRequest jobRequest) throws Exception {
 		WebMessages webMessages = new WebMessages();
 		List<String> missingFields = super.validateRequiredAddFields(jobRequest);
-		logger.log(Level.DEBUG, "validateAdd");
+		// the validateRequiredAddFields method checks for null and for empty strings, not for zero-length arrays.
+		// since we are moving away from using this method, and toward the RequestValidator paradigm, let's add
+		// a check for new fields here.
+		RequestValidator.validateServiceTags(conn, webMessages, JobRequest.JOBTAGS, jobRequest.getJobtags(), true, "Service Type");
+		
+		logger.log(Level.DEBUG, "validateAdd:" + missingFields);
 		String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
 		if ( missingFields.isEmpty() ) {
 			if ( ! JobUtils.isValidDLPct(jobRequest.getDirectLaborPct())) {
-				webMessages.addMessage("directLabotPct", "Invalid DL Pct");
+				webMessages.addMessage("directLaborPct", "Invalid DL Pct");
 			}
 		} else {
 //			String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");

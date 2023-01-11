@@ -5,9 +5,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
+import com.ansi.scilla.common.callNote.CallNoteReference;
+import com.ansi.scilla.common.callNote.DefaultAddress;
+import com.ansi.scilla.web.callNote.request.CallNoteRequest;
 import com.ansi.scilla.web.common.response.MessageResponse;
+import com.ansi.scilla.web.common.struts.SessionUser;
+import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class CallNoteResponse extends MessageResponse {
 
@@ -39,19 +45,22 @@ public class CallNoteResponse extends MessageResponse {
 	private String xrefType;
 	private Integer xrefId;	
 	private List<CallNoteResponseItem> noteList;
+	private CallNoteRequest defaultVals;
+	private String defaultAddressName;
+	private String ansiContactName;
 	
 	public CallNoteResponse() {
 		super();
 	}
 	
-	public CallNoteResponse(Connection conn, String xrefType, Integer xrefId) throws SQLException {
+	public CallNoteResponse(Connection conn, String xrefType, Integer xrefId, SessionUser user) throws SQLException, RecordNotFoundException {
 		this();
 		this.xrefType = xrefType;
 		this.xrefId = xrefId;
 		this.noteList = makeNoteList(conn);
+		this.setDefaultVals(makeDefaultVals(conn, xrefType, xrefId, user));
 	}
 
-	
 	public String getXrefType() {
 		return xrefType;
 	}
@@ -75,6 +84,31 @@ public class CallNoteResponse extends MessageResponse {
 	public void setNoteList(List<CallNoteResponseItem> noteList) {
 		this.noteList = noteList;
 	}
+	
+	public CallNoteRequest getDefaultVals() {
+		return defaultVals;
+	}
+
+	public void setDefaultVals(CallNoteRequest defaultVals) {
+		this.defaultVals = defaultVals;
+	}
+	
+	public String getDefaultAddressName() {
+		return defaultAddressName;
+	}
+	
+	public void setDefaultAddressName(String defaultAddressName) {
+		this.defaultAddressName = defaultAddressName;
+	}
+	
+	public String getAnsiContactName() {
+		return ansiContactName;
+	}
+	
+	public void setAnsiContactName(String ansiContactName) {
+		this.ansiContactName = ansiContactName;
+	}
+	
 	private List<CallNoteResponseItem> makeNoteList(Connection conn) throws SQLException {
 		PreparedStatement ps = conn.prepareStatement(this.sql);
 		ps.setString(1, this.xrefType);
@@ -88,6 +122,29 @@ public class CallNoteResponse extends MessageResponse {
 		return noteList;
 	}
 	
+	private CallNoteRequest makeDefaultVals(Connection conn, String xrefType, Integer xrefId, SessionUser user) throws SQLException {
+		Calendar now = Calendar.getInstance();
+		CallNoteReference xref = CallNoteReference.valueOf(xrefType);
+		CallNoteRequest callNoteRequest = new CallNoteRequest();
+		callNoteRequest.setUserId(user.getUserId());
+		this.ansiContactName = user.getFirstName() + " " + user.getLastName();
+		try {
+			DefaultAddress defaultAddress = xref.defaultAddress(conn, xrefId);
+			callNoteRequest.setAddressId(defaultAddress.addressId);
+			this.defaultAddressName = defaultAddress.name;
+		} catch ( RecordNotFoundException e ) {
+			callNoteRequest.setAddressId(null);
+			this.defaultAddressName = null;
+		}
+		callNoteRequest.setContactId(xrefId);
+		callNoteRequest.setXrefId(xrefId);
+		callNoteRequest.setXrefType(xrefType);
+		callNoteRequest.setStartDate(now);
+		callNoteRequest.setStartTime(now);
+		callNoteRequest.setContactType("PHONE");
+		return callNoteRequest;
+	}
+
 	
 	
 	

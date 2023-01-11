@@ -3,7 +3,9 @@ package com.ansi.scilla.web.ticket.servlet;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.Connection;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -14,13 +16,12 @@ import org.apache.logging.log4j.Level;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.ansi.scilla.common.AnsiTime;
-import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.web.common.response.MessageKey;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
@@ -60,7 +61,7 @@ public class TicketDRVServlet extends AbstractServlet {
 		try {
 
 			conn = AppUtils.getDBCPConn();
-			AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+			AppUtils.validateSession(request, Permission.TICKET_READ);
 			String month = request.getParameter("month");
 			String format = request.getParameter("format");
 			if(StringUtils.isBlank(month)||!StringUtils.isNumeric(month)||Integer.valueOf(month)>12){
@@ -99,7 +100,7 @@ public class TicketDRVServlet extends AbstractServlet {
 			}
 			ticketDRVResponse.setWebMessages(webMessages);
 			if(!StringUtils.isBlank(format) && format.equalsIgnoreCase("xls")){
-				sendAsXLS(response, ticketDRVResponse);
+				sendAsXLS(response, chosenMonth, thisYear, ticketDRVResponse);
 			} else{
 				super.sendResponse(conn, response, responseCode, ticketDRVResponse);
 			}
@@ -117,7 +118,16 @@ public class TicketDRVServlet extends AbstractServlet {
 
 	}
 
-	public void sendAsXLS(HttpServletResponse response, TicketDRVResponse ticketDRVResponse) throws IOException{
+	public void sendAsXLS(HttpServletResponse response, Integer month, Integer year, TicketDRVResponse ticketDRVResponse) throws IOException{
+		SimpleDateFormat runDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		String runDate = runDateFormat.format(ticketDRVResponse.getRunDate());
+		
+		SimpleDateFormat reportDateFormat = new SimpleDateFormat("yyyy-MM");
+		String reportDate = reportDateFormat.format((new GregorianCalendar(year, month, 1)).getTime());
+		
+		String fileName = "DRV for Division " + ticketDRVResponse.getDivision().getDivisionNbr() + " for " + reportDate + " as of " + runDate + ".xlsx";
+		fileName = fileName.replaceAll(" ","_");
+		
 		XSSFWorkbook workbook = ticketDRVResponse.toXLSX();
 		OutputStream out = response.getOutputStream();
 		
@@ -126,7 +136,7 @@ public class TicketDRVServlet extends AbstractServlet {
 	    response.setHeader("Pragma", "public");
 	    // setting the content type
 	    response.setContentType("application/vnd.ms-excel");
-	    String dispositionHeader = "attachment; filename=" + "DRV" + ".xlsx";
+	    String dispositionHeader = "attachment; filename=" + fileName;
 		response.setHeader("Content-disposition",dispositionHeader);
 	    // the contentlength
 //	    response.setContentLength(baos.size());

@@ -3,7 +3,6 @@ package com.ansi.scilla.web.callNote.query;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 
 import com.ansi.scilla.common.db.CallLog;
@@ -21,7 +20,7 @@ public class CallNoteLookupQuery extends LookupQuery {
 	public static final String USER_ID = "call_log.user_id";
 	public static final String ANSI_CONTACT = "concat(ansi_user.first_name, ' ', ansi_user.last_name)";
 	public static final String START_TIME = "call_log.start_time";
-	public static final String CONTACT_TYPE = "code.description";
+	public static final String CONTACT_TYPE = "code.display_value";
 	public static final String XREF_TYPE = "call_log_xref.xref_type";
 	public static final String XREF_ID = "call_log_xref.xref_id";
 	public static final String XREF = "concat(call_log_xref.xref_type, ' ', call_log_xref.xref_id)";
@@ -97,7 +96,6 @@ public class CallNoteLookupQuery extends LookupQuery {
 	 * 
 	 * @param queryTerm
 	 * @return 
-	 * @throws Exception
 	 */
 	protected String makeWhereClause(String queryTerm)  {
 		String whereClause = CallNoteLookupQuery.baseWhereClause;

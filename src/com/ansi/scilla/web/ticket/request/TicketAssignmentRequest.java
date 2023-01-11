@@ -33,7 +33,7 @@ public class TicketAssignmentRequest extends AbstractRequest {
 	public WebMessages validateAdd(Connection conn) throws Exception {
 		WebMessages webMessages = new WebMessages();
 		RequestValidator.validateWasherId(conn, webMessages, WASHER_ID, this.washerId, true);
-		RequestValidator.validateTicketId(conn, webMessages, TICKET_ID, this.ticketId, true);
+		RequestValidator.validateTicketId(conn, webMessages, TICKET_ID, this.ticketId, true, null);
 		return webMessages;
 	}
 	

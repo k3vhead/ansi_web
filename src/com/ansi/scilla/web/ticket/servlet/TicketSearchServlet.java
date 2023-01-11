@@ -12,11 +12,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
-import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
@@ -31,11 +30,11 @@ import com.thewebthing.commons.db2.RecordNotFoundException;
  * 
  * The url for get will be one of:
  * 		/ticketSearch/List      		(retrieves everything)
- * 		/ticketSearch/<ticketId>		(retrieves a single record)
+ * 		/ticketSearch/&lt;ticketId&gt;		(retrieves a single record)
  *		/ticketSearch?term=				(retrieves everything)
- * 		/ticketSearch?term=<queryTerm>	(retrieves filtered selection)
- * 		/ticketSearch?sort=<sort>,<sort> (retrieve sorted selection)
- * 		/ticketSearch?term=<term>&sort=<sort> (retrieve sorted filtered selection)
+ * 		/ticketSearch?term=&lt;queryTerm&gt;	(retrieves filtered selection)
+ * 		/ticketSearch?sort=&lt;sort&gt;,&lt;sort&gt; (retrieve sorted selection)
+ * 		/ticketSearch?term=&lt;term&gt;&amp;sort=&lt;sort&gt; (retrieve sorted filtered selection)
  * 
  * @author ggroce
  */
@@ -79,7 +78,7 @@ public class TicketSearchServlet extends AbstractServlet {
 					Connection conn = null;
 					try {
 						conn = AppUtils.getDBCPConn();
-						AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+						AppUtils.validateSession(request, Permission.TICKET_READ);
 
 						TicketSearchListResponse ticketSearchListResponse = doGetWork(conn, myString, queryString);
 						super.sendResponse(conn, response, ResponseCode.SUCCESS, ticketSearchListResponse);
@@ -105,7 +104,7 @@ public class TicketSearchServlet extends AbstractServlet {
 
 			try {
 				conn = AppUtils.getDBCPConn();
-				AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+				AppUtils.validateSession(request, Permission.TICKET_READ);
 				TicketSearchListResponse ticketSearchListQueryResponse = doGetWork(conn, queryString);
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, ticketSearchListQueryResponse);
 			} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {

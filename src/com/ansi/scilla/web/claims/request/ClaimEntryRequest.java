@@ -114,10 +114,10 @@ public class ClaimEntryRequest extends AbstractRequest {
 		
 		RequestValidator.validateDate(webMessages, ClaimEntryRequest.WORK_DATE, this.workDate, true, null, null);
 		RequestValidator.validateWasherId(conn, webMessages, ClaimEntryRequest.WASHER_ID, this.washerId, true);
-		RequestValidator.validateDouble(webMessages, ClaimEntryRequest.VOLUME, this.volume, null, null, true);
-		RequestValidator.validateDouble(webMessages, ClaimEntryRequest.DL_AMT, this.dlAmt, null, null, true);
-		RequestValidator.validateDouble(webMessages, ClaimEntryRequest.HOURS, this.hours, null, null, true);
-		RequestValidator.validateString(webMessages, ClaimEntryRequest.NOTES, this.notes, 1024, false);
+		RequestValidator.validateDouble(webMessages, ClaimEntryRequest.VOLUME, this.volume, null, null, true, null);
+		RequestValidator.validateDouble(webMessages, ClaimEntryRequest.DL_AMT, this.dlAmt, null, null, true, null);
+		RequestValidator.validateDouble(webMessages, ClaimEntryRequest.HOURS, this.hours, null, null, true, null);
+		RequestValidator.validateString(webMessages, ClaimEntryRequest.NOTES, this.notes, 1024, false, null);
 		return webMessages;
 	}
 	public WebMessages validateAddPassthruExpense(Connection conn) throws Exception {
@@ -125,9 +125,9 @@ public class ClaimEntryRequest extends AbstractRequest {
 		
 		RequestValidator.validateDate(webMessages, ClaimEntryRequest.WORK_DATE, this.workDate, true, null, null);
 		RequestValidator.validateWasherId(conn, webMessages, ClaimEntryRequest.WASHER_ID, this.washerId, true);
-		RequestValidator.validateDouble(webMessages, ClaimEntryRequest.PASSTHRU_EXPENSE_VOLUME, this.passthruExpenseVolume, null, null, true);
-		RequestValidator.validatePassthruExpenseType(conn, webMessages, ClaimEntryRequest.PASSTHRU_EXPENSE_TYPE, this.passthruExpenseType, true);
-		RequestValidator.validateString(webMessages, ClaimEntryRequest.NOTES, this.notes, 1024, false);
+		RequestValidator.validateDouble(webMessages, ClaimEntryRequest.PASSTHRU_EXPENSE_VOLUME, this.passthruExpenseVolume, null, null, true, null);
+		RequestValidator.validatePassthruExpenseType(conn, webMessages, ClaimEntryRequest.PASSTHRU_EXPENSE_TYPE, this.passthruExpenseType, true, null);
+		RequestValidator.validateString(webMessages, ClaimEntryRequest.NOTES, this.notes, 1024, false, null);
 		return webMessages;
 	}
 	

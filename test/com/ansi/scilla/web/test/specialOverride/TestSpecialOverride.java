@@ -3,7 +3,6 @@ package com.ansi.scilla.web.test.specialOverride;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 
 import com.ansi.scilla.web.common.utils.AppUtils;

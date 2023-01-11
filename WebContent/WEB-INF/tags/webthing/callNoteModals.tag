@@ -35,11 +35,6 @@
   		</tr>
   		</ansi:hasPermission>
   		<tr>
-  			<td><span class="formLabel">Contact Name:</span></td>
-  			<td><input type="text" name="contact" /><input type="hidden" name="contactId"/></td>
-  			<td><span class="contactIdErr err"></span></td>
-  		</tr>
-  		<tr>
   			<td><span class="formLabel">Date/Time:</span></td>
   			<td><input type="date" name="startDate"  /> <input type="time" name="startTime" /></td>
   			<td><span class="startDateErr err"></span></td>
@@ -48,6 +43,11 @@
   			<td><span class="formLabel">Contact Type:</span></td>
   			<td><select name="contactType"></select></td>
   			<td><span class="contactTypeErr err"></span></td>
+  		</tr>
+  		<tr>
+  			<td><span class="formLabel">Contact Name:</span></td>
+  			<td><input type="text" name="contact" /><input type="hidden" name="contactId"/></td>
+  			<td><span class="contactIdErr err"></span></td>
   		</tr>
   		<tr>
   			<td><span class="formLabel">Summary:</span></td>

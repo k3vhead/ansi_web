@@ -119,8 +119,27 @@
     	<servlet-name>autoComplete</servlet-name>
     	<url-pattern>/autoComplete</url-pattern>
 	</servlet-mapping>
+	
+	
+	<servlet>
+		<servlet-name>batch</servlet-name>
+		<servlet-class>com.ansi.scilla.web.batch.servlet.BatchServlet</servlet-class>
+	</servlet><servlet-mapping>
+    	<servlet-name>batch</servlet-name>
+    	<url-pattern>/batch</url-pattern>
+    	<url-pattern>/batch/*</url-pattern>
+	</servlet-mapping>
 
 
+	<servlet>
+        <servlet-name>batchLogLookup</servlet-name>
+        <servlet-class>com.ansi.scilla.web.batch.servlet.BatchLogLookupServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>batchLogLookup</servlet-name>
+        <url-pattern>/batch/batchLogLookup</url-pattern>
+    </servlet-mapping>
+    
     
     <servlet>
         <servlet-name>budgetControlLookup</servlet-name>
@@ -131,9 +150,34 @@
         <url-pattern>/claims/budgetControlLookup/*</url-pattern>
         <url-pattern>/claims/budgetControlLookup</url-pattern>
     </servlet-mapping>
+    
+    
+    
+    <servlet>
+        <servlet-name>bcrServlet</servlet-name>
+        <servlet-class>com.ansi.scilla.web.bcr.servlet.BcrServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>bcrServlet</servlet-name>
+        <url-pattern>/bcr/*</url-pattern>
+    </servlet-mapping>
 
 
 
+	<servlet>
+        <servlet-name>calendarLookup</servlet-name>
+        <servlet-class>com.ansi.scilla.web.calendar.servlet.CalendarServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>calendarLookup</servlet-name>
+        <url-pattern>/calendar/ansiCalendar/*</url-pattern>
+        <url-pattern>/calendar/ansiCalendar</url-pattern>
+    </servlet-mapping>
+
+
+
+
+	
 
 	<servlet>
         <servlet-name>callNote</servlet-name>
@@ -211,8 +255,7 @@
     </servlet-mapping>
     
     
-    
-   <servlet>
+    <servlet>
         <servlet-name>directLaborLookup</servlet-name>
         <servlet-class>com.ansi.scilla.web.claims.servlet.DirectLaborLookupServlet</servlet-class>
     </servlet>
@@ -222,20 +265,62 @@
     </servlet-mapping>
     
     
-    
-   <servlet>
-        <servlet-name>ticketStatusLookup</servlet-name>
-        <servlet-class>com.ansi.scilla.web.claims.servlet.TicketStatusLookupServlet</servlet-class>
+    <servlet>
+        <servlet-name>documentLookup</servlet-name>
+        <servlet-class>com.ansi.scilla.web.document.servlet.DocumentLookupServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>ticketStatusLookup</servlet-name>
-        <url-pattern>/claims/ticketStatusLookup</url-pattern>
+        <servlet-name>documentLookup</servlet-name>
+        <url-pattern>/document/documentLookup</url-pattern>
     </servlet-mapping>
 
 
+    
+    
+   <servlet>
+        <servlet-name>documentUpload</servlet-name>
+        <servlet-class>com.ansi.scilla.web.document.servlet.DocumentUploadServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>documentUpload</servlet-name>
+        <url-pattern>/documentUpload/*</url-pattern>
+        <url-pattern>/documentUpload</url-pattern>
+    </servlet-mapping>
 
 
-    <servlet>
+	<servlet>
+        <servlet-name>documentValidate</servlet-name>
+        <servlet-class>com.ansi.scilla.web.document.servlet.DocumentValidateServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>documentValidate</servlet-name>
+        <url-pattern>/document/validate/*</url-pattern>
+    </servlet-mapping>
+    
+    
+   <servlet>
+        <servlet-name>documentView</servlet-name>
+        <servlet-class>com.ansi.scilla.web.document.servlet.DocumentViewServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>documentView</servlet-name>
+        <url-pattern>/document/view/*</url-pattern>
+    </servlet-mapping>
+
+    
+	<servlet>
+        <servlet-name>documentViewLookup</servlet-name>
+        <servlet-class>com.ansi.scilla.web.document.servlet.DocumentViewLookupServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>documentViewLookup</servlet-name>
+        <url-pattern>/document/viewLookup/*</url-pattern>
+    </servlet-mapping>
+
+    
+    
+   
+   <servlet>
         <servlet-name>claimDetailLookup</servlet-name>
         <servlet-class>com.ansi.scilla.web.claims.servlet.ClaimDetailLookupServlet</servlet-class>
     </servlet>
@@ -277,6 +362,15 @@
         <url-pattern>/code/*</url-pattern>
     </servlet-mapping>
     
+    
+    <servlet>
+        <servlet-name>codeLookup</servlet-name>
+        <servlet-class>com.ansi.scilla.web.code.servlet.CodeLookupServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>codeLookup</servlet-name>
+        <url-pattern>/codeLookup</url-pattern>
+    </servlet-mapping>
 
     <servlet>
     	<servlet-name>contact</servlet-name>
@@ -326,6 +420,35 @@
         <servlet-name>division</servlet-name>
         <url-pattern>/division/*</url-pattern>
     </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>divisionClose</servlet-name>
+        <servlet-class>com.ansi.scilla.web.division.servlet.DivisionCloseServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>divisionClose</servlet-name>
+        <url-pattern>/divisionClose</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>divisionList</servlet-name>
+        <servlet-class>com.ansi.scilla.web.division.servlet.DivisionListServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>divisionList</servlet-name>
+        <url-pattern>/divisionList</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+    	<servlet-name>divisionLookup</servlet-name>
+    	<servlet-class>com.ansi.scilla.web.division.servlet.DivisionLookupServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+    	<servlet-name>divisionLookup</servlet-name>
+    	<url-pattern>/divisionLookup</url-pattern>
+    </servlet-mapping>
+
+
     <servlet>
     	<servlet-name>divisionTypeAhead</servlet-name>
     	<servlet-class>com.ansi.scilla.web.division.servlet.DivisionTypeAheadServlet</servlet-class>
@@ -333,6 +456,16 @@
     <servlet-mapping>
     	<servlet-name>divisionTypeAhead</servlet-name>
     	<url-pattern>/divisionTypeAhead/*</url-pattern>
+    </servlet-mapping>
+    
+    
+    <servlet>
+        <servlet-name>divisionUnclose</servlet-name>
+        <servlet-class>com.ansi.scilla.web.division.servlet.DivisionUncloseServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>divisionUnclose</servlet-name>
+        <url-pattern>/divisionUnclose</url-pattern>
     </servlet-mapping>
     
     <servlet>
@@ -439,22 +572,22 @@
 
 
 	<servlet>
-		<servlet-name>invoiceReprint</servlet-name>
-		<servlet-class>com.ansi.scilla.web.invoice.servlet.InvoiceReprintServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>invoiceReprint</servlet-name>
-		<url-pattern>/invoiceReprint/*</url-pattern>
-	</servlet-mapping>
-
-
-	<servlet>
 		<servlet-name>invoicePrintLookup</servlet-name>
 		<servlet-class>com.ansi.scilla.web.invoice.servlet.InvoicePrintLookupServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>invoicePrintLookup</servlet-name>
 		<url-pattern>/invoicePrintLookup/*</url-pattern>
+	</servlet-mapping>
+
+
+	<servlet>
+		<servlet-name>invoiceReprint</servlet-name>
+		<servlet-class>com.ansi.scilla.web.invoice.servlet.InvoiceReprintServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>invoiceReprint</servlet-name>
+		<url-pattern>/invoiceReprint/*</url-pattern>
 	</servlet-mapping>
 
 
@@ -507,13 +640,103 @@
 		<url-pattern>/getJobs/*</url-pattern>
 	</servlet-mapping>
 	
+	
+	<servlet>
+		<servlet-name>jobTagLookup</servlet-name>
+		<servlet-class>com.ansi.scilla.web.job.servlet.JobTagLookupServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>jobTagLookup</servlet-name>
+		<url-pattern>/jobtag/jobTagLookup</url-pattern>
+	</servlet-mapping>
+	
+	
+	<servlet>
+		<servlet-name>jobTag</servlet-name>
+		<servlet-class>com.ansi.scilla.web.job.servlet.JobTagServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>jobTag</servlet-name>
+		<url-pattern>/jobtag/jobTag/*</url-pattern>
+		<url-pattern>/jobtag/jobTag</url-pattern>
+	</servlet-mapping>
+	
+	
+	
 	<servlet>
 		<servlet-name>jobTable</servlet-name>
-		<servlet-class>com.ansi.scilla.web.job.servlet.JobTableServlet</servlet-class>
+		<servlet-class>com.ansi.scilla.web.job.servlet.JobLookupServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>jobTable</servlet-name>
 		<url-pattern>/jobTable/*</url-pattern>
+	</servlet-mapping>
+	
+	
+	
+	
+	<servlet>
+		<servlet-name>localeAutocomplete</servlet-name>
+		<servlet-class>com.ansi.scilla.web.locale.servlet.LocaleAutocompleteServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	<servlet-name>localeAutocomplete</servlet-name>
+		<url-pattern>/localeAutocomplete</url-pattern>
+	</servlet-mapping>
+	
+	
+	
+	
+	<servlet>
+		<servlet-name>localeServlet</servlet-name>
+		<servlet-class>com.ansi.scilla.web.locale.servlet.LocaleServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>localeServlet</servlet-name>
+		<url-pattern>/locale/*</url-pattern>
+		<url-pattern>/locale</url-pattern>
+	</servlet-mapping>
+	
+	
+	
+	<servlet>
+		<servlet-name>localeDivisionLookup</servlet-name>
+		<servlet-class>com.ansi.scilla.web.locale.servlet.LocaleDivisionLookupServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>localeDivisionLookup</servlet-name>
+		<url-pattern>/localeDivisionLookup</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>localeDivisionServlet</servlet-name>
+		<servlet-class>com.ansi.scilla.web.locale.servlet.LocaleDivisionServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>localeDivisionServlet</servlet-name>
+		<url-pattern>/localeDivision/*</url-pattern>
+		<url-pattern>/localeDivision</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>localeTaxRateLookup</servlet-name>
+		<servlet-class>com.ansi.scilla.web.tax.servlet.LocaleTaxRateLookupServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>localeTaxRateLookup</servlet-name>
+		<url-pattern>/taxRateLookup/*</url-pattern>
+		<url-pattern>/taxRateLookup</url-pattern>
+	</servlet-mapping>
+
+
+	<servlet>
+		<servlet-name>localeTaxRate</servlet-name>
+		<servlet-class>com.ansi.scilla.web.tax.servlet.LocaleTaxRateServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>localeTaxRate</servlet-name>
+		<url-pattern>/localeTaxRate/*</url-pattern>
+		<url-pattern>/localeTaxRate</url-pattern>
 	</servlet-mapping>
 
 
@@ -554,6 +777,7 @@
     <servlet-mapping>
         <servlet-name>newQuote</servlet-name>
         <url-pattern>/quote/new</url-pattern>
+        <url-pattern>/quote/orphan/*</url-pattern>
     </servlet-mapping>
 
 
@@ -585,6 +809,15 @@
     <servlet-mapping>
         <servlet-name>options</servlet-name>
         <url-pattern>/options/*</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>organization</servlet-name>
+        <servlet-class>com.ansi.scilla.web.organization.servlet.OrganizationServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>organization</servlet-name>
+        <url-pattern>/organization/*</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -650,6 +883,16 @@
 		<servlet-name>paymentTypeAhead</servlet-name>
 		<url-pattern>/paymentTypeAhead/*</url-pattern>
 	</servlet-mapping>
+	
+	
+	<servlet>
+		<servlet-name>payroll</servlet-name>
+		<servlet-class>com.ansi.scilla.web.payroll.servlet.PayrollServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>payroll</servlet-name>
+		<url-pattern>/payroll/*</url-pattern>
+	</servlet-mapping>
 
 
 	<servlet>
@@ -660,6 +903,8 @@
         <servlet-name>permissionGroup</servlet-name>
         <url-pattern>/permissionGroup/*</url-pattern>
     </servlet-mapping>
+
+
 
 	<servlet>
         <servlet-name>permission</servlet-name>
@@ -690,6 +935,17 @@
         <url-pattern>/quote/*</url-pattern>
     </servlet-mapping>
 
+
+	<servlet>
+		<servlet-name>quoteAutoComplete</servlet-name>
+		<servlet-class>com.ansi.scilla.web.quote.servlet.QuoteAutoComplete</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>quoteAutoComplete</servlet-name>
+		<url-pattern>/quoteAutoComplete</url-pattern>
+	</servlet-mapping>
+	
+	
 	<servlet>
         <servlet-name>quotePrint</servlet-name>
         <servlet-class>com.ansi.scilla.web.quote.servlet.QuotePrintServlet</servlet-class>
@@ -698,6 +954,7 @@
         <servlet-name>quotePrint</servlet-name>
         <url-pattern>/quotePrint/*</url-pattern>
     </servlet-mapping>
+    
     
     
 	<servlet>
@@ -749,6 +1006,38 @@
 		<url-pattern>/report/*</url-pattern>
 	</servlet-mapping>
 	
+	
+	<servlet>
+		<servlet-name>reportSubscription</servlet-name>
+		<servlet-class>com.ansi.scilla.web.report.servlet.SubscriptionServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>reportSubscription</servlet-name>
+		<url-pattern>/reports/subscription</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>reportSubscriptionAdmin</servlet-name>
+		<servlet-class>com.ansi.scilla.web.report.servlet.SubscriptionAdminServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>reportSubscriptionAdmin</servlet-name>
+		<url-pattern>/reports/subscriptionAdmin/*</url-pattern>
+		<url-pattern>/reports/subscriptionAdmin</url-pattern>
+	</servlet-mapping>
+
+
+	<servlet>
+		<servlet-name>reportSubscriptionCSV</servlet-name>
+		<servlet-class>com.ansi.scilla.web.report.servlet.ReportSubscriptionCSVServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>reportSubscriptionCSV</servlet-name>
+		<url-pattern>/reports/subscriptionCSV</url-pattern>
+	</servlet-mapping>
+	
+	
+	
 	<servlet>
 		<servlet-name>specialOverrides</servlet-name>
 		<servlet-class>com.ansi.scilla.web.specialOverride.servlet.SpecialOverrideServlet</servlet-class>
@@ -759,6 +1048,17 @@
 		<url-pattern>/specialOverrides/*</url-pattern>
 	</servlet-mapping>
 
+	<servlet>
+		<servlet-name>sysAdmin</servlet-name>
+		<servlet-class>com.ansi.scilla.web.systemAdmin.servlet.SystemAdminServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>sysAdmin</servlet-name>
+		<url-pattern>/sysAdmin</url-pattern>
+		<url-pattern>/sysAdmin/*</url-pattern>
+	</servlet-mapping>
+	
+	
 	<servlet>
 		<servlet-name>tableFieldList</servlet-name>
 		<servlet-class>com.ansi.scilla.web.code.servlet.TableFieldListServlet</servlet-class>
@@ -881,6 +1181,18 @@
 	
 	
 	<servlet>
+        <servlet-name>ticketStatusLookup</servlet-name>
+        <servlet-class>com.ansi.scilla.web.claims.servlet.TicketStatusLookupServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ticketStatusLookup</servlet-name>
+        <url-pattern>/claims/ticketStatusLookup</url-pattern>
+    </servlet-mapping>
+
+
+
+
+    <servlet>
 		<servlet-name>ticketStatusReport</servlet-name>
 		<servlet-class>com.ansi.scilla.web.report.servlet.TicketStatusReportServlet</servlet-class>
 	</servlet>
@@ -963,7 +1275,17 @@
 	</servlet-mapping>
 
 
-
+	<servlet>
+        <servlet-name>workdate</servlet-name>
+        <servlet-class>com.ansi.scilla.web.dates.servlet.WorkDateServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>workdate</servlet-name>
+        <url-pattern>/workdate</url-pattern>
+    </servlet-mapping>
+    
+    
+   
 
 
 
@@ -1047,5 +1369,11 @@
         <res-auth>Container</res-auth>
     </resource-ref>
 -->
+    <resource-ref>
+        <description>Overture Tomcat Database Pooling</description>
+        <res-ref-name>jdbc/ansi</res-ref-name>
+        <res-type>javax.sql.DataSource</res-type>
+        <res-auth>Container</res-auth>
+    </resource-ref>
 	
 </web-app>

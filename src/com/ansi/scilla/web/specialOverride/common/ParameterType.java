@@ -125,6 +125,7 @@ public class ParameterType extends ApplicationObject {
 	
 	public void setPsParm(PreparedStatement ps, String value, Integer index) throws SQLException {
 		if(this.type.equals(Integer.class)) {
+			value = StringUtils.trim(value);
 			Integer intVal = Integer.valueOf(value);
 			ps.setInt(index, intVal);
 		} else if ( this.type.equals(Date.class)) {

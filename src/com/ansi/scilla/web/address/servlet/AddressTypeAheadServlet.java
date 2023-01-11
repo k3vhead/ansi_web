@@ -21,7 +21,7 @@ import org.apache.logging.log4j.Level;
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
@@ -45,7 +45,7 @@ import com.thewebthing.commons.lang.StringUtils;
  * 
  * The url for get will be one of:
  * 		/addressSearch?term=					(returns null list)
- * 		/addressSearch?term=<searchTerm>		(returns all records containing <searchTerm>)
+ * 		/addressSearch?term=&lt;searchTerm&gt;	(returns all records containing &lt;searchTerm&gt;)
  * 
  * The servlet will return 404 Not Found if there is no "term=" found.
  * 
@@ -123,7 +123,7 @@ public class AddressTypeAheadServlet extends AbstractServlet {
 										+ " OR lower(zip) like '%" + term + "%'"
 										+ " ORDER BY name "
 										+ " OFFSET 0 ROWS"
-										+ " FETCH NEXT 500 ROWS ONLY";
+										+ " FETCH NEXT 250 ROWS ONLY";
 								Statement s = conn.createStatement();
 								ResultSet rs = s.executeQuery(sql);
 								while ( rs.next() ) {
