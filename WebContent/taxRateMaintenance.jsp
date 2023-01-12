@@ -93,25 +93,25 @@ change log
 				url: 'taxRate/list', 	// modthis
 				type: 'GET',
 				data: {},
-				success: function($data){ // if the ajax call succeeds... do all of this stuff.. 
-					// display the rows..
-					// calls the addRow Function for each data item (row) from url: 'taxRate/list'; 
-					//    note : the name after '$data.data.'  'taxRateList'. in this case, is defined
-					//           within the servlet that is doing the server side processing.
-					// modthis
-					$.each($data.data.taxRateList,	function(index, value) {	
-						// value.<data_item>Id> = the value used to retreive the record from the server
-						// value = the data item/row
-						// modthis
-						addRow(value.taxRateId, value);
-					});
-					doFunctionBinding();
-				},
-				error : {
-					function($data) {}
-				},
 				statusCode: {
-					403: function($data) { $("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);} 
+					200: function($data){ // if the ajax call succeeds... do all of this stuff.. 
+						// display the rows..
+						// calls the addRow Function for each data item (row) from url: 'taxRate/list'; 
+						//    note : the name after '$data.data.'  'taxRateList'. in this case, is defined
+						//           within the servlet that is doing the server side processing.
+						// modthis
+						$.each($data.data.taxRateList,	function(index, value) {	
+							// value.<data_item>Id> = the value used to retreive the record from the server
+							// value = the data item/row
+							// modthis
+							addRow(value.taxRateId, value);
+						});
+						doFunctionBinding();
+					},
+					403: function($data) { $("#globalMsg").html("Session Expired. Login and try again").show();},
+					404: function($data) { $("#globalMsg").html("System Error 404: Contact Support").show();},
+					405: function($data) { $("#globalMsg").html("System Error 405: Contact Support").show();}, 
+					500: function($data) { $("#globalMsg").html("System Error 500: Contact Support").show();}, 
 				},
 				dataType: 'json'
 			});
@@ -145,12 +145,12 @@ change log
 				_td = _td + '	<td id="col_03">' + (($data_item.rate)*100).toFixed(2) + '%</td>';
 				_td = _td + '	<td id="col_04">' + $data_item.amount + 			'</td>'; 
 				_td = _td + '	<td id="col_05">' + $data_item.effectiveDate + 	'</td>';
-       	    	<ansi:hasPermission permissionRequired="SYSADMIN_WRITE">
+       	    	<ansi:isSuperUser>
 						_td = _td + '<td id="col_06">';
 						_td = _td + '<a href="#" class="updAction" data-item-id="' + $data_item_id +'"><span class="green fas fa-pencil-alt" ari-hidden="true"></span></a> | ';
 						_td = _td + '<a href="#" class="delAction" data-item-id="' + $data_item_id +'"><span class="red fa fa-trash" aria-hidden="true"></span></a>';
 						_td = _td + '</td>';
-       			</ansi:hasPermission>
+       			</ansi:isSuperUser>
 				return _td;
 			}
 		
@@ -543,16 +543,13 @@ change log
     	</table>
     				<webthing:scrolltop />
 
-		<ansi:hasPermission permissionRequired="SYSADMIN">
-			<ansi:hasWrite>
+		<ansi:isSuperUser>
 				<div class="addButtonDiv">
 					<input type="button" id="addButton" class="prettyWideButton" value="<bean:message key="field.label.new" />" />
 				</div>
-			</ansi:hasWrite>
-		</ansi:hasPermission>
+		</ansi:isSuperUser>
     	
-    	<ansi:hasPermission permissionRequired="SYSADMIN">
-    		<ansi:hasWrite>
+		<ansi:isSuperUser>
 		    	<div id="confirmDelete">
 					<!-- // modthis -->
 		    		Are You Sure You Want to Delete this Tax Rate?<br />
@@ -605,7 +602,6 @@ change log
 		    			</table>
 		    		</form>
 		    	</div>		    			    	
-	    	</ansi:hasWrite>
-    	</ansi:hasPermission>
+		</ansi:isSuperUser>
     </tiles:put>
 </tiles:insert>

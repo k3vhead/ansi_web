@@ -91,7 +91,13 @@
 			#editActualPPCModal {
 				display:none;
 			}
+			#editDLModal {
+				display:none;
+			}
 			#editPoNumberModal {
+				display:none;
+			}
+			#editTicketTypeModal {
 				display:none;
 			}
 			#displayTicketTable {
@@ -201,6 +207,12 @@
         			});
         			$(".editPoNumber").click(function($event) {
         				TICKET_OVERRIDE.doEditPoNumber($event);
+        			});
+        			$(".editTicketType").click(function($event) {
+        				TICKET_OVERRIDE.doEditTicketType($event);	
+        			});
+        			$(".editDL").click(function($event) {
+        				TICKET_OVERRIDE.doEditDL($event);	
         			});
         			$("#generateInvoice").checkboxradio();
 					$("#generateInvoice").click(function($event) {
@@ -488,6 +500,31 @@
 
             		
             		
+            		$("#editDLModal").dialog({
+        				title:'Edit Direct Labor Amount',
+        				autoOpen: false,
+        				height: 300,
+        				width: 400,
+        				modal: true,
+        				buttons: [
+        					{
+        						id: "cancelDLModal",
+        						click: function() {
+        							$("#editDLModal").dialog( "close" );
+        						}
+        					},{
+        						id: "saveDLModal",
+        						click: function($event) {
+        							TICKET_OVERRIDE.saveNewDL();
+        						}
+        					}
+        				],
+        				close: function() {
+        					$("#editDLModal").dialog( "close" );
+        				}
+        			});
+            		$('#saveDLModal').button('option', 'label', 'Save');
+            		$('#cancelDLModal').button('option', 'label', 'Cancel');
             		
             		
             		
@@ -515,7 +552,35 @@
         				}
         			});
             		$('#savePoNumberModal').button('option', 'label', 'Save');
-            		$('#cancelPoNumberModal').button('option', 'label', 'Cancel');       			
+            		$('#cancelPoNumberModal').button('option', 'label', 'Cancel');   
+            		
+            		
+            		
+            		$("#editTicketTypeModal").dialog({
+        				title:'Edit Ticket Type',
+        				autoOpen: false,
+        				height: 300,
+        				width: 400,
+        				modal: true,
+        				buttons: [
+        					{
+        						id: "cancelTicketType",
+        						click: function() {
+        							$("#editTicketTypeModal").dialog( "close" );
+        						}
+        					},{
+        						id: "saveTicketType",
+        						click: function($event) {
+        							TICKET_OVERRIDE.saveTicketType();
+        						}
+        					}
+        				],
+        				close: function() {
+        					$("#editTicketTypeModal").dialog( "close" );
+        				}
+        			});
+            		$('#saveTicketType').button('option', 'label', 'Save');
+            		$('#cancelTicketType').button('option', 'label', 'Cancel');
             	},
         		
             	
@@ -718,6 +783,19 @@
     				$("#editPoNumberModal").dialog("open");
 
                	},
+               	
+               	doEditTicketType : function($event) {
+               		console.log("doEditTicketType");
+               		$("#editTicketTypeModal select[name='ticketType']").val( GLOBAL_DATA['globalTicket'].ticketTypeId);
+               		$("#editTicketTypeModal").dialog("open");
+               	},
+               	
+               	doEditDL : function($event) {
+               		console.log("doEditDL");
+               		$('#editDLModal').find('input[name="overrideDLAmt"]').val(GLOBAL_DATA['globalTicket'].actDlAmt.substring(1));
+    				$("#editDLModal").dialog("open");
+               	},
+               	
                	
                	populateTicketDetail:function($data) {
            			GLOBAL_DATA['globalTicket'] = $data.ticketDetail;
@@ -1043,6 +1121,17 @@
     			},
     			
     			
+    			saveNewDL : function() {
+    				console.log("saveNewDL");
+    				var $overrideType = "dlAmt";
+    				var $newDL = $('#editDLModal input[name="overrideDLAmt"]').val();
+    				
+    				var $overrideList =[ {'dlAmt':$newDL}];
+    				TICKET_OVERRIDE.doOverride($('#editDLModal'), $overrideType, $overrideList);
+    			},
+    			
+    			
+    			
     			saveNewPoNumber : function() {
     				var $overrideType = "actPoNumber";
     				var $newPoNumber = $('#editPoNumberModal').find('input[name="newPoNumber"]').val();
@@ -1050,6 +1139,18 @@
     				var $overrideList =[ {'actPoNumber':$newPoNumber}];
     				TICKET_OVERRIDE.doOverride($('#editPoNumberModal'), $overrideType, $overrideList);
     			},
+    			
+    			
+    			saveTicketType : function() {
+    				console.log("saveTicketType");
+    				var $overrideType = "ticketType";
+    				var $newTicketType = $("#editTicketTypeModal select[name='ticketType']").val();
+    				console.log("new type: " + $newTicketType);
+    				var $overrideList =[ {'ticketType':$newTicketType}];
+    				console.log($overrideList);
+    				TICKET_OVERRIDE.doOverride($('#editTicketTypeModal'), $overrideType, $overrideList);
+    			},
+    			
     			
     			
     			doOverride:function($modal, $type, $overrideList) {
@@ -1461,8 +1562,8 @@
 		   			<td style="border-bottom:solid 1px #000000; width:9%;"><span id="actTax"></span></td>
 		   			<td style="border-bottom:solid 1px #000000; width:9%;"><span id="totalTaxPaid"></span></td>
 		   			<td style="border-bottom:solid 1px #000000; width:9%;"><span id="ticketBalance"></span></td>
-		   			<td style="border-bottom:solid 1px #000000; width:9%;"><span id="ticketType"></span></td>
-		   			<td style="border-bottom:solid 1px #000000; width:8%;"><span id="actDlAmt"></span></td>
+		   			<td style="border-bottom:solid 1px #000000; width:9%;"><span id="ticketType"></span><webthing:edit styleClass="editTicketType action-link">Edit</webthing:edit></td>
+		   			<td style="border-bottom:solid 1px #000000; width:8%;"><span id="actDlAmt"></span><webthing:edit styleClass="editDL action-link">Edit</webthing:edit></td>
 		   			<td style="border-bottom:solid 1px #000000; width:9%;"><span id="actDlPct"></span></td>
 		   			<td style="border-bottom:solid 1px #000000; white-space:nowrap; width:10%;">
 		   				<span id="startDate"></span>
@@ -1651,6 +1752,19 @@
 				</table>
 			</div> 			
  		</ansi:hasPermission>
+ 		
+ 		
+ 		<ansi:hasPermission permissionRequired="TICKET_OVERRIDE">
+			<div id="editDLModal">
+				<div class="err modalErr" ></div>
+				<table>		    			
+					<tr>
+						<td style="width:100px;"><span class="formLabel">DL Amt:</span></td>
+						<td><input type="number" name="overrideDLAmt" id="overrideDLAmt" step=".01"/></td>
+					</tr>  
+				</table>
+			</div> 			
+ 		</ansi:hasPermission>
     	
     	
     	
@@ -1661,6 +1775,24 @@
 					<tr>
 						<td style="width:100px;"><span class="formLabel">Division:</span></td>
 						<td><select id="overrideDivision" name="overrideDivision"></select></td>
+					</tr>  
+				</table>
+			</div> 			
+ 		</ansi:hasPermission>
+ 		
+ 		
+ 		<ansi:hasPermission permissionRequired="TICKET_OVERRIDE">
+			<div id="editTicketTypeModal">
+				<div class="err modalErr" ></div>
+				<table>		    			
+					<tr>
+						<td style="width:100px;"><span class="formLabel">Ticket Type:</span></td>
+						<td>
+							<select id="ticketType" name="ticketType">
+								<option value=""></option>
+								<ansi:ticketType />
+							</select>
+						</td>
 					</tr>  
 				</table>
 			</div> 			

@@ -5,8 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.List;
 
-import com.ansi.scilla.web.common.utils.AppUtils;
-
 public class DashboardFavoriteAdminQuery extends DashboardFavoriteBaseQuery {
 
 	private static final long serialVersionUID = 1L;

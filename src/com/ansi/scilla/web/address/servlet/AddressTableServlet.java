@@ -13,13 +13,15 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections4.Transformer;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.web.address.response.AddressJsonResponse;
 import com.ansi.scilla.web.address.response.AddressReturnItem;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
@@ -37,7 +39,7 @@ import com.ansi.scilla.web.exceptions.TimeoutException;
  * 
  * The url for get will be one of:
  * 		/addressSearch    						(retrieves all records from address table)
- * 		/addressSearch?term=<searchTerm>		(returns all records containing <searchTerm>)
+ * 		/addressSearch?term=&lt;searchTerm&gt;	(returns all records containing &lt;searchTerm&gt;)
  * 
  * The servlet will return all records if there is no "term=" is found.
  * 
@@ -83,7 +85,7 @@ public class AddressTableServlet extends AbstractServlet {
 		try {
 			conn = AppUtils.getDBCPConn();
 			AppUtils.validateSession(request, Permission.ADDRESS_READ);
-			String qs = request.getQueryString();
+//			String qs = request.getQueryString();
 
 			String term = "";
 			
@@ -129,15 +131,32 @@ public class AddressTableServlet extends AbstractServlet {
 			if(rs0.next()){
 		        total = rs0.getInt(1);
 		    }
+			rs0.close();
 			
 		    int totalAfterFilter = total;
-			term = term.toLowerCase();
+			term = term.replaceAll("'","''").toLowerCase();
 			List<AddressReturnItem> resultList = new ArrayList<AddressReturnItem>();
+			/*
 			sql = "select a.address_id, a.name, a.address_status, a.address1, a.address2, a.city, a.county, a.state, a.zip, a.country_code, (a3.jobCount + a3.billCount) as count, "
-					+ "a.invoice_style_default, a.invoice_grouping_default, a.invoice_batch_default, a.invoice_terms_default, a.our_vendor_nbr_default "
+					+ "a.invoice_style_default, a.invoice_grouping_default, a.invoice_batch_default, a.invoice_terms_default, a.our_vendor_nbr_default, a.billto_tax_exempt "
 					+ "\n from address a"
 					+ "\n left join (select a2.address_id, count(q1.job_site_address_id) as jobCount, count(q1.bill_to_address_id) as billCount from address a2"
 					+ "\n inner join quote q1 on (a2.address_id = q1.job_site_address_id or a2.address_id = q1.bill_to_address_id) group by a2.address_id ) a3 on a.address_id = a3.address_id";
+			*/
+			sql = "select a.address_id, a.name, a.address_status, a.address1, a.address2, a.city, a.county, a.state, a.zip, \n" + 
+					"	a.country_code, (a3.jobCount + a3.billCount) as count, \n" + 
+					"	a.invoice_style_default, a.invoice_grouping_default, \n" + 
+					"	a.invoice_batch_default, a.invoice_terms_default, a.our_vendor_nbr_default, count(document.document_id) as document_count\n" + 
+					" from address a\n" + 
+					" left outer join document on document.xref_id=a.address_id and document.xref_type='TAX_EXEMPT'\n" + 
+					" left join (select a2.address_id, count(q1.job_site_address_id) as jobCount, count(q1.bill_to_address_id) as billCount from address a2\n" + 
+					" inner join quote q1 on (a2.address_id = q1.job_site_address_id or a2.address_id = q1.bill_to_address_id) group by a2.address_id ) a3 on a.address_id = a3.address_id\n"; 
+					
+			String groupBy = "group by a.address_id, a.name, a.address_status, a.address1, a.address2, a.city, a.county, a.state, a.zip, \n" + 
+					"	a.country_code, (a3.jobCount + a3.billCount), \n" + 
+					"	a.invoice_style_default, a.invoice_grouping_default, \n" + 
+					"	a.invoice_batch_default, a.invoice_terms_default, a.our_vendor_nbr_default";
+			
 			String search = "\n where lower(a.name) like '%" + term + "%'"
 					+ "\n OR lower(a.address1) like '%" + term + "%'"
 					+ "\n OR lower(a.address2) like '%" + term + "%'"
@@ -149,8 +168,10 @@ public class AddressTableServlet extends AbstractServlet {
 //					String group = " group by a.address_id, a.name, a.status, a.address1, a.address2, a.city, a.county, a.state, a.zip, a.country_code";
 			
 			
-			
-			sql += search ;
+			if ( ! StringUtils.isBlank(term)) {
+				sql += search ;
+			}
+			sql += groupBy;
 			sql += " order by a." + colName + " " + dir;
 			
 			
@@ -164,6 +185,7 @@ public class AddressTableServlet extends AbstractServlet {
 			while ( rs.next() ) {
 				resultList.add(new AddressReturnItem(rs));
 			}
+			rs.close();
 			
 			
 			
@@ -177,8 +199,6 @@ public class AddressTableServlet extends AbstractServlet {
 			if(rs2.next()){
 				totalAfterFilter = rs2.getInt(1);
 		    }
-			rs.close();
-			rs0.close();
 			rs2.close();
 			
 			response.setStatus(HttpServletResponse.SC_OK);
@@ -209,5 +229,13 @@ public class AddressTableServlet extends AbstractServlet {
 		}
 	}
 
+	public class WhereClauseMaker implements Transformer<String, String> {
+
+		@Override
+		public String transform(String arg0) {			
+			return "lower(" + arg0 + ") like ?";
+		}
+		
+	}
 
 }

@@ -18,7 +18,7 @@ import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionDivision;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AnsiURL;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 
 public class BudgetControlLookupServlet extends AbstractLookupServlet {
@@ -35,6 +35,7 @@ public class BudgetControlLookupServlet extends AbstractLookupServlet {
 				"ticket.ticket_id",
 				"ticket.ticket_status",
 				"ticket_claim_weekly_totals.claim_week",
+				"job.budget",
 				"isnull(ticket_claim_weekly_totals.claimed_weekly_dl_amt,0.00)",   //claimed_weekly_dl_amt
 				"isnull(ticket_claim_weekly_totals.claimed_weekly_dl_exp,0.00)", // as claimed_weekly_dl_exp"
 				"isnull(ticket_claim_weekly_totals.claimed_weekly_dl_amt,0.00)+ISNULL(ticket_claim_weekly_totals.claimed_weekly_dl_exp,0.00)", //as claimed_weekly_dl_total"

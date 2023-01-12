@@ -168,7 +168,7 @@ public class AnsiUserRequest extends AbstractRequest {
 		RequestValidator.validateString(webMessages, "firstName", this.firstName, true);
 		RequestValidator.validateString(webMessages, "lastName", this.lastName, true);
 		RequestValidator.validateString(webMessages, "password", this.password, true);
-		RequestValidator.validateId(conn, webMessages, "permission_group", "permission_group_id", "permissionGroupId", this.permissionGroupId, true);
+		RequestValidator.validateId(conn, webMessages, "permission_group", "permission_group_id", "permissionGroupId", this.permissionGroupId, true, null);
 		RequestValidator.validateString(webMessages, "phone", this.phone, false);
 		RequestValidator.validateBoolean(webMessages, "status", this.status, false);
 		RequestValidator.validateString(webMessages, "title", this.title, false);
@@ -190,10 +190,10 @@ public class AnsiUserRequest extends AbstractRequest {
 		RequestValidator.validateString(webMessages, "firstName", this.firstName, true);
 		RequestValidator.validateString(webMessages, "lastName", this.lastName, true);
 		RequestValidator.validateString(webMessages, "password", this.password, false);
-		RequestValidator.validateId(conn, webMessages, "permission_group", "permission_group_id", "permissionGroupId", this.permissionGroupId, true);
+		RequestValidator.validateId(conn, webMessages, "permission_group", "permission_group_id", "permissionGroupId", this.permissionGroupId, true, null);
 		RequestValidator.validateString(webMessages, "phone", this.phone, false);
 		RequestValidator.validateString(webMessages, "title", this.title, false);
-		RequestValidator.validateId(conn, webMessages, "ansi_user", "user_id", "userId", this.userId, true);
+		RequestValidator.validateId(conn, webMessages, "ansi_user", "user_id", "userId", this.userId, true, null);
 		RequestValidator.validateUserStatus(webMessages, "status", this.status, true);
 		RequestValidator.validateBigDecimal(webMessages, "minimumHourlyPay", this.minimumHourlyPay, new BigDecimal(0.0D), null, false);
 		
@@ -202,7 +202,7 @@ public class AnsiUserRequest extends AbstractRequest {
 
 	public WebMessages validateDelete(Connection conn) throws Exception {
 		WebMessages webMessages = new WebMessages();
-		RequestValidator.validateId(conn, webMessages, "ansi_user", "user_id", "userId", this.userId, true);
+		RequestValidator.validateId(conn, webMessages, "ansi_user", "user_id", "userId", this.userId, true, null);
 		return webMessages;
 	}
 }

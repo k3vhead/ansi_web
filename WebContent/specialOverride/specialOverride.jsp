@@ -124,7 +124,7 @@
 						statusCode: {
 							200: function($data) {
 								if ( $data.responseHeader.responseCode == "SUCCESS") {
-									$("#globalMsg").html("Success").show().fadeOut(3000);
+									$("#globalMsg").html($data.data.webMessages.GLOBAL_MESSAGE[0]).show().fadeOut(6000);
 									$(".updateButton").hide();
 									SPECIALOVERRIDE.makeSelectResultsTable("#updateResults", null, $scriptName, $data);
 									var $continueButton = $('<input type="button" id="continueButton" value="Continue" />');
@@ -386,8 +386,12 @@
 				processSelectCall : function($outbound, $scriptName, $data ) {
 					console.log("processSelectCall");
 					if ( $data.responseHeader.responseCode == "SUCCESS") {
-						SPECIALOVERRIDE.makeSelectResultsTable("#selectResults", $outbound, $scriptName, $data);
-						SPECIALOVERRIDE.makeUpdateForm($outbound, $scriptName, $data);
+						if ( $data.data.resultSet.length > 1 ) {
+							SPECIALOVERRIDE.makeSelectResultsTable("#selectResults", $outbound, $scriptName, $data);
+							SPECIALOVERRIDE.makeUpdateForm($outbound, $scriptName, $data);
+						} else {
+							$("#globalMsg").html("No Records Selected for Override").show().fadeOut(6000);
+						}
 					} else if ( $data.responseHeader.responseCode = "EDIT_FAILURE") {
 						console.log("Bad data, but it worked");
 						$.each($data.data.webMessages, function(key, messageList) {

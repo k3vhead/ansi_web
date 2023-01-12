@@ -1,6 +1,6 @@
 $(function() {    	
 	;LOOKUPUTILS = {
-		makeFilters : function($myTable, $filterContainerName, $dataTableName, $tableMakerFunction, $tableMakerCallbackFunction) {
+		makeFilters : function($myTable, $filterContainerName, $dataTableName, $tableMakerFunction, $tableMakerCallbackFunction, $tableMakerData) {
 			console.log("makeFilters");
 			// parameters
 			//     myTable - the datatables constructor. Easiest way to get is to you "this" from inside initComplete function
@@ -28,8 +28,10 @@ $(function() {
             		$inputField = $('<input type="text">')
             		$fieldName = "columns["+colIdx+"][search][value]";
             		$inputField.attr("name", $fieldName);
+            		if(columns[colIdx].searchFormat != null){
+            			$inputField.attr("placeholder", columns[colIdx].searchFormat);
+            		}
             		$fieldCell.append($inputField);
-            		
             		
             		$filterRow.append($titleCell);
             		$filterRow.append($fieldCell);
@@ -77,7 +79,7 @@ $(function() {
         		$($filterContainerName + " .filter-banner .filter-hider .filter-data-open").click();
         		//recreate the table from scratch
         		$($dataTableName).DataTable().destroy(false);
-        		$tableMakerFunction();
+        		$tableMakerFunction($tableMakerData);
         	});
         	
         	if ( $tableMakerCallbackFunction != null ) {

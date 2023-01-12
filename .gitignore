@@ -7,3 +7,4 @@ build
 WebContent/WEB-INF/lib/ansi_common.jar
 logs
 WebContent/WEB-INF/lib/ansi_report.jar
+**/.directory

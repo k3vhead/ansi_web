@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -19,6 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.ApplicationObject;
+import com.ansi.scilla.common.db.Code;
 import com.ansi.scilla.common.db.Job;
 import com.ansi.scilla.common.db.Quote;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
@@ -29,7 +31,7 @@ import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.common.utils.UserPermission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
@@ -38,10 +40,12 @@ import com.ansi.scilla.web.quote.common.QuoteValidator;
 import com.ansi.scilla.web.quote.request.QuoteRequest;
 import com.ansi.scilla.web.quote.response.QuoteListResponse;
 import com.ansi.scilla.web.quote.response.QuoteResponse;
+import com.ansi.scilla.web.quote.response.QuoteResponseItem;
+import com.ansi.scilla.web.quote.response.QuoteResponseItemDetail;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 /**
- * The url for delete will be of the form /quote/&lt;quoteId&gt;/<quoteNumber>/<revision>
+ * The url for delete will be of the form /quote/&lt;quoteId&gt;/&lt;quoteNumber&gt;/&lt;revision&gt;
  * 
  * The url for get will be one of:
  * 		/quote    (retrieves everything)
@@ -120,7 +124,10 @@ public class QuoteServlet extends AbstractQuoteServlet {
 			} else {
 				QuoteListResponse quotesListResponse = makeFilteredListResponse(conn, parsedUrl.quoteId, sessionData.getUserPermissionList());
 				QuoteResponse quoteResponse = new QuoteResponse();
-				quoteResponse.setQuote(quotesListResponse.getQuoteList().get(0));
+				QuoteResponseItem item = quotesListResponse.getQuoteList().get(0);
+				quoteResponse.setQuote(item);
+				WebMessages webMessages = validateQuoteValues(conn, item.getQuote());
+				quoteResponse.setWebMessages(webMessages);
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, quoteResponse);
 			}
 		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
@@ -247,6 +254,24 @@ public class QuoteServlet extends AbstractQuoteServlet {
 			logger.log(Level.DEBUG, "Copy Done: "+quote);
 			
 			String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
+			
+			
+			// Make sure the lead type is still valid
+			Code code = new Code();
+			code.setTableName("quote");
+			code.setFieldName("lead_type");
+			code.setValue(quote.getLeadType());
+			logger.log(Level.DEBUG, "LeadType: " + quote.getLeadType());
+			try {
+				code.selectOne(conn);
+				logger.log(Level.DEBUG, "Code: " + code);
+				if ( code.getStatus().intValue() != Code.STATUS_IS_ACTIVE.intValue() ) {
+					message = "Inactive Lead Type; please update";
+				}
+			} catch ( RecordNotFoundException e) {
+				message = "Invalid Lead Type; please update";
+			}
+
 			responseCode = ResponseCode.SUCCESS;
 			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
 		} catch ( DuplicateEntryException e ) {
@@ -342,6 +367,45 @@ public class QuoteServlet extends AbstractQuoteServlet {
 
 	
 	
+	private WebMessages validateQuoteValues(Connection conn, QuoteResponseItemDetail item) throws Exception {
+		List<String> invalidFieldList = new ArrayList<String>();
+		
+		Code accountType = new Code();
+		accountType.setTableName("quote");
+		accountType.setFieldName("account_type");
+		accountType.setValue(item.getAccountType());
+		try {
+			accountType.selectOne(conn);
+			if ( accountType.getStatus().intValue() != Code.STATUS_IS_ACTIVE.intValue() ) {
+				invalidFieldList.add("Account Type");
+			}
+		} catch ( RecordNotFoundException e) {
+			invalidFieldList.add("Account Type");
+		}
+		
+		Code leadType = new Code();
+		leadType.setTableName("quote");
+		leadType.setFieldName("lead_type");
+		leadType.setValue(item.getLeadType());
+		try {
+			leadType.selectOne(conn);
+			if ( leadType.getStatus().intValue() != Code.STATUS_IS_ACTIVE.intValue() ) {
+				invalidFieldList.add("Lead Type");
+			}
+		} catch ( RecordNotFoundException e) {
+			invalidFieldList.add("Lead Type");
+		}
+		
+		WebMessages webMessages = new WebMessages();
+		if ( ! invalidFieldList.isEmpty() ) {
+			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid values: " + StringUtils.join(invalidFieldList, ","));
+		}
+		return webMessages;
+	}
+
+
+
+
 	protected Quote doAdd(Connection conn, QuoteRequest quoteRequest, SessionData sessionData) throws Exception {
 		Date today = new Date();
 		Quote quote = new Quote();

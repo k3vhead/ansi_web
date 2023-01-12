@@ -25,10 +25,13 @@
     <tiles:put name="headextra" type="string">
     	<link rel="stylesheet" href="css/lookup.css" />
     	<link rel="stylesheet" href="css/ticket.css" />
+    	<link rel="stylesheet" href="css/callNote.css" />
+    	<link rel="stylesheet" href="css/accordion.css" />
     	<script type="text/javascript" src="js/ansi_utils.js"></script>
     	<script type="text/javascript" src="js/addressUtils.js"></script>
     	<script type="text/javascript" src="js/lookup.js"></script> 
     	<script type="text/javascript" src="js/ticket.js"></script> 
+    	<script type="text/javascript" src="js/callNote.js"></script>
         <style type="text/css">
         	#filter-container {
         		width:402px;
@@ -66,6 +69,7 @@
         			TICKETSTATUS.createTable();
         			TICKETSTATUS.makeClickers();
         			TICKETSTATUS.makeModals();
+        			CALLNOTE.init();
         		},
         		
         		
@@ -115,49 +119,51 @@
     			            { title: "Status", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
     			            	if(row.ticket_status != null){return ('<span class="tooltip">' + row.ticket_status + '<span class="tooltiptext">' + row.ticket_status_description + '</span></span>');}
     			            } },
-    			            { title: "Direct Labor", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { title: "Direct Labor", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
     			            	if(row.claimed_dl_amt != null){return (parseFloat(row.claimed_dl_amt).toFixed(2));}
     			            } },
-    			            { title: "+ Expenses" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { title: "+ Expenses" , "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
     			            	if(row.claimed_dl_exp != null){return (parseFloat(row.claimed_dl_exp).toFixed(2));}
     			            } },
-    			            { title: "= Total", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { title: "= Total", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
     			            	if(row.claimed_dl_total != null){return (parseFloat(row.claimed_dl_total).toFixed(2)+"");}
     			            } },
-    			            { title: "Total Volume", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { title: "Total Volume", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
     			            	if(row.total_volume != null){return (parseFloat(row.total_volume).toFixed(2)+"");}
     			            } },
     			            { title: "Volume Claimed", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.claimed_volume != null){return (parseFloat(row.claimed_volume).toFixed(2)+"");}
     			            } },
-    			            { title: "Passthru",  "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { title: "Passthru",  "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
     			            	if(row.passthru_volume != null){return (parseFloat(row.passthru_volume).toFixed(2)+"");}
     			            } },			            
-    			            { title: "Volume Claimed Total", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { title: "Volume Claimed Total", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
     			            	if(row.claimed_volume_total != null){return (parseFloat(row.claimed_volume_total).toFixed(2)+"");}
     			            } },
-    			            { title: "Remaining Volume", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { title: "Remaining Volume", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
     			            	if(row.volume_remaining != null){return (parseFloat(row.volume_remaining).toFixed(2)+"");}
     			            } },
-    			            { title: "Invoiced Amount", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { title: "Invoiced Amount", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
     			            	if(row.billed_amount != null){return (parseFloat(row.billed_amount).toFixed(2)+"");}
     			            } },
-    			            { title: "Diff CLM/BLD", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { title: "Diff CLM/BLD", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
     			            	if(row.claimed_vs_billed != null){return (parseFloat(row.claimed_vs_billed).toFixed(2)+"");}
     			            } },
-    			            { title: "Amount Paid", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { title: "Amount Paid", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
     			            	if(row.paid_amt != null){return (parseFloat(row.paid_amt).toFixed(2)+"");}
     			            } },
-    			            { title: "Amount Due", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { title: "Amount Due", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
     			            	if(row.amount_due != null){return (parseFloat(row.amount_due).toFixed(2)+"");}
     			            } },
     			            { title: "<bean:message key="field.label.action" />",  searchable:false, data: function ( row, type, set ) {	
     			            	{
     				            	var $claim = '';
     				            	if (row.ticket_status=='D' || row.ticket_status=='C') {
-    				            		$claim = '<a href="#" class="claimAction" data-id="'+row.ticket_id+'"><webthing:invoiceIcon styleClass="green">Budget Control</webthing:invoiceIcon></a>';
+    				            		$claim = '<ansi:hasPermission permissionRequired='CLAIMS_READ'><a href="#" class="claimAction" data-id="'+row.ticket_id+'">Ticket Note<webthing:invoiceIcon styleClass="green">Budget Control</webthing:invoiceIcon></a></ansi:hasPermission>';
     				            	}
-    			            		return "<ansi:hasPermission permissionRequired='CLAIMS_READ'>"+$claim+"</ansi:hasPermission>";
+    				            	var $notesLink = '<webthing:notes xrefType="TICKET" xrefId="'+row.ticket_id+'">Ticket Note</webthing:notes>';
+    				            	console.log($notesLink);
+    			            		return $claim + $notesLink;
     			            	}
     			            	
     			            } }],
@@ -167,6 +173,7 @@
     			            },
     			            "drawCallback": function( settings ) {
     			            	TICKETSTATUS.doFunctionBinding();
+    			            	CALLNOTE.lookupLink();
     			            }
     			    } );
             		//new $.fn.dataTable.FixedColumns( dataTable );
@@ -228,6 +235,7 @@
 	    <webthing:scrolltop />
     
 	    <webthing:ticketModal ticketContainer="ticket-modal" />
+	    <webthing:callNoteModals />
     </tiles:put>
 		
 </tiles:insert>

@@ -67,7 +67,7 @@ $(function() {
 					}
 				]
 			});	
-			$("#"+$cancelId).button('option', 'label', 'Cancel');
+			$("#"+$cancelId).button('option', 'label', 'Done');
 		},
 		
 		
@@ -110,7 +110,16 @@ $(function() {
 				$($modalId + " .invoiceTable").hide();				
 			}				
 		},
-		
+		populateJobTags : function($modalId, $data) {
+				$($modalId + " .longCode").html($data.jobTags.longCode);					
+				$($modalId + " .abbrev").html($data.jobTags.abbrev);
+				$($modalId + " .status").html($data.jobTags.status);
+				$($modalId + " .statusDescription").html($data.jobTags.statusDescription);
+				$($modalId + " .tagDescription").html($data.jobTags.tagDescription);
+				$($modalId + " .tagId").html($data.jobTags.tagId);
+				$($modalId + " .tagType").html($data.jobTags.tagType);
+				$($modalId + " .tagTypeDescription").html($data.jobTags.tagTypeDescription);
+			},
 		
 		
 		populateSummary : function($modalId, $data) {
@@ -134,6 +143,8 @@ $(function() {
 			$($modalId + " .actTax").html($data.ticketDetail.actTax);
 			$($modalId + " .totalTaxPaid").html($data.ticketDetail.totalTaxPaid);
 			$($modalId + " .ticketBalance").html($data.ticketDetail.balance);
+			$($modalId + " .directLabor").html($data.ticketDetail.actDlAmt);
+			$($modalId + " .directLaborPct").html($data.ticketDetail.actDlPct);
 			
 			$($modalId + " .completedRow").hide();
 			if ( $data.ticketDetail.status=='N') {
@@ -178,7 +189,24 @@ $(function() {
 				
 				$($modalId + " .processDateLabel").html($processLabel);
 				$($modalId + " .processDate").html($data.ticketDetail.processDate);
-				$($modalId + " .processNotes").html($data.ticketDetail.processNotes);					
+				$($modalId + " .processNotes").html($data.ticketDetail.processNotes);	
+				
+				$($modalId + " .jobTags").html("");
+				$displayValue = "";
+				
+				
+				$.each($data.ticketDetail.jobTags, function($key, $value) {
+					$displayValue = $displayValue + $key + ": ";
+					$.each($value, function($index, $jobTag) {
+						if ( $value.tagType == $jobTag.name ){
+							$displayValue = $displayValue + " " + '<span class="jobtag-display jobtag-selected tooltip">'+$jobTag.abbrev+'<span class="tooltiptext">'+ $jobTag.tagDescription +'</span></span>';
+						} else {
+							$displayValue = $displayValue + '<span class="formLabel">' + $jobTag.displayValue + ": </span>";
+						}
+					});
+					$displayValue = $displayValue + "<br />";
+				});	
+				$($modalId + " .jobTags").html($displayValue);
 			}
 		},
 		

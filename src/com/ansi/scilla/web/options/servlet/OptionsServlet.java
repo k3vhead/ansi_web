@@ -20,11 +20,11 @@ import com.ansi.scilla.web.options.response.OptionsListResponse;
 import com.ansi.scilla.web.options.response.ResponseOption;
 
 /**
- * The url for HTTP get will be of the form /options/?&lt;name&gt;,&lt;name&gt;,&lt;name&gt;<br />
- * where &lt;name&gt; is the name of an value from OptionResponseOptions<br />
- * eg. /options?JOB_FREQUENCY,TICKET_STATUS<br />
- * Case matters<br />
- * <br />
+ * The url for HTTP get will be of the form /options/?&lt;name&gt;,&lt;name&gt;,&lt;name&gt;
+ * where &lt;name&gt; is the name of an value from OptionResponseOptions
+ * eg. /options?JOB_FREQUENCY,TICKET_STATUS
+ * Case matters
+ * 
  * HTTP POST and HTTP DELETE are not supported
  * 
  * @author dclewis

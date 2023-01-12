@@ -22,7 +22,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.ApplicationObject;
-import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.jsonFormat.AnsiFormat;
 import com.ansi.scilla.common.queries.PaymentSearch;
 import com.ansi.scilla.common.queries.PaymentSearchResult;
@@ -30,7 +29,7 @@ import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
@@ -50,7 +49,7 @@ import com.thewebthing.commons.lang.StringUtils;
  * 
  * The url for get will be one of:
  * 		/PaymentTypeAhead?term=					(returns not found)
- * 		/PaymentTypeAhead?term=<searchTerm>		(returns all records containing <searchTerm>)
+ * 		/PaymentTypeAhead?term=&lt;searchTerm&gt;		(returns all records containing &lt;searchTerm&gt;)
  * 
  * The servlet will return 404 Not Found if there is no "term=" found.
  * 
@@ -106,7 +105,7 @@ public class PaymentTypeAheadServlet extends AbstractServlet {
 							term = queryTerm.toLowerCase();
 							try {
 								conn = AppUtils.getDBCPConn();
-								SessionData sessionData = AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+								SessionData sessionData = AppUtils.validateSession(request, Permission.TICKET_READ);
 								SessionUser user = sessionData.getUser();
 								logger.log(Level.DEBUG, "PaymentTypeAheadServlet(): doGet(): term =$" + term +"$");
 								List<ReturnItem> resultList = new ArrayList<ReturnItem>();

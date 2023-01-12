@@ -19,6 +19,7 @@
             <include name="servlet-api.jar" />
             <include name="tomcat-api.jar" />
             <include name="tomcat-dbcp.jar" />
+        	<include name="sqljdbc42.jar" />   <!-- this is ms sql server specific -->
         </fileset>
 
         <fileset dir="${libdirectory}">
@@ -54,6 +55,39 @@
         
     </target>
 
+	
+	
+	
+	<target name="git">
+    	<property name="webLoc" location="../../ansi_web" />
+    	<property name="reportLoc" location="../../ansi_report" />
+    	<property name="commonLoc" location="../../ansi_common" />
+    	<property name="destFile" value="${dist}/WEB-INF/classes/resources/branch.properties" />
+    	<echo message="executing git" level="info" />  
+    	<delete file="${destFile}"/>
+    	<exec executable="git" dir="${webLoc}" outputproperty="webGit" failonerror="true">
+    		<arg value="rev-parse" />
+    		<arg value="--abbrev-ref" />
+			<arg value="HEAD" />    		
+    	</exec>
+    	<exec executable="git" dir="${commonLoc}" outputproperty="commonGit" failonerror="true">    		
+    		<arg value="rev-parse" />
+    		<arg value="--abbrev-ref" />
+			<arg value="HEAD" />
+    	</exec>
+    	<exec executable="git" dir="${reportLoc}" outputproperty="reportGit" failonerror="true">    		
+    		<arg value="rev-parse" />
+    		<arg value="--abbrev-ref" />
+			<arg value="HEAD" />
+    	</exec>
+    	<echo message="web=${webGit}${line.separator}" level="info" output="${destFile}" append="true" />
+    	<echo message="common=${commonGit}${line.separator}" level="info"  output="${destFile}" append="true" />
+		<echo message="report=${reportGit}${line.separator}" level="info"  output="${destFile}" append="true" />
+	</target>
+	
+	
+	
+	
     <target name="centerpoint_ui" depends="init" description="Build UI components">
         <copy todir="${dist}">
             <fileset dir="../../${projectName}/WebContent"/>
@@ -65,8 +99,9 @@
         </copy>
     </target>
     
+
     
-    <target name="build" depends="init, centerpoint_ui" description="Build everything">
+    <target name="build" depends="init, git, centerpoint_ui" description="Build everything">
 		<path id="asana.classpath">
             <path refid="compile.classpath"/>
 			<pathelement location="../build/classes"/>
@@ -83,8 +118,17 @@
 			destination="${dist}/WEB-INF/classes/resources/completedTask.properties" 
 			doasana="${doasana}" />
 			
-			
-			
+		<exec executable="git" outputproperty="git.revision" failifexecutionfails="false" errorproperty="">
+			<arg value="rev-parse" />
+			<arg value="--abbrev-ref" />
+			<arg value="HEAD" />
+		</exec>
+		<condition property="repository.version" value="${git.revision}" else="unknown">
+			<and>
+				<isset property="git.revision" />
+				<length string="${git.revision}" trim="yes" length="0" when="greater" />
+			</and>
+		</condition>
 			
         <path id="ui.classpath">
             <path refid="compile.classpath"/>
@@ -95,6 +139,7 @@
 
     	<propertyfile file="${dist}/WEB-INF/classes/resources/build_web.properties" comment="ansi_web">
     		<entry key="builddate" type="date" value="now" pattern="MM/dd/yyyy HH:mm:ss" />
+            <entry key="gitbranch" value="${git.revision}" />
     	</propertyfile>
 
         <javac srcdir="../../${projectName}/src"

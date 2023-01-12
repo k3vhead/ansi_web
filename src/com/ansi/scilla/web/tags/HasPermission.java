@@ -9,7 +9,7 @@ import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.jstl.core.ConditionalTagSupport;
 
 import com.ansi.scilla.web.common.struts.SessionData;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 
 public class HasPermission extends ConditionalTagSupport {
 
