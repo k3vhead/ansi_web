@@ -2,19 +2,28 @@ package com.ansi.scilla.web.ticket.response;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.ApplicationObject;
+import com.ansi.scilla.common.claims.TicketClaimTotals;
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.Job;
-import com.ansi.scilla.common.db.TaxRate;
 import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.common.invoice.InvoiceStyle;
 import com.ansi.scilla.common.invoice.InvoiceTerm;
 import com.ansi.scilla.common.jobticket.JobFrequency;
+import com.ansi.scilla.common.jobticket.JobTagDisplay;
 import com.ansi.scilla.common.jobticket.TicketStatus;
 import com.ansi.scilla.common.jobticket.TicketType;
 import com.ansi.scilla.common.jsonFormat.AnsiCurrencyFormatter;
@@ -67,7 +76,7 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 
 	
 	
-	
+	private HashMap<String,List<JobTagDisplay>> jobTags;/*string is the job tag type*/
 	
 	
 	/* ******************************************** */
@@ -80,13 +89,19 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 	private String fleetmaticsId;
 //	private Integer actDivisionId;
 	private String ticketType;
+	private String ticketTypeId;
 	// Tax stuff:
-	private BigDecimal taxRateAmount;
-	private Date taxRateEffectiveDate;
-	private String taxRateLocation;
-	private BigDecimal taxRate;
+//	private BigDecimal taxRateAmount;
+//	private Date taxRateEffectiveDate;
+//	private String taxRateLocation;
+//	private BigDecimal taxRate;
 	private String poNumber;
 	private String actPoNumber;
+
+	// how much of this ticket has not yet been claimed:
+	private BigDecimal remainingDlAmt;    
+	private BigDecimal remainingPricePerCleaning;
+
 	
 	/* ******************************************** */
 	/* ******************************************** */
@@ -100,6 +115,7 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 		ticket.setTicketId(ticketId);
 		ticket.selectOne(conn);
 		TicketPaymentTotals ticketPaymentTotals = TicketPaymentTotals.select(conn, ticketId);
+		TicketClaimTotals ticketClaimTotals = new TicketClaimTotals(conn, ticketId);
 		
 		Division division = new Division();
 		division.setDivisionId(ticketPaymentTotals.getDivisionId());
@@ -153,35 +169,99 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 		this.fleetmaticsId = ticket.getFleetmaticsId();
 //		this.actDivisionId = ticket.getActDivisionId();
 		this.ticketType = TicketType.lookup(ticket.getTicketType()).display();
+		this.ticketTypeId = TicketType.lookup(ticket.getTicketType()).name();
 		this.actTaxRateId = ticket.getActTaxRateId();
 		 
 		
 		this.billToAddress = new AddressDetail(conn, ticketPaymentTotals.getBillToAddressId());
 		this.jobSiteAddress = new AddressDetail(conn, ticketPaymentTotals.getJobSiteAddressId());
 		
-		TaxRate taxRate = new TaxRate();
-		taxRate.setTaxRateId(ticket.getActTaxRateId());
-		taxRate.selectOne(conn);
-		this.taxRateAmount = taxRate.getAmount();
-		this.taxRateEffectiveDate = taxRate.getEffectiveDate();
-		this.taxRateLocation = taxRate.getLocation();
-		this.taxRate = taxRate.getRate();
+//		These fields are not used in the JSP
+//		TaxRate taxRate = new TaxRate();
+//		taxRate.setTaxRateId(ticket.getActTaxRateId());
+//		taxRate.selectOne(conn);
+//		this.taxRateAmount = taxRate.getAmount();
+//		this.taxRateEffectiveDate = taxRate.getEffectiveDate();
+//		this.taxRateLocation = taxRate.getLocation();
+//		this.taxRate = taxRate.getRate();
+		
+		
 		this.poNumber = job.getPoNumber();
 		// populate actual po with actual if we have one.
 		// else populate with job's po if we have one
-		if ( StringUtils.isBlank(ticket.getActPoNumber())) {
-			if ( ! StringUtils.isBlank(job.getPoNumber())) {
-				this.actPoNumber = job.getPoNumber();
-			}
-		} else {
+//		if ( StringUtils.isBlank(ticket.getActPoNumber())) {
+//			if ( ! StringUtils.isBlank(job.getPoNumber())) {
+//				this.actPoNumber = job.getPoNumber();
+//			}
+//		} else {
 			this.actPoNumber = ticket.getActPoNumber();
-		}
+//		}
+		makeJobTagList(conn, this.jobId);
+		
+		this.remainingDlAmt = this.actDlAmt.subtract(ticketClaimTotals.getTotalClaimedDlAmt());    
+		this.remainingPricePerCleaning = this.actPricePerCleaning.subtract(ticketClaimTotals.getTotalClaimedVolume());
+	}
+	
+	
+	
+	private BigDecimal makeActualDl(Connection conn, Integer ticketId) throws SQLException {
+		PreparedStatement ps = conn.prepareStatement("select sum(dl_amt) as actuaDL from ticket_claim where ticket_claim.ticket_id=?");
+		ps.setInt(1,  ticketId);
+		ResultSet rs = ps.executeQuery();
+		BigDecimal actuaDl = rs.next() ? rs.getBigDecimal("actuaDL") : BigDecimal.ZERO;
+		return actuaDl;
 	}
 
+	
+	
+	private void makeJobTagList(Connection conn, Integer jobId) throws SQLException {
+		this.jobTags = new HashMap<String,List<JobTagDisplay>>();
+		
+		// initialize the tag display list
+		Statement s = conn.createStatement();
+		ResultSet rs = s.executeQuery("select distinct tag_type from job_tag order by tag_type");
+		while (rs.next() ) {
+			this.jobTags.put(rs.getString("tag_type"), new ArrayList<JobTagDisplay>());
+		}
+		
+		// get the tag display values
+		List<JobTagDisplay> tagList = JobTagDisplay.getTags(conn, jobId);
+		// make sure we've got tags to display
+		if ( tagList != null && tagList.size() > 0 ) {
+			Collections.sort(tagList, new Comparator<JobTagDisplay>() {
+				public int compare(JobTagDisplay o1, JobTagDisplay o2) {
+					return o1.getTagType().compareTo(o2.getTagType());
+				}
+			});
+			List<JobTagDisplay> tagNameList = new ArrayList<JobTagDisplay> ();
+			String previousTagType = null;
+			for (JobTagDisplay tagDisplay : tagList) {
+				if (!StringUtils.isBlank(previousTagType) && !tagDisplay.getTagType().equals(previousTagType)) {
+					this.jobTags.put(previousTagType,tagNameList);
+					tagNameList = new ArrayList<JobTagDisplay>();
+				}
+				tagNameList.add(tagDisplay);
+				previousTagType = tagDisplay.getTagType();
+			}
+			this.jobTags.put(previousTagType, tagNameList);
+		}
+		
+	}
+	
+	
+	
 	public Integer getTicketId() {
 		return ticketId;
 	}
 	
+	public HashMap<String, List<JobTagDisplay>> getJobTags() {
+		return jobTags;
+	}
+
+	public void setJobTags(HashMap<String, List<JobTagDisplay>> jobTags) {
+		this.jobTags = jobTags;
+	}
+
 	public void setTicketId(Integer ticketId) {
 		this.ticketId = ticketId;
 	}
@@ -463,40 +543,46 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 		this.ticketType = ticketType;
 	}
 
-
-
-	public BigDecimal getTaxRateAmount() {
-		return taxRateAmount;
+	public String getTicketTypeId() {
+		return ticketTypeId;
 	}
 
-	public void setTaxRateAmount(BigDecimal taxRateAmount) {
-		this.taxRateAmount = taxRateAmount;
-	}
-	
-	@JsonSerialize(using=AnsiDateFormatter.class)
-	public Date getTaxRateEffectiveDate() {
-		return taxRateEffectiveDate;
+	public void setTicketTypeId(String ticketTypeId) {
+		this.ticketTypeId = ticketTypeId;
 	}
 
-	public void setTaxRateEffectiveDate(Date taxRateEffectiveDate) {
-		this.taxRateEffectiveDate = taxRateEffectiveDate;
-	}
-
-	public String getTaxRateLocation() {
-		return taxRateLocation;
-	}
-
-	public void setTaxRateLocation(String taxRateLocation) {
-		this.taxRateLocation = taxRateLocation;
-	}
-
-	public BigDecimal getTaxRate() {
-		return taxRate;
-	}
-
-	public void setTaxRate(BigDecimal taxRate) {
-		this.taxRate = taxRate;
-	}
+//	public BigDecimal getTaxRateAmount() {
+//		return taxRateAmount;
+//	}
+//
+//	public void setTaxRateAmount(BigDecimal taxRateAmount) {
+//		this.taxRateAmount = taxRateAmount;
+//	}
+//	
+//	@JsonSerialize(using=AnsiDateFormatter.class)
+//	public Date getTaxRateEffectiveDate() {
+//		return taxRateEffectiveDate;
+//	}
+//
+//	public void setTaxRateEffectiveDate(Date taxRateEffectiveDate) {
+//		this.taxRateEffectiveDate = taxRateEffectiveDate;
+//	}
+//
+//	public String getTaxRateLocation() {
+//		return taxRateLocation;
+//	}
+//
+//	public void setTaxRateLocation(String taxRateLocation) {
+//		this.taxRateLocation = taxRateLocation;
+//	}
+//
+//	public BigDecimal getTaxRate() {
+//		return taxRate;
+//	}
+//
+//	public void setTaxRate(BigDecimal taxRate) {
+//		this.taxRate = taxRate;
+//	}
 
 	public String getPoNumber() {
 		return poNumber;
@@ -520,6 +606,22 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 
 	public void setJobFrequencyDesc(String jobFrequencyDesc) {
 		this.jobFrequencyDesc = jobFrequencyDesc;
+	}
+
+	public BigDecimal getRemainingDlAmt() {
+		return remainingDlAmt;
+	}
+
+	public void setRemainingDlAmt(BigDecimal remainingDlAmt) {
+		this.remainingDlAmt = remainingDlAmt;
+	}
+
+	public BigDecimal getRemainingPricePerCleaning() {
+		return remainingPricePerCleaning;
+	}
+
+	public void setRemainingPricePerCleaning(BigDecimal remainingPricePerCleaning) {
+		this.remainingPricePerCleaning = remainingPricePerCleaning;
 	}
 
 	

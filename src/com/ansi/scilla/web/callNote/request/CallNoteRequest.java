@@ -13,7 +13,7 @@ import com.ansi.scilla.web.common.request.AbstractRequest;
 import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.struts.SessionData;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class CallNoteRequest extends AbstractRequest {
@@ -142,8 +142,8 @@ public class CallNoteRequest extends AbstractRequest {
 		if ( canDoUser ) {
 			RequestValidator.validateId(conn, webMessages, User.TABLE, User.USER_ID, USER_ID, userId, true);
 		}
-		RequestValidator.validateString(webMessages, SUMMARY, summary, 300, true);
-		RequestValidator.validateString(webMessages, NOTES, notes, 4000, true);
+		RequestValidator.validateString(webMessages, SUMMARY, summary, 300, true, null);
+		RequestValidator.validateString(webMessages, NOTES, notes, 4000, true, null);
 		RequestValidator.validateContactType(conn, webMessages, CONTACT_TYPE, contactType, true);
 		CallNoteReference callNoteReference = CallNoteReference.valueOf(xrefType);
 		RequestValidator.validateId(conn, webMessages, callNoteReference.table(), callNoteReference.idField(), XREF_ID, xrefId, true);
@@ -159,8 +159,8 @@ public class CallNoteRequest extends AbstractRequest {
 		RequestValidator.validateId(conn, webMessages, Contact.TABLE, Contact.CONTACT_ID, CONTACT_ID, contactId, true);
 		RequestValidator.validateId(conn, webMessages, User.TABLE, User.USER_ID, USER_ID, userId, true);
 		RequestValidator.validateId(conn, webMessages, CallLog.TABLE, CallLog.CALL_LOG_ID, CALL_NOTE_ID, callNoteId, true);
-		RequestValidator.validateString(webMessages, SUMMARY, summary, 300, true);
-		RequestValidator.validateString(webMessages, NOTES, notes, 4000, true);
+		RequestValidator.validateString(webMessages, SUMMARY, summary, 300, true, null);
+		RequestValidator.validateString(webMessages, NOTES, notes, 4000, true, null);
 		RequestValidator.validateContactType(conn, webMessages, CONTACT_TYPE, contactType, true);
 		CallNoteReference callNoteReference = CallNoteReference.valueOf(xrefType);
 		RequestValidator.validateId(conn, webMessages, callNoteReference.table(), callNoteReference.idField(), XREF_ID, xrefId, true);

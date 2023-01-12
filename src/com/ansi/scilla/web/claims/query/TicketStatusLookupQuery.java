@@ -149,7 +149,6 @@ public class TicketStatusLookupQuery extends ClaimsQuery {
 	 * 
 	 * @param queryTerm
 	 * @return 
-	 * @throws Exception
 	 */
 	protected String makeWhereClause(String queryTerm)  {
 		String whereClause = TicketStatusLookupQuery.baseWhereClause;

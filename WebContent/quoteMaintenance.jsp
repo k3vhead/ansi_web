@@ -30,6 +30,7 @@
         <script type="text/javascript" src="js/quotePrint.js"></script>
         <script type="text/javascript" src="js/addressUtils.js"></script>
         <script type="text/javascript" src="js/callNote.js"></script> 
+        <script type="text/javascript" src="js/textExpander.js"></script> 
         
         <script type="text/javascript">        
         
@@ -46,10 +47,12 @@
 					invoiceTermList : null,
 					jobStatusList : null,
 					jobFrequencyList : null,
+					jobTagList : null,
+					jobTagTypeList : null,
 					leadTypeList : null,
 					managerList : null,
-					quote : null,
-					
+					quote : null,					
+									
 					joblist : {},
 					
 					progressbar : $("#progressbar"),
@@ -61,6 +64,7 @@
 					
 					init : function() {
 						console.log("init");
+						TEXTEXPANDER.init();
 						CALLNOTE.init();
 						$("#call-note-link").attr("data-xrefid", QUOTEMAINTENANCE.quoteId);
 						CALLNOTE.lookupLink();
@@ -124,46 +128,6 @@
 								$($selector).html($val[0]).show().fadeOut(3000);
 							});							
 						} else {
-							//QUOTEMAINTENANCE.quote = $data.data.quote;
-							//var $replacementJobHeader = null
-							//$.each($data.data.jobHeaderList, function($index, $value) {
-						//		if ( $value.jobId == $data.data.job.jobId ) {
-						//			$replacementJobHeader = QUOTEMAINTENANCE.makeJobHeader(
-							//				$value.jobId, 
-								//			$value.jobNbr, 
-								//			$value.abbrDescription, 
-								//			$value.divisionNbr, 
-								//			$value.divisionCode, 
-								//			$value.jobStatus, 
-								//			$value.jobFrequency, 
-								//			$value.pricePerCleaning,
-								//			$value.canEdit,
-								//			$value.canActivate,
-								//			$value.canCancel,
-								//			$value.canDelete,
-								//			$value.canSchedule);
-								//}
-							//});
-							// header
-							//var $jobId = $data.data.quote.jobDetail.job.jobId;
-							//var $headerDestination = "#job" + $jobId + " .jobTitleRow";
-							//$($headerDestination).html("");
-							//$($headerDestination).append($replacementJobHeader);
-							//QUOTEMAINTENANCE.makeJobClickers();
-							// detail
-							//var $dataDestination = "#job" + $jobId + " .job-data-row";
-							//QUOTEMAINTENANCE.populateJobPanel($data.jobId, $dataDestination, $data.data);
-							//$("#job-activate-modal").dialog("close");
-							//$("#globalMsg").html("Job Activated").show().fadeOut(3000);
-							
-							//QUOTEMAINTENANCE.showJobUpdates($data.data);
-							
-							
-							
-							
-							
-							
-							
 							var $jobId = $data.data.quote.jobDetail.job.jobId;
 							QUOTEMAINTENANCE.joblist[$jobId] = $data.data.quote.jobDetail;
 							console.log("populate the job panels after activate");
@@ -171,7 +135,6 @@
 							$("#job-activate-modal").dialog("close");
 							
 							QUOTEMAINTENANCE.showJobUpdates($data.data);
-
 						}
 					}, 
 					
@@ -451,10 +414,66 @@
 					},
 					
 					
+					populateTagListEdit : function($job) {
+						console.log($job);
+						var $display = "N/A";
+						if ( QUOTEMAINTENANCE.jobTagList.length > 0 ) {
+		            		
+		            		var $tagDisplay = $("<div>");
+		            		$.each(QUOTEMAINTENANCE.jobTagTypeList, function($typeIndex, $tagType) {		            			
+		            			var $label = '<span class="formLabel">' + $tagType.display + ': </span>';
+		            			$tagDisplay.append($label);
+		            			$display = "";
+		            			$.each(QUOTEMAINTENANCE.jobTagList, function($index, $tag) {
+		            				if ( $tag.tagType == $tagType.name) {
+										var $classList = "";
+										var $tagIsActive = true
+										var $tagIsSelected = false;
+										var $skip = false;
+										if ( $tag.status == "INACTIVE") {
+											$tagIsActive = false;
+										}
+										if ( $job != null ) {
+											// when we're adding a job, a null is passed in, so nothing will be pre-selected
+											$.each($job.jobTagList, function($selectedIndex, $selectedTag) {
+												if ( $selectedTag.tagId == $tag.tagId ) {
+													$tagIsSelected = true;
+												}
+											});
+										}
+										if ( $tagIsActive ) {
+											if ( $tagIsSelected ) {
+												$classList = $classList + " jobtag-selected";
+											} else {
+												// nothing to do here
+											}
+										} else {
+											if ( $tagIsSelected ) {
+												$classList = $classList + " jobtag-selected jobtag-inactive";
+											} else {
+												$skip = true;
+											}
+										}
+										if ( $skip == false ) {
+				            				$display = $display + '<span style="cursor:pointer;" class="jobtag jobtag-edit tooltip '+$classList+'" data-tagid="'+$tag.tagId+'">' + $tag.longCode + '<span class="tooltiptext">'+$tag.abbrev + '-' + $tag.description+'</span></span>&nbsp;';				            				
+										}
+		            				}
+								});
+		            			
+		            			$tagDisplay.append($display + "<br />");
+		            		});
+							
+						}
+						
+						return $tagDisplay;
+					},
+
+					
+					
 					
 					editThisJob : function($jobId, $type) {
 	            		console.log("clicked a job edit: " + $jobId);
-	            		console.log($type);
+	            		console.log("Edit type: " + $type);
 	
 	    				// hide edit icon & show save/cancel
 	    				//$editSelector = "#job" + $jobId + " .jobTitleRow .panel-button-container .edit-this-job";
@@ -471,6 +490,7 @@
 						$($tableSelector).show();
 						$($closedSelector).hide();
 						$($openSelector).show();
+						$("#job-edit-modal .job-proposal-jobtag-message").html("");
 						
 						$detailSelector = "#job" + $jobId + " .job-data-row .job-detail-display";
 						if ( ! $($detailSelector).length ) {
@@ -494,7 +514,25 @@
 						$("#job-edit-modal .proposal input[name='job-proposal-ppc']").val(QUOTEMAINTENANCE.joblist[$jobId].job.pricePerCleaning);
 						$("#job-edit-modal .proposal select[name='job-proposal-freq']").val(QUOTEMAINTENANCE.joblist[$jobId].job.jobFrequency);
 						$("#job-edit-modal .proposal textarea[name='job-proposal-desc']").val(QUOTEMAINTENANCE.joblist[$jobId].job.serviceDescription);
+						$("#job-edit-modal .proposal .job-proposal-jobtag").html(QUOTEMAINTENANCE.populateTagListEdit(QUOTEMAINTENANCE.joblist[$jobId].job));
 						
+						$(".jobtag-edit").click(function($event) {
+							var $tagId = $(this).attr("data-tagid");
+							var $selected = $(this).hasClass("jobtag-selected");
+							console.log("jobtag click: " + $tagId + " " + $selected);
+							if ( $selected ) {
+								$(this).removeClass("jobtag-selected");
+							} else {
+								$(this).addClass("jobtag-selected");
+							}
+						});
+
+						$("#job-edit-modal .proposal textarea[name='job-proposal-desc']").keyup(function($event) {
+							TEXTEXPANDER.keyup($event, $("#job-edit-modal .proposal textarea[name='job-proposal-desc']"))
+						});
+						$("#job-edit-modal .proposal textarea[name='job-proposal-desc']").blur(function() {
+							TEXTEXPANDER.blur($("#job-edit-modal .proposal textarea[name='job-proposal-desc']"))
+						});
 						
 						// populate activation edit panel
 						$("#job-edit-modal .activation input[name='job-activation-dl-pct']").val(QUOTEMAINTENANCE.joblist[$jobId].job.directLaborPct);
@@ -649,35 +687,6 @@
 		    				dataType: 'json'
 		    			});
 					},
-					
-					
-					getOptions : function($optionList, $callBack) {
-						console.log("getOptions");
-		    			var $returnValue = null;
-		    			var jqxhr1 = $.ajax({
-		    				type: 'GET',
-		    				url: 'options',
-		    				data: $optionList,			    				
-		    				statusCode: {
-		    					200: function($data) {
-		    						$callBack($data.data);		    						
-		    					},			    				
-		    					403: function($data) {
-		    						$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
-		    					}, 
-		    					404: function($data) {
-		    						$("#globalMsg").html("System Error Option 404. Contact Support").show();
-		    					}, 
-		    					405: function($data) {
-		    						$("#globalMsg").html("System Error Option 405. Contact Support").show();
-		    					}, 
-		    					500: function($data) {
-		    						$("#globalMsg").html("System Error Option 500. Contact Support").show();
-		    					}, 
-		    				},
-		    				dataType: 'json'
-		    			});
-		    		},
 		            
 		            
 		            
@@ -692,6 +701,15 @@
 								statusCode: {
 									200: function($data) {
 										console.log("Got the quote");
+										
+										if ( $data.data.webMessages != null && $data.data.webMessages.hasOwnProperty("GLOBAL_MESSAGE" )) {
+											$("#globalMsg").html( $data.data.webMessages["GLOBAL_MESSAGE"][0]).show();
+				    						if ( $("#propose-button").length > 0 ) {
+				    							// Button only exists for those with sufficient privileges
+				    							$("#propose-button").hide();
+				    						}
+										}
+										
 										QUOTEMAINTENANCE.quote = $data.data.quote;
 										QUOTEMAINTENANCE.populateQuotePanels($data.data);	
 										if ( QUOTEMAINTENANCE.quote.canEdit == true ) {
@@ -1412,7 +1430,36 @@
 					
 					
 					
-					makeManagerList: function(){
+					
+					makeJobTagList : function(){
+	    				var $url = "jobtag/jobTag/list";
+	    				var jqxhr = $.ajax({
+	    					type: 'GET',
+	    					url: $url,
+	    					data: null,
+	    					statusCode: {
+	    						200: function($data) {
+	    							QUOTEMAINTENANCE.jobTagList = $data.data.itemList;
+	    							QUOTEMAINTENANCE.incrementProgress("Job Tag List");
+	    						},					
+	    						403: function($data) {
+	    							$("#globalMsg").html("Session Expired. Log In and try again").show();
+	    						},
+	    						404: function($data) {
+	    							$("#globalMsg").html("System Error 404/Manager List. Contact Support").show();
+	    						},
+	    						500: function($data) {
+	    							$("#globalMsg").html("System Error 500. Contact Support").show();
+	    						}
+	    					},
+	    					dataType: 'json'
+	    				});		    			
+		    		},
+		    		
+		    		
+		    		
+					
+					makeManagerList : function(){
 	    				var $url = "user/manager";
 	    				var jqxhr = $.ajax({
 	    					type: 'GET',
@@ -1441,7 +1488,7 @@
 		    		
 		    		
 		    		makeOptionLists : function(){
-						QUOTEMAINTENANCE.getOptions('JOB_STATUS,JOB_FREQUENCY,COUNTRY,INVOICE_GROUPING,INVOICE_STYLE,INVOICE_TERM', QUOTEMAINTENANCE.populateOptions);
+						ANSI_UTILS.getOptionList('JOB_STATUS,JOB_FREQUENCY,COUNTRY,INVOICE_GROUPING,INVOICE_STYLE,INVOICE_TERM,JOBTAG_TYPE', QUOTEMAINTENANCE.populateOptions);
 						QUOTEMAINTENANCE.incrementProgress("Job Status List");
 						QUOTEMAINTENANCE.incrementProgress("Job Frequency List");
 						
@@ -1459,6 +1506,7 @@
 						QUOTEMAINTENANCE.incrementProgress("Lead Type List");
 						
 						QUOTEMAINTENANCE.makeManagerList();	
+						QUOTEMAINTENANCE.makeJobTagList();
 		            },
 		            
 		            
@@ -1513,11 +1561,32 @@
 		    				var $quoteNumber = $(this).attr("data-quotenumber");
 		    				console.debug("Adding job to " + $quoteId);
 		    				
-		    				
 		    				//Clear all job forms
 		    				$(".job-edit-panel input").val("");
 		    				$(".job-edit-panel select").val("");
 		    				$(".job-edit-panel textarea").val("");
+		    				$("#job-edit-modal .job-proposal-jobtag-message").html("");
+		    				
+		    				//show job tags
+		    				if ($("#job-edit-modal .proposal .job-proposal-jobtag").html() == "" ) {
+		    					$("#job-edit-modal .proposal .job-proposal-jobtag").html(QUOTEMAINTENANCE.populateTagListEdit(null));
+		    					$(".jobtag-edit").click(function($event) {
+									var $tagId = $(this).attr("data-tagid");
+									var $selected = $(this).hasClass("jobtag-selected");
+									console.log("jobtag click: " + $tagId + " " + $selected);
+									if ( $selected ) {
+										$(this).removeClass("jobtag-selected");
+									} else {
+										$(this).addClass("jobtag-selected");
+									}
+								});
+		    				} else {
+		    					// new job -- nothing pre-selected
+		    					$.each($("#job-edit-modal .proposal .job-proposal-jobtag .jobtag-edit"), function($index, $value) {
+		    						$(this).removeClass("jobtag-selected");
+		    					});
+		    				}
+		    				
 		    				//set all job forms to visible
 							$(".job-edit-panel").show();		    				
 		    				//Populate frequncy dropdown
@@ -1537,6 +1606,16 @@
 							});
 							var $nextJobNbr = $maxJobNbr + 1;
 							$("#job-edit-modal input[name='job-proposal-job-nbr']").val($nextJobNbr);
+							
+							// turn off the text expander before turning it on to make sure it is only called once
+							TEXTEXPANDER.cancel($("#job-edit-modal .proposal textarea[name='job-proposal-desc']"));
+							$("#job-edit-modal .proposal textarea[name='job-proposal-desc']").keyup(function($event) {								
+								TEXTEXPANDER.keyup($event, $("#job-edit-modal .proposal textarea[name='job-proposal-desc']"))
+							});
+							$("#job-edit-modal .proposal textarea[name='job-proposal-desc']").blur(function() {
+								TEXTEXPANDER.blur($("#job-edit-modal .proposal textarea[name='job-proposal-desc']"))
+							});
+							
 		    				$("#job-edit-modal").dialog("open");
 		    			});
 	
@@ -1620,6 +1699,8 @@
 		    				$("#edit-this-quote").hide();
 		    				$("#quoteDataContainer .managerName").hide();
 		    				$("#quoteDataContainer select[name='managerId']").show();
+		    				$("#new-quote-button").hide();
+		    				$("#lookup-button").hide();
 		    				$("#quote-container .quote-button-container .save-quote").show();
 		    				$("#quote-container .quote-button-container .cancel-edit").show();
 		    			});
@@ -1635,6 +1716,8 @@
 		    				$("#edit-this-quote").show();
 		    				$("#quoteDataContainer .managerName").show();
 		    				$("#quoteDataContainer select[name='managerId']").hide();
+		    				$("#new-quote-button").show();
+		    				$("#lookup-button").show();
 		    				$("#quote-container .quote-button-container .save-quote").hide();
 		    				$("#quote-container .quote-button-container .cancel-edit").hide();
 		    			});
@@ -1663,7 +1746,7 @@
 		    					//$("#progressbar").hide();
 		    					QUOTEMAINTENANCE.showQuote();
 		    				},
-		    				max: 11
+		    				max: 12
 		    			});
 		    		},
 		    		
@@ -1822,6 +1905,26 @@
 		            },
 		            
 		            
+		            
+		            makeJobTagDisplay : function($jobTagList) {
+		            	var $display = '<span class="formLabel">Tags:</span> N/A<br />';
+		            	if ( $jobTagList != null && $jobTagList.length > 0 ) {
+		            		$display = "";
+		            		$.each(QUOTEMAINTENANCE.jobTagTypeList, function($typeIndex, $tagType) {
+		            			$display = $display + '<span class="formLabel">' + $tagType.display + ": </span>";
+			            		$.each($jobTagList, function($index, $value) {
+			            			if ( $value.tagType == $tagType.name ) {
+			            				$display = $display + '<span class="jobtag tooltip" data-tagid="'+$value.tagId+'">' + $value.longCode + '<span class="tooltiptext">'+$value.abbrev + " - " + $value.tagDescription+'</span></span>&nbsp;';
+			            			}
+			            		});
+			            		$display = $display + "<br />";
+		            		});
+		            	}
+		            	return $display;
+		            },
+		            
+		            
+		            
 		            populateJobPanel : function($jobId, $destination, $data) {	
 		            	console.log("Populate Job Panel");
 		            	console.log($data);
@@ -1844,6 +1947,7 @@
 		            	$($destination + " .jobProposalDisplayPanel .job-proposal-ppc").html("$" + $jobDetail.job.pricePerCleaning);
 		            	$($destination + " .jobProposalDisplayPanel .job-proposal-freq").html($jobDetail.job.jobFrequency);
 		            	$($destination + " .jobProposalDisplayPanel .job-proposal-desc").html($jobDetail.job.serviceDescription);
+		            	$($destination + " .jobProposalDisplayPanel .job-proposal-jobtag").html(QUOTEMAINTENANCE.makeJobTagDisplay($jobDetail.job.jobTagList));
 		            	
 		            	$($destination + " .jobActivationDisplayPanel .job-activation-dl-pct").html($jobDetail.job.directLaborPct);
 		            	$($destination + " .jobActivationDisplayPanel .job-activation-dl-budget").html($jobDetail.job.budget);
@@ -1975,6 +2079,7 @@
 						QUOTEMAINTENANCE.invoiceTermList = $optionData.invoiceTerm;
 						QUOTEMAINTENANCE.jobStatusList = $optionData.jobStatus;
 						QUOTEMAINTENANCE.jobFrequencyList = $optionData.jobFrequency;
+						QUOTEMAINTENANCE.jobTagTypeList = $optionData.jobTagType
 						
 						QUOTEMAINTENANCE.populateOptionSelects();
 		            },
@@ -2330,6 +2435,15 @@
 									$outbound['repeatScheduleAnnually'] = 0;
 								}
 							}
+							if ( $type == "proposal" ) {
+								console.log("proposal-specific updates");
+								var $jobtagList = [];
+								$.each( $("#job-edit-modal .proposal .jobtag-selected"), function($tagIndex, $tagValue) {
+									var $tagId = $(this).attr("data-tagid");
+									$jobtagList.push(parseInt($tagId));
+								});
+								$outbound['jobtags'] = $jobtagList;
+							}
 						});
 
 						// if this is a new job -- add all the other stuff, too
@@ -2390,31 +2504,41 @@
 							$.each($data.data.webMessages, function(index, val) {	
 								// index matches up with attr data-apiname in the form
 								// loop through the input/selects and apply a class to the input
-								$.each( $("#job-edit-modal input"), function(fieldIdx, fieldVal) {
-									var $apiName = $(fieldVal).attr("data-apiname");
-									if ( index == $apiName ) {
-										var $fieldName = $(fieldVal).attr("name");
-										var $selector = "#job-edit-modal input[name='"+ $fieldName +"']";
-										$($selector).addClass("edit-err");
-									}
-								});
-								$.each( $("#job-edit-modal select"), function(fieldIdx, fieldVal) {
-									var $apiName = $(fieldVal).attr("data-apiname");
-									if ( index == $apiName ) {
-										var $fieldName = $(fieldVal).attr("name");
-										var $selector = "#job-edit-modal select[name='"+ $fieldName +"']";
-										$($selector).addClass("edit-err");
-									}
-								});
+								if ( index == "jobtags") {
+									// jobtags gets special treatment because it's not an input or a select
+									$("#job-edit-modal .job-proposal-jobtag-message").html($data.data.webMessages["jobtags"][0]).show();
+								} else {
+									$.each( $("#job-edit-modal input"), function(fieldIdx, fieldVal) {
+										var $apiName = $(fieldVal).attr("data-apiname");
+										if ( index == $apiName ) {
+											var $fieldName = $(fieldVal).attr("name");
+											var $selector = "#job-edit-modal input[name='"+ $fieldName +"']";
+											$($selector).addClass("edit-err");
+										}
+									});
+									$.each( $("#job-edit-modal select"), function(fieldIdx, fieldVal) {
+										var $apiName = $(fieldVal).attr("data-apiname");
+										if ( index == $apiName ) {
+											var $fieldName = $(fieldVal).attr("name");
+											var $selector = "#job-edit-modal select[name='"+ $fieldName +"']";
+											$($selector).addClass("edit-err");
+										}
+									});
+								}
 							});
+							
 						} else {
-							console.log("Update header success:");
+							console.log("Update header success 2528:");
 							console.log($data);
 							var $jobId = $data.data.quote.jobDetail.job.jobId;
 							QUOTEMAINTENANCE.joblist[$jobId] = $data.data.quote.jobDetail;
 							console.log("do something to populate the job panels here");
 							//var $destination = "#job" + $jobId + " .job-data-row";
     						//QUOTEMAINTENANCE.populateJobPanel($jobId, $destination, $data.data);
+    						if ( $("#propose-button").length > 0 ) {
+    							// Button only exists for those with sufficient privileges
+    							$("#propose-button").show();
+    						}
 							$("#globalMsg").html("Update Successful").show().fadeOut(3000);
 							$("#job-edit-modal").dialog("close");
 							
@@ -2478,7 +2602,7 @@
 							});
 							alert("Invalid input. Correct the indicated fields and resubmit");
 						} else {
-							console.log("Update header success:");
+							console.log("Update header success 2599:");
 							console.log($data);
 							QUOTEMAINTENANCE.quote = $data.data.quote;
 							QUOTEMAINTENANCE.populateQuotePanel(QUOTEMAINTENANCE.quote);
@@ -2491,6 +2615,12 @@
 		    				$("#edit-this-quote").show();
 		    				$("#quote-container .quote-button-container .save-quote").hide();
 		    				$("#quote-container .quote-button-container .cancel-edit").hide();
+    						if ( $("#propose-button").length > 0 ) {
+    							// Button only exists for those with sufficient privileges
+	   							$("#propose-button").show();
+    						}
+		    				$("#new-quote-button").show();
+		    				$("#lookup-button").show();
 						}
 						
 						
@@ -2769,6 +2899,23 @@
 				display:inline; 
 				margin-right:10px;
 			}
+			.jobtag {
+				border:solid 1px #404040;
+				padding:1px;
+				spacing:1px;
+				-moz-border-radius:3px;
+				-webkit-border-radius:3px;
+				-khtml-border-radius:3px;
+				border-radius:3px;
+				cursor:default;
+			}
+			.jobtag-inactive {
+				text-decoration:line-through;
+			}
+			.jobtag-selected {
+				background:#CC6600;
+				color:#FFFFFF;
+			}
 			.panel-button-container {
 				float:right; 
 				margin-right:8px;
@@ -2811,7 +2958,7 @@
     
     
     <tiles:put name="content" type="string">
-    	<h1>Quote Maintenance</h1>
+    	<h1>Quote Maintenance</h1>    	
     	<%--
     	<div id="loading-container"><webthing:thinking style="width:100%" /></div>
     	<div style="width:1200px;">
@@ -2826,7 +2973,7 @@
     			<%-- <ansi:hasPermission permissionRequired="QUOTE_CREATE"><webthing:edit styleClass="fa-2x quote-button">Edit</webthing:edit></ansi:hasPermission>--%>
  			    <ansi:hasPermission permissionRequired="QUOTE_CREATE"><div class="action-button-container"><webthing:revise styleClass="fa-2x quote-button action-button" styleId="revise-button">Revise</webthing:revise></div></ansi:hasPermission>
     			<ansi:hasPermission permissionRequired="QUOTE_CREATE"><div class="action-button-container"><webthing:copy styleClass="fa-2x quote-button action-button" styleId="copy-button">Copy</webthing:copy></div></ansi:hasPermission>
-    			<ansi:hasPermission permissionRequired="QUOTE_READ"><div class="action-button-container"><a href="quoteLookup.html" style="text-decoration:none; color:#404040;"><webthing:view styleClass="fa-2x quote-button">Lookup</webthing:view></a></div></ansi:hasPermission>
+    			<ansi:hasPermission permissionRequired="QUOTE_READ"><div class="action-button-container"><a href="quoteLookup.html" style="text-decoration:none; color:#404040;"><webthing:view styleClass="fa-2x quote-button" styleId="lookup-button">Lookup</webthing:view></a></div></ansi:hasPermission>
     			<ansi:hasPermission permissionRequired="QUOTE_CREATE"><div class="action-button-container"><a href="newQuote.html"><webthing:addNew styleClass="fa-2x quote-button action-button" styleId="new-quote-button">New Quote</webthing:addNew></a></div></ansi:hasPermission>
     			<ansi:hasPermission permissionRequired="QUOTE_READ"><div class="action-button-container"><webthing:print styleClass="orange fa-2x quote-button action-button" styleId="preview-button">Preview</webthing:print></div></ansi:hasPermission>    			
     			<ansi:hasPermission permissionRequired="QUOTE_PROPOSE"><div class="action-button-container"><webthing:print styleClass="green fa-2x quote-button action-button" styleId="propose-button">Propose</webthing:print></div></ansi:hasPermission>

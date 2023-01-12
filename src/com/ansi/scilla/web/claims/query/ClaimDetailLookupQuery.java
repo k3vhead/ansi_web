@@ -157,7 +157,6 @@ public class ClaimDetailLookupQuery extends ClaimsQuery {
 	 * 
 	 * @param queryTerm
 	 * @return 
-	 * @throws Exception
 	 */
 	protected String makeWhereClause(String queryTerm)  {
 		String whereClause = ClaimDetailLookupQuery.baseWhereClause;

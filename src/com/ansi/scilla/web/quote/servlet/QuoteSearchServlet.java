@@ -13,13 +13,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
-import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
@@ -34,11 +33,11 @@ import com.thewebthing.commons.db2.RecordNotFoundException;
  * 
  * The url for get will be one of:
  * 		/quoteSearch/List      				(retrieves everything)
- * 		/quoteSearch/<quoteId>					(retrieves a single record)
+ * 		/quoteSearch/&lt;quoteId&gt;					(retrieves a single record)
  *		/quoteSearch?term=					(retrieves everything)
- * 		/quoteSearch?term=<queryTerm>			(retrieves filtered selection)
- * 		/quoteSearch?sort=<sort>,<sort> 		(retrieve sorted selection)
- * 		/quoteSearch?term=<term>&sort=<sort> 	(retrieve sorted filtered selection)
+ * 		/quoteSearch?term=&lt;queryTerm&gt;			(retrieves filtered selection)
+ * 		/quoteSearch?sort=&lt;sort&gt;,&lt;sort&gt; 		(retrieve sorted selection)
+ * 		/quoteSearch?term=&lt;term&gt;&amp;sort=&lt;sort&gt; 	(retrieve sorted filtered selection)
  * 
  * 
  * @author ggroce
@@ -87,7 +86,7 @@ public class QuoteSearchServlet extends AbstractServlet {
 							throw new RecordNotFoundException();
 						}
 						conn = AppUtils.getDBCPConn();
-						SessionData sessionData = AppUtils.validateSession(request, Permission.QUOTE, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+						SessionData sessionData = AppUtils.validateSession(request, Permission.QUOTE_READ);
 						SessionUser user = sessionData.getUser();
 
 						QuoteSearchListResponse quoteSearchListResponse = doGetWork(conn, user, myString, queryString);
@@ -112,7 +111,7 @@ public class QuoteSearchServlet extends AbstractServlet {
 			Connection conn = null;
 			try {
 				conn = AppUtils.getDBCPConn();
-				SessionData sessionData = AppUtils.validateSession(request, Permission.QUOTE, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+				SessionData sessionData = AppUtils.validateSession(request, Permission.QUOTE_READ);
 				SessionUser user = sessionData.getUser();
 
 				QuoteSearchListResponse quoteSearchListQueryResponse = doGetWork(conn, user, queryString);

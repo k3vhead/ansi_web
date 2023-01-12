@@ -29,7 +29,7 @@ import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
@@ -63,6 +63,7 @@ public class ApplyPaymentServlet extends AbstractServlet {
 				ApplyPaymentRequest paymentRequest = new  ApplyPaymentRequest();
 				AppUtils.json2object(jsonString, paymentRequest);
 				url = new AnsiURL(request, "applyPayment", new String[] {PaymentRequestType.VERIFY.name().toLowerCase(), PaymentRequestType.COMMIT.name().toLowerCase()});
+				//SessionData sessionData = AppUtils.validateSession(request, Permission.PAYMENT, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
 				SessionData sessionData = AppUtils.validateSession(request, Permission.PAYMENT_WRITE);
 				SessionUser sessionUser = sessionData.getUser();
 				
@@ -224,7 +225,8 @@ public class ApplyPaymentServlet extends AbstractServlet {
 			ticket.setActPricePerCleaning(BigDecimal.ZERO);
 		}
 		ticket.setActTaxAmt(BigDecimal.ZERO);
-		ticket.setActTaxRateId(0);
+//		ticket.setActTaxRateId(0);
+		ticket.setActTaxRate(BigDecimal.ZERO);
 		ticket.setAddedBy(sessionUser.getUserId());
 //		ticket.setAddedDate(addedDate);		// added by super
 		ticket.setBillSheet(Ticket.BILL_SHEET_IS_NO);

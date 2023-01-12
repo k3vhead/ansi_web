@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.db.Invoice;
-import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.invoice.InvoiceUtils;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
@@ -24,7 +23,7 @@ import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
@@ -49,7 +48,7 @@ public class InvoiceReprintServlet extends AbstractServlet {
 				conn = AppUtils.getDBCPConn();
 				conn.setAutoCommit(false);
 				ansiURL = new AnsiURL(request, "invoiceReprint", (String[])null); //  .../ticket/etc
-				SessionData sessionData = AppUtils.validateSession(request, Permission.INVOICE, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+				SessionData sessionData = AppUtils.validateSession(request, Permission.INVOICE_READ);
 				Invoice invoice = validateInvoice(conn, ansiURL.getId());
 				SessionUser sessionUser = sessionData.getUser();				
 				processUpdate(conn, request, response, invoice, sessionUser);
@@ -109,7 +108,7 @@ public class InvoiceReprintServlet extends AbstractServlet {
 		String invoiceFileName = invoice.getInvoiceId() + "_" + fileDate + ".pdf";
 
 
-		ByteArrayOutputStream baos = InvoiceUtils.reprintInvoice(conn, invoice);
+		ByteArrayOutputStream baos = InvoiceUtils.reprintInvoice(conn, invoice, sessionUser.getUserId());
 		
 		
 		FileOutputStream os = new FileOutputStream(new File(invoicePathName + "/" + invoiceFileName));

@@ -18,7 +18,6 @@ import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.db.PermissionGroup;
 import com.ansi.scilla.common.db.PermissionGroupLevel;
-import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.common.exceptions.InvalidDeleteException;
 import com.ansi.scilla.common.queries.PermissionGroupUserCount;
@@ -30,7 +29,7 @@ import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
@@ -75,7 +74,7 @@ public class PermissionGroupServlet extends AbstractServlet {
 		try {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
-			AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+			AppUtils.validateSession(request, Permission.SYSADMIN_WRITE);
 
 			try {
 				url = new AnsiURL(request,"permissionGroup", new String[] {""});
@@ -141,7 +140,7 @@ public class PermissionGroupServlet extends AbstractServlet {
 		try {
 			conn = AppUtils.getDBCPConn();
 			
-			AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_READ);  		// make sure we're allowed to be here
+			AppUtils.validateSession(request, Permission.SYSADMIN_READ);  		// make sure we're allowed to be here
 			url = new AnsiURL(request, "permissionGroup",new String[] { ACTION_IS_LIST });							// parse the URL and look for "contact"
 			PermissionGroupListResponse permissionGroupListResponse = makeSingleListResponse(conn, url);			// get the data we're looking for
 			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");											// add messages to the response
@@ -168,7 +167,7 @@ public class PermissionGroupServlet extends AbstractServlet {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
 			
-			SessionData sessionData = AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+			SessionData sessionData = AppUtils.validateSession(request, Permission.SYSADMIN_WRITE);
 			SessionUser sessionUser = sessionData.getUser();
 
 			try {

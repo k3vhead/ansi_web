@@ -1,5 +1,186 @@
 $( document ).ready(function() {
 	;ANSI_UTILS = {
+		// $type          : POST or GET
+		// $url           : the url to call
+		// $outbound      : dictionary or json string of name/value pairs to be sent to the URL via query string or post data
+		// $callbacks     : dictionary of callback methods based on http status code. eg. {200:successMethod, 500:errorMethod, 403:securityMethod}
+		// $passThruData  : dictionary of data to be passed to callback methods, along with the HTTP response object.
+		// Note that callbacks will be called, passing HTTP response object and $passThruData
+		// If you run into an HTTP code that isn't in the list, add it and make life easier for the next guy
+		makeServerCall : function($type, $url, $outbound, $callbacks, $passThruData) {
+			var jqxhr = $.ajax({
+				type: $type,
+				url: $url,
+				data: $outbound,
+				statusCode: {
+					200: function($data) {
+						$method = $callbacks[200];
+						if ( $method == null ) {
+							$("#globalMsg").html("System Error: " + $url + " Undefined response. Contact Support");
+						} else {
+							$method($data, $passThruData);
+						}
+					},					
+					403: function($data) {
+						$method = $callbacks[403];
+						if ( $method == null ) {
+							$("#globalMsg").html("Session has expired.").show().fadeOut(5000);
+						} else {
+							$method($data, $passThruData);
+						}
+					},
+					404: function($data) {
+						$method = $callbacks[404];
+						if ( $method == null ) {
+							$("#globalMsg").html("System Error: " + $url + " 404. Contact Support").show().fadeOut(5000);
+						} else {
+							$method($data, $passThruData);
+						}
+					},
+					405: function($data) {
+						$method = $callbacks[404];
+						if ( $method == null ) {
+							$("#globalMsg").html("Action Not Permitted").show().fadeOut(5000);
+						} else {
+							$method($data, $passThruData);
+						}
+					},
+					500: function($data) {
+						$method = $callbacks[500];
+						if ( $method == null ) {
+							$("#globalMsg").html("System Error: " + $url + " 500. Contact Support").show().fadeOut(5000);
+						} else {
+							$method($data, $passThruData);
+						}						
+					}
+				},
+				dataType: "json"
+			});
+		},	
+			
+		
+		// *********************************************************************************
+		// ******** THIS METHOD IS DEPRECATED. USE makeServerCall INSTEAD ******************
+		// *********************************************************************************
+		// $type          : POST or GET
+		// $url           : the url to call
+		// $outbound      : dictionary or json string of name/value pairs to be sent to the URL via query string or post data
+		// $successMethod : callback when the HTTP returns a 200 and the response code is SUCCESS (ie. no edit errors)
+		// $failureMethod : callback when the HTTP returns a 200 and the response code is EDIT_FAILURE
+		// $expiredMethod : callback when the HTTP returns a 403. Default is to display a message in #globalMsg
+		// $passThruData  : dictionary of data to be passed to callback methods, along with the HTTP response object.
+		// Note that callbacks will be called, passing HTTP response object and $passThruData
+		doServerCall : function($type, $url, $outbound, $successMethod, $failureMethod, $expiredMethod, $passThruData) {
+			var jqxhr = $.ajax({
+				type: $type,
+				url: $url,
+				data: $outbound,
+				statusCode: {
+					200: function($data) {
+						if ( $data.responseHeader.responseCode == 'SUCCESS' ) {
+							$successMethod($data, $passThruData);
+						} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE' ) {
+							$failureMethod($data, $passThruData);
+						} else {
+							$("#globalMsg").html("System Error: " + $url + " Invalid response code " + $data.responseHeader.responseCode + ". Contact Support").show().fadeOut(5000);
+						}
+					},					
+					403: function($data) {
+						if ( $expiredMethod == null ) {
+							$("#globalMsg").html("Session has expired.").show().fadeOut(5000);
+						} else {
+							$expiredMethod($data, $passThruData);
+						}
+					},
+					404: function($data) {
+						$("#globalMsg").html("System Error: " + $url + " 404. Contact Support").show().fadeOut(5000);
+					},
+					500: function($data) {
+						$("#globalMsg").html("System Error: " + $url + " 500. Contact Support").show().fadeOut(5000);
+					}
+				},
+				dataType: "json"
+			});
+		},
+		
+		
+		// creates a modal, if it doesn't already exist
+		// displays messages in that modal (the values in the webmessage key/value pairs)
+		showWarnings : function($warningModal, $webMessages) {
+			console.log("showWarnings");
+			if ( $("#" + $warningModal).length == 0 ) {
+				// if the div does not exist, create it
+				console.log("Creating warning modal");
+				var $modal = $("<div>");
+				$modal.attr("id",$warningModal);
+				$modal.attr("style", "display:none;");				
+				$modal.appendTo('body');
+				
+				$( "#" + $warningModal ).dialog({
+    				title:'Success -- Warnings',
+    				autoOpen: false,
+    				height: 200,
+    				width: 350,
+    				modal: true,
+    				closeOnEscape:true,
+    				//open: function(event, ui) {
+    				//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+    				//},
+    				buttons: [
+    					{
+    						id:  $warningModal + "-close",
+    						click: function($event) {
+   								$( "#" + $warningModal ).dialog("close");
+    						}
+    					}
+    				]
+    			});	
+    			$("#" + $warningModal + "-close").button('option', 'label', 'OK');  
+			} else {
+				$modal = $("#" + $warningModal);
+			}
+			var $warningList = $("<li>");
+			$.each($webMessages, function($fldIndex, $field) {
+				console.log($fldIndex);
+				$.each($field, function($msgIndex, $message) {
+					console.log("*" + $message);
+					$warningList.append( $("<li>").append($message)   );	
+				});
+				
+			});
+			$modal.append($warningList);
+			$("#"+$warningModal).dialog("open");
+		},
+			
+		// loops through all inputs & selects in a form and creates a map (suitable for a server call) with
+		// name/value pairs. If a fieldname exists as a key in the $nameMapping map, the field will be renamed
+		// in the outbound map accordingly.
+		form2outbound : function($selector, $nameMapping) {
+			var $outbound = {};
+			var $inputSelector = $selector + " input";
+			var $selectSelector = $selector + " select";
+
+			$.each($($inputSelector), function($index, $value) {
+				if ( $value.name in $nameMapping ) {
+					$outbound[ $nameMapping[$value.name] ] = $($value).val();
+				} else {
+					$outbound[$value.name] = $($value).val();
+				}
+				
+			});
+			$.each($($selectSelector), function($index, $value) {
+				if ( $value.name in $nameMapping ) {
+					$outbound[ $nameMapping[$value.name] ] = $($value).val();
+				} else {
+					$outbound[$value.name] = $($value).val();
+				}
+			});			
+			
+			return $outbound;
+		},
+		
+		
+			
 		getOptions: function($optionList) {
 			var $returnValue = null;
 			var jqxhr1 = $.ajax({

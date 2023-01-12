@@ -13,9 +13,16 @@
 <%@ taglib uri="WEB-INF/theTagThing.tld" prefix="ansi" %>
 
 
+<%--
 <%@ page import="java.lang.reflect.Method,
 			com.ansi.scilla.web.report.common.ReportType,
-			com.ansi.scilla.report.reportBuilder.AbstractReport" %>
+<<<<<<< HEAD
+			com.ansi.scilla.report.reportBuilder.AbstractReport" %> 
+--%>			
+<%@ page import="com.ansi.scilla.web.report.common.ReportType" %> 
+=======
+			com.ansi.scilla.report.reportBuilder.reportType.AbstractReport" %>
+>>>>>>> dev
 
 <tiles:insert page="layout.jsp" flush="true">
 

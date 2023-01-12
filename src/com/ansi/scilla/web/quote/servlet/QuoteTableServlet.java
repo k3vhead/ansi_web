@@ -13,14 +13,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.Level;
 
-import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.db.Quote;
 import com.ansi.scilla.common.queries.QuoteSearch;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
@@ -72,7 +71,7 @@ public class QuoteTableServlet extends AbstractServlet {
 	    Connection conn = null;
 	    try {
 	    	conn = AppUtils.getDBCPConn();
-	    	SessionData sessionData = AppUtils.validateSession(request, Permission.QUOTE, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+	    	SessionData sessionData = AppUtils.validateSession(request, Permission.QUOTE_READ);
 	    	SessionUser user = sessionData.getUser();
 
 	    	String term = "";

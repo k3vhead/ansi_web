@@ -3,9 +3,7 @@ package com.ansi.scilla.web.common.fieldValidator;
 import java.sql.Connection;
 
 import com.ansi.scilla.common.invoice.InvoiceStyle;
-import com.ansi.scilla.web.common.response.MessageKey;
 import com.ansi.scilla.web.common.response.WebMessages;
-import com.ansi.scilla.web.common.utils.AppUtils;
 
 public abstract class InvoiceStyleValidator implements FieldValidator {
 

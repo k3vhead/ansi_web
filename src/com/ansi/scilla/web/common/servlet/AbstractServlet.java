@@ -46,6 +46,9 @@ public class AbstractServlet extends HttpServlet {
 	public static final String ACTION_IS_ADD = "add";
 	public static final String ACTION_IS_COPY = "copy";
 	public static final String ACTION_IS_LIST = "list";
+	public static final String ACTION_IS_GET = "get";
+	public static final String ACTION_IS_EDIT = "edit";
+	public static final String ACTION_IS_DELETE = "delete";
 	
 	protected Logger logger = AppUtils.getLogger();
 
@@ -127,7 +130,7 @@ public class AbstractServlet extends HttpServlet {
 	 */
 	public String makeJsonString(HttpServletRequest request) throws UnsupportedEncodingException, IOException {
 		Writer writer = new StringWriter();
-		 
+
         char[] buffer = new char[1024];
         try {
             Reader reader = new BufferedReader(new InputStreamReader(request.getInputStream(), "UTF-8"));
@@ -288,8 +291,8 @@ public class AbstractServlet extends HttpServlet {
 					}
 				} else if ( value != null && value instanceof Float) {
 					Float decimalValue = (Float)value;
-					Float minValue = new Float(min);
-					Float maxValue = new Float(max);
+					Float minValue = Float.valueOf(min);
+					Float maxValue = Float.valueOf(max);
 					
 					if ( minValue.compareTo(decimalValue) > 0 ) {
 						nonMatchingValues.add(fixFieldName(fieldName));
@@ -298,8 +301,8 @@ public class AbstractServlet extends HttpServlet {
 					}
 				} else if ( value != null && value instanceof Integer) {
 					Integer decimalValue = (Integer)value;
-					Integer minValue = (new Float(min)).intValue();
-					Integer maxValue = (new Float(max)).intValue();
+					Integer minValue = (Float.valueOf(min)).intValue();
+					Integer maxValue = (Float.valueOf(max)).intValue();
 					
 					if ( minValue.compareTo(decimalValue) > 0 ) {
 						nonMatchingValues.add(fixFieldName(fieldName));

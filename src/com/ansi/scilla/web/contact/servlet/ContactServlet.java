@@ -21,7 +21,7 @@ import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.contact.request.ContactRequest;
 import com.ansi.scilla.web.contact.response.ContactListResponse;
 import com.ansi.scilla.web.contact.response.ContactResponse;
@@ -32,17 +32,17 @@ import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 /**
- * The url for delete will be of the form /contact/<contactId>
+ * The url for delete will be of the form /contact/&lt;contactId&gt;
  * 
  * The url for get will be one of:
  * 		/contact/list  			(retrieves everything)
- * 		/contact/<contactId>	(retrieves a single record)
+ * 		/contact/&lt;contactId&gt;	(retrieves a single record)
  * 
  * The url for adding a new record will be a POST to:
  * 		/contact/add   with parameters in the JSON
  * 
  * The url for update will be a POST to:
- * 		/contact/<contactId> with parameters in the JSON
+ * 		/contact/&lt;contactId&gt; with parameters in the JSON
  * 
  * 
  * @author gagroce
@@ -200,6 +200,7 @@ public class ContactServlet extends AbstractServlet {
 
 	protected WebMessages validateAdd(Connection conn, ContactRequest contactRequest) throws Exception {
 		WebMessages webMessages = new WebMessages();
+		contactRequest = removeExtraSpaces(contactRequest);
 		List<String> missingFields = super.validateRequiredAddFields(contactRequest);
 		if ( missingFields.isEmpty() ) {
 			List<String> badFormatFieldList = super.validateFormat(contactRequest);
@@ -230,6 +231,8 @@ public class ContactServlet extends AbstractServlet {
 
 	protected WebMessages validateUpdate(Connection conn, Contact contact, ContactRequest contactRequest) throws RecordNotFoundException, Exception {
 		WebMessages webMessages = new WebMessages();
+		contactRequest = removeExtraSpaces(contactRequest);
+		
 		List<String> missingFields = super.validateRequiredUpdateFields(contactRequest);
 		if ( missingFields.isEmpty() ) {
 			List<String> badFormatFieldList = super.validateFormat(contactRequest);
@@ -252,6 +255,18 @@ public class ContactServlet extends AbstractServlet {
 			}
 		}
 		return webMessages;
+	}
+
+	private ContactRequest removeExtraSpaces(ContactRequest contactRequest) {
+		contactRequest.setFirstName(StringUtils.trimToNull(contactRequest.getFirstName()));
+		contactRequest.setLastName(StringUtils.trimToNull(contactRequest.getLastName()));
+		contactRequest.setEmail(StringUtils.trimToNull(contactRequest.getEmail()));
+		contactRequest.setBusinessPhone(StringUtils.trimToNull(contactRequest.getBusinessPhone()));
+		contactRequest.setFax(StringUtils.trimToNull(contactRequest.getFax()));
+		contactRequest.setMobilePhone(StringUtils.trimToNull(contactRequest.getMobilePhone()));
+		contactRequest.setPreferredContact(StringUtils.trimToNull(contactRequest.getPreferredContact()));
+		
+		return contactRequest;
 	}
 
 	protected Contact doAdd(Connection conn, ContactRequest contactRequest, SessionUser sessionUser) throws Exception {
@@ -291,13 +306,13 @@ public class ContactServlet extends AbstractServlet {
 
 	protected void validatePreferredContact(ContactRequest contactRequest, WebMessages webMessages) {
 		if ( contactRequest.getPreferredContact().equals(Contact.BUSINESS_PHONE) && StringUtils.isBlank(contactRequest.getBusinessPhone())){
-			webMessages.addMessage(Contact.BUSINESS_PHONE, "Missing data");
+			webMessages.addMessage(ContactRequest.BUSINESS_PHONE, "Missing data");
 		} else if ( contactRequest.getPreferredContact().equals(Contact.MOBILE_PHONE) && StringUtils.isBlank(contactRequest.getMobilePhone())){
-			webMessages.addMessage(Contact.MOBILE_PHONE, "Missing data");
+			webMessages.addMessage(ContactRequest.MOBILE_PHONE, "Missing data");
 		} else if ( contactRequest.getPreferredContact().equals(Contact.FAX) && StringUtils.isBlank(contactRequest.getFax())){
-			webMessages.addMessage(Contact.FAX, "Missing data");
+			webMessages.addMessage(ContactRequest.FAX, "Missing data");
 		} else if ( contactRequest.getPreferredContact().equals(Contact.EMAIL) && StringUtils.isBlank(contactRequest.getEmail())){
-			webMessages.addMessage(Contact.EMAIL, "Missing data");
+			webMessages.addMessage(ContactRequest.EMAIL, "Missing data");
 		}
 		
 	}
