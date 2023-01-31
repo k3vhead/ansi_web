@@ -18,7 +18,6 @@ import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.EmployeeAlias;
 import com.ansi.scilla.common.db.PayrollEmployee;
-import com.ansi.scilla.common.payroll.common.EmployeeStatus;
 import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
@@ -188,9 +187,9 @@ public class EmployeeServlet extends AbstractServlet {
 
 		EmployeeResponse data = new EmployeeResponse();
 		if ( responseCode.equals(ResponseCode.SUCCESS)) {
-			doAdd(conn, employeeRequest, sessionData.getUser(), today);
+			Integer employeeCode = doAdd(conn, employeeRequest, sessionData.getUser(), today);
 			conn.commit();
-			data = new EmployeeResponse(conn, employeeRequest.getEmployeeCode());
+			data = new EmployeeResponse(conn, employeeCode);
 		} 
 		data.setWebMessages(webMessages);
 		super.sendResponse(conn, response, responseCode, data);
@@ -240,16 +239,16 @@ public class EmployeeServlet extends AbstractServlet {
 
 
 
-	private void doAdd(Connection conn, EmployeeRequest employeeRequest, SessionUser sessionUser, Calendar today) throws Exception {
+	private Integer doAdd(Connection conn, EmployeeRequest employeeRequest, SessionUser sessionUser, Calendar today) throws Exception {
 		PayrollEmployee employee = new PayrollEmployee();
 		
 		populateEmployee(conn, employee, employeeRequest, sessionUser, today);
 		
-		employee.setEmployeeCode(employeeRequest.getEmployeeCode());
+		employee.setVendorEmployeeCode(employeeRequest.getVendorEmployeeCode());
 		employee.setAddedBy(sessionUser.getUserId());
 		employee.setAddedDate(today.getTime());
 		
-		employee.insertWithNoKey(conn);		
+		return employee.insertWithKey(conn);		
 	}
 
 
@@ -280,6 +279,7 @@ public class EmployeeServlet extends AbstractServlet {
 		
 		boolean isUnionMember =  employeeRequest.getUnionMember() != null && employeeRequest.getUnionMember().intValue() == 1;
 		
+		employee.setVendorEmployeeCode(employeeRequest.getVendorEmployeeCode());
 		employee.setCompanyCode(StringUtils.trimToNull(employeeRequest.getCompanyCode()));
 		employee.setDeptDescription(StringUtils.trimToNull(employeeRequest.getDepartmentDescription()));
 		employee.setDivision(String.valueOf(division.getDivisionNbr()));

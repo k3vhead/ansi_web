@@ -18,6 +18,7 @@ public class EmployeeLookupQuery extends LookupQuery {
 	
 	private static final String sqlSelectClause = "select " +
 			"   payroll_employee.employee_code,\n" + 
+			"   payroll_employee.vendor_employee_code,\n" +
 			"	payroll_employee.company_code,\n" + 
 //			"	payroll_employee.division,\n" +
 			"   concat(division.division_nbr, '-',division.division_code) as div, \n" +
@@ -88,6 +89,7 @@ public class EmployeeLookupQuery extends LookupQuery {
 		 */
 		String[] searchableFields = new String[] {
 				"payroll_employee.employee_code",
+				"payroll_employee.vendor_employee_code",
 				"payroll_employee.company_code",
 				"payroll_employee.division",
 				"payroll_employee.dept_description",

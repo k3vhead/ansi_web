@@ -17,6 +17,7 @@ public class EmployeeResponseRecord extends ApplicationObject {
 
 
 	private Integer employeeCode;
+	private String vendorEmployeeCode;
 	private String companyCode;
 	private Integer divisionId;
 	private String firstName;
@@ -42,6 +43,7 @@ public class EmployeeResponseRecord extends ApplicationObject {
 		employee.setEmployeeCode(employeeCode);
 		employee.selectOne(conn);
 		this.employeeCode = employeeCode;
+		this.vendorEmployeeCode = employee.getVendorEmployeeCode();
 		this.companyCode = employee.getCompanyCode();
 		this.divisionId = employee.getDivisionId();
 		this.firstName = employee.getEmployeeFirstName();
@@ -72,6 +74,14 @@ public class EmployeeResponseRecord extends ApplicationObject {
 
 	public void setEmployeeCode(Integer employeeCode) {
 		this.employeeCode = employeeCode;
+	}
+
+	public String getVendorEmployeeCode() {
+		return vendorEmployeeCode;
+	}
+
+	public void setVendorEmployeeCode(String vendorEmployeeCode) {
+		this.vendorEmployeeCode = vendorEmployeeCode;
 	}
 
 	public String getCompanyCode() {
