@@ -398,6 +398,7 @@
 						console.log("getAliasSuccess");
 						$("#alias-modal .division").html($data.data.employee.div);
 						$("#alias-modal .companyCode").html($data.data.employee.companyCode);
+						$("#alias-modal .vendorEmployeeCode").html($data.data.employee.vendorEmployeeCode);
 						$("#alias-modal .err").html('');
 					},
 					
@@ -459,7 +460,7 @@
            				$( "#alias-modal" ).dialog({
                				title:'Employee Alias',
                				autoOpen: false,
-               				height: 230,
+               				height: 260,
                				width: 500,
                				modal: true,
                				closeOnEscape:true,
@@ -486,7 +487,18 @@
                			
                			var $nameSelector = "#alias-modal input[name='employeeName']"
                			$( $nameSelector ).autocomplete({
-               				'source':"payroll/employeeAutoComplete?",
+               				//'source':"payroll/employeeAutoComplete?",
+               				'source':function(request, response) {
+               					$.ajax({
+               						url:"payroll/employeeAutoComplete?",
+               						dataType:"json",
+               						data : {term:request.term,divisionId:$("input[name='divisionId']").val()},
+               						success:function($data) {
+               							response($data);
+               						}		
+               					});
+               					
+               				},
                				position:{my:"left top", at:"left bottom",collision:"none"},
                				appendTo:"#alias-modal",
                				select: function( event, ui ) {
@@ -785,8 +797,11 @@
 	           					{ title : "Row", searchable:true, "defaultContent": "", 
 	           						data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeValue(row.row, row.messageList['row']);  }
 	           					},
-	           					{ title : "Code", searchable:true, "defaultContent": "", 
+	           					{ title : "Emp. Code", searchable:true, "defaultContent": "", 
 	           						data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeValue(row.employeeCode, row.messageList['globalMsg']);  }
+	           					},
+	           					{ title : "Vendor Code", searchable:true, "defaultContent": "", 
+	           						data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeValue(row.vendorEmployeeCode, row.messageList['vendorEmployeeCode']);  }
 	           					},
 	           					{ title : "Employee Name", searchable:true, "defaultContent": "", 
 	           						data:function(row, type, set) { return TIMESHEET_IMPORT.makeEmployeeValue(row.employeeName, row.messageList['employeeName']);  }
@@ -1486,6 +1501,11 @@
 				<tr>
 					<td><span class="form-label">Employee Code:</span></td>
 					<td><span class="employeeCode alias-display"></span></td>
+					<td>&nbsp;</td>
+				</tr>
+				<tr>
+					<td><span class="form-label">Vendor Employee Code:</span></td>
+					<td><span class="vendorEmployeeCode alias-display"></span></td>
 					<td>&nbsp;</td>
 				</tr>
 				<tr>

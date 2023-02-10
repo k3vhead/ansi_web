@@ -59,6 +59,7 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 	public static final String WEEK_ENDING = "weekEnding";
 	public static final String STATE = "state";
 	public static final String EMPLOYEE_CODE = "employeeCode";
+	public static final String VENDOR_EMPLOYEE_CODE = "vendorEmployeeCode";
 	public static final String CITY = "city";
 	
 	public static final String EMPLOYEE_NAME = "employeeName";
@@ -79,6 +80,7 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 	private Calendar weekEnding;
 	private String state;  // abbreviation
 	private Integer employeeCode;
+	private String vendorEmployeeCode;
 	private String city;
 	
 	// these fields are used in the post to update a record
@@ -192,6 +194,14 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 
 	public void setEmployeeCode(Integer employeeCode) {
 		this.employeeCode = employeeCode;
+	}
+
+	public String getVendorEmployeeCode() {
+		return vendorEmployeeCode;
+	}
+
+	public void setVendorEmployeeCode(String vendorEmployeeCode) {
+		this.vendorEmployeeCode = vendorEmployeeCode;
 	}
 
 	public String getCity() {
@@ -359,9 +369,10 @@ public class TimesheetRequest extends AbstractRequest implements EmployeeValidat
 			RequestValidator.validateCityState(conn, webMessages, CITY, this.city, this.state, 255, false, null);
 		}
 		RequestValidator.validateDate(webMessages, WEEK_ENDING, this.weekEnding, true, null, null);
-		RequestValidator.validateEmployeeCode(conn, webMessages, EMPLOYEE_CODE, this.employeeCode, true, null);
+//		RequestValidator.validateEmployeeCode(conn, webMessages, EMPLOYEE_CODE, this.employeeCode, true, null);
+		RequestValidator.validateString(webMessages, EMPLOYEE_NAME, this.vendorEmployeeCode, 45, true, null);
 		if ( webMessages.isEmpty() ) {
-			RequestValidator.validateEmployeeName(conn, webMessages, EMPLOYEE_CODE, employeeCode, employeeName);
+			RequestValidator.validateEmployeeName(conn, webMessages, EMPLOYEE_NAME, employeeCode, employeeName);
 			makeValues();
 		} else {
 			responseCode = ResponseCode.EDIT_FAILURE;

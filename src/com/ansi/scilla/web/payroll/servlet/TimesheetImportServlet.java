@@ -15,7 +15,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.payroll.common.PayrollUtils;
-import com.ansi.scilla.common.payroll.common.VersionStatus;
 import com.ansi.scilla.common.payroll.exceptions.NotATimesheetException;
 import com.ansi.scilla.common.payroll.parser.worksheet.PayrollWorksheetParser;
 import com.ansi.scilla.common.payroll.validator.common.ValidatorUtils;
