@@ -562,6 +562,7 @@
            					$outbound["city"] = TIMESHEET_IMPORT.worksheetHeader.locale.name;
 	           			}
         				$outbound["employeeCode"] = $employee.employeeCode;
+        				$outbound["vendorEmployeeCode"] = $employee.vendorEmployeeCode;
    						$outbound["employeeName"] = $employee.employeeName
         				$outbound["regularHours"] = $employee.regularHours
         				$outbound["regularPay"] = $employee.regularPay
