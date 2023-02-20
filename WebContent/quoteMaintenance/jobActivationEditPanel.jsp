@@ -20,7 +20,7 @@
 				<td colspan="4">
 					<div style="display:inline; margin-right:10px;">
 						<span class="formLabel">DL%:</span>
-						<input type="text" name="job-activation-dl-pct" data-apiname="directLaborPct" style="width:75px;" />
+						<input type="text" name="job-activation-dl-pct" disabled="true" data-apiname="directLaborPct" style="width:75px;" />
 					</div>
 					<div style="display:inline; margin-right:10px;">
 						<span class="formLabel">DL Budget:</span>
