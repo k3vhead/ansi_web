@@ -297,6 +297,58 @@
 					
 					
 					
+					doDLBudget : function($jobId) {
+		            	// calculate DL stufff
+		            	QUOTEMAINTENANCE.previousDlPct = $("#job-edit-modal .activation input[name='job-activation-dl-pct']").val();
+		            	QUOTEMAINTENANCE.previousDlBudget = $("#job-edit-modal .activation input[name='job-activation-dl-budget']").val();
+		            	// field is disabled so this code is deprecated
+		            	//$("#job-edit-modal .activation input[name='job-activation-dl-pct']").blur(function($event) {
+		            	//	var currentDlPct = $("#job-edit-modal .activation input[name='job-activation-dl-pct']").val();
+		            	//	var ppc = QUOTEMAINTENANCE.joblist[$jobId].job.pricePerCleaning;
+		            	//	if ( QUOTEMAINTENANCE.previousDlPct != currentDlPct ) {
+		            	//		newDlBudget = (currentDlPct / 100 ) * ppc;
+		            	//		if ( newDlBudget != Math.floor(newDlBudget)) { // if new value is not a whole number, limit to 2 decimals
+		            	//			newDlBudget = newDlBudget.toFixed(2);	
+		            	//		}
+		            	//		$("#job-edit-modal .activation input[name='job-activation-dl-budget']").val(newDlBudget);
+		            	//		QUOTEMAINTENANCE.previousDlPct = currentDlPct;
+		            	//		QUOTEMAINTENANCE.previousDlBudget = newDlBudget;
+		            	//	}		            		
+		            	//});
+		            	$("#job-edit-modal .activation input[name='job-activation-dl-budget']").off("blur");
+		            	$("#job-edit-modal .activation input[name='job-activation-dl-budget']").blur(function($event) {
+		            		var currentDlBudget = $("#job-edit-modal .activation input[name='job-activation-dl-budget']").val();
+		            		var ppc = null;
+		            		if ( $jobId == null ) {
+		            			// this is a new job
+		            			temp = $("#job-edit-modal input[name='job-proposal-ppc']").val();
+		            			if ( temp == null || temp == "") {
+		            				ppc = 0.0;
+		            				$("#job-edit-modal input[name='job-proposal-ppc']").val(ppc);
+		            			} else {
+		            				ppc = parseFloat(temp);
+		            			}
+		            		} else {
+		            			// editing an existing job
+		            			ppc = QUOTEMAINTENANCE.joblist[$jobId].job.pricePerCleaning;
+		            		}
+		            		if ( QUOTEMAINTENANCE.previousDlBudget != currentDlBudget ) {
+		            			if ( ppc == 0.0 ) {
+		            				newDlPct = 0.0;
+		            			} else {
+			            			newDlPct = (currentDlBudget/ppc) * 100;
+		            			}
+		            			if ( newDlPct != Math.floor(newDlPct)) {    // if new value is not a whole number, limit to 2 decimals
+		            				newDlPct = newDlPct.toFixed(2);	
+		            			}
+		            			$("#job-edit-modal .activation input[name='job-activation-dl-pct']").val(newDlPct);
+		            			QUOTEMAINTENANCE.previousDlPct = newDlPct;
+		            			QUOTEMAINTENANCE.previousDlBudget = currentDlBudget;
+		            		}
+		            	});
+		            	
+					},
+					
 					
 					
 					doJobUpdate : function($jobId, $outbound, $successCallback, $errCallback) {
@@ -547,44 +599,9 @@
 		            	$("#job-edit-modal .activation input[name='job-activation-washer-notes']").val(QUOTEMAINTENANCE.joblist[$jobId].job.washerNotes);
 		            	$("#job-edit-modal .activation input[name='job-activation-om-notes']").val(QUOTEMAINTENANCE.joblist[$jobId].job.omNotes);
 		            	$("#job-edit-modal .activation input[name='job-activation-billing-notes']").val(QUOTEMAINTENANCE.joblist[$jobId].job.billingNotes);
-	
-		            	// calculate DL stufff
-		            	QUOTEMAINTENANCE.previousDlPct = $("#job-edit-modal .activation input[name='job-activation-dl-pct']").val();
-		            	QUOTEMAINTENANCE.previousDlBudget = $("#job-edit-modal .activation input[name='job-activation-dl-budget']").val();
-		            	$("#job-edit-modal .activation input[name='job-activation-dl-pct']").blur(function($event) {
-		            		var currentDlPct = $("#job-edit-modal .activation input[name='job-activation-dl-pct']").val();
-		            		var ppc = QUOTEMAINTENANCE.joblist[$jobId].job.pricePerCleaning;
-		            		if ( QUOTEMAINTENANCE.previousDlPct != currentDlPct ) {
-		            			newDlBudget = (currentDlPct / 100 ) * ppc;
-		            			if ( newDlBudget != Math.floor(newDlBudget)) { // if new value is not a whole number, limit to 2 decimals
-		            				newDlBudget = newDlBudget.toFixed(2);	
-		            			}
-		            			$("#job-edit-modal .activation input[name='job-activation-dl-budget']").val(newDlBudget);
-		            			QUOTEMAINTENANCE.previousDlPct = currentDlPct;
-		            			QUOTEMAINTENANCE.previousDlBudget = newDlBudget;
-		            		}		            		
-		            	});
-		            	$("#job-edit-modal .activation input[name='job-activation-dl-budget']").blur(function($event) {
-		            		var currentDlBudget = $("#job-edit-modal .activation input[name='job-activation-dl-budget']").val();
-		            		var ppc = QUOTEMAINTENANCE.joblist[$jobId].job.pricePerCleaning;
-		            		if ( ppc == null || ppc == 0 ) {
-		            			$("#job-edit-modal .activation input[name='job-activation-dl-pct']").val(-1);
-		            			QUOTEMAINTENANCE.previousDlPct = -1;
-		            			QUOTEMAINTENANCE.previousDlBudget = currentDlBudget;
-		            		} else {
-			            		if ( QUOTEMAINTENANCE.previousDlBudget != currentDlBudget ) {
-			            			newDlPct = (currentDlBudget/ppc) * 100;
-			            			if ( newDlPct != Math.floor(newDlPct)) {    // if new value is not a whole number, limit to 2 decimals
-			            				newDlPct = newDlPct.toFixed(2);	
-			            			}
-			            			$("#job-edit-modal .activation input[name='job-activation-dl-pct']").val(newDlPct);
-			            			QUOTEMAINTENANCE.previousDlPct = newDlPct;
-			            			QUOTEMAINTENANCE.previousDlBudget = currentDlBudget;
-			            		}
-		            		}
-		            	});
-		            	
-		            	
+
+		            	QUOTEMAINTENANCE.doDLBudget($jobId);
+		            		            	
 						// populate invoice edit panel
 						$("#job-edit-modal .invoice input[name='job-invoice-purchase-order']").val(QUOTEMAINTENANCE.joblist[$jobId].job.poNumber);
 		            	$("#job-edit-modal .invoice input[name='job-invoice-vendor-nbr']").val(QUOTEMAINTENANCE.joblist[$jobId].job.ourVendorNbr);
@@ -1621,7 +1638,7 @@
 							$("#job-edit-modal .proposal textarea[name='job-proposal-desc']").blur(function() {
 								TEXTEXPANDER.blur($("#job-edit-modal .proposal textarea[name='job-proposal-desc']"))
 							});
-							
+							QUOTEMAINTENANCE.doDLBudget(null);
 		    				$("#job-edit-modal").dialog("open");
 		    			});
 	
