@@ -16,21 +16,21 @@ public class BcrTicketLookupServlet extends AbstractBcrTicketLookupServlet {
 	@Override
 	protected void makeMyColumns() {
 		cols = new String[] { 
-				"job_site_name", //	Account
-				"ticket_id",	//Ticket Number
-				"claim_week",	// ClaimWeek
+				"job_site.name", //	Account
+				"ticket.ticket_id",	//Ticket Number
+				"ticket_claim.claim_week",	// ClaimWeek
 				"dl_amt", //"D/L"  
 				"total_volume", //"Total Volume"  
-				"volume_claimed", //"Volume Claimed" 
-				"passthru_volume", // Expense
-				"volume_remaining", //"Volume Remaining"  
+				"isnull(ticket_claim.volume,0.00)", //"Volume Claimed" 
+				"ISNULL(ticket_claim.passthru_expense_volume,0.00)", // Expense
+				"ISNULL(ticket_claim.passthru_expense_volume,0.00)", //"Volume Remaining"  
 				"notes", //"Notes"  
-				"billed_amount", //"Billed Amount"  
-				"claimed_vs_billed", //"Diff Clm/Bld"  
+				"isnull(invoice_totals.invoiced_amount,0.00)", //"Billed Amount"  
+				"(isnull(ticket_claim_totals.claimed_total_volume,0.00)) - isnull(invoice_totals.invoiced_amount,0.00)", //"Diff Clm/Bld"  
 				"ticket_status", //"Ticket Status"  
-				"service_tag_id", //"Service"  
-				"equipment_tags", //"Equipment"  
-				"employee", //"Employee"
+				"job_tag.abbrev", //"Service"  
+				"tag_list.equipment_tags", //"Equipment"  
+				"ticket_claim.employee_name", //"Employee"
 		};
 	}
 	
