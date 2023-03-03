@@ -111,7 +111,7 @@ public class BcrTicketSpreadsheet extends AbstractBCRSpreadsheet {
 		List<BCRTotalsDetail> weekTotals = bctr.getWeekTotals();
 		BCRTotalsPredicate totalsPredicate = new BCRTotalsPredicate();
 
-		String tabName = "Monthly Budget Control Summary";
+		String tabName = TabName.MONTHLY_BUDGET_CONTROL_SUMMARY.label(); //"Monthly Budget Control Summary";
 		XSSFSheet sheet = this.workbook.createSheet(tabName);
 		this.workbook.setSheetOrder(tabName, tabNumber);
 		

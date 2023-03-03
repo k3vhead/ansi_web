@@ -8,9 +8,8 @@ import java.util.List;
 
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.logging.log4j.Level;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
@@ -28,6 +27,8 @@ public class BcrTicketWorksheet extends AbstractBCRSpreadsheet {
 	 * This is a WIP of BCRTicketSpreadsheet
 	 * */
 	private static final long serialVersionUID = 1L;
+	private int actualsRowNum;
+	private int actualsColNum;
 
 	public BcrTicketWorksheet(Connection conn, Integer userId, List<SessionDivision> divisionList, Integer divisionId, Integer claimYear, String workWeeks) 
 			throws Exception {
@@ -36,7 +37,7 @@ public class BcrTicketWorksheet extends AbstractBCRSpreadsheet {
 	
 	
 	protected void makeActualDLTotalsTab(int tabNumber, List<WorkWeek> workCalendar, BudgetControlTotalsResponse bctr) {
-		String tabName = "Actual Direct Labor Totals";
+		String tabName = TabName.ACTUAL_DIRECT_LABOR_TOTALS.label(); //"Actual Direct Labor Totals";
 		XSSFSheet sheet = this.workbook.createSheet(tabName);
 		this.workbook.setSheetOrder(tabName, tabNumber);
 		String[] weekLabel = new String[] {"1st","2nd","3rd","4th","5th"};
@@ -46,9 +47,7 @@ public class BcrTicketWorksheet extends AbstractBCRSpreadsheet {
 		dateCellStyle.setDataFormat(dateFormat);
 		dateCellStyle.setAlignment(HorizontalAlignment.CENTER);
 		
-		XSSFCellStyle yellowBack = this.workbook.createCellStyle();
-		yellowBack.setFillBackgroundColor(IndexedColors.YELLOW.index);
-		yellowBack.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+		
 		
 //		CustomCellFormat myStyle = new CustomCellFormat(CustomCellColor.BLACK, CustomCellColor.WHITE, CustomCellAlignment.RIGHT, "#,##000", "#,###0.00");
 //		myStyle.setBackground(CustomCellColor.YELLOW);
@@ -70,6 +69,9 @@ public class BcrTicketWorksheet extends AbstractBCRSpreadsheet {
 			}
 		}
 		rowNum++;
+		
+		// keep track of where we start things so we can reference it in the budget controls tab
+		this.actualsRowNum = rowNum; 
 		
 		for ( WorkWeek value : workCalendar ) {
 			colNum = 0;
@@ -93,15 +95,16 @@ public class BcrTicketWorksheet extends AbstractBCRSpreadsheet {
 			colNum++;
 			
 			ActualDL actualDL = bctr.getActualDl().getWeekActualDL().get(value.getWeekOfYear());
+			this.actualsColNum = colNum;
 			cell = row.createCell(colNum);			
 			cell.setCellValue(actualDL == null ? 0.0D : actualDL.getActualDL());
 			cell.setCellStyle(this.cellFormats.get(CellFormat.RIGHT));
-			cell.setCellStyle(yellowBack);
+			cell.setCellStyle(this.cellFormats.get(CellFormat.YELLOW_BACKGROUND_NUMERIC));
 			colNum++;
 			cell = row.createCell(colNum);
 			cell.setCellValue(actualDL == null ? 0.0D : actualDL.getOmDL());
 			cell.setCellStyle(this.cellFormats.get(CellFormat.RIGHT));
-			cell.setCellStyle(yellowBack);
+			cell.setCellStyle(this.cellFormats.get(CellFormat.YELLOW_BACKGROUND_NUMERIC));
 			colNum++;
 			
 			rowNum++;
@@ -122,7 +125,7 @@ public class BcrTicketWorksheet extends AbstractBCRSpreadsheet {
 		List<BCRTotalsDetail> weekTotals = bctr.getWeekTotals();
 		BCRTotalsPredicate totalsPredicate = new BCRTotalsPredicate();
 
-		String tabName = "Monthly Budget Control Summary";
+		String tabName = TabName.MONTHLY_BUDGET_CONTROL_SUMMARY.label(); //"Monthly Budget Control Summary";
 		XSSFSheet sheet = this.workbook.createSheet(tabName);
 		this.workbook.setSheetOrder(tabName, tabNumber);
 		
@@ -208,15 +211,15 @@ public class BcrTicketWorksheet extends AbstractBCRSpreadsheet {
 		
 		
 		// populate monthly column		
-		BCRTotalsDetail monthTotal = bctr.getMonthTotal();		
-		populateTotalsValue(sheet, monthTotalColNum, TotalsRow.TOTAL_VOLUME, monthTotal.getTotalVolume());
-		populateTotalsValue(sheet, monthTotalColNum, TotalsRow.VOLUME_CLAIMED, monthTotal.getVolumeClaimed());
-		populateTotalsValue(sheet, monthTotalColNum, TotalsRow.CLAIMED_VOLUME_REMAINING, monthTotal.getVolumeRemaining());
+		BCRTotalsDetail monthTotal = bctr.getMonthTotal();			
+		populateMonthlyTotalValue(sheet, monthTotalColNum, TotalsRow.TOTAL_VOLUME, monthTotal.getTotalVolume());
+		populateMonthlyTotalValue(sheet, monthTotalColNum, TotalsRow.VOLUME_CLAIMED, monthTotal.getVolumeClaimed());
+		populateMonthlyTotalValue(sheet, monthTotalColNum, TotalsRow.CLAIMED_VOLUME_REMAINING, monthTotal.getVolumeRemaining());
 		
-		populateTotalsValue(sheet, monthTotalColNum, TotalsRow.TOTAL_BILLED, monthTotal.getBilledAmount());
-		populateTotalsValue(sheet, monthTotalColNum, TotalsRow.VARIANCE, monthTotal.getClaimedVsBilled());
+		populateMonthlyTotalValue(sheet, monthTotalColNum, TotalsRow.TOTAL_BILLED, monthTotal.getBilledAmount());
+		populateMonthlyTotalValue(sheet, monthTotalColNum, TotalsRow.VARIANCE, monthTotal.getClaimedVsBilled());
 		
-		populateTotalsValue(sheet, monthTotalColNum, TotalsRow.TOTAL_DL_CLAIMED, monthTotal.getDlTotal());
+		populateMonthlyTotalValue(sheet, monthTotalColNum, TotalsRow.TOTAL_DL_CLAIMED, monthTotal.getDlTotal());
 
 		Double dlDisplay = monthTotal.getDlPercentage().isInfinite() ? 0.0D : monthTotal.getDlPercentage();
 		populateTotalsValue(sheet, monthTotalColNum, TotalsRow.DL_PERCENTAGE, dlDisplay);
@@ -227,6 +230,51 @@ public class BcrTicketWorksheet extends AbstractBCRSpreadsheet {
 		
 		
 		// populate Totals & Actuals
+		logger.log(Level.DEBUG, "**** Totals & Actuals ****");
+		
+		Integer destCol = 2;
+		Integer sourceRow = this.actualsRowNum + 1;
+		Integer sourceCol = this.actualsColNum;
+
+		Integer sumStartRow = TotalsRow.ACTUAL_DL.rowNum() + 1;
+		Integer sumEndRow = TotalsRow.ACTUAL_OM_DL.rowNum() + 1;
+
+		XSSFRow actualDlRow = sheet.getRow(TotalsRow.ACTUAL_DL.rowNum());
+		XSSFRow actualOmDlRow = sheet.getRow(TotalsRow.ACTUAL_OM_DL.rowNum());
+		XSSFRow totalActualDlRow = sheet.getRow(TotalsRow.TOTAL_ACTUAL_DL.rowNum());
+		for ( WorkWeek value : workCalendar ) {			
+			XSSFCell actualDlCell = actualDlRow.getCell(destCol);
+			XSSFCell actualOmDlCell = actualOmDlRow.getCell(destCol);
+			XSSFCell totalCell = totalActualDlRow.getCell(destCol);
+			String actualDlFormula = "'" + TabName.ACTUAL_DIRECT_LABOR_TOTALS.label() + "'!" + colNum2label(sourceCol) + sourceRow;
+			String actualOmDlFormula = "'" + TabName.ACTUAL_DIRECT_LABOR_TOTALS.label() + "'!" + colNum2label(sourceCol+1) + sourceRow;
+			
+			String destColLabel = colNum2label(destCol);
+			String totalFormula = "sum(" + destColLabel + sumStartRow + ":" + destColLabel + sumEndRow + ")";
+			actualDlCell.setCellFormula(actualDlFormula);
+			actualOmDlCell.setCellFormula(actualOmDlFormula);
+			totalCell.setCellFormula(totalFormula);
+			sourceRow++;
+			destCol++;
+		}
+		
+		
+		
+		String firstColLabel = colNum2label(2);
+		String lastColLabel = colNum2label(workCalendar.size() + 1);
+		XSSFCell actualDlTotalCell = actualDlRow.getCell(monthTotalColNum);
+		Integer totalDlRowNum = TotalsRow.ACTUAL_DL.rowNum() + 1;
+		actualDlTotalCell.setCellFormula("sum(" + firstColLabel + totalDlRowNum + ":" + lastColLabel + totalDlRowNum + ")");
+		
+		XSSFCell actualOmDlTotalCell = actualOmDlRow.getCell(monthTotalColNum);
+		Integer totalOmDlRowNum = TotalsRow.ACTUAL_OM_DL.rowNum() + 1;
+		actualOmDlTotalCell.setCellFormula("sum(" + firstColLabel + totalOmDlRowNum + ":" + lastColLabel + totalOmDlRowNum + ")");
+		
+		XSSFCell totalCell = totalActualDlRow.getCell(monthTotalColNum);
+
+		Integer totalRowNum = TotalsRow.TOTAL_ACTUAL_DL.rowNum() + 1;
+		totalCell.setCellFormula("sum(" + firstColLabel + totalRowNum + ":" + lastColLabel + totalRowNum + ")");
+		/*
 		HashMap<Integer, ActualDL> actuals = bctr.getActualDl().getWeekActualDL();
 		List<Integer> weekNums = IterableUtils.toList(actuals.keySet());
 		Collections.sort(weekNums);
@@ -238,13 +286,13 @@ public class BcrTicketWorksheet extends AbstractBCRSpreadsheet {
 			populateTotalsValue(sheet, colNum, TotalsRow.TOTAL_ACTUAL_DL, actual.getActualDL() + actual.getOmDL());
 			colNum++;
 		}
-		
 
 		// populate budget control panel actual dl totals
 		ActualDL totalActualDL = bctr.getActualDl().getTotalActualDL();
 		populateTotalsValue(sheet, monthTotalColNum, TotalsRow.ACTUAL_DL, totalActualDL.getActualDL());
 		populateTotalsValue(sheet, monthTotalColNum, TotalsRow.ACTUAL_OM_DL, totalActualDL.getOmDL());
 		populateTotalsValue(sheet, monthTotalColNum, TotalsRow.TOTAL_ACTUAL_DL, totalActualDL.getTotalDL());
+		*/
 
 		
 		sheet.setColumnWidth(0, 7000);
@@ -258,10 +306,23 @@ public class BcrTicketWorksheet extends AbstractBCRSpreadsheet {
 
 
 	
-	
+	protected void populateMonthlyTotalValue(XSSFSheet sheet, int colNum, TotalsRow totalsRow, Double value) {
+		XSSFRow row = sheet.getRow(totalsRow.rowNum());
+		XSSFCell cell = row.getCell(colNum);
+		String startCol = totalsRow.equals(TotalsRow.TOTAL_VOLUME) ? "B" : "C";
+		String endCol = colNum2label(colNum - 1);
+		String rowLabel = String.valueOf(totalsRow.rowNum() + 1);
+		String formula = "sum(" + startCol + rowLabel + ":" + endCol + rowLabel + ")";
+		cell.setCellFormula(formula);
+//		cell.setCellValue(value);
+	}
 	
 
-	
+	protected String colNum2label(Integer columnNumber) {
+		Integer keyNum = columnNumber % 26;
+		char letter = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".charAt(keyNum);
+		return String.valueOf(letter);
+	}
 	
 	
 	

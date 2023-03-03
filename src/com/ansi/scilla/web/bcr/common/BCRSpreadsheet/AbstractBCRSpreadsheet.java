@@ -23,7 +23,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
@@ -81,7 +83,7 @@ public abstract class AbstractBCRSpreadsheet extends ApplicationObject {
 		
 		conn.close();
 
-		makeTicketTab(data, tabNumber, "All Tickets");
+		makeTicketTab(data, tabNumber, TabName.ALL_TICKETS.label());
 		tabNumber++;
 		for ( int i = 0; i < weekList.length; i++ ) {
 			String weekNum = Integer.valueOf(weekList[i]) < 10 ? "0" + weekList[i] : weekList[i];
@@ -109,7 +111,7 @@ public abstract class AbstractBCRSpreadsheet extends ApplicationObject {
 	
 	
 	protected void makeBudgetControlEmployeesTab(Integer tabNumber, Integer claimYear, List<WorkWeek> workCalendar, BudgetControlEmployeesResponse employeeResponse) {
-		String tabName = "Employees";
+		String tabName = TabName.EMPLOYEES.label(); //"Employees";
 		XSSFSheet sheet = this.workbook.createSheet(tabName);
 		this.workbook.setSheetOrder(tabName, tabNumber);
 		XSSFRow row = null;
@@ -420,7 +422,7 @@ public abstract class AbstractBCRSpreadsheet extends ApplicationObject {
 				BcrTicketSql.makeFilteredFromClause(divisionList) + 
 				BcrTicketSql.makeBaseWhereClause(workWeeks) + 
 				"\norder by " + BcrTicketSql.JOB_SITE_NAME;
-		logger.log(Level.DEBUG, baseSql);
+//		logger.log(Level.DEBUG, baseSql);
 		
 		List<BCRRow> data = new ArrayList<BCRRow>();
 		PreparedStatement ps = conn.prepareStatement(baseSql);
@@ -510,6 +512,12 @@ public abstract class AbstractBCRSpreadsheet extends ApplicationObject {
 		cellStyleRightBorder.setDataFormat(workbook.createDataFormat().getFormat("#0.00"));
 		cellStyleRightBorder.setBorderRight(BorderStyle.MEDIUM);
 		this.cellFormats.put(CellFormat.RIGHT_BORDER, cellStyleRightBorder);
+		
+		XSSFCellStyle yellowBackgroundNumeric = this.workbook.createCellStyle();
+		yellowBackgroundNumeric.setFillForegroundColor(IndexedColors.YELLOW.index);
+		yellowBackgroundNumeric.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+		yellowBackgroundNumeric.setDataFormat(workbook.createDataFormat().getFormat("#0.00"));
+		this.cellFormats.put(CellFormat.YELLOW_BACKGROUND_NUMERIC, yellowBackgroundNumeric);
 	}
 
 
@@ -550,6 +558,19 @@ public abstract class AbstractBCRSpreadsheet extends ApplicationObject {
 		LEFT,
 		RIGHT,
 		RIGHT_BORDER,
+		YELLOW_BACKGROUND_NUMERIC,
 		;		
+	}
+	
+	protected enum TabName {
+		ACTUAL_DIRECT_LABOR_TOTALS("Actual Direct Labor Totals"),
+		MONTHLY_BUDGET_CONTROL_SUMMARY("Monthly Budget Control Summary"),
+		EMPLOYEES("Employees"),
+		ALL_TICKETS("All Tickets"),
+		;
+		private String label;
+		private TabName(String label) {this.label = label;}
+		public String label() { return this.label; }
+		
 	}
 }
