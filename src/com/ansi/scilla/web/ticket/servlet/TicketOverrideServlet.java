@@ -173,7 +173,7 @@ public class TicketOverrideServlet extends TicketServlet {
 						key.setTicketId(ticket.getTicketId());
 						Logger logger = AppUtils.getLogger();
 						logger.debug(ticket);
-						result.ticket.update(conn, key);
+						result.ticket.update(conn, key, sessionUser.getUserId());
 					}
 					conn.commit();
 				} else {
