@@ -1,9 +1,8 @@
 package com.ansi.scilla.web.bcr.common.BCRSpreadsheet;
 
 import java.sql.Connection;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.collections4.IterableUtils;
@@ -18,10 +17,8 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 import com.ansi.scilla.common.utils.WorkWeek;
 import com.ansi.scilla.web.bcr.response.BudgetControlActualDlResponse.ActualDL;
-import com.ansi.scilla.web.bcr.response.BudgetControlEmployeesResponse.EmployeeClaim;
-import com.ansi.scilla.web.bcr.common.BCRSpreadsheet.AbstractBCRSpreadsheet.CellFormat;
-import com.ansi.scilla.web.bcr.common.BCRSpreadsheet.AbstractBCRSpreadsheet.TabName;
 import com.ansi.scilla.web.bcr.response.BudgetControlEmployeesResponse;
+import com.ansi.scilla.web.bcr.response.BudgetControlEmployeesResponse.EmployeeClaim;
 import com.ansi.scilla.web.bcr.response.BudgetControlTotalsResponse;
 import com.ansi.scilla.web.bcr.response.BudgetControlTotalsResponse.BCRTotalsDetail;
 import com.ansi.scilla.web.common.struts.SessionDivision;
@@ -377,9 +374,17 @@ public class BcrTicketWorksheet extends AbstractBCRSpreadsheet {
 		cell.setCellValue("D/L");
 		cell.setCellStyle(cellFormats.get(CellFormat.HEADER_CENTER));
 		
+		List<String> volumeColumns = new ArrayList<String>();
+		List<String> dlColumns = new ArrayList<String>();
+		colNum = 1;
+		for ( String claimWeek : employeeResponse.getClaimWeeks() ) {
+			volumeColumns.add( colNum2label(colNum) );
+			colNum++;
+			dlColumns.add( colNum2label(colNum) );
+			colNum++;
+		}
 		
 		rowNum = 3;
-		
 		for ( EmployeeClaim claim : employeeResponse.getEmployees() ) {
 			row = sheet.createRow(rowNum);
 			cell = row.createCell(0);
@@ -405,11 +410,16 @@ public class BcrTicketWorksheet extends AbstractBCRSpreadsheet {
 				colNum++;
 			}
 			cell = row.createCell(colNum);
-			cell.setCellValue(claim.getTotalClaimedVolume());
+//			cell.setCellValue(claim.getTotalClaimedVolume());
+			int formulaRow = rowNum+1;
+			String volumeFormula = "SUM("+ StringUtils.join(volumeColumns, formulaRow+",") + formulaRow +")";
+			cell.setCellFormula(volumeFormula);
 			cell.setCellStyle(cellFormats.get(CellFormat.RIGHT));
 			colNum++;
 			cell = row.createCell(colNum);
-			cell.setCellValue(claim.getTotalClaimedDL());
+//			cell.setCellValue(claim.getTotalClaimedDL());
+			String dlFormula = "SUM("+ StringUtils.join(dlColumns, formulaRow+",") + formulaRow +")";
+			cell.setCellFormula(dlFormula);
 			cell.setCellStyle(cellFormats.get(CellFormat.RIGHT));
 			colNum++;
 			rowNum++;
@@ -440,11 +450,16 @@ public class BcrTicketWorksheet extends AbstractBCRSpreadsheet {
 			colNum++;
 		}
 		cell = row.createCell(colNum);
-		cell.setCellValue(employeeResponse.getMonthlyTotal().getTotalClaimedVolume());
+//		cell.setCellValue(employeeResponse.getMonthlyTotal().getTotalClaimedVolume());
+		int formulaRow = rowNum+1;
+		String volumeFormula = "SUM("+ StringUtils.join(volumeColumns, formulaRow+",") + formulaRow +")";
+		cell.setCellFormula(volumeFormula);
 		cell.setCellStyle(cellFormats.get(CellFormat.RIGHT));
 		colNum++;
 		cell = row.createCell(colNum);
-		cell.setCellValue(employeeResponse.getMonthlyTotal().getTotalClaimedDL());
+//		cell.setCellValue(employeeResponse.getMonthlyTotal().getTotalClaimedDL());
+		String dlFormula = "SUM("+ StringUtils.join(dlColumns, formulaRow+",") + formulaRow +")";
+		cell.setCellFormula(dlFormula);
 		cell.setCellStyle(cellFormats.get(CellFormat.RIGHT));
 		colNum++;
 
