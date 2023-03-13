@@ -900,7 +900,7 @@
 			   						$("#billToName").html($address.name);
 			   						$("#billToState").html($address.state);
 			   						$("#billToZip").html($address.zip);
-									$('#ticketTable').dataTable().fnDestroy();
+									// $('#ticketTable').dataTable().fnDestroy();
 			   						PAYMENT.populateDataTable($data.data);
 				   					$("#toPay").html("$0.00");
 				   					$("#feeAmount").val("0.00");
@@ -1059,6 +1059,7 @@
 			        	        "scrollCollapse": 	true,
 			        	        "scrollX": 			true,
 			        	        rowId: 				'dt_RowId',
+			        	        destroy:            true,
 			        	        dom: 				'Bfrtip',
 			        	        "searching": 		false,
 			        	        //lengthMenu: [
@@ -1078,38 +1079,38 @@
 			        	        "paging": false,
 			        	        data: $data.ticketList,
 						        columns: [
-						            { title: "Division", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+						            { title: "Division", "width":"9%", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 						            	if(row.divisionDisplay != null){return (row.divisionDisplay+"");}
 						            } },
-						            { title: "Ticket", "defaultContent": "<i>0</i>", data: function ( row, type, set ) {
+						            { title: "Ticket", "width":"9%", "defaultContent": "<i>0</i>", data: function ( row, type, set ) {
 						            	if(row.ticketId != null){return (row.ticketId+"");}
 						            } },
-						            { title: "Completed", "defaultContent": "<i>0</i>", data: function ( row, type, set ) {
+						            { title: "Completed", "width":"9%", "defaultContent": "<i>0</i>", data: function ( row, type, set ) {
 						            	if(row.processDate != null){return (row.processDate+"");}
 						            } },
-						            { title: "Inv. Date",  "defaultContent": "<i></i>", data: function ( row, type, set ) {
+						            { title: "Inv. Date",  "width":"9%", "defaultContent": "<i></i>", data: function ( row, type, set ) {
 						            	if(row.invoiceDate != null){return (row.invoiceDate+"");}
 						            } },
-						            { title: "Inv. Amt.", "defaultContent": "<i>0.00</i>", data: function ( row, type, set ) {
+						            { title: "Inv. Amt.", "width":"9%", "defaultContent": "<i>0.00</i>", data: function ( row, type, set ) {
 						            	if(row.actPricePerCleaning != null){return (row.actPricePerCleaning+"");}
 						            } },
-						            { title: "Inv. Paid", "defaultContent": "<i>0.00</i>", data: function ( row, type, set ) {
+						            { title: "Inv. Paid", "width":"9%", "defaultContent": "<i>0.00</i>", data: function ( row, type, set ) {
 						            	if(row.totalVolPaid != null){return (row.totalVolPaid+"");}
 						            } },
-						            { title: "Tax. Amt.", "defaultContent": "<i>0.00</i>", data: function ( row, type, set ) {
+						            { title: "Tax. Amt.", "width":"9%", "defaultContent": "<i>0.00</i>", data: function ( row, type, set ) {
 						            	if(row.actTaxAmt != null){return (row.actTaxAmt+"");}
 						            } },
-						            { title: "Tax. Paid", "defaultContent": "<i>0.00</i>", data: function ( row, type, set ) {
+						            { title: "Tax. Paid", "width":"9%", "defaultContent": "<i>0.00</i>", data: function ( row, type, set ) {
 						            	if(row.totalTaxPaid != null){return (row.totalTaxPaid+"");}
 						            } },
-						            { title: "Balance", "defaultContent": "<i>0.00</i>", data: function ( row, type, set ) {
+						            { title: "Balance", "width":"9%", "defaultContent": "<i>0.00</i>", data: function ( row, type, set ) {
 						            	if(row.totalBalance != null){return (row.totalBalance+"");}
 						            } },
-						            { title: "Pay Inv", "defaultContent": "<i>0.00</i>", data: function ( row, type, set ) {
+						            { title: "Pay Inv", "width":"9%", "defaultContent": "<i>0.00</i>", data: function ( row, type, set ) {
 						            	$tabIndex = $tabIndex+1;				            	
 					            		return '<input tabIndex="'+ $tabIndex +'" type="text" data-ticketId="'+row.ticketId+'" data-paid="'+ row.totalVolPaid.replace("\$","").replace(",","") +'" data-amount="'+ row.actPricePerCleaning.replace("\$","").replace(",","") +'" class="ticketPayInv ticketPmt" style="width:80px;" />';
 						            } },
-						            { title: "Pay Tax", "defaultContent": "<i>0.00</i>", data: function ( row, type, set ) {
+						            { title: "Pay Tax", "width":"10%", "defaultContent": "<i>0.00</i>", data: function ( row, type, set ) {
 						            	$myTabIndex = $tabIndex + $data.ticketList.length;
 						            	if ( row.actTaxAmt == "$0.00" && row.totalTaxPaid == "$0.00") {
 						            		$display="display:none;";
@@ -1385,39 +1386,10 @@
     	
     	
     	
-    	<table id="ticketTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
-	        <colgroup>
-	        	<col style="width:9%;" />
-	        	<col style="width:9%;" />
-	        	<col style="width:9%;" />
-	        	<col style="width:9%;" />
-	        	<col style="width:9%;" />
-	        	<col style="width:9%;" />
-	        	<col style="width:9%;" />
-	        	<col style="width:9%;" />
-	        	<col style="width:9%;" />
-	        	<col style="width:10%;" />
-	   		</colgroup>        
-	        <thead>
-	            <tr>
-	    			<td class="formHdr">Div</td>
-	    			<td class="formHdr">Ticket</td>
-	    			<td class="formHdr">Completed</td>
-	    			<td class="formHdr">Inv Date</td>
-	    			<td class="formHdr">Inv Amt</td>
-	    			<td class="formHdr">Inv Paid</td>
-	    			<td class="formHdr">Tax Amt</td>
-	    			<td class="formHdr">Tax Paid</td>
-	    			<td class="formHdr">Balance</td>
-	    			<td class="formHdr">Pay Inv</td>
-	    			<td class="formHdr">Pay Tax</td>
-	    			<%-- <td class="formHdr">Write Off</td> (this is for v2) --%>
-	            </tr>
-	        </thead>
-	        <tfoot>
-	        </tfoot>
+    	<table id="ticketTable" style="width:1300px; margin-left:0px;"> <%-- style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">  --%>
+	        
         </table>
-        <table style="width:1300px; margin-left:20px;">
+        <table style="width:1300px;">
 	        <colgroup>
 	        	<col style="width:9%;" />
 	        	<col style="width:9%;" />
