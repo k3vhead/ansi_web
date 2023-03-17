@@ -2294,7 +2294,7 @@
         			$("#bcr_quick_claim_modal").dialog({
         				title:'Quick Claim',
         				autoOpen: false,
-        				height: 530,
+        				height: 630,
         				width: 1000,
         				modal: true,
         				closeOnEscape:true,
@@ -3795,6 +3795,42 @@
 					<td><span class="err laborNotesErr"></span></td>
 	    		</tr>
 	    		<tr class="quick-claim-employee employee4">
+   					<td><input type="text" name="employee" tabindex="10" style="width:95%;"  /></td>
+					<td><span class="err employeeErr"></span></td>
+   					<td><input type="number" name="employeePct" step=".01" tabindex="15" style="width:95%;"  /></td>
+					<td><span class="err employeePctErr"></span></td>
+   					<td><input type="number" name="dlAmt" step=".01" tabindex="20" style="width:95%;"  /></td>
+					<td><span class="err dlAmtErr"></span></td>
+   					<td><input type="number" name="volumeClaimed" step=".01" tabindex="25" style="width:95%;"  /></td>
+					<td><span class="err volumeClaimedErr"></span></td>
+   					<td><input type="text" name="laborNotes" tabindex="30" style="width:95%;"  /></td>
+					<td><span class="err laborNotesErr"></span></td>
+	    		</tr>
+	    		<tr class="quick-claim-employee employee5">
+   					<td><input type="text" name="employee" tabindex="10" style="width:95%;"  /></td>
+					<td><span class="err employeeErr"></span></td>
+   					<td><input type="number" name="employeePct" step=".01" tabindex="15" style="width:95%;"  /></td>
+					<td><span class="err employeePctErr"></span></td>
+   					<td><input type="number" name="dlAmt" step=".01" tabindex="20" style="width:95%;"  /></td>
+					<td><span class="err dlAmtErr"></span></td>
+   					<td><input type="number" name="volumeClaimed" step=".01" tabindex="25" style="width:95%;"  /></td>
+					<td><span class="err volumeClaimedErr"></span></td>
+   					<td><input type="text" name="laborNotes" tabindex="30" style="width:95%;"  /></td>
+					<td><span class="err laborNotesErr"></span></td>
+	    		</tr>
+	    		<tr class="quick-claim-employee employee6">
+   					<td><input type="text" name="employee" tabindex="10" style="width:95%;"  /></td>
+					<td><span class="err employeeErr"></span></td>
+   					<td><input type="number" name="employeePct" step=".01" tabindex="15" style="width:95%;"  /></td>
+					<td><span class="err employeePctErr"></span></td>
+   					<td><input type="number" name="dlAmt" step=".01" tabindex="20" style="width:95%;"  /></td>
+					<td><span class="err dlAmtErr"></span></td>
+   					<td><input type="number" name="volumeClaimed" step=".01" tabindex="25" style="width:95%;"  /></td>
+					<td><span class="err volumeClaimedErr"></span></td>
+   					<td><input type="text" name="laborNotes" tabindex="30" style="width:95%;"  /></td>
+					<td><span class="err laborNotesErr"></span></td>
+	    		</tr>
+	    		<tr class="quick-claim-employee employee7">
    					<td><input type="text" name="employee" tabindex="10" style="width:95%;"  /></td>
 					<td><span class="err employeeErr"></span></td>
    					<td><input type="number" name="employeePct" step=".01" tabindex="15" style="width:95%;"  /></td>

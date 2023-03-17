@@ -14,6 +14,7 @@ public class BcrTicketSql extends ApplicationObject {
 	private static final long serialVersionUID = 1L;
 
 	public static final String JOB_SITE_NAME = "job_site_name";
+	public static final String DIV = "div";
 	public static final String TICKET_ID = "ticket_id";
 	public static final String JOB_ID = "job_id";
 	public static final String CLAIM_YEAR = "claim_year";
@@ -153,6 +154,7 @@ public class BcrTicketSql extends ApplicationObject {
 	public static final String sqlSelectClause = 
 			"select \n" + 
 			"   job_site.name as " + JOB_SITE_NAME + "\n" + 
+			" , concat(division.division_nbr,'-',division.division_code) as " + DIV + "\n" +
 			" , ticket."+TICKET_ID+"\n" + 
 			" , ticket." + JOB_ID + "\n" + 
 			" , ticket_claim." + CLAIM_ID + "\n" +
