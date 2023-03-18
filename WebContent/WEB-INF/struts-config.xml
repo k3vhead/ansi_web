@@ -116,9 +116,12 @@
             <forward name="valid" path="/claims/claimEntry.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
-        <action
+		<action
             path="/claimLookup"
-            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
+            type="com.ansi.scilla.web.bcr.action.ClaimLookupAction"
+            name="idForm"
+            input="/budgetControl/claimLookup.jsp"
+            scope="request">
             <forward name="valid" path="/budgetControl/claimLookup.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>

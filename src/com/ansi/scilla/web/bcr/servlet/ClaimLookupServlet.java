@@ -63,15 +63,24 @@ public class ClaimLookupServlet extends AbstractLookupServlet {
 		List<SessionDivision> divisionList = sessionData.getDivisionList();
 
 		String searchTerm = null;
+		String ticketParm = request.getParameter("ticketId");
+		
 		if(request.getParameter("search[value]") != null){
 			searchTerm = request.getParameter("search[value]");
 		}
 		
-		LookupQuery lookupQuery = new ClaimLookupQuery(user.getUserId(), divisionList);
+		ClaimLookupQuery lookupQuery = new ClaimLookupQuery(user.getUserId(), divisionList);
 		if ( ! StringUtils.isBlank(searchTerm)) {
 			lookupQuery.setSearchTerm(searchTerm);
 		}
-		
+		if ( ! StringUtils.isBlank(ticketParm) ) {
+			try {
+				Integer ticketId = Integer.valueOf(ticketParm);
+				lookupQuery.setTicketId(ticketId);
+			} catch ( NumberFormatException | NullPointerException e ) {
+				// go on with life, just don't do any filtering
+			}	
+		}
 		return lookupQuery;
 	}
 	

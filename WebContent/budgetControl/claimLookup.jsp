@@ -56,6 +56,12 @@
         		width:402px;
         		float:right;
         	}
+        	#filterLabel {
+        		display:none;
+        	}
+        	#clearFilter {
+        		cursor:pointer;
+        	}
         	#ndl-crud-form {
         		display:none;
         		background-color:#FFFFFF;
@@ -177,9 +183,11 @@
         
         $(document).ready(function() {
         	;CLAIM_LOOKUP = {
+        		defaultTicketId : "<c:out value="${ANSI_TICKET_CLAIM_ID}" />",
+        		
         		init : function() {
-        			console.log("Claim lookup init");
-        			CLAIM_LOOKUP.doTicketLookup();
+        			CLAIM_LOOKUP.makeClickers();
+        			CLAIM_LOOKUP.doTicketLookup();        			
         		},
         		
         		doTicketLookup : function() {
@@ -192,13 +200,17 @@
         	        	{extend:'excel', filename:'* ' + $fileName}, 
         	        	{extend:'pdfHtml5', orientation: 'landscape', filename:'* ' + $fileName}, 
         	        	'print',
-        	        	//{extend:'colvis', label: function () {doFunctionBinding();$('#ticketTable').draw();}}
         	        ];
         			
 
-        			
-        			
-        			var $jobEditTag = '<webthing:edit>No Services Defined. Revise the Job</webthing:edit>';
+        			var $outbound = {}
+        			if ( CLAIM_LOOKUP.defaultTicketId != null && CLAIM_LOOKUP.defaultTicketId != "" ) {
+        				$outbound = {"ticketId":CLAIM_LOOKUP.defaultTicketId}
+        				$("#ticketFilter").html(CLAIM_LOOKUP.defaultTicketId);
+        				$("#filterLabel").show();
+        			} else {
+        				$("#filterLabel").hide();
+        			}
         			
         			$("#claimLookup").DataTable( {
             			"aaSorting":		[[0,'asc']],
@@ -230,7 +242,7 @@
     			        "ajax": {
     			        	"url": "bcr/claimLookup",
     			        	"type": "GET",
-    			        	"data": {},
+    			        	"data": $outbound,
     			        	},
     			        columns: [
     			        	{ title: "Account", width:"15%", searchable:true, "defaultContent": "<i>N/A</i>", data:'job_site_name' }, 
@@ -282,16 +294,7 @@
     			            { title: "Ticket Status",  width:"4%", searchable:true, "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.ticket_status != null){return (row.ticket_status+"");}
     			            } },
-    			            { title: "Service",  width:"4%", searchable:true,  
-    			            	data: function ( row, type, set ) {
-    			            		if ( row.service_tag_id == null ) {
-    			            			$display = '<a href="jobMaintenance.html?id=' + row.job_id +'">' + $jobEditTag + '</a>';
-    			            		} else {
-    			            			$display = row.service_tag_id;
-    			            		}
-    			            		return $display;
-    			            	} 
-    			            },
+    			            { title: "Service",  width:"4%", searchable:true, data: "service_tag_id" },
     			            { title: "Equipment",  width:"4%", searchable:true,  
     			            	data: function ( row, type, set ) {
     			            		var $display = [];
@@ -353,6 +356,16 @@
     				});	
 
         		},
+        		
+        		
+        		
+        		makeClickers : function() {
+        			$("#clearFilter").click( function($event) {
+        				$("#filterLabel").hide();
+        				CLAIM_LOOKUP.defaultTicketId = null;
+        				CLAIM_LOOKUP.doTicketLookup();
+        			});
+        		}
         	};
         	
         	CLAIM_LOOKUP.init();
@@ -366,7 +379,10 @@
     	<h1>Ticket Claim Lookup</h1>
     	
    		<webthing:lookupFilter filterContainer="filter-container" />
-    	
+    	<div id="filterLabel">
+    		<span class="orange">Ticket: <span id="ticketFilter"></span></span>
+    		<span id="clearFilter"><webthing:ban>Clear Filter</webthing:ban></span><br>
+   		</div>
 	    <table id="claimLookup">
    		</table>
     	

@@ -25,6 +25,8 @@ public class ClaimLookupQuery extends LookupQuery {
 	
 			
 	protected static final String baseWhereClause = "where ticket_claim.claim_id is not null";
+	
+	private Integer ticketId;
 
 	public ClaimLookupQuery(Integer userId, List<SessionDivision> divisionList) {
 		super(BcrTicketSql.sqlSelectClause, BcrTicketSql.makeFilteredFromClause(divisionList), baseWhereClause);
@@ -33,6 +35,16 @@ public class ClaimLookupQuery extends LookupQuery {
 	}
 
 	
+	public Integer getTicketId() {
+		return ticketId;
+	}
+
+
+	public void setTicketId(Integer ticketId) {
+		this.ticketId = ticketId;
+	}
+
+
 	@Override
 	protected String makeOrderBy(SelectType selectType) {
 		String orderBy = "";
@@ -52,7 +64,8 @@ public class ClaimLookupQuery extends LookupQuery {
 
 	@Override
 	protected String makeWhereClause(String queryTerm) {
-		String whereClause = baseWhereClause;
+		// we don't need to worry about sql injection here because we've already checked that the ticket id is numeric
+		String whereClause = this.ticketId == null ? baseWhereClause : baseWhereClause + " and ticket_claim.ticket_id=" + this.ticketId;
 		String joiner = " and ";
 		
 		String[] searchableFields = new String[] {
@@ -65,7 +78,7 @@ public class ClaimLookupQuery extends LookupQuery {
 			"ticket_claim.employee_name",
 			// equipment tags
 		};
-		
+				
 		
 		if ( ! StringUtils.isBlank(queryTerm) ) {
 			StringBuffer searchFieldBuffer = new StringBuffer();
