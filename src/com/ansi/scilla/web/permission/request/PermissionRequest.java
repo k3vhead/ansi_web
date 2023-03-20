@@ -6,13 +6,12 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.IteratorUtils;
 import org.apache.commons.collections4.Predicate;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.common.request.AbstractRequest;
 import com.ansi.scilla.web.common.response.WebMessages;
-import com.ansi.scilla.common.utils.Permission;
 
 public class PermissionRequest extends AbstractRequest {
 

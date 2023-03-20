@@ -1,6 +1,5 @@
 package com.ansi.scilla.web.test.payroll;
 
-import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.payroll.request.TimesheetRequest;
 
 public class TestTimesheetRequest {

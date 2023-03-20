@@ -9,7 +9,6 @@ import java.util.Date;
 //import org.apache.tomcat.util.http.fileupload.disk.DiskFileItemFactory;
 
 import com.ansi.scilla.common.utils.AppUtils;
-import com.ansi.scilla.web.payroll.response.TimesheetImportResponse;
 
 public class KevinsTest{
 
@@ -49,6 +48,7 @@ public class KevinsTest{
 //			inputStream = new FileInputStream(odsFilePath1);
 //			timesheetImportResponse  = new TimesheetImportResponse(conn, inputStream);
 //			System.out.println(timesheetImportResponse);
+			inputStream.close();
 		} 
 		finally {
 			if ( conn != null ) {
