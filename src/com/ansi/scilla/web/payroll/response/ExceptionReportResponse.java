@@ -1,6 +1,7 @@
 package com.ansi.scilla.web.payroll.response;
 
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.ansi.scilla.web.common.response.MessageResponse;
@@ -31,6 +32,7 @@ public class ExceptionReportResponse extends MessageResponse {
 		this.group = division.getDivisionDisplay();
 		this.groupDescription = division.getDescription();
 		this.recordList = new ArrayList<ExceptionReportRecord> ();
+		/*
 		ResultSet rs = null; //ExceptionReportQuery.execute(conn, groupId);
 		while (rs.next()) {
 			ExceptionReportRecord record = new ExceptionReportRecord(rs);
