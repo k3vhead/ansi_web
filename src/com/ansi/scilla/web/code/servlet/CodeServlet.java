@@ -19,6 +19,7 @@ import org.apache.logging.log4j.Logger;
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Code;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.code.request.CodeRequest;
 import com.ansi.scilla.web.code.response.CodeListResponse;
 import com.ansi.scilla.web.code.response.CodeResponse;
@@ -63,11 +64,11 @@ public class CodeServlet extends AbstractServlet {
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		
-		SessionData sessionData = null;
+		
 		Connection conn = null;
 		try {			
 			conn = AppUtils.getDBCPConn();			
-			sessionData = AppUtils.validateSession(request);
+			SessionData sessionData = AppUtils.validateSession(request,Permission.SYSADMIN_WRITE);
 			
 			String sortBy = request.getParameter("sortBy");
 			
@@ -104,7 +105,7 @@ public class CodeServlet extends AbstractServlet {
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		SessionUser sessionUser = AppUtils.getSessionUser(request);
+	
 		String url = request.getRequestURI();
 //		String queryString = request.getQueryString();
 		
@@ -115,7 +116,8 @@ public class CodeServlet extends AbstractServlet {
 		try {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
-
+			SessionData sessionData = AppUtils.validateSession(request,Permission.SYSADMIN_WRITE);
+			SessionUser sessionUser = sessionData.getUser();
 			// figure out if this is an "add" or an "update"
 			int idx = url.indexOf("/code/");
 			String myString = url.substring(idx + "/code/".length());				

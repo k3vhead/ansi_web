@@ -31,15 +31,15 @@ public class TestBcrWorksheet extends AbstractBcrTest {
 			
 			BcrTicketWorksheet spreadsheet = new BcrTicketWorksheet(conn, userId, divisionList, div_12il02, claimYear, workWeekJanuary2021);
 			XSSFWorkbook workbook = spreadsheet.getWorkbook();
+			FileOutputStream fos = null;
 			if ( userId == USER_IS_DAVE) {
-				workbook.write(new FileOutputStream("/home/dclewis/Documents/Dropbox/webthing_v2/projects/ANSI/testresults/BCR_Worksheet.xlsx"));
+				fos = new FileOutputStream("/home/dclewis/Documents/webthing_v2/projects/ANSI/testresults/BCR_Worksheet.xlsx");
 			} else if ( userId == USER_IS_JOSHUA ) {
-				workbook.write(new FileOutputStream("/home/jwlewis/Documents/projects/BCR_Worksheet.xlsx"));
-			} else {				
+				fos = new FileOutputStream("/home/jwlewis/Documents/projects/BCR_Worksheet.xlsx");
+			} else {
 				throw new Exception("Where do I write the file?");
 			}
-
-			
+			workbook.write(fos);		
 			
 			
 		} finally {

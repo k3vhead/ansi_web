@@ -1,14 +1,12 @@
 package com.ansi.scilla.web.payroll.response;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.web.common.response.MessageResponse;
 import com.ansi.scilla.web.payroll.common.ExceptionReportRecord;
-import com.ansi.scilla.web.payroll.query.ExceptionReportQuery;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class ExceptionReportResponse extends MessageResponse {
@@ -34,12 +32,14 @@ public class ExceptionReportResponse extends MessageResponse {
 		this.group = division.getDivisionDisplay();
 		this.groupDescription = division.getDescription();
 		this.recordList = new ArrayList<ExceptionReportRecord> ();
+		/*
 		ResultSet rs = null; //ExceptionReportQuery.execute(conn, groupId);
 		while (rs.next()) {
 			ExceptionReportRecord record = new ExceptionReportRecord(rs);
 			this.recordList.add(record);
 		}
 		rs.close();
+		*/
 	} 
 	
 	

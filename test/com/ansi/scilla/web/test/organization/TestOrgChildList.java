@@ -3,7 +3,6 @@ package com.ansi.scilla.web.test.organization;
 import java.sql.Connection;
 import java.util.List;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
 
 import com.ansi.scilla.common.organization.Organization;

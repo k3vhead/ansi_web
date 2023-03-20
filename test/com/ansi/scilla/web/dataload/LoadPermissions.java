@@ -17,7 +17,6 @@ public class LoadPermissions {
 			new LoadPermissions().loadOptions();
 //			new LoadPermissions().loadEquivalentValues();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

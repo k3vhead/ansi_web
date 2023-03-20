@@ -20,7 +20,6 @@ import com.ansi.scilla.common.utils.WhereFieldLikeTransformer;
 import com.ansi.scilla.web.common.query.LookupQuery;
 import com.ansi.scilla.web.common.struts.SessionDivision;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.ColumnFilter;
 import com.ansi.scilla.web.common.utils.SessionDivisionTransformer;
 
 public class CalendarLookupQuery extends LookupQuery {
