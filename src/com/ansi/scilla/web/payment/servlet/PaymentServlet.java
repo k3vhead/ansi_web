@@ -86,7 +86,7 @@ public class PaymentServlet extends AbstractServlet {
 		AnsiURL url = null;
 		try {
 			conn = AppUtils.getDBCPConn();
-			AppUtils.validateSession(request, Permission.PAYMENT);
+			AppUtils.validateSession(request, Permission.PAYMENT_READ);
 			url = new AnsiURL(request, "payment", (String[])null);
 			if ( url.getId() != null ) {
 				PaymentResponse data = new PaymentResponse(conn, url.getId());

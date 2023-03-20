@@ -1,16 +1,12 @@
 package com.ansi.scilla.web.test.payroll;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.web.common.struts.SessionDivision;
 import com.ansi.scilla.web.common.utils.ColumnFilter;
 import com.ansi.scilla.web.payroll.query.ExceptionReportQuery;
-import com.ansi.scilla.web.payroll.servlet.ExceptionReportServlet;
 import com.ansi.scilla.web.test.common.AbstractTester;
 
 public class TestExceptionQuery extends AbstractTester {

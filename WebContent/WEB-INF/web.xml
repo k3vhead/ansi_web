@@ -841,7 +841,14 @@
     </servlet-mapping>
     
     
-    
+    <servlet>
+        <servlet-name>passwordReset</servlet-name>
+        <servlet-class>com.ansi.scilla.web.passwordReset.servlet.PasswordResetServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>passwordReset</servlet-name>
+        <url-pattern>/passwordReset</url-pattern>
+    </servlet-mapping>
    
    
    

@@ -152,7 +152,7 @@ public class ContactSearchServlet extends AbstractServlet {
 			return contactId;
 		}
 
-		public void setContactId(Integer id) {
+		public void setContactId(Integer contactId) {
 			this.contactId = contactId;
 		}
 
