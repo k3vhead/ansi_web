@@ -47,8 +47,8 @@ import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.db.ApplicationProperties;
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.User;
-import com.ansi.scilla.common.utils.PropertyNames;
 import com.ansi.scilla.common.utils.Permission;
+import com.ansi.scilla.common.utils.PropertyNames;
 import com.ansi.scilla.web.common.response.MessageKey;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.struts.SessionData;
@@ -488,6 +488,17 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 //		systemFileAppender.activateOptions();
 //		logger.setLevel(Level.INFO);
 	}
+
+	public static String makeSessionKey() {
+		boolean useLetters = true;
+        boolean useNumbers = true;
+        Integer passwordLength = 8;
+        String code =  RandomStringUtils.random(passwordLength, useLetters, useNumbers);
+        return code;
+
+	}
+
+
 
 	/**
 	 * Create a logger to be used by webthing utilities

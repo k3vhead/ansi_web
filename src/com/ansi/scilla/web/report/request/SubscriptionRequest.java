@@ -2,8 +2,6 @@ package com.ansi.scilla.web.report.request;
 
 import java.sql.Connection;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.ansi.scilla.web.common.request.AbstractRequest;
 import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.WebMessages;

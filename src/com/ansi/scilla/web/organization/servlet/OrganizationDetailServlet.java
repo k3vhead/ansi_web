@@ -55,7 +55,6 @@ public class OrganizationDetailServlet extends AbstractServlet {
 	@Override
 	protected void doDelete(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		super.doDelete(request, response);
 	}
 

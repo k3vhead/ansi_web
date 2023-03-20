@@ -22,16 +22,6 @@
     
     <tiles:put name="headextra" type="string">
         <style type="text/css">
-			.forgotPassLink {
-				color:#000000;
-				text-decoration:none;
-				font-style:italic;
-				font-size:12px;
-				font-family:times roman,serif;
-			}
-			.bigText {
-				font-size:35px;
-			}
 			#bottomSpace {
 				clear:both; 
 				width:100%;
@@ -51,6 +41,25 @@
 				padding:30px; 
 				width:85%;
 			}
+        	#resetModal {
+        		display:none;
+        	}
+        	#resetModal .resetConfirm {
+        		display:none;
+        	}
+        	#resetModal .resetGo {
+        		display:none;
+        	}
+			.bigText {
+				font-size:35px;
+			}
+			.forgotPassLink {
+				color:#000000;
+				text-decoration:none;
+				font-style:italic;
+				font-size:12px;
+				font-family:times roman,serif;
+			}
 			.login-box {
 				border:solid 1px #000000;
 				background-color:#FFFFFF;
@@ -66,6 +75,7 @@
 				display:none;
 			}
         </style>
+        <script type="text/javascript" src="js/ansi_utils.js"></script>
         <script src="js/login.js"></script>        
     </tiles:put>
     
@@ -123,6 +133,57 @@
    		</div>
 		<div id="bottomSpace">
 			&nbsp;
+		</div>
+		
+		<div id="resetModal">
+			<table>
+				<tr class="resetVerify">
+					<td class="formLabel">User Id:</td>
+					<td><input type="text" name="resetUserId" /></td>
+					<td><span class="err resetUserIdErr"></span></td>
+				</tr>
+				<tr class="resetVerify">
+					<td colspan="3" style="text-align:right;">
+						<input type="button" name="resetVerify" value="Verify" />
+					</td>
+				</tr>
+				<tr class="resetConfirm">
+					<td colspan="3">
+						Check your inbox (or maybe your junk mail) for a confirmation code.	
+					</td>
+				</tr>
+				<tr class="resetConfirm">
+					<td class="formLabel">Confirmation Code:</td>
+					<td><input type="text" name="resetCode" /></td>
+					<td><span class="err resetCodeErr"></span></td>
+				</tr>
+				<tr class="resetConfirm">
+					<td colspan="3" style="text-align:right;">
+						<input type="button" name="resetConfirm" value="Confirm" />
+					</td>
+				</tr>
+				<tr class="resetGo">
+					<td colspan="3">
+						Enter your new password	
+					</td>
+				</tr>
+				<tr class="resetGo">
+					<td class="formLabel">Password:</td>
+					<td><input type="password" name="resetPassword" /></td>
+					<td><span class="err resetPasswordErr"></span></td>
+				</tr>
+				<tr class="resetGo">
+					<td class="formLabel">Confirm:</td>
+					<td><input type="password" name="resetPassword2" /></td>
+					<td><span class="err resetPassword2Err"></span></td>
+				</tr>
+				<tr class="resetGo">
+					<td colspan="3" style="text-align:right;">
+						<input type="button" name="resetGo" value="Save" />
+					</td>
+				</tr>
+			</table>
+			
 		</div>
     </tiles:put>
 

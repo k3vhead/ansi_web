@@ -7,7 +7,6 @@ import java.util.List;
 import com.ansi.scilla.common.db.Quote;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.UserPermission;
-import com.ansi.scilla.web.quote.response.QuoteListResponse;
 import com.ansi.scilla.web.quote.response.QuoteResponseItem;
 
 public class TestQuoteListResponse {

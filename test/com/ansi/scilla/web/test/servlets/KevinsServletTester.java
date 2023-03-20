@@ -121,14 +121,12 @@ public class KevinsServletTester extends TestServlet {
 			try {
 				paramString = AppUtils.object2json(params);
 			} catch (JsonProcessingException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 					
 			try {
 				sResult = super.doPost(sessionCookie, url , paramString);
 			} catch (IOException | URISyntaxException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}		
 			String sOutput = makeOutput(msg, method, url, paramString, sResult);
@@ -156,14 +154,11 @@ public class KevinsServletTester extends TestServlet {
 			} catch (JsonProcessingException e_object2json) {
 				if(logDebugMsgs) e_object2json.printStackTrace();
 			} catch (ClientProtocolException e_doPost) {
-				// TODO Auto-generated catch block
 				if(e_doPost.getMessage() != null) sOutput = sOutput + e_doPost.getMessage(); 
 				//e.printStackTrace();
 			} catch (URISyntaxException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			return sOutput;
@@ -203,14 +198,12 @@ public class KevinsServletTester extends TestServlet {
 			try {
 				paramString = AppUtils.object2json(params);
 			} catch (JsonProcessingException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 					
 			try {
 				sResult = super.doPost(sessionCookie, url , paramString);
 			} catch (IOException | URISyntaxException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}		
 			String sOutput = makeOutput(msg, method, url, paramString, sResult);
@@ -260,14 +253,12 @@ public class KevinsServletTester extends TestServlet {
 			try {
 				paramString = AppUtils.object2json(params);
 			} catch (JsonProcessingException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 					
 			try {
 				sResult = super.doPost(sessionCookie, url , paramString);
 			} catch (IOException | URISyntaxException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}		
 			String sOutput = makeOutput(msg, method, url, paramString, sResult);
@@ -292,14 +283,12 @@ public class KevinsServletTester extends TestServlet {
 			try {
 				paramString = AppUtils.object2json(params);
 			} catch (JsonProcessingException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 					
 			try {
 				sResult = super.doPost(sessionCookie, url , paramString);
 			} catch (IOException | URISyntaxException e) {
-				// TODO Auto-generated catch block
 				logger.log(Level.DEBUG, "oh, here?");
 				e.printStackTrace();
 			} catch (Exception e) {
@@ -513,14 +502,12 @@ public class KevinsServletTester extends TestServlet {
 			try {
 				paramString = AppUtils.object2json(params);
 			} catch (JsonProcessingException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 					
 			try {
 				sResult = super.doPost(sessionCookie, url , paramString);
 			} catch (IOException | URISyntaxException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}		
 			String sOutput = makeOutput(msg, method, url, paramString, sResult);
@@ -547,7 +534,6 @@ public class KevinsServletTester extends TestServlet {
 		private String RunTests() throws Exception{
 			this.logDebugMsgs = false; 
 			this.realm = "permission";
-			// TODO Try out using TODO
 			String s ="";
 
 			super.userId = "kjw@ansi.com";
