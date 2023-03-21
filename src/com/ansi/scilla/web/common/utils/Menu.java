@@ -28,7 +28,6 @@ public enum Menu {
 	CALL_NOTES(         "Call Notes",           LOOKUPS, Permission.CALL_NOTE_READ, "callNoteLookup.html"),
 	CALENDAR(           "ANSI Calendar",        LOOKUPS, Permission.CALENDAR_READ,  "calendarLookup.html"),
 	DOCUMENT_LOOKUP(	"Document", 			LOOKUPS, Permission.DOCUMENT_READ,  "documentLookup.html"),
-	KNOWLEDGE_BASE(     "Knowledge Base",       LOOKUPS, null,                      "knowledgeBaseLookup.html"),
 
 	
 	REPORTS("Reports", null, null,"#"),
@@ -79,6 +78,7 @@ public enum Menu {
 	REPORT_SUBSCRIPTION("Report Subscriptions", SETTINGS,   Permission.REPORT_SUBSCRIPTION_OVERRIDE, "reportSubscriptionAdmin.html"),
 	APP_PROPERTY(       "App Properties",       SETTINGS,   Permission.SYSADMIN_READ,   "applicationPropertiesLookup.html"),
 	MOTD(               "Message of the Day",   SETTINGS,   Permission.SYSADMIN_WRITE,  "motd.html"),
+	KNOWLEDGE_BASE(     "Knowledge Base",       SETTINGS,   Permission.KNOWLEDGE_WRITE, "knowledgeBaseLookup.html"),
 
 	
 	MY_ANSI("My ANSI", null, null,"#"),

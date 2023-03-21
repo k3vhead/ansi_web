@@ -27,7 +27,7 @@
     	<script type="text/javascript" src="js/ansi_utils.js"></script>
     	<script type="text/javascript" src="js/lookup.js"></script>
     	<script type="text/javascript" src="js/knowledgebase.js"></script>  
-    	<!--   <script type="text/javascript" src="js/tinymce/tinymce.min.js"></script> -->
+    	<script type="text/javascript" src="js/tinymce/tinymce.min.js"></script>
     	
     
         <style type="text/css">
@@ -41,16 +41,18 @@
 				width:400px;
 				padding:15px;
 			}
-			
+			#confirm-modal {
+        		display:none;
+        	}
+			#editForm {
+				display:none;
+			}
 			#filter-container {
         		width:402px;
         		float:right;
         	}
         	
 			
-			#confirm-modal {
-        		display:none;
-        	}
 			.action-link {
 				cursor:pointer;
 			}
@@ -97,18 +99,6 @@
        			init : function() {
        				KNOWLEDGEBASE_LOOKUP.makeDataTable();  
        				KNOWLEDGEBASE_LOOKUP.makeClickers();
-       				// temp remove tinymce
-       				//tinymce.init({
-       				//	selector: "#editForm textarea[name='kbContent']", //"#editForm textarea[name='kbContent']",
-       				//	menubar: false,
-       				//	plugins: "table, preview, anchor, link, image, code", //, hr, textcolor",
-                    //    image_advtab:true,
-                    //    image_list: "mediaList.js?type=IMAGE",
-                    //    tools: "inserttable",
-                    //    toolbar1 : "bold italic underline strikethrough | alignleft aligncenter alignright | table | bullist numlist outdent indent blockquote | undo redo | removeformat | subscript superscript",
-                    //    toolbar2 : "cut copy paste | preview | link anchor | image | styleselect fontselect fontsizeselect | hr forecolor | code ",
-       				//});
-       				$("#editForm").hide();
                 }, 
 				
                 
@@ -178,11 +168,7 @@
 						var $val = $($inputField).val();
 						$outbound[$fieldName] = $val;
     				});
-                	$.each( $('#editForm').find("textarea"), function(index, $inputField) {
-    					$fieldName = $($inputField).attr('name');
-						var $val = $($inputField).val();
-						$outbound[$fieldName] = $val;
-    				});
+                	$outbound["kbContent"] = tinymce.activeEditor.getContent();
                 	console.log( JSON.stringify($outbound));
                 	
                 	var $callbacks = {200:KNOWLEDGEBASE_LOOKUP.doUpdateSuccess};
@@ -236,12 +222,12 @@
                 
                 getKBSuccess : function($data, $passthru) {
                 	console.log("getKBSuccess");
+                	$("#editForm").dialog("option","title", "Update Knowledge").dialog("open");
                 	$("#editForm select[name='kbTagName']").val($data.data.kbTagName);
                 	$("#editForm input[name='languageCode']").val($data.data.languageCode);
                 	$("#editForm input[name='kbTitle']").val($data.data.kbTitle);
                 	$("#editForm select[name='kbStatus']").val($data.data.kbStatus);
-                	$("#editForm textarea[name='kbContent']").html($data.data.kbContent);
-                	$("#editForm").dialog("option","title", "Update Knowledge").dialog("open");
+                	KNOWLEDGEBASE_LOOKUP.makeEditor($data.data.kbContent);
                 },
                 
                 
@@ -265,41 +251,6 @@
 	            	});
 	            	
                 },
-                
-                
-                xxxxx : function() {
-	            	var $localeComplete = $( "#parentName" ).autocomplete({
-	    				source: function(request,response) {
-	    					term = $("#editForm input[name='parentName']").val();
-	    					localeTypeId = $("#editForm select[name='localeTypeId']").val();
-	    					stateName = $("#editForm select[name='stateName']").val();
-	    					$.getJSON("localeAutocomplete", {"term":term, "localeTypeId":localeTypeId, "stateName":stateName}, response);
-	    				},
-	                    minLength: 2,
-	                    select: function( event, ui ) {
-	                    	$("#editForm input[name='parentId']").val(ui.item.id);
-	                    },
-	                    response: function(event, ui) {
-	                        if (ui.content.length === 0) {
-	                        	$("#globalMsg").html("No Matching Locale");
-	                        	$("#editForm input[name='parentId']").val("");
-	                        } else {
-	                        	$("#globalMsg").html("");
-	                        }
-	                    }
-	              	}).data('ui-autocomplete');	            	
-	                
-	    			$localeComplete._renderMenu = function( ul, items ) {
-	    				var that = this;
-	    				$.each( items, function( index, item ) {
-	    					that._renderItemData( ul, item );
-	    				});
-	    				if ( items.length == 1 ) {
-	    					$("#editForm input[name='parentId']").val(items[0].id);
-	    					$("#parentName").autocomplete("close");
-	    				}
-	    			}
-	            },
                 
                 
                 
@@ -376,32 +327,22 @@
                 
                 
             	
-            	showEditModalXXXX : function($key, $language) {
-            		console.log("showEditModal");
-            		$('#kbTable_wrapper').hide();
-            		$(".showEditButton").hide();
-					$("#editForm").show();
-					if ( $key == null || $key == "" ) {
-						if ( $language == null || $language == "" ) {
-							// this is an add function
-							KNOWLEDGEBASE_LOOKUP.clearEditForm();
-							$("#editForm ").dialog("option","title", "Create Knowledge").dialog("open");
-						} else {
-							// language but no key
-							$("#globalMsg").html("Invalid system state; reload and try again");
-						}
-					} else {
-						if ( $key == null || $key == "" ) {
-							// key but no language
-							$("#globalMsg").html("Invalid system state; reload and try again");
-						} else {
-							// this is an edit function
-							KNOWLEDGEBASE_LOOKUP.getKB($key, $language);
-						}
-					}
-				},	
-				
-				
+            	makeEditor : function($kbContent) {
+            		$("#kbContentContainer").html("");
+            		$("#kbContentContainer").append('<textarea id="kbContent"></textarea>')
+            		$("#kbContent").html($kbContent)
+       				tinymce.init({
+       					selector: "textarea#kbContent", //"#editForm textarea[name='kbContent']",
+       					menubar: false,
+       					plugins: "table, preview, anchor, link, image, code", //, hr, textcolor",
+                        image_advtab:true,
+                        image_list: "mediaList.js?type=IMAGE",
+                        tools: "inserttable",
+                        toolbar1 : "bold italic underline strikethrough | alignleft aligncenter alignright | table | bullist numlist outdent indent blockquote | undo redo | removeformat | subscript superscript",
+                        toolbar2 : "cut copy paste | preview | link anchor | image | styleselect fontselect fontsizeselect | hr forecolor | code ",
+       				});
+            	},
+            	
                 
             	showEditModal : function($key, $language) {
             		console.log("showEditModal");
@@ -429,7 +370,7 @@
 							}
 						});
 						$("#editFormCancelButton").button('option', 'label', 'Cancel');  
-	        			$("#editFormGoButton").button('option', 'label', 'Confirm');
+	        			$("#editFormGoButton").button('option', 'label', 'Save');
 					}
 					
 					if ( $key == null || $key == "" ) {
@@ -437,6 +378,7 @@
 							// this is an add function
 							KNOWLEDGEBASE_LOOKUP.clearEditForm();
 							$("#editForm ").dialog("option","title", "Create Knowledge").dialog("open");
+							KNOWLEDGEBASE_LOOKUP.makeEditor("");
 						} else {
 							// language but no key
 							$("#globalMsg").html("Invalid system state; reload and try again");
@@ -556,10 +498,9 @@
     		</tr>
     		<tr>
     			<td style="vertical-align:top;"><span class="formHdr">Content</span></td>
-    			<td colspan="2">
-    				<div class="newsContent">
-    				<textarea name="kbContent" rows="15" cols="50"></textarea>
-    				</div>
+    			<td colspan="2" id="kbContentContainer">
+    				<textarea id="kbContent" name="kbContent" rows="15" cols="50">
+    				</textarea>
     			</td>
    			</tr>
     		<tr>
@@ -569,6 +510,7 @@
     	</table>
     	
     </div>
+   	
     
     <webthing:scrolltop />
 
