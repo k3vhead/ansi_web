@@ -8,6 +8,8 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 
 import com.ansi.scilla.common.jobticket.JobUtils;
+import com.ansi.scilla.common.jobticket.TicketStatus;
+import com.ansi.scilla.common.jobticket.TicketType;
 import com.ansi.scilla.common.queries.SelectType;
 import com.ansi.scilla.web.common.query.LookupQuery;
 import com.ansi.scilla.web.common.struts.SessionDivision;
@@ -28,6 +30,7 @@ public class JobLookupQuery extends LookupQuery {
 	public static final String SERVICE_DESCRIPTION = "job.service_description";
 	public static final String ACTIVATION_DATE = "job.activation_date"; 
 	public static final String START_DATE = "job.start_date"; 
+	public static final String LAST_RUN = "( select max(ticket.process_date) from ticket where ticket.ticket_status in ('"+ TicketStatus.COMPLETED.code() +"','"+ TicketStatus.INVOICED.code()+"','"+TicketStatus.PAID.code()+"') and ticket.ticket_type in ('"+TicketType.JOB.code()+"','"+TicketType.RUN.code()+"') and ticket.job_id = job.job_id ) ";
 	public static final String CANCEL_DATE = "job.cancel_date"; 
 	public static final String CANCEL_REASON = "job.cancel_reason";
 	public static final String QUOTE_NBR = "concat(quote.quote_number,quote.revision)";
@@ -85,6 +88,7 @@ public class JobLookupQuery extends LookupQuery {
 			SERVICE_DESCRIPTION + ", \n" + 
 			ACTIVATION_DATE + ", \n" + 
 			START_DATE + ", \n" + 
+			LAST_RUN + " as last_run, \n" +
 			CANCEL_DATE + ", \n" + 
 			CANCEL_REASON + ",\n" + 
 			QUOTE_NBR + " as quote_nbr, \n" +

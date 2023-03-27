@@ -1,9 +1,5 @@
 package com.ansi.scilla.web.common.response;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import com.ansi.scilla.common.ApplicationObject;
 
 /**

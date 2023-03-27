@@ -181,6 +181,7 @@
     			            { width: "5%", title: "<bean:message key="field.label.startDate" />", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "YYYY-MM-dd", data: function ( row, type, set ) {
     			            	if(row.start_date != null){return (row.start_date+"");}
     			            } },
+    			            { width: "5%", title: "Last Run", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "YYYY-MM-dd", data: "last_run" },
     			            { width: "3%", title: "<bean:message key="field.label.jobFrequency" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.job_frequency != null){return (row.job_frequency+"");}
     			            } },

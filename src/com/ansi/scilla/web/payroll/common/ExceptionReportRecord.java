@@ -4,10 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Calendar;
 
-import org.apache.commons.lang3.time.DateUtils;
-
 import com.ansi.scilla.common.ApplicationObject;
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class ExceptionReportRecord extends ApplicationObject {
 
