@@ -973,7 +973,7 @@
 	
 	<servlet>
 		<servlet-name>quoteTable</servlet-name>
-		<servlet-class>com.ansi.scilla.web.quote.servlet.QuoteTableServlet</servlet-class>
+		<servlet-class>com.ansi.scilla.web.quote.servlet.QuoteLookupServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>quoteTable</servlet-name>
