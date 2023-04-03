@@ -19,7 +19,6 @@ import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.db.Payment;
-import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.common.payment.PaymentType;
 import com.ansi.scilla.web.common.response.ResponseCode;
@@ -87,7 +86,7 @@ public class PaymentServlet extends AbstractServlet {
 		AnsiURL url = null;
 		try {
 			conn = AppUtils.getDBCPConn();
-			AppUtils.validateSession(request, Permission.PAYMENT, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+			AppUtils.validateSession(request, Permission.PAYMENT_READ);
 			url = new AnsiURL(request, "payment", (String[])null);
 			if ( url.getId() != null ) {
 				PaymentResponse data = new PaymentResponse(conn, url.getId());
@@ -123,7 +122,7 @@ public class PaymentServlet extends AbstractServlet {
 				AppUtils.json2object(jsonString, paymentRequest);
 				logger.log(Level.DEBUG, paymentRequest);
 				url = new AnsiURL(request, "payment", new String[] {PaymentRequestType.ADD.name().toLowerCase()});
-				SessionData sessionData = AppUtils.validateSession(request, Permission.PAYMENT, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+				SessionData sessionData = AppUtils.validateSession(request, Permission.PAYMENT_WRITE);
 				SessionUser sessionUser = sessionData.getUser();
 				
 				if ( ! StringUtils.isBlank(url.getCommand())) {

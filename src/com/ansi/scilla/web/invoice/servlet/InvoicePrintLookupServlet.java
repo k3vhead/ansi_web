@@ -7,7 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.ansi.scilla.common.db.PermissionLevel;
+//import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
@@ -39,7 +39,8 @@ public class InvoicePrintLookupServlet extends AbstractServlet {
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
-			AppUtils.validateSession(request, Permission.INVOICE, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+			//AppUtils.validateSession(request, Permission.INVOICE, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+			AppUtils.validateSession(request, Permission.INVOICE_WRITE);
 			InvoicePrintLookupResponse lookupResponse = new InvoicePrintLookupResponse(conn);			
 			WebMessages webMessages = new WebMessages();
 			lookupResponse.setWebMessages(webMessages);

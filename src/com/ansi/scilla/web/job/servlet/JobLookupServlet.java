@@ -30,6 +30,7 @@ public class JobLookupServlet extends AbstractLookupServlet {
 	public static final String ACTIVATION_DATE = "activation_date";
 	public static final String CANCEL_DATE = "cancel_date";
 	public static final String START_DATE = "start_date";
+	public static final String LAST_RUN = "last_run";
 	
 	public static final String DATE_FORMAT = "MM/dd/yyyy";
 	
@@ -46,6 +47,7 @@ public class JobLookupServlet extends AbstractLookupServlet {
 				JobLookupQuery.SITE_NAME,
 				JobLookupQuery.JOB_SITE,
 				JobLookupQuery.START_DATE,
+				JobLookupQuery.LAST_RUN,
 				JobLookupQuery.JOB_FREQUENCY,
 				JobLookupQuery.PRICE_PER_CLEANING,
 				JobLookupQuery.JOB_NBR,
@@ -106,7 +108,7 @@ public class JobLookupServlet extends AbstractLookupServlet {
 		
 		@Override
 		public HashMap<String, Object> transform(HashMap<String, Object> arg0) {
-			for ( String key : new String[] {PROPOSAL_DATE, ACTIVATION_DATE, START_DATE, CANCEL_DATE} ) {
+			for ( String key : new String[] {PROPOSAL_DATE, ACTIVATION_DATE, START_DATE, LAST_RUN, CANCEL_DATE} ) {
 				Timestamp date = (Timestamp)arg0.get(key);
 				if ( date != null ) {
 					arg0.put(key, dateFormat.format(date));

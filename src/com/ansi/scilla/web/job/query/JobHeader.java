@@ -3,7 +3,6 @@ package com.ansi.scilla.web.job.query;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,8 +15,8 @@ import com.ansi.scilla.common.db.Quote;
 import com.ansi.scilla.common.jobticket.JobFrequency;
 import com.ansi.scilla.common.jobticket.JobStatus;
 import com.ansi.scilla.common.jobticket.JobUtils;
-import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.common.utils.Permission;
+import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.UserPermission;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.thewebthing.commons.lang.StringUtils;

@@ -47,8 +47,8 @@ import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.db.ApplicationProperties;
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.User;
-import com.ansi.scilla.common.utils.PropertyNames;
 import com.ansi.scilla.common.utils.Permission;
+import com.ansi.scilla.common.utils.PropertyNames;
 import com.ansi.scilla.web.common.response.MessageKey;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.struts.SessionData;
@@ -489,6 +489,17 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 //		logger.setLevel(Level.INFO);
 	}
 
+	public static String makeSessionKey() {
+		boolean useLetters = true;
+        boolean useNumbers = true;
+        Integer passwordLength = 8;
+        String code =  RandomStringUtils.random(passwordLength, useLetters, useNumbers);
+        return code;
+
+	}
+
+
+
 	/**
 	 * Create a logger to be used by webthing utilities
 	 * @throws IOException
@@ -616,44 +627,8 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 	 * @throws NotAllowedException
 	 * @throws ExpiredLoginException
 	 */
-	@Deprecated
-	public static SessionData validateSession(HttpServletRequest request, Permission requiredPermission, Integer requiredLevel) throws TimeoutException, NotAllowedException, ExpiredLoginException {
-		HttpSession session = null;
-		SessionData sessionData = null;
-		try {
-			session = request.getSession();
-			sessionData = (SessionData)session.getAttribute(SessionData.KEY);			
-		} catch ( Exception e ) {
-			logBadRequestSession(request);
-			throw new RuntimeException(e);
-		}
-		
-		// check for login
-		if ( sessionData == null || sessionData.getUser() == null ) {
-			throw new TimeoutException();
-		} 
-		
-		// check for superuser, or that user has permission
-		SessionUser user = sessionData.getUser();
-		if ( ! user.getSuperUser().equals(User.SUPER_USER_IS_YES)) {
-			boolean isAllowed = false;
-			for ( UserPermission userPermission : sessionData.getUserPermissionList()) {
-				Permission myPermission = Permission.valueOf(userPermission.getPermissionName());
-				if ( myPermission.equals(requiredPermission)) {
-					isAllowed = true;
-//					if ( userPermission.getLevel() >= requiredLevel ) {
-//						isAllowed = true;
-//					}
-				}
-			}
-			if ( ! isAllowed ) {
-	            throw new NotAllowedException();
-	        }
-		}
-		
-		return sessionData;
-	}
 	
+
 	
 	/**
 	 * Validate that a user is logged in, and is allowed to be where he's trying to go
@@ -711,5 +686,27 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 
 		workbook.write(out);
 		out.close();
+	}
+	
+	
+	
+	
+	/**
+	 * Given a result set and metadata, create a hashmap (fieldname -> field value)
+	 * @param rs
+	 * @param rsmd
+	 * @return
+	 * @throws SQLException
+	 */
+	public static HashMap<String, Object> rs2Map(ResultSet rs, ResultSetMetaData rsmd) throws SQLException {
+		HashMap<String, Object> dataItem = new HashMap<String, Object>();
+		for ( int i = 0; i < rsmd.getColumnCount(); i++ ) {
+			int idx = i + 1;
+			String column = rsmd.getColumnName(idx);
+			Object value = rs.getObject(idx);
+			
+			dataItem.put(column, value);
+		}
+		return dataItem;
 	}
 }

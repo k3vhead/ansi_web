@@ -75,6 +75,7 @@ public enum Menu {
 	USER_LOOKUP(		"User Lookup",			SETTINGS,	Permission.SYSADMIN_READ,	"userLookup.html"),
 	PERMISSIONS(		"Permissions",			SETTINGS,	Permission.SYSADMIN_READ,	"permissionGroup.html"),
 	REPORT_SUBSCRIPTION("Report Subscriptions", SETTINGS,   Permission.REPORT_SUBSCRIPTION_OVERRIDE, "reportSubscriptionAdmin.html"),
+	APP_PROPERTY(       "App Properties",       SETTINGS,   Permission.SYSADMIN_READ,   "applicationPropertiesLookup.html"),
 	MOTD(               "Message of the Day",   SETTINGS,   Permission.SYSADMIN_WRITE,  "motd.html"),
 
 	

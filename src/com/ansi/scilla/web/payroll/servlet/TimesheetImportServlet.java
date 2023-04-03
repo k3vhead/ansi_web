@@ -15,6 +15,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.payroll.common.PayrollUtils;
+import com.ansi.scilla.common.payroll.common.VersionStatus;
 import com.ansi.scilla.common.payroll.exceptions.NotATimesheetException;
 import com.ansi.scilla.common.payroll.parser.worksheet.PayrollWorksheetParser;
 import com.ansi.scilla.common.payroll.validator.common.ValidatorUtils;
@@ -64,7 +65,10 @@ public class TimesheetImportServlet extends AbstractServlet {
 					PayrollWorksheetParser parser = new PayrollWorksheetParser(conn, requestFile.getName(), requestFile.getInputStream());
 					
 					ValidatedWorksheetHeader header = HeaderValidator.validateHeader(conn, parser.getHeader());
-					
+					ErrorLevel versionErrorLevel = PayrollUtils.verifyPayrollVersion(conn, requestFile.getInputStream()).errorLevel();
+					if ( ! versionErrorLevel.equals(ErrorLevel.OK)) {
+						webMessages.addMessage("VERSION", "Warning: Invalid spreadsheet version");
+					}
 					if ( ! header.maxErrorLevel().equals(ErrorLevel.ERROR)) {
 						payrollLogger.log(Level.DEBUG, "Validated Employees:");
 						validatedEmployees = ValidatorUtils.validatePayrollEmployees(conn, header, parser.getTimesheetRecords());
@@ -78,8 +82,8 @@ public class TimesheetImportServlet extends AbstractServlet {
 					payrollLogger.log(Level.DEBUG, validatedWorksheet);
 					data = new TimesheetImportResponse(conn, parser.getFileName(), validatedWorksheet);
 					payrollLogger.log(Level.DEBUG, data);
-					if ( validatedWorksheet.getHeader().maxErrorLevel().equals(ErrorLevel.WARNING) ) {
-						responseCode = ResponseCode.EDIT_WARNING;
+					if ( validatedWorksheet.getHeader().maxErrorLevel().equals(ErrorLevel.WARNING) || versionErrorLevel.equals(ErrorLevel.WARNING) ) { 
+							responseCode = ResponseCode.EDIT_WARNING;
 					} else {
 						responseCode = ResponseCode.SUCCESS;
 					}

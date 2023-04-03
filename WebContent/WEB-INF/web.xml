@@ -828,7 +828,14 @@
     </servlet-mapping>
     
     
-    
+    <servlet>
+        <servlet-name>passwordReset</servlet-name>
+        <servlet-class>com.ansi.scilla.web.passwordReset.servlet.PasswordResetServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>passwordReset</servlet-name>
+        <url-pattern>/passwordReset</url-pattern>
+    </servlet-mapping>
    
    
    
@@ -1035,6 +1042,17 @@
 		<url-pattern>/specialOverrides/*</url-pattern>
 	</servlet-mapping>
 
+	<servlet>
+		<servlet-name>sysAdmin</servlet-name>
+		<servlet-class>com.ansi.scilla.web.systemAdmin.servlet.SystemAdminServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>sysAdmin</servlet-name>
+		<url-pattern>/sysAdmin</url-pattern>
+		<url-pattern>/sysAdmin/*</url-pattern>
+	</servlet-mapping>
+	
+	
 	<servlet>
 		<servlet-name>tableFieldList</servlet-name>
 		<servlet-class>com.ansi.scilla.web.code.servlet.TableFieldListServlet</servlet-class>
