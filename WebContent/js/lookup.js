@@ -1,12 +1,15 @@
 $(function() {    	
 	;LOOKUPUTILS = {
-		makeFilters : function($myTable, $filterContainerName, $dataTableName, $tableMakerFunction, $tableMakerCallbackFunction, $tableMakerData) {
+		makeFilters : function($myTable, $filterContainerName, $dataTableName, $tableMakerFunction, $tableMakerData) {
 			console.log("makeFilters");
+			console.log($tableMakerData);
+			
 			// parameters
 			//     myTable - the datatables constructor. Easiest way to get is to you "this" from inside initComplete function
 			//     filterContainerName - the CSS selector for the div that will contain the filter table
 			//     dataTableName - the CSS selector for the datatables table
 			//	   tableMakerFunction - method that will reinitalize the table
+			//	   tableMakerData - data that the tableMakerFunction needs in order to run
 			$($filterContainerName + " .filter-div").html("");  // first - clear out whatever is in there now
 			var $filterTable = $("<table>");
         	
@@ -82,9 +85,9 @@ $(function() {
         		$tableMakerFunction($tableMakerData);
         	});
         	
-        	if ( $tableMakerCallbackFunction != null ) {
-        		$tableMakerCallbackFunction();
-        	}
+        	//if ( $tableMakerCallbackFunction != null ) {
+        	//	$tableMakerFunction($tableMakerData);
+        	//}
 		},
 		
 		

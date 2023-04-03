@@ -94,6 +94,7 @@
         			$("#employee-edit .err").html("");
         			$("#employee-edit .attn").hide();
         			$("#employee-edit input[name='employeeCode']").val($data.data.employee.employeeCode);
+        			$("#employee-edit input[name='vendorEmployeeCode']").val($data.data.employee.vendorEmployeeCode);
         			$("#employee-edit select[name='companyCode']").val($data.data.employee.companyCode);
         			$("#employee-edit select[name='divisionId']").val($data.data.employee.divisionId);
         			$("#employee-edit input[name='firstName']").val($data.data.employee.firstName);
@@ -118,6 +119,7 @@
         			$("#employee-edit input[name='processDate']").val($data.data.employee.processDate);
         			$("#employee-edit input[name='notes']").val($data.data.employee.notes);
         			$("#employee-edit input[name='employeeCode']").prop('disabled',true);
+        			$("#employee-edit input[name='vendorEmployeeCode']").prop('disabled',true);
         			$("#employee-edit").attr("data-action", "update");
         			$("#employee-edit").dialog("open");
         		},
@@ -288,7 +290,8 @@
             			$("#employee-edit select").val("");
             			$("#employee-edit .err").html("");
             			$("#employee-edit .employee-code").html("New")
-         			    $("#employee-edit input[name='employeeCode']").prop('disabled',false);
+         			    $("#employee-edit input[name='employeeCode']").prop('disabled',true);
+         			    $("#employee-edit input[name='vendorEmployeeCode']").prop('disabled',false);
             			$("#employee-edit .attn").hide();
             			$("#employee-edit").attr("data-action", "add");
             			$("#employee-edit").dialog("open");
@@ -310,7 +313,7 @@
         			var $unknown = '<webthing:questionmark>Invalid</webthing:questionmark>';
         			
         			$("#employeeLookup").DataTable( {
-            			"aaSorting":		[[4,'asc'],[3,'asc']],
+            			"aaSorting":		[[5,'asc'],[4,'asc']],
             			"processing": 		true,
             	        "serverSide": 		true,
             	        "autoWidth": 		false,
@@ -333,7 +336,16 @@
             	        		'csv', 
             	        		'excel', 
             	        		{extend: 'pdfHtml5', orientation: 'landscape'}, 
-            	        		'print',{extend: 'colvis',	label: function () {doFunctionBinding();$('#employeeLookup').draw();}},
+            	        		'print',
+            	        		{extend: 'colvis',	label: function () {doFunctionBinding();$('#employeeLookup').draw();}},
+            	        		<ansi:hasPermission permissionRequired="PAYROLL_WRITE">
+            	        		{
+    	        	        		text:'New',
+    	        	        		action: function(e, dt, node, config) {
+    	        	        			$("#new-employee-button").click();
+    	        	        		}            	        		
+    	        	        	}
+            	        		</ansi:hasPermission>
             	        	],
             	        "columnDefs": [
              	            { "orderable": true, "targets": -1 },
@@ -350,6 +362,7 @@
     			        	},
     			        columns: [
     			        	{ title: "Employee Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_code' }, 
+    			        	{ title: "Vendor Emp. Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'vendor_employee_code' },
     			        	{ title: "Company Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'company_code' }, 
     			        	{ title: "Division", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'div' },
     			        	{ title: "First Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_first_name' },
@@ -550,6 +563,7 @@
         			var $outbound = {
        					//'selectedEmployeeCode' : $("#employee-edit input[name='selectedEmployeeCode']").val(),
         				'employeeCode' : $("#employee-edit input[name='employeeCode']").val(),
+        				'vendorEmployeeCode' : $("#employee-edit input[name='vendorEmployeeCode']").val(),
 	        			'companyCode' : $("#employee-edit select[name='companyCode']").val(),
 	        			'divisionId' : $("#employee-edit select[name='divisionId']").val(),
 	        			'firstName' : $("#employee-edit input[name='firstName']").val(),

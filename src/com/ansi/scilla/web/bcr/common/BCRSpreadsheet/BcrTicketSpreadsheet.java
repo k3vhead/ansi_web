@@ -17,6 +17,8 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 import com.ansi.scilla.common.utils.WorkWeek;
 import com.ansi.scilla.web.bcr.response.BudgetControlActualDlResponse.ActualDL;
+import com.ansi.scilla.web.bcr.response.BudgetControlEmployeesResponse;
+import com.ansi.scilla.web.bcr.response.BudgetControlEmployeesResponse.EmployeeClaim;
 import com.ansi.scilla.web.bcr.response.BudgetControlTotalsResponse;
 import com.ansi.scilla.web.bcr.response.BudgetControlTotalsResponse.BCRTotalsDetail;
 import com.ansi.scilla.web.common.struts.SessionDivision;
@@ -106,12 +108,12 @@ public class BcrTicketSpreadsheet extends AbstractBCRSpreadsheet {
 		
 	}
 	
-	
-	protected void makeBudgetControlTotalsTab(int tabNumber, List<WorkWeek> workCalendar, BudgetControlTotalsResponse bctr) {
+	@Override
+	protected void makeBudgetControlTotalsTab(int tabNumber, List<WorkWeek> workCalendar, BudgetControlTotalsResponse bctr, BudgetControlEmployeesResponse employeeResponse) {
 		List<BCRTotalsDetail> weekTotals = bctr.getWeekTotals();
 		BCRTotalsPredicate totalsPredicate = new BCRTotalsPredicate();
 
-		String tabName = "Monthly Budget Control Summary";
+		String tabName = TabName.MONTHLY_BUDGET_CONTROL_SUMMARY.label(); //"Monthly Budget Control Summary";
 		XSSFSheet sheet = this.workbook.createSheet(tabName);
 		this.workbook.setSheetOrder(tabName, tabNumber);
 		
@@ -244,8 +246,148 @@ public class BcrTicketSpreadsheet extends AbstractBCRSpreadsheet {
 
 
 	
+	@Override
+	protected void makeBudgetControlEmployeesTab(Integer tabNumber, Integer claimYear, List<WorkWeek> workCalendar, BudgetControlEmployeesResponse employeeResponse) {
+		String tabName = TabName.EMPLOYEES.label(); //"Employees";
+		XSSFSheet sheet = this.workbook.createSheet(tabName);
+		this.workbook.setSheetOrder(tabName, tabNumber);
+		XSSFRow row = null;
+		XSSFCell cell = null;
+		int rowNum = 0;
+		int colNum = 0;
+		
+		XSSFRow headerRow1 = sheet.createRow(0);
+		XSSFRow headerRow2 = sheet.createRow(1);
+		XSSFRow headerRow3 = sheet.createRow(2);
 
+		cell = headerRow1.createCell(0);
+		cell.setCellValue("Week:");
+		cell.setCellStyle(cellFormats.get(CellFormat.HEADER));
+		
+		
+		colNum = 1;
+		for ( int i = 0; i < workCalendar.size(); i++ ) {
+			Date firstOfWeek = workCalendar.get(i).getFirstOfWeek().getTime();
+			Date lastOfWeek = workCalendar.get(i).getLastOfWeek().getTime();
+			
+			cell = headerRow1.createCell(colNum+1);
+			cell.setCellStyle(cellFormats.get(CellFormat.CENTER_BORDER));
+			cell = headerRow1.createCell(colNum);
+			sheet.addMergedRegion(new CellRangeAddress(0,0,colNum,colNum+1));
+			cell.setCellValue(mmdd.format(firstOfWeek) + "-" + mmdd.format(lastOfWeek));
+			cell.setCellStyle(cellFormats.get(CellFormat.CENTER_BORDER));
+			
+			
+			cell = headerRow2.createCell(colNum+1);
+			cell.setCellStyle(cellFormats.get(CellFormat.CENTER_BORDER));
+			cell = headerRow2.createCell(colNum);
+			sheet.addMergedRegion(new CellRangeAddress(1,1,colNum,colNum+1));
+			String weekOfYear = workCalendar.get(i).getWeekOfYear() < 10 ? "0" + workCalendar.get(i).getWeekOfYear() : String.valueOf(workCalendar.get(i).getWeekOfYear());
+			cell.setCellValue(claimYear + "-" + weekOfYear);
+			cell.setCellStyle(cellFormats.get(CellFormat.HEADER_CENTER_BORDER));
+			
+			cell = headerRow3.createCell(colNum);
+			cell.setCellValue("Volume");
+			cell.setCellStyle(cellFormats.get(CellFormat.HEADER_CENTER));
+			cell = headerRow3.createCell(colNum+1);
+			cell.setCellValue("D/L");
+			cell.setCellStyle(cellFormats.get(CellFormat.HEADER_CENTER_BORDER));
+			
+			colNum = colNum+2;
+		}
+		
+		cell = headerRow1.createCell(colNum);
+		sheet.addMergedRegion(new CellRangeAddress(0,0,colNum,colNum+1));
+		cell.setCellValue("Month");
+		cell.setCellStyle(cellFormats.get(CellFormat.HEADER_CENTER));
+		
+		cell = headerRow2.createCell(colNum);
+		sheet.addMergedRegion(new CellRangeAddress(1,1,colNum,colNum+1));
+		cell.setCellValue("Total");
+		cell.setCellStyle(cellFormats.get(CellFormat.HEADER_CENTER));
+		
+		cell = headerRow3.createCell(colNum);
+		cell.setCellValue("Volume");
+		cell.setCellStyle(cellFormats.get(CellFormat.HEADER_CENTER));
+		cell = headerRow3.createCell(colNum+1);
+		cell.setCellValue("D/L");
+		cell.setCellStyle(cellFormats.get(CellFormat.HEADER_CENTER));
+		
+		
+		rowNum = 3;
+		
+		for ( EmployeeClaim claim : employeeResponse.getEmployees() ) {
+			row = sheet.createRow(rowNum);
+			cell = row.createCell(0);
+			cell.setCellValue(StringUtils.isBlank(claim.getEmployee()) ? "unspecified" : claim.getEmployee());
+			
+			colNum = 1;
+			for ( String claimWeek : employeeResponse.getClaimWeeks() ) {
+				cell = row.createCell(colNum);
+				if ( claim.getWeeklyClaimedVolume().containsKey(claimWeek)) {
+					cell.setCellValue(claim.getWeeklyClaimedVolume().get(claimWeek));
+				} else {
+					cell.setCellValue(0.0D);
+				}
+				cell.setCellStyle(cellFormats.get(CellFormat.RIGHT));
+				colNum++;
+				cell = row.createCell(colNum);
+				if ( claim.getWeeklyClaimedDL().containsKey(claimWeek)) {
+					cell.setCellValue(claim.getWeeklyClaimedDL().get(claimWeek));
+				} else {
+					cell.setCellValue(0.0D);
+				}
+				cell.setCellStyle(cellFormats.get(CellFormat.RIGHT_BORDER));
+				colNum++;
+			}
+			cell = row.createCell(colNum);
+			cell.setCellValue(claim.getTotalClaimedVolume());
+			cell.setCellStyle(cellFormats.get(CellFormat.RIGHT));
+			colNum++;
+			cell = row.createCell(colNum);
+			cell.setCellValue(claim.getTotalClaimedDL());
+			cell.setCellStyle(cellFormats.get(CellFormat.RIGHT));
+			colNum++;
+			rowNum++;
+		}
+		
+		row = sheet.createRow(rowNum);
+		cell = row.createCell(0);
+		cell.setCellValue(ALL_EMPLOYEE_DL_LABEL);
+		colNum = 1;
+		for ( String claimWeek : employeeResponse.getClaimWeeks() ) {
+			cell = row.createCell(colNum);
+			if ( employeeResponse.getMonthlyTotal().getWeeklyClaimedVolume().containsKey(claimWeek)) {
+				cell.setCellValue(employeeResponse.getMonthlyTotal().getWeeklyClaimedVolume().get(claimWeek));
+			} else {
+				cell.setCellValue(0.0D);
+			}
+			cell.setCellStyle(cellFormats.get(CellFormat.RIGHT));
+			colNum++;
+			cell = row.createCell(colNum);
+			if ( employeeResponse.getMonthlyTotal().getWeeklyClaimedDL().containsKey(claimWeek)) {
+				cell.setCellValue(employeeResponse.getMonthlyTotal().getWeeklyClaimedDL().get(claimWeek));
+			} else {
+				cell.setCellValue(0.0D);
+			}
+			cell.setCellStyle(cellFormats.get(CellFormat.RIGHT_BORDER));
+			colNum++;
+		}
+		cell = row.createCell(colNum);
+		cell.setCellValue(employeeResponse.getMonthlyTotal().getTotalClaimedVolume());
+		cell.setCellStyle(cellFormats.get(CellFormat.RIGHT));
+		colNum++;
+		cell = row.createCell(colNum);
+		cell.setCellValue(employeeResponse.getMonthlyTotal().getTotalClaimedDL());
+		cell.setCellStyle(cellFormats.get(CellFormat.RIGHT));
+		colNum++;
 
+		
+		sheet.setColumnWidth(0, 7500);
+		for ( int i = 1; i <= sheet.getRow(0).getLastCellNum(); i++ ) {
+			sheet.setColumnWidth(i, 2500);
+		}
+	}
 	
 	
 	

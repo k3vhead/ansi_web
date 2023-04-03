@@ -18,6 +18,7 @@ public enum Menu {
 	JOBTAGS(			"Job Tags", 			LOOKUPS, Permission.QUOTE_READ,		"jobTagLookup.html"),
 	TICKETS(			"Tickets", 				LOOKUPS, Permission.TICKET_READ,	"ticketLookup.html"),
 //	TICKET_ASSIGNMENT(	"Ticket Assignments",	LOOKUPS, Permission.TICKET_READ,	"ticketAssignmentLookup.html"),
+	TICKET_CLAIMS(      "Ticket Claims",        LOOKUPS, Permission.CLAIMS_READ,    "claimLookup.html"),
 	INVOICES(			"Invoices", 			LOOKUPS, Permission.INVOICE_READ, 	"invoiceLookup.html"),
 	INVOICE_DETAIL(     "Invoice Detail",       LOOKUPS, Permission.INVOICE_READ,   "invoiceDetailLookup.html"),
 	PAYMENTS(			"Payments", 			LOOKUPS, Permission.PAYMENT_READ, 	"paymentLookup.html"),

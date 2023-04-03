@@ -18,6 +18,7 @@ public class BcrServlet extends AbstractServlet {
 
 	public static final String ACTUAL_DL = "actualDL";
 	public static final String BC_TOTALS = "bcTotals";
+	public static final String CLAIM_LOOKUP = "claimLookup";
 	public static final String EMPLOYEE_AUTOCOMPLETE = "employee";
 	public static final String EMPLOYEES = "employees";
 	public static final String EXPENSE = "expense";
@@ -76,6 +77,9 @@ public class BcrServlet extends AbstractServlet {
 			break;
 		case BC_TOTALS:
 			new BcrTotalsServlet().doGet(request, response);
+			break;
+		case CLAIM_LOOKUP:
+			new ClaimLookupServlet().doGet(request, response);
 			break;
 		case EMPLOYEE_AUTOCOMPLETE:
 			new BcrEmployeeAutoComplete().doGet(request, response);

@@ -73,12 +73,15 @@ public class BcrUtils {
 		Logger logger = LogManager.getLogger(BcrUtils.class);
 		String[] claimWeek = bcrRequest.getClaimWeek().split("-");
 
+		WorkYear workYear = new WorkYear(bcrRequest.getWorkYear());
+		
 		Calendar today = Calendar.getInstance(new AnsiTime());
 		TicketClaim ticketClaim = new TicketClaim();
 		ticketClaim.setAddedBy(sessionUser.getUserId());
 		ticketClaim.setAddedDate(today.getTime());
 //		ticketClaim.setClaimId(claimId);
 		ticketClaim.setClaimWeek(Integer.valueOf(claimWeek[1]));
+		ticketClaim.setClaimMonth(workYear.getWorkMonth(Integer.valueOf(claimWeek[1])));
 		ticketClaim.setClaimYear(bcrRequest.getWorkYear());
 		ticketClaim.setDlAmt(  (new BigDecimal(bcrRequest.getDlAmt())).round(MathContext.DECIMAL32)  );
 		ticketClaim.setDlExpenses(BigDecimal.ZERO);
@@ -210,12 +213,14 @@ public class BcrUtils {
 
 
 		String[] claimWeek = bcrExpenseRequest.getClaimWeek().split("-");
+		WorkYear workYear = new WorkYear(Integer.valueOf(claimWeek[0]));
 
 
 		ticketClaim.setAddedBy(sessionUser.getUserId());
 		ticketClaim.setAddedDate(today.getTime());
 		ticketClaim.setClaimWeek(Integer.valueOf(claimWeek[1]));
 		ticketClaim.setClaimYear(Integer.valueOf(claimWeek[0]));
+		ticketClaim.setClaimMonth(workYear.getWorkMonth(Integer.valueOf(claimWeek[1])));
 		ticketClaim.setDlAmt(BigDecimal.ZERO);
 		ticketClaim.setDlExpenses(BigDecimal.ZERO);
 		//		ticketClaim.setEmployeeName(employeeName);
