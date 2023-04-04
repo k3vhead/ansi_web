@@ -115,7 +115,7 @@ public class BudgetControlTotalsResponse extends MessageResponse {
 			weekFilter.add(Integer.valueOf(weekNum));
 		}
 		Logger logger = LogManager.getLogger(this.getClass());
-		logger.log(Level.DEBUG, sql);
+//		logger.log(Level.DEBUG, sql);
 		
 		PreparedStatement ps = conn.prepareStatement(sql);
 		ps.setInt(1, divisionId);
@@ -123,7 +123,7 @@ public class BudgetControlTotalsResponse extends MessageResponse {
 		ResultSet rs = ps.executeQuery();
 		while ( rs.next() ) {
 			String claimWeek = rs.getString("claim_week");
-			logger.log(Level.DEBUG, "claimWeek:<" +claimWeek+">");
+//			logger.log(Level.DEBUG, "claimWeek:<" +claimWeek+">");
 			if (!(claimWeek.equals("-"))) {
 				BCRTotalsDetail detail = new BCRTotalsDetail(rs, actualDl);
 				this.weekTotals.add(detail);

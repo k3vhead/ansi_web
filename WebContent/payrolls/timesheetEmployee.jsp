@@ -48,6 +48,11 @@
 			<td colspan="2"><span class="employeeCodeErr err"></span></td>
 		</tr>
 		<tr class="employee-edit-row">
+			<td><span class="form-label">Vendor Employee Code: </span></td>
+			<td colspan="3"><input type="text" name="vendorEmployeeCode" class="update-field" disabled="" /></td>
+			<td colspan="2"><span class="vendorEmployeeCodeErr err"></span></td>
+		</tr>
+		<tr class="employee-edit-row">
 			<td><span class="form-label">Employee Name: </span></td>
 			<td colspan="3"><input type="text" name="employeeName" class="update-field" /></td>
 			<td colspan="2"><span class="employeeNameErr err"></span></td>

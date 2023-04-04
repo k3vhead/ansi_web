@@ -20,6 +20,7 @@ public class EmployeeRequest extends AbstractRequest {
 
 	public static final String VALIDATE_ONLYE = "validateOnly";
 	public static final String EMPLOYEE_CODE = "employeeCode";
+	public static final String VENDOR_EMPLOYEE_CODE = "vendorEmployeeCode";
 	public static final String COMPANY_CODE ="companyCode";
 	public static final String DIVISION_ID="divisionId";
 	public static final String FIRST_NAME="firstName";
@@ -36,6 +37,7 @@ public class EmployeeRequest extends AbstractRequest {
 	
 	private Boolean validateOnly;
 	private Integer employeeCode;
+	private String vendorEmployeeCode;
 	private String companyCode;
 	private Integer divisionId;
 	private String firstName;
@@ -143,15 +145,18 @@ public class EmployeeRequest extends AbstractRequest {
 	public void setNotes(String notes) {
 		this.notes = StringUtils.trimToNull(notes);
 	}
+	public String getVendorEmployeeCode() {
+		return vendorEmployeeCode;
+	}
+	public void setVendorEmployeeCode(String vendorEmployeeCode) {
+		this.vendorEmployeeCode = vendorEmployeeCode;
+	}
 	
 	
 	public WebMessages validateAdd(Connection conn) throws Exception {
 		
 		WebMessages webMessages = new WebMessages();
-		if ( employeeExists(conn) ) {
-			webMessages.addMessage(EMPLOYEE_CODE, "Duplicate Employee");
-		}
-		RequestValidator.validateInteger(webMessages, EMPLOYEE_CODE, employeeCode, null, null, true);
+		RequestValidator.validateString(webMessages, VENDOR_EMPLOYEE_CODE, this.vendorEmployeeCode, 45, true, null);
 		RequestValidator.validateString(webMessages, "name", this.firstName, 40, true, "Name");
 		RequestValidator.validateString(webMessages, "name", this.lastName, 40, true, "Name");
 		RequestValidator.validateString(webMessages, "name", this.middleInitial, 2, false, "Middle Initial");
@@ -165,13 +170,17 @@ public class EmployeeRequest extends AbstractRequest {
 		}
 //		RequestValidator.validateDate(webMessages, PROCESS_DATE, processDate, true, null, null);
 		validateTerminationDate(webMessages);
+		if ( webMessages.isEmpty() && employeeExists(conn) ) {
+			webMessages.addMessage(VENDOR_EMPLOYEE_CODE, "Duplicate Employee");
+		}
 		return webMessages;
 	}
 	
 	
 	private boolean employeeExists(Connection conn) throws Exception {
 		PayrollEmployee payrollEmployee = new PayrollEmployee();
-		payrollEmployee.setEmployeeCode(this.employeeCode);
+		payrollEmployee.setVendorEmployeeCode(this.vendorEmployeeCode);
+		payrollEmployee.setCompanyCode(this.companyCode);
 		Boolean payrollEmployeeExists = null;
 		try {
 			payrollEmployee.selectOne(conn);

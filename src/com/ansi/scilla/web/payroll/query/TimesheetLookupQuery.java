@@ -27,6 +27,7 @@ public class TimesheetLookupQuery extends LookupQuery {
 			+ "	    else locale.name \n"
 			+ "	end as city,\n"
 			+ "	payroll_worksheet.employee_code,\n"
+			+ " payroll_employee.vendor_employee_code,\n"
 			+ "	-- payroll_employee.employee_first_name,\n"
 			+ "	-- payroll_employee.employee_last_name,\n"
 			+ "	-- payroll_employee.employee_mi,\n"
@@ -50,7 +51,7 @@ public class TimesheetLookupQuery extends LookupQuery {
 	private static final String sqlFromClause =
 			"from payroll_worksheet \n" + 
 			"inner join division on division.division_id = payroll_worksheet.division_id\n" + 
-			"-- inner join payroll_employee on payroll_employee.employee_code = payroll_worksheet.employee_code \n" +
+			"inner join payroll_employee on payroll_employee.employee_code = payroll_worksheet.employee_code \n" +
 			"left outer join locale on locale.locale_id=payroll_worksheet.locale_id\n" +
 			"left outer join locale as locale_state on locale_state.state_name=locale.state_name and locale_state.locale_type_id='STATE'";
 	private static final String sqlWhereClause = "";

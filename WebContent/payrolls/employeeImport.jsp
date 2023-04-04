@@ -154,7 +154,7 @@
 						var $unionRate = $employeeValue['unionRate'].replaceAll("$","").replace(",","");
 						var $outbound = {
 							'validateOnly':false,
-							'employeeCode':$employeeValue['employeeCode'],
+							'vendorEmployeeCode':$employeeValue['employeeCode'],
 							'companyCode':$employeeValue['companyCode'],
 							'divisionId':$employeeValue['divisionId'],
 							'firstName':$employeeValue['firstName'],
