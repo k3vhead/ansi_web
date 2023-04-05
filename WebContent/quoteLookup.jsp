@@ -128,17 +128,17 @@
     			            { title: "PAC",width:"5%", "defaultContent": "<i>N/A</i>", searchable: true, data: "pac_status"},
     			            { title: "<bean:message key="field.label.action" />", width:"8%",  data: function ( row, type, set ) {	
     			            	//console.log(row);    			            	
-    			            	editText = '<a href="quoteMaintenance.html?id='+row.quoteId+'" class="editAction" data-id="'+row.quoteId+'"><webthing:edit>Edit</webthing:edit></a>';
+    			            	editText = '<a href="quoteMaintenance.html?id='+row.quote_id+'" class="editAction" data-id="'+row.quote_id+'"><webthing:edit>Edit</webthing:edit></a>';
     			            	if ( row.quoteJobCount == 0 ) {
-    			            		editText = '<a href="newQuote.html?id='+row.quoteId+'" class="editAction" data-id="'+row.quoteId+'"><webthing:edit>Edit</webthing:edit></a>';
+    			            		editText = '<a href="newQuote.html?id='+row.quote_id+'" class="editAction" data-id="'+row.quote_id+'"><webthing:edit>Edit</webthing:edit></a>';
     			            	}
-    			            	viewText = '<a href="quoteMaintenance.html?id='+row.quoteId+'" class="editAction" data-id="'+row.quoteId+'"><webthing:view style="color:#404040;">View</webthing:view></a>';
-    			            	printText = '<i class="fa fa-print orange quotePrint" aria=hidden="true" data-id="'+row.quoteId+'" data-quotenumber="'+ row.quoteCode + '"></i>';
-    			            	copyText = '<i class="far fa-copy copyQuote" aria-hidden="true" data-id="'+row.quoteId+'"></i>';
-    			            	var $noteLink = '<webthing:notes xrefType="QUOTE" xrefId="' + row.quoteId + '">Quote Notes</webthing:notes>'
+    			            	viewText = '<a href="quoteMaintenance.html?id='+row.quote_id+'" class="editAction" data-id="'+row.quote_id+'"><webthing:view style="color:#404040;">View</webthing:view></a>';
+    			            	printText = '<i class="fa fa-print orange quotePrint" aria=hidden="true" data-id="'+row.quote_id+'" data-quotenumber="'+ row.quoteCode + '"></i>';
+    			            	copyText = '<i class="far fa-copy copyQuote" aria-hidden="true" data-id="'+row.quote_id+'"></i>';
+    			            	var $noteLink = '<webthing:notes xrefType="QUOTE" xrefId="' + row.quote_id + '">Quote Notes</webthing:notes>'
     			            	var $docLink = "";;
     			            	if ( row.documentCount > 0 ) {
-    			            		$docLink = '<webthing:document styleClass="documentAction" xrefType="SIGNED_CONTRACT" xrefId="'+row.quoteId+'">Signed Quote</webthing:document>';
+    			            		$docLink = '<webthing:document styleClass="documentAction" xrefType="SIGNED_CONTRACT" xrefId="'+row.quote_id+'">Signed Quote</webthing:document>';
     			            	}
     			            	{return '<ansi:hasPermission permissionRequired="QUOTE_READ" maxLevel="true">'+ viewText + '&nbsp;</ansi:hasPermission><ansi:hasPermission permissionRequired="QUOTE_CREATE">'+ editText +'</ansi:hasPermission>&nbsp;' + printText + '&nbsp;<ansi:hasPermission permissionRequired="QUOTE_CREATE">' + copyText + '</ansi:hasPermission> ' + $noteLink + $docLink;}
     			            	
