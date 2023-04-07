@@ -44,7 +44,7 @@ public enum Menu {
 	NEW_QUOTE(			"New Quote", 			QUICK_LINKS, Permission.QUOTE_CREATE,	"newQuote.html"),
 	GENERATE_TICKETS(	"Generate Tickets", 	QUICK_LINKS, Permission.TICKET_WRITE,	"ticketGeneration.html"),
 	PRINT_TICKETS(		"Print Tickets", 		QUICK_LINKS, Permission.TICKET_WRITE,	"ticketPrint.html"),
-	ASSIGN_TICKETS(		"Assign Tickets", 		QUICK_LINKS, Permission.TICKET_WRITE,	"ticketAssignment.html"),
+//	ASSIGN_TICKETS(		"Assign Tickets", 		QUICK_LINKS, Permission.TICKET_WRITE,	"ticketAssignment.html"),
 	TICKET_RETURN(		"Ticket Return", 		QUICK_LINKS, Permission.TICKET_WRITE,	"ticketReturn.html"),
 	GENERATE_INVOICES(	"Generate Invoices", 	QUICK_LINKS, Permission.INVOICE_WRITE,	"invoiceGeneration.html"),
 	PRINT_INVOICES(		"Print Invoices", 		QUICK_LINKS, Permission.INVOICE_WRITE,	"invoicePrint.html"),
