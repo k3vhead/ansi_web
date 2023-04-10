@@ -118,6 +118,29 @@ public class AbstractServlet extends HttpServlet {
 		writer.flush();
 		writer.close();
 	}
+	
+	
+	/**
+	 * Return an HTML response to the client
+	 * 
+	 * @param conn
+	 * @param response
+	 * @param responseCode
+	 * @param html
+	 * @throws Exception
+	 */
+	protected void sendResponse(HttpServletResponse response, ResponseCode responseCode, String html) throws Exception {
+		response.setStatus(responseCode.statusCode());
+		response.setContentType("text/html");
+		
+		ServletOutputStream o = response.getOutputStream();
+		OutputStreamWriter writer = new OutputStreamWriter(o);
+		writer.write(html);
+		writer.flush();
+		writer.close();
+	}
+	
+	
 
 	/**
 	 * Take the posted values from an HttpServletRequest object and convert into a string. 

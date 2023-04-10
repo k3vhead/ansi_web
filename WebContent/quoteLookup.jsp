@@ -25,11 +25,13 @@
     
     
     <tiles:put name="headextra" type="string">
-		<link rel="stylesheet" href="css/callNote.css" />
+		<link rel="stylesheet" href="css/callNote.css" type="text/css" />
     	<link rel="stylesheet" href="css/accordion.css" type="text/css" />
+    	<link rel="stylesheet" href="css/lookup.css" type="text/css" />
     	<script type="text/javascript" src="js/ansi_utils.js"></script>
     	<script type="text/javascript" src="js/callNote.js"></script>     
   	    <script type="text/javascript" src="js/quotePrint.js"></script>
+  	    <script type="text/javascript" src="js/lookup.js"></script>
   	    <jsp:include page="documents/documentViewJS.jsp" /> <%-- We do this way so the custom tags in the JS will get parsed properly --%>
         <style type="text/css">
 			#displayTable {
@@ -42,14 +44,14 @@
 				width:400px;
 				padding:15px;
 			}
+			#filter-container {
+        		width:402px;
+        		float:right;
+        	}			        	
 			.prettyWideButton {
 				height:30px;
 				min-height:30px;
-			}
-			select	{
-				width:80px !important;
-				max-width:80px !important;
-			}
+			}			
 			.quotePrint {
 				text-decoration:none;
 				cursor:pointer;
@@ -104,8 +106,8 @@
             	        ],
             	        "columnDefs": [
              	            { "orderable": false, "targets": -1 },
-            	            { className: "dt-left", "targets": [2,3,4,5,6,10] },
-            	            { className: "dt-center", "targets": [0,1,7,8] },
+            	            { className: "dt-left", "targets": [2,3,4,5,6,11] },
+            	            { className: "dt-center", "targets": [0,1,7,8, 10] },
             	            { className: "dt-right", "targets": [9]}
             	         ],
             	        "paging": true,
@@ -114,57 +116,41 @@
     			        	"type": "GET"
     			        	},
     			        columns: [
-    			            { title: "<bean:message key="field.label.quoteId" />", width:"5%", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-    			            	if(row.quoteId != null){return (row.quoteId+"");}
-    			            } },
-    			            { title: "<bean:message key="field.label.quoteCode" />", width:"8%", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.quoteCode != null){return (row.quoteCode+"");}
-    			            } },
-    			            { title: "<bean:message key="field.label.divisionNbr" />", width:"6%", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.divisionNbr != null){return (row.divisionNbr+"-"+row.divisionCode);}
-    			            } },
-    			            { title: "<bean:message key="field.label.billToName" />" , width:"14%", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-    			            	if(row.billToName != null){return (row.billToName+"");}
-    			            } },
-    			            { title: "<bean:message key="field.label.jobSiteName" />", width:"14%", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.jobSiteName != null){return (row.jobSiteName+"");}
-    			            } },
-    			            { title: "<bean:message key="field.label.jobSiteAddress" />",  width:"14%", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.jobSiteAddress != null){return (row.jobSiteAddress+"");}
-    			            } },
-    			            { title: "<bean:message key="field.label.managerName" />", width:"10%", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.managerName != null){return (row.managerName+"");}
-    			            } },
-    			            { title: "<bean:message key="field.label.proposalDate" />", width:"7%", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.proposalDate != null){return (row.proposalDate+"");}
-    			            } },
-    			            { title: "<bean:message key="field.label.quoteJobCount" />",width:"5%", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
-    			            	if(row.quoteJobCount != null){return (row.quoteJobCount+"");}
-    			            } },
-    			            { title: "<bean:message key="field.label.quotePpcSum" />",width:"8%",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-    			            	if(row.quotePpcSum != null){return (row.quotePpcSum+"");} 
-    			            } },
+    			            { title: "<bean:message key="field.label.quoteId" />", searchable: true, width:"5%", "defaultContent": "<i>N/A</i>", data: "quote_id"},
+    			            { title: "<bean:message key="field.label.quoteCode" />", searchable: true, width:"8%", "defaultContent": "<i>N/A</i>", data:"quote_code"},
+    			            { title: "<bean:message key="field.label.divisionNbr" />", searchable: true, width:"6%", "defaultContent": "<i>N/A</i>", data:"div"},
+    			            { title: "<bean:message key="field.label.billToName" />" , searchable: true, width:"14%", "defaultContent": "<i>N/A</i>", data:"bill_to_name"},
+    			            { title: "<bean:message key="field.label.jobSiteName" />", searchable: true, width:"14%", "defaultContent": "<i>N/A</i>", data:"job_site_name"},
+    			            { title: "<bean:message key="field.label.jobSiteAddress" />",  searchable: true, width:"14%", "defaultContent": "<i>N/A</i>", data: "job_site_address"},
+    			            { title: "<bean:message key="field.label.managerName" />", searchable: true, width:"10%", "defaultContent": "<i>N/A</i>", data:"manager_name"},
+    			            { title: "<bean:message key="field.label.proposalDate" />", searchable: true, searchFormat:"yyyy-mm-dd", width:"7%", "defaultContent": "<i>N/A</i>", data:"proposal_date"},
+    			            { title: "<bean:message key="field.label.quoteJobCount" />", searchable: true, width:"3%", "defaultContent": "<i>N/A</i>", data: "quote_job_count"},
+    			            { title: "<bean:message key="field.label.quotePpcSum" />", searchable: true, width:"5%",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	return row.quote_ppc_sum.toFixed(2);
+    			            }},
+    			            { title: "PAC",width:"5%", "defaultContent": "<i>N/A</i>", searchable: true, data: "pac_status"},
     			            { title: "<bean:message key="field.label.action" />", width:"8%",  data: function ( row, type, set ) {	
     			            	//console.log(row);    			            	
-    			            	editText = '<a href="quoteMaintenance.html?id='+row.quoteId+'" class="editAction" data-id="'+row.quoteId+'"><webthing:edit>Edit</webthing:edit></a>';
+    			            	editText = '<a href="quoteMaintenance.html?id='+row.quote_id+'" class="editAction" data-id="'+row.quote_id+'"><webthing:edit>Edit</webthing:edit></a>';
     			            	if ( row.quoteJobCount == 0 ) {
-    			            		editText = '<a href="newQuote.html?id='+row.quoteId+'" class="editAction" data-id="'+row.quoteId+'"><webthing:edit>Edit</webthing:edit></a>';
+    			            		editText = '<a href="newQuote.html?id='+row.quote_id+'" class="editAction" data-id="'+row.quote_id+'"><webthing:edit>Edit</webthing:edit></a>';
     			            	}
-    			            	viewText = '<a href="quoteMaintenance.html?id='+row.quoteId+'" class="editAction" data-id="'+row.quoteId+'"><webthing:view style="color:#404040;">View</webthing:view></a>';
-    			            	printText = '<i class="fa fa-print orange quotePrint" aria=hidden="true" data-id="'+row.quoteId+'" data-quotenumber="'+ row.quoteCode + '"></i>';
-    			            	copyText = '<i class="far fa-copy copyQuote" aria-hidden="true" data-id="'+row.quoteId+'"></i>';
-    			            	var $noteLink = '<webthing:notes xrefType="QUOTE" xrefId="' + row.quoteId + '">Quote Notes</webthing:notes>'
+    			            	viewText = '<a href="quoteMaintenance.html?id='+row.quote_id+'" class="editAction" data-id="'+row.quote_id+'"><webthing:view style="color:#404040;">View</webthing:view></a>';
+    			            	printText = '<i class="fa fa-print orange quotePrint" aria=hidden="true" data-id="'+row.quote_id+'" data-quotenumber="'+ row.quoteCode + '"></i>';
+    			            	copyText = '<i class="far fa-copy copyQuote" aria-hidden="true" data-id="'+row.quote_id+'"></i>';
+    			            	var $noteLink = '<webthing:notes xrefType="QUOTE" xrefId="' + row.quote_id + '">Quote Notes</webthing:notes>'
     			            	var $docLink = "";;
     			            	if ( row.documentCount > 0 ) {
-    			            		$docLink = '<webthing:document styleClass="documentAction" xrefType="SIGNED_CONTRACT" xrefId="'+row.quoteId+'">Signed Quote</webthing:document>';
+    			            		$docLink = '<webthing:document styleClass="documentAction" xrefType="SIGNED_CONTRACT" xrefId="'+row.quote_id+'">Signed Quote</webthing:document>';
     			            	}
     			            	{return '<ansi:hasPermission permissionRequired="QUOTE_READ" maxLevel="true">'+ viewText + '&nbsp;</ansi:hasPermission><ansi:hasPermission permissionRequired="QUOTE_CREATE">'+ editText +'</ansi:hasPermission>&nbsp;' + printText + '&nbsp;<ansi:hasPermission permissionRequired="QUOTE_CREATE">' + copyText + '</ansi:hasPermission> ' + $noteLink + $docLink;}
     			            	
     			            } }],
-    			            //"initComplete": function(settings, json) {
+    			            "initComplete": function(settings, json) {
     			            	//console.log(json);
-    			            //	doFunctionBinding();
-    			            //},
+    			            	var myTable = this;
+    			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#quoteTable", QUOTELOOKUP.createTable);
+    			            },
     			            "drawCallback": function( settings ) {
     			            	QUOTELOOKUP.doFunctionBinding();
     			            	CALLNOTE.lookupLink();
@@ -285,12 +271,8 @@
    <tiles:put name="content" type="string">
     	<h1>Quote Lookup</h1>
     	
-<<<<<<< HEAD
-	 	<table id="quoteTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
-	      
-=======
+    	<webthing:lookupFilter filterContainer="filter-container" />
 	 	<table id="quoteTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">	        
->>>>>>> dev
 	    </table>
 	    
 	    <webthing:scrolltop />

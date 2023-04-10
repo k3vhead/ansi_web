@@ -11,6 +11,12 @@
 			<td><span class="err employeeCodeErr"></span></td>
 		</tr>
 		<tr>
+			<td class="form-label">Vendor Employee Code:</td>
+			<td>&nbsp;</td>
+			<td><input type="text" name="vendorEmployeeCode" /></td>
+			<td><span class="err vendorEmployeeCodeErr"></span></td>
+		</tr>
+		<tr>
 			<td class="form-label">Company:</td>
 			<td><webthing:attention styleClass="attn companyCodeAttn">Change to existing value</webthing:attention></td>
 			<td>

@@ -37,6 +37,7 @@ public class TimesheetLookupServlet extends AbstractLookupServlet {
 	public static final String STATE = "locale.state_name";
 	public static final String CITY = "locale.name";
 	public static final String EMPLOYEE_CODE = "employee_code";
+	public static final String VENDOR_EMPLOYEE_CODE = "vendor_employee_code";
 //	-- payroll_employee.employee_first_name,
 //	-- payroll_employee.employee_last_name,
 //	-- payroll_employee.employee_mi,
@@ -69,6 +70,7 @@ public class TimesheetLookupServlet extends AbstractLookupServlet {
 			STATE,
 			CITY,
 			EMPLOYEE_CODE,
+			VENDOR_EMPLOYEE_CODE,
 			EMPLOYEE_NAME,
 			REGULAR_HOURS,
 			REGULAR_PAY,

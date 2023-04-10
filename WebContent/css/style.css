@@ -78,6 +78,13 @@ h1 {
 	background:#CC6600;
 	color:#FFFFFF;
 }
+.kbTitle {
+	font-weight:bold;
+	font-size:110%;
+}
+.kbContent {
+	font-size:100%;
+}
 .mainContent {
 	padding:20px; 
 	clear:both;

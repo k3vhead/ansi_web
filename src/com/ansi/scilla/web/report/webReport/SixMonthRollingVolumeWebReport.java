@@ -19,6 +19,7 @@ import com.ansi.scilla.report.sixMonthRollingVolume.SixMonthRollingVolumeReport;
 public class SixMonthRollingVolumeWebReport extends CompoundReport implements ReportByDivMonthYear, ReportByDivision {
 
 	private static final long serialVersionUID = 1L;
+	public static final String FILENAME = "SMRV";
 	public static final String REPORT_TITLE = "6-Month Rolling Volume";
 
 	
@@ -39,12 +40,13 @@ public class SixMonthRollingVolumeWebReport extends CompoundReport implements Re
 
 	
 	public String makeFileName(String arg0, Calendar arg1, Division arg2, Calendar arg3, Calendar arg4) {
-		throw new RuntimeException("This is only here to make the compiler happy");
+		throw new RuntimeException("This method is only here to make the compiler happy");
 	}
 
 
 	public String makeFileName(Calendar runDate, Division division, Calendar startDate, Calendar endDate) {
-		return makeFileName(SixMonthRollingVolumeReport.FILENAME, runDate, division, startDate, endDate);
+		//return makeFileName(SixMonthRollingVolumeReport.FILENAME, runDate, division, startDate, endDate);
+		return makeFileName(FILENAME, runDate, division, startDate, endDate);
 	}
 
 	

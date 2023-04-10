@@ -271,13 +271,18 @@
 					$("#COMPLETED input[name=actDlAmt]").change(function($event) {
 						var $actPricePerCleaning = $("#COMPLETED input[name=actPricePerCleaning]").val();
 						var $actDlAmt = $("#COMPLETED input[name=actDlAmt]").val();
-						if ( isNaN($actDlAmt) ) {
-							TICKETRETURN.markInvalid($("#validActDlAmt"));
+						if ( $actPricePerCleaning == null || $actPricePerCleaning == 0 ) {
+							$("#COMPLETED input[name=actDlPct]").val(-1);					
+							$("#COMPLETED span[class=actDlPct]").html(-1);
 						} else {
-							TICKETRETURN.markValid($("#validActDlAmt"));
-							var $actDlPct = ($actDlAmt / $actPricePerCleaning * 100);
-							$("#COMPLETED input[name=actDlPct]").val($actDlPct);					
-							$("#COMPLETED span[class=actDlPct]").html($actDlPct.toFixed(1));
+							if ( isNaN($actDlAmt) ) {
+								TICKETRETURN.markInvalid($("#validActDlAmt"));
+							} else {
+								TICKETRETURN.markValid($("#validActDlAmt"));
+								var $actDlPct = ($actDlAmt / $actPricePerCleaning * 100);
+								$("#COMPLETED input[name=actDlPct]").val($actDlPct);					
+								$("#COMPLETED span[class=actDlPct]").html($actDlPct.toFixed(1));
+							}
 						}
 					});
 					$("#COMPLETED input[name=actPricePerCleaning]").change(function($event) {
