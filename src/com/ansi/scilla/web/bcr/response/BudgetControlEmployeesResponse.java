@@ -102,7 +102,7 @@ public class BudgetControlEmployeesResponse extends MessageResponse {
 			weekFilter.add(Integer.valueOf(weekNum));
 		}
 		Logger logger = LogManager.getLogger(this.getClass());
-		logger.log(Level.DEBUG, sql);
+//		logger.log(Level.DEBUG, sql);
 		
 		HashMap<String, EmployeeClaim> workMap = new HashMap<String, EmployeeClaim>();  // "string" is employee
 		

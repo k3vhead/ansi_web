@@ -1,6 +1,8 @@
 package com.ansi.scilla.web.specialOverride.servlet;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -15,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.common.exception.InvalidFormatException;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
@@ -23,7 +26,6 @@ import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
@@ -33,45 +35,59 @@ import com.ansi.scilla.web.specialOverride.common.SpecialOverrideType;
 import com.ansi.scilla.web.specialOverride.response.SpecialOverrideResponse;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
-public class SpecialOverrideServlet extends AbstractServlet {
+public class SpecialOverrideServlet extends AbstractOverrideServlet {
 
 	
 	private static final long serialVersionUID = 1L;
+	
+	private Class<?>[] alternates = new Class<?>[] { 
+		ClearlyWindowsTicketServlet.class, 
+		UnactivateJobServlet.class 
+	};
 
 	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException { //  Note : modeled after recommended uri parsing pattern 2018-04-19 kjw
+	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException { 
+		logger.log(Level.DEBUG, "Special Override doGet");
 		AnsiURL url = null;
 		Connection conn = null;
 		WebMessages webMessages = new WebMessages();
 		try {
 			
-			String[] name = SpecialOverrideType.names();
+			String[] name = makeCommandList();
 			url = new AnsiURL(request, "specialOverrides", name, false);
 			conn = AppUtils.getDBCPConn();
 			
-				
+			logger.log(Level.DEBUG, "Command: " + url.getCommand());
 			if ( StringUtils.isBlank(url.getCommand() )) {
 				sendNameDescription(conn, response);
 			} else {
-				SpecialOverrideType type = SpecialOverrideType.valueOf(url.getCommand());
-				if(request.getParameterNames().hasMoreElements()) {
-					webMessages = validateParameters(type.getSelectParms(), request);
-					if(webMessages.isEmpty()) {
-						sendSelectResults(conn, request, response, type);
+				AbstractOverrideServlet alternateServlet = makeAlternateServlet(url.getCommand());				
+				if ( alternateServlet == null ) {
+					SpecialOverrideType type = SpecialOverrideType.valueOf(url.getCommand());
+					if(type.getSelectParms().length == 0 || request.getParameterNames().hasMoreElements()) {
+						webMessages = validateParameters(type.getSelectParms(), request);
+						if(webMessages.isEmpty()) {
+							sendSelectResults(conn, request, response, type);
+						} else {
+							sendEditErrors(conn, response, type, webMessages);
+						}
 					} else {
-						sendEditErrors(conn, response, type, webMessages);
+						sendParameterTypes(conn, response, url, request, type);
 					}
 				} else {
-					sendParameterTypes(conn, response, url, request, type);
+					alternateServlet.doGet(request, response);
 				}
 			}
 			
 			
 		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {							// these are thrown by session validation
-			super.sendForbidden(response);
-		} catch ( RecordNotFoundException e ) {			// if they're asking for an id that doesn't exist
+			logger.log(Level.DEBUG, e);
+			super.sendForbidden(response);			
+		} catch ( RecordNotFoundException e ) {			// if they're asking for an id that doesn't exist			
+			logger.log(Level.DEBUG, e);			
 			super.sendNotFound(response);						
 		} catch ( ResourceNotFoundException e) {		
+			logger.log(Level.DEBUG, e);
 			super.sendNotFound(response);
 		} catch ( Exception e) {						// something bad happened
 			AppUtils.logException(e);
@@ -83,8 +99,12 @@ public class SpecialOverrideServlet extends AbstractServlet {
 	
 	
 	
+	
+
+
+
 	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		AnsiURL url = null;
 		Connection conn = null;
@@ -92,7 +112,7 @@ public class SpecialOverrideServlet extends AbstractServlet {
 		try {
 			SessionData sessionData = AppUtils.validateSession(request, Permission.SPECIAL_OVERRIDE_READ);
 			SessionUser user = sessionData.getUser();
-			String[] name = SpecialOverrideType.names();
+			String[] name = makeCommandList();
 			url = new AnsiURL(request, "specialOverrides", name, false);
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
@@ -102,19 +122,24 @@ public class SpecialOverrideServlet extends AbstractServlet {
 				// what we're supposed to be updating.
 				sendNotFound(response);
 			} else {
-				SpecialOverrideType type = SpecialOverrideType.valueOf(url.getCommand());
-				logger.log(Level.DEBUG, "Doing a post");
-				if(request.getParameterNames().hasMoreElements()) {
-					logger.log(Level.DEBUG, "We've got parameters");
-					webMessages = validateUpdateParameters(type.getUpdateParms(), request);
-					if(webMessages.isEmpty()) {
-						doUpdate(conn, response, user, url, request, type);
-						sendUpdateResults(conn, request, response, type);
+				AbstractOverrideServlet alternateServlet = makeAlternateServlet(url.getCommand());
+				if ( alternateServlet == null ) {
+					SpecialOverrideType type = SpecialOverrideType.valueOf(url.getCommand());
+					logger.log(Level.DEBUG, "Doing a post");
+					if(type.getSelectParms().length == 0 || request.getParameterNames().hasMoreElements()) {
+						logger.log(Level.DEBUG, "We've got parameters");
+						webMessages = validateUpdateParameters(type.getUpdateParms(), request);
+						if(webMessages.isEmpty()) {
+							doUpdate(conn, response, user, url, request, type);
+							sendUpdateResults(conn, request, response, type);
+						} else {
+							sendEditErrors(conn, response, type, webMessages);
+						}
 					} else {
-						sendEditErrors(conn, response, type, webMessages);
+						sendParameterTypes(conn, response, url, request, type);
 					}
 				} else {
-					sendParameterTypes(conn, response, url, request, type);
+					alternateServlet.doPost(request, response);
 				}
 			}
 			
@@ -132,6 +157,58 @@ public class SpecialOverrideServlet extends AbstractServlet {
 			AppUtils.closeQuiet(conn);					// return the connection to the pool
 		}	
 	}
+
+
+
+	@Override
+	public void doDelete(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		super.sendForbidden(response);
+	}
+
+
+
+
+
+
+
+	private String[] makeCommandList() {
+		SpecialOverrideResponse response = new SpecialOverrideResponse();
+		String[] commandList = new String[response.getScriptList().size()];
+		for ( int i = 0; i < commandList.length; i++ ) {
+			commandList[i] = response.getScriptList().get(i).getName();
+		}
+		return commandList;
+	}
+
+
+
+
+
+
+
+	private AbstractOverrideServlet makeAlternateServlet(String command) throws SecurityException, IllegalArgumentException, IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchMethodException {
+		AbstractOverrideServlet servlet = null;
+		for ( Class<?> clazz : this.alternates ) {
+			Field realmField;
+			try {
+				realmField = clazz.getDeclaredField("REALM");
+				String realm = (String)realmField.get(null);
+				if ( realm.equals(command) ) {
+					Constructor<AbstractServlet> constructor = (Constructor<AbstractServlet>)clazz.getConstructor( (Class<?>[])null);
+					servlet = (AbstractOverrideServlet)constructor.newInstance( (Object[])null);
+				}
+			} catch (NoSuchFieldException e) {
+				// we don't care; just means it's not a match			
+			}
+		}
+		
+		return servlet;
+	}
+
+
+
+
 
 
 
@@ -171,7 +248,7 @@ public class SpecialOverrideServlet extends AbstractServlet {
 				throw new RuntimeException("Something's wrong with the sql: " + fixed);
 			}
 			String whereClause = sqlMatcher.group(sqlMatcher.groupCount());
-			logger.log(Level.DEBUG, "Where cluase: " + whereClause);
+			logger.log(Level.DEBUG, "Where clause: " + whereClause);
 			
 			int whereParmCount = 0;
 			int whereIdx = whereClause.indexOf("=?");
@@ -215,6 +292,8 @@ public class SpecialOverrideServlet extends AbstractServlet {
 
 
 	private void sendEditErrors(Connection conn, HttpServletResponse response, SpecialOverrideType type, WebMessages webMessages) throws Exception {
+		logger.log(Level.DEBUG,"SpecialOverride.sendEditErrors");
+		
 		SpecialOverrideResponse data = new SpecialOverrideResponse(type);
 		data.setWebMessages(webMessages);
 		super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);		
@@ -223,6 +302,7 @@ public class SpecialOverrideServlet extends AbstractServlet {
 	
 	private void sendSelectResults(Connection conn, HttpServletRequest request, HttpServletResponse response,
 			SpecialOverrideType type) throws Exception {
+		logger.log(Level.DEBUG,"SpecialOverride.sendSelectResults");
 		WebMessages webMessages = new WebMessages();
 		logger.log(Level.DEBUG, type.getSelectSql());
 		PreparedStatement ps = conn.prepareStatement(type.getSelectSql());
@@ -246,6 +326,7 @@ public class SpecialOverrideServlet extends AbstractServlet {
 	
 	private void sendUpdateResults(Connection conn, HttpServletRequest request, HttpServletResponse response,
 			SpecialOverrideType type) throws Exception {
+		logger.log(Level.DEBUG,"SpecialOverride.sendUpdateResults");
 		WebMessages webMessages = new WebMessages();
 		logger.log(Level.DEBUG, type.getUpdateSelectSql());
 		PreparedStatement ps = conn.prepareStatement(type.getUpdateSelectSql());
@@ -267,6 +348,7 @@ public class SpecialOverrideServlet extends AbstractServlet {
 
 	
 	private WebMessages validateParameters(ParameterType[] selectParms, HttpServletRequest request) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		logger.log(Level.DEBUG,"SpecialOverride.validateParameters");
 		WebMessages webMessages = new WebMessages();
 		for(ParameterType p : selectParms) {
 			String stringVal = request.getParameter(p.getFieldName());
@@ -286,12 +368,14 @@ public class SpecialOverrideServlet extends AbstractServlet {
 
 	private void sendParameterTypes(Connection conn, HttpServletResponse response, AnsiURL url,
 			HttpServletRequest request, SpecialOverrideType type) throws Exception {
+		logger.log(Level.DEBUG,"SpecialOverride.sendParameterTypes");
 		AppUtils.validateSession(request, type.getPermission());
 		SpecialOverrideResponse data = new SpecialOverrideResponse(type);
 		super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
 	}
 
 	private void sendNameDescription(Connection conn, HttpServletResponse response) throws Exception {
+		logger.log(Level.DEBUG,"SpecialOverride.sendNameDescription");
 		SpecialOverrideResponse data = new SpecialOverrideResponse();
 		super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
 	}

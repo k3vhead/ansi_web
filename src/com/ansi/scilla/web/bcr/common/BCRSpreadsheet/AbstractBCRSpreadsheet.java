@@ -11,20 +11,18 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFFont;
@@ -37,13 +35,14 @@ import com.ansi.scilla.common.utils.WorkWeek;
 import com.ansi.scilla.common.utils.WorkYear;
 import com.ansi.scilla.web.bcr.common.BcrTicketSql;
 import com.ansi.scilla.web.bcr.response.BudgetControlEmployeesResponse;
-import com.ansi.scilla.web.bcr.response.BudgetControlEmployeesResponse.EmployeeClaim;
 import com.ansi.scilla.web.bcr.response.BudgetControlTotalsResponse;
 import com.ansi.scilla.web.common.struts.SessionDivision;
 
 public abstract class AbstractBCRSpreadsheet extends ApplicationObject {
 
 	private static final long serialVersionUID = 1L;
+
+	protected static final String ALL_EMPLOYEE_DL_LABEL = "Total Assigned D/L - All Employees";
 
 	protected final SimpleDateFormat mmdd = new SimpleDateFormat("MM/dd");
 //	private final SimpleDateFormat mmddyyyy = new SimpleDateFormat("MM/dd/yyyy");
@@ -69,19 +68,20 @@ public abstract class AbstractBCRSpreadsheet extends ApplicationObject {
 		int tabNumber = 0;
 		
 		BudgetControlTotalsResponse bctr = new BudgetControlTotalsResponse(conn, userId, divisionList, divisionId, claimYear, workWeeks);
+		BudgetControlEmployeesResponse employeeResponse = new BudgetControlEmployeesResponse(conn, userId, divisionList, divisionId, claimYear, workWeeks);
+
 		makeActualDLTotalsTab(tabNumber, workCalendar, bctr);
 		tabNumber++;
 		
-		makeBudgetControlTotalsTab(tabNumber, workCalendar, bctr);
+		makeBudgetControlTotalsTab(tabNumber, workCalendar, bctr, employeeResponse);
 		tabNumber++;
 		
-		BudgetControlEmployeesResponse employeeResponse = new BudgetControlEmployeesResponse(conn, userId, divisionList, divisionId, claimYear, workWeeks);
 		makeBudgetControlEmployeesTab(tabNumber, claimYear, workCalendar, employeeResponse);
 		tabNumber++;
 		
 		conn.close();
 
-		makeTicketTab(data, tabNumber, "All Tickets");
+		makeTicketTab(data, tabNumber, TabName.ALL_TICKETS.label());
 		tabNumber++;
 		for ( int i = 0; i < weekList.length; i++ ) {
 			String weekNum = Integer.valueOf(weekList[i]) < 10 ? "0" + weekList[i] : weekList[i];
@@ -103,152 +103,12 @@ public abstract class AbstractBCRSpreadsheet extends ApplicationObject {
 
 	protected abstract void makeActualDLTotalsTab(int tabNumber, List<WorkWeek> workCalendar, BudgetControlTotalsResponse bctr);
 	
-	protected abstract void makeBudgetControlTotalsTab(int tabNumber, List<WorkWeek> workCalendar, BudgetControlTotalsResponse bctr);
+	protected abstract void makeBudgetControlTotalsTab(int tabNumber, List<WorkWeek> workCalendar, BudgetControlTotalsResponse bctr, BudgetControlEmployeesResponse employeeResponse);
 	
-		
+	protected abstract void makeBudgetControlEmployeesTab(Integer tabNumber, Integer claimYear, List<WorkWeek> workCalendar, BudgetControlEmployeesResponse employeeResponse);
 	
 	
-	protected void makeBudgetControlEmployeesTab(Integer tabNumber, Integer claimYear, List<WorkWeek> workCalendar, BudgetControlEmployeesResponse employeeResponse) {
-		String tabName = "Employees";
-		XSSFSheet sheet = this.workbook.createSheet(tabName);
-		this.workbook.setSheetOrder(tabName, tabNumber);
-		XSSFRow row = null;
-		XSSFCell cell = null;
-		int rowNum = 0;
-		int colNum = 0;
-		
-		XSSFRow headerRow1 = sheet.createRow(0);
-		XSSFRow headerRow2 = sheet.createRow(1);
-		XSSFRow headerRow3 = sheet.createRow(2);
 
-		cell = headerRow1.createCell(0);
-		cell.setCellValue("Week:");
-		cell.setCellStyle(cellFormats.get(CellFormat.HEADER));
-		
-		
-		colNum = 1;
-		for ( int i = 0; i < workCalendar.size(); i++ ) {
-			Date firstOfWeek = workCalendar.get(i).getFirstOfWeek().getTime();
-			Date lastOfWeek = workCalendar.get(i).getLastOfWeek().getTime();
-			
-			cell = headerRow1.createCell(colNum+1);
-			cell.setCellStyle(cellFormats.get(CellFormat.CENTER_BORDER));
-			cell = headerRow1.createCell(colNum);
-			sheet.addMergedRegion(new CellRangeAddress(0,0,colNum,colNum+1));
-			cell.setCellValue(mmdd.format(firstOfWeek) + "-" + mmdd.format(lastOfWeek));
-			cell.setCellStyle(cellFormats.get(CellFormat.CENTER_BORDER));
-			
-			
-			cell = headerRow2.createCell(colNum+1);
-			cell.setCellStyle(cellFormats.get(CellFormat.CENTER_BORDER));
-			cell = headerRow2.createCell(colNum);
-			sheet.addMergedRegion(new CellRangeAddress(1,1,colNum,colNum+1));
-			String weekOfYear = workCalendar.get(i).getWeekOfYear() < 10 ? "0" + workCalendar.get(i).getWeekOfYear() : String.valueOf(workCalendar.get(i).getWeekOfYear());
-			cell.setCellValue(claimYear + "-" + weekOfYear);
-			cell.setCellStyle(cellFormats.get(CellFormat.HEADER_CENTER_BORDER));
-			
-			cell = headerRow3.createCell(colNum);
-			cell.setCellValue("Volume");
-			cell.setCellStyle(cellFormats.get(CellFormat.HEADER_CENTER));
-			cell = headerRow3.createCell(colNum+1);
-			cell.setCellValue("D/L");
-			cell.setCellStyle(cellFormats.get(CellFormat.HEADER_CENTER_BORDER));
-			
-			colNum = colNum+2;
-		}
-		
-		cell = headerRow1.createCell(colNum);
-		sheet.addMergedRegion(new CellRangeAddress(0,0,colNum,colNum+1));
-		cell.setCellValue("Month");
-		cell.setCellStyle(cellFormats.get(CellFormat.HEADER_CENTER));
-		
-		cell = headerRow2.createCell(colNum);
-		sheet.addMergedRegion(new CellRangeAddress(1,1,colNum,colNum+1));
-		cell.setCellValue("Total");
-		cell.setCellStyle(cellFormats.get(CellFormat.HEADER_CENTER));
-		
-		cell = headerRow3.createCell(colNum);
-		cell.setCellValue("Volume");
-		cell.setCellStyle(cellFormats.get(CellFormat.HEADER_CENTER));
-		cell = headerRow3.createCell(colNum+1);
-		cell.setCellValue("D/L");
-		cell.setCellStyle(cellFormats.get(CellFormat.HEADER_CENTER));
-		
-		
-		rowNum = 3;
-		
-		for ( EmployeeClaim claim : employeeResponse.getEmployees() ) {
-			row = sheet.createRow(rowNum);
-			cell = row.createCell(0);
-			cell.setCellValue(StringUtils.isBlank(claim.getEmployee()) ? "unspecified" : claim.getEmployee());
-			
-			colNum = 1;
-			for ( String claimWeek : employeeResponse.getClaimWeeks() ) {
-				cell = row.createCell(colNum);
-				if ( claim.getWeeklyClaimedVolume().containsKey(claimWeek)) {
-					cell.setCellValue(claim.getWeeklyClaimedVolume().get(claimWeek));
-				} else {
-					cell.setCellValue(0.0D);
-				}
-				cell.setCellStyle(cellFormats.get(CellFormat.RIGHT));
-				colNum++;
-				cell = row.createCell(colNum);
-				if ( claim.getWeeklyClaimedDL().containsKey(claimWeek)) {
-					cell.setCellValue(claim.getWeeklyClaimedDL().get(claimWeek));
-				} else {
-					cell.setCellValue(0.0D);
-				}
-				cell.setCellStyle(cellFormats.get(CellFormat.RIGHT_BORDER));
-				colNum++;
-			}
-			cell = row.createCell(colNum);
-			cell.setCellValue(claim.getTotalClaimedVolume());
-			cell.setCellStyle(cellFormats.get(CellFormat.RIGHT));
-			colNum++;
-			cell = row.createCell(colNum);
-			cell.setCellValue(claim.getTotalClaimedDL());
-			cell.setCellStyle(cellFormats.get(CellFormat.RIGHT));
-			colNum++;
-			rowNum++;
-		}
-		
-		row = sheet.createRow(rowNum);
-		cell = row.createCell(0);
-		cell.setCellValue("Total Assigned D/L - All Employees");
-		colNum = 1;
-		for ( String claimWeek : employeeResponse.getClaimWeeks() ) {
-			cell = row.createCell(colNum);
-			if ( employeeResponse.getMonthlyTotal().getWeeklyClaimedVolume().containsKey(claimWeek)) {
-				cell.setCellValue(employeeResponse.getMonthlyTotal().getWeeklyClaimedVolume().get(claimWeek));
-			} else {
-				cell.setCellValue(0.0D);
-			}
-			cell.setCellStyle(cellFormats.get(CellFormat.RIGHT));
-			colNum++;
-			cell = row.createCell(colNum);
-			if ( employeeResponse.getMonthlyTotal().getWeeklyClaimedDL().containsKey(claimWeek)) {
-				cell.setCellValue(employeeResponse.getMonthlyTotal().getWeeklyClaimedDL().get(claimWeek));
-			} else {
-				cell.setCellValue(0.0D);
-			}
-			cell.setCellStyle(cellFormats.get(CellFormat.RIGHT_BORDER));
-			colNum++;
-		}
-		cell = row.createCell(colNum);
-		cell.setCellValue(employeeResponse.getMonthlyTotal().getTotalClaimedVolume());
-		cell.setCellStyle(cellFormats.get(CellFormat.RIGHT));
-		colNum++;
-		cell = row.createCell(colNum);
-		cell.setCellValue(employeeResponse.getMonthlyTotal().getTotalClaimedDL());
-		cell.setCellStyle(cellFormats.get(CellFormat.RIGHT));
-		colNum++;
-
-		
-		sheet.setColumnWidth(0, 7500);
-		for ( int i = 1; i <= sheet.getRow(0).getLastCellNum(); i++ ) {
-			sheet.setColumnWidth(i, 2500);
-		}
-	}
 
 
 	protected void makeTicketTab(List<BCRRow> data, Integer index, String title) throws SQLException, Exception {
@@ -420,7 +280,7 @@ public abstract class AbstractBCRSpreadsheet extends ApplicationObject {
 				BcrTicketSql.makeFilteredFromClause(divisionList) + 
 				BcrTicketSql.makeBaseWhereClause(workWeeks) + 
 				"\norder by " + BcrTicketSql.JOB_SITE_NAME;
-		logger.log(Level.DEBUG, baseSql);
+//		logger.log(Level.DEBUG, baseSql);
 		
 		List<BCRRow> data = new ArrayList<BCRRow>();
 		PreparedStatement ps = conn.prepareStatement(baseSql);
@@ -510,6 +370,12 @@ public abstract class AbstractBCRSpreadsheet extends ApplicationObject {
 		cellStyleRightBorder.setDataFormat(workbook.createDataFormat().getFormat("#0.00"));
 		cellStyleRightBorder.setBorderRight(BorderStyle.MEDIUM);
 		this.cellFormats.put(CellFormat.RIGHT_BORDER, cellStyleRightBorder);
+		
+		XSSFCellStyle yellowBackgroundNumeric = this.workbook.createCellStyle();
+		yellowBackgroundNumeric.setFillForegroundColor(IndexedColors.YELLOW.index);
+		yellowBackgroundNumeric.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+		yellowBackgroundNumeric.setDataFormat(workbook.createDataFormat().getFormat("#0.00"));
+		this.cellFormats.put(CellFormat.YELLOW_BACKGROUND_NUMERIC, yellowBackgroundNumeric);
 	}
 
 
@@ -550,6 +416,19 @@ public abstract class AbstractBCRSpreadsheet extends ApplicationObject {
 		LEFT,
 		RIGHT,
 		RIGHT_BORDER,
+		YELLOW_BACKGROUND_NUMERIC,
 		;		
+	}
+	
+	protected enum TabName {
+		ACTUAL_DIRECT_LABOR_TOTALS("Actual Direct Labor Totals"),
+		MONTHLY_BUDGET_CONTROL_SUMMARY("Monthly Budget Control Summary"),
+		EMPLOYEES("Employees"),
+		ALL_TICKETS("All Tickets"),
+		;
+		private String label;
+		private TabName(String label) {this.label = label;}
+		public String label() { return this.label; }
+		
 	}
 }

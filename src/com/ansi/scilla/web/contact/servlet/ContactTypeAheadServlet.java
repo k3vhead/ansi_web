@@ -19,9 +19,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.ApplicationObject;
+import com.ansi.scilla.common.contact.ContactStatus;
+import com.ansi.scilla.common.db.Contact;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
@@ -101,6 +103,7 @@ public class ContactTypeAheadServlet extends AbstractServlet {
 						}
 					}
 					try {
+						String contact = AppUtils.makeTableName(Contact.class);
 						conn = AppUtils.getDBCPConn();
 						AppUtils.validateSession(request, Permission.CONTACT_READ);
 						logger.log(Level.DEBUG, "ContactTypeAheadServlet(): doGet(): term =$" + term +"$");
@@ -109,14 +112,17 @@ public class ContactTypeAheadServlet extends AbstractServlet {
 //								+ " concat(last_name,', ',first_name) as name, "
 								+ " concat(LTRIM(RTRIM(first_name)), ' ', LTRIM(RTRIM(last_name))) as name, "
 								+ " business_phone, mobile_phone, email, fax, preferred_contact "
-								+ " from contact where lower(business_phone) like '%" + term + "%'"
-								+ " OR lower(fax) like '%" + term + "%'"
-								+ " OR lower(concat(LTRIM(RTRIM(first_name)),' ',LTRIM(RTRIM(last_name)))) like '%" + term + "%'"
-								+ " OR lower(concat(LTRIM(RTRIM(last_name)),' ',LTRIM(RTRIM(first_name)))) like '%" + term + "%'"
-								+ " OR lower(concat(LTRIM(RTRIM(last_name)),', ',LTRIM(RTRIM(first_name)))) like '%" + term + "%'"
-								+ " OR lower(mobile_phone) like '%" + term + "%'"
-								+ " OR lower(email) like '%" + term + "%'"
-								+ " ORDER BY concat(LTRIM(RTRIM(first_name)), ' ', LTRIM(RTRIM(last_name))) "
+								+ " from "+contact+" "
+								+ " where contact_status='" + ContactStatus.VALID.name() + "' \n"
+								+ " AND \n"
+								+ " (lower(business_phone) like '%" + term + "%'\n"
+								+ " OR lower(fax) like '%" + term + "%'\n"
+								+ " OR lower(concat(LTRIM(RTRIM(first_name)),' ',LTRIM(RTRIM(last_name)))) like '%" + term + "%'\n"
+								+ " OR lower(concat(LTRIM(RTRIM(last_name)),' ',LTRIM(RTRIM(first_name)))) like '%" + term + "%'\n"
+								+ " OR lower(concat(LTRIM(RTRIM(last_name)),', ',LTRIM(RTRIM(first_name)))) like '%" + term + "%'\n"
+								+ " OR lower(mobile_phone) like '%" + term + "%'\n"
+								+ " OR lower(email) like '%" + term + "%')\n"
+								+ " ORDER BY concat(LTRIM(RTRIM(first_name)), ' ', LTRIM(RTRIM(last_name))) \n"
 //								+ " ORDER BY concat(last_name,', ',first_name) "
 								+ " OFFSET 0 ROWS"
 								+ " FETCH NEXT 250 ROWS ONLY";

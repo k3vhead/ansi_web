@@ -5,12 +5,15 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import com.ansi.scilla.web.common.response.MessageResponse;
 import com.ansi.scilla.web.specialOverride.common.ParameterType;
 import com.ansi.scilla.web.specialOverride.common.SpecialOverrideType;
+import com.ansi.scilla.web.specialOverride.servlet.ClearlyWindowsTicketServlet;
+import com.ansi.scilla.web.specialOverride.servlet.UnactivateJobServlet;
 
 public class SpecialOverrideResponse extends MessageResponse{
 
@@ -26,6 +29,9 @@ public class SpecialOverrideResponse extends MessageResponse{
 	public SpecialOverrideResponse() {
 		super();
 		this.scriptList = makeScriptList();		
+		this.scriptList.add( new NameDescriptionResponseItem(ClearlyWindowsTicketServlet.REALM, ClearlyWindowsTicketServlet.REALM_DESC));
+		this.scriptList.add( new NameDescriptionResponseItem(UnactivateJobServlet.REALM, UnactivateJobServlet.REALM_DESC));
+		Collections.sort(this.scriptList);
 	}
 	
 	public SpecialOverrideResponse(SpecialOverrideType specialOverrideType) {
@@ -41,11 +47,17 @@ public class SpecialOverrideResponse extends MessageResponse{
 	}
 	
 
+	public SpecialOverrideResponse(ResultSet rs) throws SQLException {
+		this();
+		this.resultSet = makeResultSet(rs);
+	}
+
 	protected List<NameDescriptionResponseItem> makeScriptList() {
 		List<NameDescriptionResponseItem> scriptList = new ArrayList<NameDescriptionResponseItem>();
 		for ( SpecialOverrideType reference : SpecialOverrideType.values() ) {
 			scriptList.add(new NameDescriptionResponseItem(reference));
 		}
+		Collections.sort(scriptList);
 		return scriptList;
 	}
 	

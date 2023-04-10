@@ -118,8 +118,8 @@
             	        
             	        "columnDefs": [
              	            { "orderable": false, "targets": -1 },
-            	            { className: "dt-left", "targets": [1,4] },
-            	            { className: "dt-center", "targets": [0,2,3,5] },
+            	            { className: "dt-left", "targets": [1,2,4] },
+            	            { className: "dt-center", "targets": [0,3,5] },
             	            { className: "dt-right", "targets": []}
             	         ],
             	        "paging": true,
@@ -138,10 +138,10 @@
     			            { width:"25%", title: "<bean:message key="field.label.description" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.description != null){return row.description;}
     			            } },
-    			            { width:"10%", title: "<bean:message key="field.label.documentDate" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { width:"10%", title: "<bean:message key="field.label.documentDate" />", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "YYYY-MM-dd", data: function ( row, type, set ) {
     			            	if(row.document_date != null){return row.document_date;}
     			            } },
-    			            { width:"10%", title: "<bean:message key="field.label.documentExpirationDate" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { width:"10%", title: "<bean:message key="field.label.documentExpirationDate" />", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "YYYY-MM-dd", data: function ( row, type, set ) {
     			            	if(row.expiration_date != null){return (row.expiration_date+"");}
     			            } },
     			            { width:"10%", title: "<bean:message key="field.label.xrefDisplay" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
@@ -197,8 +197,8 @@
     	 --%>
     	  	
 	 	<webthing:lookupFilter filterContainer="filter-container" />
-		<div id="table-container">
-		 	<table id="document-lookup-table" class="display" cellspacing="0" style="table-layout: fixed; font-size:9pt;min-width:1300px; max-width:1300px;width:1300px;">
+		<div id="table-container" style="font-size:9pt;min-width:1300px; max-width:1300px;width:1300px;">
+		 	<table id="document-lookup-table"> <!-- class="display" cellspacing="0" style="table-layout: fixed; font-size:9pt;min-width:1300px; max-width:1300px;width:1300px;"> --> 
 		        <thead></thead>
 		        <tbody></tbody>
 		        <tfoot></tfoot>

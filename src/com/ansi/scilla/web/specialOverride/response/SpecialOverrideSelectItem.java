@@ -22,6 +22,13 @@ public class SpecialOverrideSelectItem extends SpecialOverrideResponseItem{
 	}
 	
 	
+	public SpecialOverrideSelectItem(String label, String fieldName, String fieldType) {
+		this();
+		this.label = label;
+		this.fieldName = fieldName;
+		this.fieldType = fieldType;
+	}
+
 	public String getLabel() {
 		return label;
 	}

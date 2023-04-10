@@ -52,10 +52,6 @@
 			#bcr_panels .display {
 				display:none;
 			}
-        	#filter-container {
-        		width:402px;
-        		float:right;
-        	}
         	#ndl-crud-form {
         		display:none;
         		background-color:#FFFFFF;
@@ -140,6 +136,10 @@
 				width:5%;
 				margin-right:8px;
 			}
+        	.ticket-filter-container {
+        		width:402px;
+        		float:right;
+        	}
 			.table-header {
 				text-align:center;
 				font-weight:bold;
@@ -868,10 +868,10 @@
     			       //     	//if(row.start_time != null){return (row.start_time+"");}
     			       //     	return 'x';
     			       //     } },
-    			            { title: "Total Volume",  width:"6%", searchable:true, searchFormat: "Type Name", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { title: "Total Volume",  width:"6%", searchable:true, searchFormat: "###.##", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.total_volume != null){return (row.total_volume.toFixed(2)+"");}
     			            } },		
-    			            { title: "Volume Claimed",  width:"6%", searchable:true, searchFormat: "Name #####", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { title: "Volume Claimed",  width:"6%", searchable:true, searchFormat: "###.##", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.volume_claimed != null){return (row.volume_claimed.toFixed(2)+"");}
     			            } },
     			      //      { title: "Volume Remaining",  width:"6%", searchable:true, searchFormat: "Name #####", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
@@ -883,24 +883,24 @@
         			        { title: "Expense Volume", width:"6%", searchable:true, "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
         			          	if(row.passthru_volume != null){return (row.passthru_volume.toFixed(2)+"");}
     			            } },
-    			            { title: "Volume Remaining",  width:"6%", searchable:true, searchFormat: "Name #####", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { title: "Volume Remaining",  width:"6%", searchable:true, searchFormat: "###.##", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.volume_remaining != null){return (row.volume_remaining.toFixed(2)+"");}
     			            } },
-							{ title: "Notes",  width:"10%", searchable:true, searchFormat: "Name #####", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+							{ title: "Notes",  width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	var $displayNote = '';
     			            	if(row.notes != null && row.notes != ''){$displayNote = '<span class="tooltip ticket-note">'+row.notes_display+'<span class="tooltiptext">'+row.notes+'</span></span>';}
     			            	return $displayNote;
     			            } },
-    			            { title: "Billed Amount",  width:"6%", searchable:true, searchFormat: "Name #####", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { title: "Billed Amount",  width:"6%", searchable:true, searchFormat: "###.##", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.billed_amount != null){return (row.billed_amount.toFixed(2)+"");}
     			            } },
-    			            { title: "Diff Clm/Bld",  width:"6%", searchable:true, searchFormat: "Name #####", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { title: "Diff Clm/Bld",  width:"6%", searchable:true, searchFormat: "###.##", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.claimed_vs_billed != null){return (row.claimed_vs_billed.toFixed(2)+"");}
     			            } },
-    			            { title: "Ticket Status",  width:"4%", searchable:true, searchFormat: "Name #####", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { title: "Ticket Status",  width:"4%", searchable:true, "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.ticket_status != null){return (row.ticket_status+"");}
     			            } },
-    			            { title: "Service",  width:"4%", searchable:true, searchFormat: "Name #####", 
+    			            { title: "Service",  width:"4%", searchable:true,  
     			            	data: function ( row, type, set ) {
     			            		if ( row.service_tag_id == null ) {
     			            			$display = '<a href="jobMaintenance.html?id=' + row.job_id +'">' + $jobEditTag + '</a>';
@@ -910,7 +910,7 @@
     			            		return $display;
     			            	} 
     			            },
-    			            { title: "Equipment",  width:"4%", searchable:true, searchFormat: "Equipment #####", 
+    			            { title: "Equipment",  width:"4%", searchable:true,  
     			            	data: function ( row, type, set ) {
     			            		var $display = [];
     			            		if ( row.equipment_tags != null ) {
@@ -927,11 +927,19 @@
     			            		return $display.join("");
     			            	}
     			            },
-    			            { title: "Employee",  width:"13%", searchable:true, searchFormat: "Name #####", data:'employee' }
+    			            { title: "Employee",  width:"13%", searchable:true, data:'employee' }
     			            ],
     			            "initComplete": function(settings, json) {
     			            	var myTable = this;
-    			            	//LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#ticketTable", CALL_NOTE_LOOKUP.makeTable);
+    			            	var $filterContainer = $destination + "Filter";
+    			            	$(this).attr("destination",$destination);
+    			            	var $passThru = {
+       			            		"destination":$destination,
+    			            		"url":$url,
+    			            		"outbound":$outbound
+    			            	}
+    			            	console.log("init complete: " + JSON.stringify($passThru));
+    			            	LOOKUPUTILS.makeFilters(myTable, $filterContainer, $destination, BUDGETCONTROL.doTicketLookupFilter, $passThru);
     			            },
     			            "drawCallback": function( settings ) {
     			            	BUDGETCONTROL.doFunctionBinding();
@@ -950,6 +958,15 @@
     			            }
     			    } );
         		},
+        		
+        		
+        		
+        		doTicketLookupFilter : function($passThru) {
+        			console.log("doTicketLookupFilter");
+        			BUDGETCONTROL.doTicketLookup($passThru["destination"],$passThru["url"],$passThru["outbound"])        			
+        		},
+        		
+        		
         		
         		
         		expenseSave : function() {
@@ -2277,7 +2294,7 @@
         			$("#bcr_quick_claim_modal").dialog({
         				title:'Quick Claim',
         				autoOpen: false,
-        				height: 530,
+        				height: 630,
         				width: 1000,
         				modal: true,
         				closeOnEscape:true,
@@ -3364,7 +3381,7 @@
         			 -->
         			<div class="thinking"><webthing:thinking style="width:100%" /></div>
 	        		<div class="display">
-	        			<bcr:ticketTable id="ticketTable" />	       				
+	        			<bcr:ticketTable id="ticketTable" filterClass="ticket-filter-container" />	       				
 	       			</div>
         		</div>
        		</li>
@@ -3373,7 +3390,7 @@
         		<div id="bcr_tickets_week1">
         			<div class="thinking"><webthing:thinking style="width:100%" /></div>
 	        		<div class="display">
-	        			<bcr:ticketTable id="ticketTable1" />	       				
+	        			<bcr:ticketTable id="ticketTable1" filterClass="ticket-filter-container" />	       				
 	       			</div>
         		</div>
        		</li>
@@ -3382,7 +3399,7 @@
         		<div id="bcr_tickets_week2">
         			<div class="thinking"><webthing:thinking style="width:100%" /></div>
 	        		<div class="display">
-	        			<bcr:ticketTable id="ticketTable2" />	       				
+	        			<bcr:ticketTable id="ticketTable2" filterClass="ticket-filter-container" />	       				
 	       			</div>
         		</div>
        		</li>
@@ -3391,7 +3408,7 @@
         		<div id="bcr_tickets_week3">
         			<div class="thinking"><webthing:thinking style="width:100%" /></div>
 	        		<div class="display">
-	        			<bcr:ticketTable id="ticketTable3" />	       				
+	        			<bcr:ticketTable id="ticketTable3" filterClass="ticket-filter-container" />	       				
 	       			</div>
         		</div>
        		</li>
@@ -3400,7 +3417,7 @@
         		<div id="bcr_tickets_week4">
         			<div class="thinking"><webthing:thinking style="width:100%" /></div>
 	        		<div class="display">
-	        			<bcr:ticketTable id="ticketTable4" />	       				
+	        			<bcr:ticketTable id="ticketTable4" filterClass="ticket-filter-container" />	       				
 	       			</div>
         		</div>
        		</li>
@@ -3409,7 +3426,7 @@
         		<div id="bcr_tickets_week1">
         			<div class="thinking"><webthing:thinking style="width:100%" /></div>
 	        		<div class="display">
-	        			<bcr:ticketTable id="ticketTable5"  />	       				
+	        			<bcr:ticketTable id="ticketTable5" filterClass="ticket-filter-container"  />	       				
 	       			</div>
         		</div>
        		</li>
@@ -3778,6 +3795,42 @@
 					<td><span class="err laborNotesErr"></span></td>
 	    		</tr>
 	    		<tr class="quick-claim-employee employee4">
+   					<td><input type="text" name="employee" tabindex="10" style="width:95%;"  /></td>
+					<td><span class="err employeeErr"></span></td>
+   					<td><input type="number" name="employeePct" step=".01" tabindex="15" style="width:95%;"  /></td>
+					<td><span class="err employeePctErr"></span></td>
+   					<td><input type="number" name="dlAmt" step=".01" tabindex="20" style="width:95%;"  /></td>
+					<td><span class="err dlAmtErr"></span></td>
+   					<td><input type="number" name="volumeClaimed" step=".01" tabindex="25" style="width:95%;"  /></td>
+					<td><span class="err volumeClaimedErr"></span></td>
+   					<td><input type="text" name="laborNotes" tabindex="30" style="width:95%;"  /></td>
+					<td><span class="err laborNotesErr"></span></td>
+	    		</tr>
+	    		<tr class="quick-claim-employee employee5">
+   					<td><input type="text" name="employee" tabindex="10" style="width:95%;"  /></td>
+					<td><span class="err employeeErr"></span></td>
+   					<td><input type="number" name="employeePct" step=".01" tabindex="15" style="width:95%;"  /></td>
+					<td><span class="err employeePctErr"></span></td>
+   					<td><input type="number" name="dlAmt" step=".01" tabindex="20" style="width:95%;"  /></td>
+					<td><span class="err dlAmtErr"></span></td>
+   					<td><input type="number" name="volumeClaimed" step=".01" tabindex="25" style="width:95%;"  /></td>
+					<td><span class="err volumeClaimedErr"></span></td>
+   					<td><input type="text" name="laborNotes" tabindex="30" style="width:95%;"  /></td>
+					<td><span class="err laborNotesErr"></span></td>
+	    		</tr>
+	    		<tr class="quick-claim-employee employee6">
+   					<td><input type="text" name="employee" tabindex="10" style="width:95%;"  /></td>
+					<td><span class="err employeeErr"></span></td>
+   					<td><input type="number" name="employeePct" step=".01" tabindex="15" style="width:95%;"  /></td>
+					<td><span class="err employeePctErr"></span></td>
+   					<td><input type="number" name="dlAmt" step=".01" tabindex="20" style="width:95%;"  /></td>
+					<td><span class="err dlAmtErr"></span></td>
+   					<td><input type="number" name="volumeClaimed" step=".01" tabindex="25" style="width:95%;"  /></td>
+					<td><span class="err volumeClaimedErr"></span></td>
+   					<td><input type="text" name="laborNotes" tabindex="30" style="width:95%;"  /></td>
+					<td><span class="err laborNotesErr"></span></td>
+	    		</tr>
+	    		<tr class="quick-claim-employee employee7">
    					<td><input type="text" name="employee" tabindex="10" style="width:95%;"  /></td>
 					<td><span class="err employeeErr"></span></td>
    					<td><input type="number" name="employeePct" step=".01" tabindex="15" style="width:95%;"  /></td>

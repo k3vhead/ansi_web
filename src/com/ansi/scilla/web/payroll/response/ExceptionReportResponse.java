@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.web.common.response.MessageResponse;
 import com.ansi.scilla.web.payroll.common.ExceptionReportRecord;
 import com.thewebthing.commons.db2.RecordNotFoundException;
@@ -25,6 +24,7 @@ public class ExceptionReportResponse extends MessageResponse {
 	}
 	
 	public ExceptionReportResponse(Connection conn, Integer groupId) throws RecordNotFoundException, Exception {
+		/*
 		this();
 		Division division = new Division();
 		division.setDivisionId(groupId);

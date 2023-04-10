@@ -384,7 +384,7 @@
 
 	<servlet>
 		<servlet-name>contactLookup</servlet-name>
-		<servlet-class>com.ansi.scilla.web.contact.servlet.ContactTableServlet</servlet-class>
+		<servlet-class>com.ansi.scilla.web.contact.servlet.ContactLookupServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>contactLookup</servlet-name>
@@ -610,6 +610,14 @@
 		<url-pattern>/job/*</url-pattern>
 	</servlet-mapping>
 
+	<servlet>
+		<servlet-name>jobTrafficCop</servlet-name>
+		<servlet-class>com.ansi.scilla.web.job.servlet.JobsServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>jobTrafficCop</servlet-name>
+		<url-pattern>/jobInfo/*</url-pattern>
+	</servlet-mapping>
 
 	<servlet>
 		<servlet-name>jobSchedule</servlet-name>
@@ -673,6 +681,16 @@
 	</servlet-mapping>
 	
 	
+	
+	<servlet>
+		<servlet-name>knowledgeBase</servlet-name>
+		<servlet-class>com.ansi.scilla.web.knowledgeBase.servlet.KnowledgeBaseServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	<servlet-name>knowledgeBase</servlet-name>
+		<url-pattern>/knowledgeBase</url-pattern>
+		<url-pattern>/knowledgeBase/*</url-pattern>
+	</servlet-mapping>
 	
 	
 	<servlet>
@@ -986,7 +1004,7 @@
 	
 	<servlet>
 		<servlet-name>quoteTable</servlet-name>
-		<servlet-class>com.ansi.scilla.web.quote.servlet.QuoteTableServlet</servlet-class>
+		<servlet-class>com.ansi.scilla.web.quote.servlet.QuoteLookupServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>quoteTable</servlet-name>

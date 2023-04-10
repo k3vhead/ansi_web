@@ -37,6 +37,7 @@ import com.ansi.scilla.web.quote.response.QuoteTableReturnItem;
  * @author ggroce
  *
  */
+@Deprecated
 public class QuoteTableServlet extends AbstractServlet {
 
 	private static final long serialVersionUID = 1L;

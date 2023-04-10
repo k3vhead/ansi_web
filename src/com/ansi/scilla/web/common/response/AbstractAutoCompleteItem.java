@@ -9,8 +9,8 @@ public abstract class AbstractAutoCompleteItem extends ApplicationObject {
 	private static final long serialVersionUID = 1L;
 	
 	protected Integer id;
-	protected String label;
-	protected String value;
+	protected String label;   // this is what shows up in the auto-complete dropdown
+	protected String value;	  // this is what goes into the text form field
 
 	public AbstractAutoCompleteItem(ResultSet rs) throws Exception {
 		super();
