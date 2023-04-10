@@ -3,6 +3,9 @@ package com.ansi.scilla.web.payroll.response;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Calendar;
 
 import com.ansi.scilla.common.db.Locale;
@@ -20,6 +23,7 @@ public class TimesheetResponse extends MessageResponse {
 	private Calendar weekEnding;
 	private String state;
 	private Integer employeeCode;
+	private Integer vendorEmployeeCode;
 	private String city;
 	
 	private BigDecimal directLabor;
@@ -52,46 +56,85 @@ public class TimesheetResponse extends MessageResponse {
 		this.weekEnding = weekEnding;
 		this.state = locale.getStateName();
 		this.employeeCode = employeeCode;
-		this.city = locale.getLocaleTypeId().equals(LocaleType.STATE.name()) ? null : locale.getName();;
+		this.city = locale.getLocaleTypeId().equals(LocaleType.STATE.name()) ? null : locale.getName();
 		
-		PayrollWorksheet timesheet = new PayrollWorksheet();
-		timesheet.setDivisionId(divisionId);
-		timesheet.setWeekEnding(weekEnding.getTime());
-//		timesheet.setState(state);
-		timesheet.setEmployeeCode(employeeCode);
-//		timesheet.setCity(city);
-		timesheet.setLocaleId(locale.getLocaleId());
-		timesheet.selectOne(conn);
+		PreparedStatement ps = conn.prepareStatement("select pw.*, payroll_employee.vendor_employee_code  \n"
+				+ "from payroll_worksheet pw\n"
+				+ "inner join payroll_employee on payroll_employee.employee_code=pw.employee_code \n"
+				+ "where pw.division_id=?\n"
+				+ "and pw.week_ending=?\n"
+				+ "and pw.locale_id=?\n"
+				+ "and pw.employee_code=?");
+		ps.setInt(1, divisionId);
+		ps.setDate(2, new java.sql.Date(weekEnding.getTime().getTime()));
+		ps.setInt(3, locale.getLocaleId());
+		ps.setInt(4, employeeCode);
+//		PayrollWorksheet timesheet = new PayrollWorksheet();
+//		timesheet.setDivisionId(divisionId);
+//		timesheet.setWeekEnding(weekEnding.getTime());
+//		timesheet.setEmployeeCode(employeeCode);
+//		timesheet.setLocaleId(locale.getLocaleId());
+//		timesheet.selectOne(conn);
+//		this.employeeName = timesheet.getEmployeeName();
 		
-		this.employeeName = timesheet.getEmployeeName();
-		
-		for (String fieldName : new String[] {
-				"DirectLabor",
-				"Expenses",
-				"ExpensesAllowed",
-				"ExpensesSubmitted",
-				"GrossPay",
-				"HolidayHours",
-				"HolidayPay",
-				"OtHours",
-				"OtPay",
-//				"Productivity",
-				"RegularHours",
-				"RegularPay",
-				"VacationHours",
-				"VacationPay",
-				"Volume",
-		}) {
-			String getterName = "get" + fieldName;
-			String setterName = "set" + fieldName;
-			Method getter = PayrollWorksheet.class.getMethod(getterName, (Class<?>[])null);
-			BigDecimal value = (BigDecimal)getter.invoke(timesheet, (Object[])null);
-			Method setter = TimesheetResponse.class.getMethod(setterName, new Class<?>[] {BigDecimal.class});
-			setter.invoke(this, new Object[] {value});
+//		for (String fieldName : new String[] {
+//				"DirectLabor",
+//				"Expenses",
+//				"ExpensesAllowed",
+//				"ExpensesSubmitted",
+//				"GrossPay",
+//				"HolidayHours",
+//				"HolidayPay",
+//				"OtHours",
+//				"OtPay",
+////				"Productivity",
+//				"RegularHours",
+//				"RegularPay",
+//				"VacationHours",
+//				"VacationPay",
+//				"Volume",
+//		}) {
+//			String getterName = "get" + fieldName;
+//			String setterName = "set" + fieldName;
+//			Method getter = PayrollWorksheet.class.getMethod(getterName, (Class<?>[])null);
+//			BigDecimal value = (BigDecimal)getter.invoke(timesheet, (Object[])null);
+//			Method setter = TimesheetResponse.class.getMethod(setterName, new Class<?>[] {BigDecimal.class});
+//			setter.invoke(this, new Object[] {value});
+//		}
+		ResultSet rs = ps.executeQuery();
+		if ( rs.next() ) {
+			this.employeeName = rs.getString("employee_name");
+			this.vendorEmployeeCode = rs.getInt("vendor_employee_code");
+			populateMe(rs, "direct_labor", "DirectLabor");
+			populateMe(rs, "expenses", "Expenses");
+			populateMe(rs, "expenses_allowed", "ExpensesAllowed");
+			populateMe(rs, "expenses_submitted", "ExpensesSubmitted");
+			populateMe(rs, "gross_pay", "GrossPay");
+			populateMe(rs, "holiday_hours", "HolidayHours");
+			populateMe(rs, "holiday_pay", "HolidayPay");
+			populateMe(rs, "ot_hours", "OtHours");
+			populateMe(rs, "ot_pay", "OtPay");
+//			populateMe(rs, "direct_labor", "Productivity");
+			populateMe(rs, "regular_hours", "RegularHours");
+			populateMe(rs, "regular_pay", "RegularPay");
+			populateMe(rs, "vacation_hours", "VacationHours");
+			populateMe(rs, "vacation_pay", "VacationPay");
+			populateMe(rs, "volume", "Volume");
+		} else {
+			throw new RecordNotFoundException();
 		}
+		
 		
 	}
 
+	
+	private void populateMe(ResultSet rs, String fromField, String toField) throws Exception {
+		Object value = rs.getObject(fromField);
+		if ( value != null ) {
+			Method setter = TimesheetResponse.class.getMethod("set" + toField, new Class<?>[] {BigDecimal.class});
+			setter.invoke(this, new Object[] {(BigDecimal)value});
+		}
+	}
 
 
 	public Integer getDivisionId() {
@@ -126,6 +169,18 @@ public class TimesheetResponse extends MessageResponse {
 	public void setEmployeeCode(Integer employeeCode) {
 		this.employeeCode = employeeCode;
 	}
+
+	public Integer getVendorEmployeeCode() {
+		return vendorEmployeeCode;
+	}
+
+
+
+	public void setVendorEmployeeCode(Integer vendorEmployeeCode) {
+		this.vendorEmployeeCode = vendorEmployeeCode;
+	}
+
+
 
 	public String getCity() {
 		return city;

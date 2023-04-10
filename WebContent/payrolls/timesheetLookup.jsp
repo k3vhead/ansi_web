@@ -95,6 +95,10 @@
        			init : function() {       				
        				TIMESHEETLOOKUP.makeTimesheetLookup(); 
        				TIMESHEETLOOKUP.makeClickers();
+       				
+       				var $employeeJson = '{"employeeName":"Test Dude", "employeeCode":5012, "vendorEmployeeCode":"2468"}';
+       				var $Y = JSON.parse($employeeJson);
+       				console.log($Y);
            		},
            		
            		
@@ -200,8 +204,28 @@
            				$($value).val("");
            			});
        				$("#edit-modal input[name='action']").val("ADD");
-       				$("#edit-modal .update-field").prop("disabled", false);
-       				$("#edit-modal input[name='employeeCode']").prop("disabled", true);
+       				// In order to select a unique employee, we need to know which company we're talking about.
+       				// So, for the division to be selected before allowing an employee name to be entered.
+       				$("#edit-modal .update-field").prop("disabled", true); // this turns off all the employee fields, including the division 
+       				$("#edit-modal .payfield").prop("disabled", true);  // this turns off all the numbers 
+       				$("#edit-modal select[name='divisionId']").prop("disabled",false); // this turns the division selector back on
+       				$("#edit-modal select[name='divisionId']").off("change");
+       				$("#edit-modal select[name='divisionId']").change(function() {
+						var $div = $("#edit-modal select[name='divisionId']").val();
+						if ( $div == null || $div == "" ) {
+		       				$("#edit-modal .update-field").prop("disabled", true); // this turns off on the employee fields, including the division 
+		       				$("#edit-modal .payfield").prop("disabled", true);  // this turns off all the numbers 
+		       				$("#edit-modal select[name='divisionId']").prop("disabled",false); // this turns the division selector back on
+						} else {
+		       				$("#edit-modal .update-field").prop("disabled", false); // this turns on on the employee fields, including the division 
+		       				$("#edit-modal .payfield").prop("disabled", false);  // this turns on all the numbers 
+		       				$("#edit-modal input[name='employeeCode']").prop("disabled", true);
+		       				$("#edit-modal input[name='vendorEmployeeCode']").prop("disabled", true);
+						}
+	       				$("#edit-modal input[name='employeeCode']").val("");
+	       				$("#edit-modal input[name='vendorEmployeeCode']").val("");
+	       				$("#edit-modal input[name='employeeName']").val("");
+       				});
            			$("#edit-modal").dialog("open");
            		},
            		
@@ -214,23 +238,24 @@
 		        	var $colState = 2;
 		        	var $colCity = 3;
 		        	var $colEmployeeCode = 4;
-		        	var $colEmployeeName = 5;
-		            var $colRegularHours = 6;
-		            var $colRegularPay = 7;
-		            var $colExpenses = 8;
-		            var $colOTHours = 9;
-		            var $colOTPay = 10;
-		            var $colVacationHours = 11;
-		            var $colVacationPay = 12;
-		            var $colHolidayHours = 13;
-		            var $colHolidayPay = 14;
-		            var $colGrossPay = 15;
-		            var $colExpensesSubmitted = 16;
-		            var $colExpensesAllowed = 17;
-		            var $colVolume = 18;
-		            var $colDirectLabor = 19;
-		            var $colProductivity = 20;
-		            var $colAction = 21;
+		        	var $colVendorEmpCode = 5;
+		        	var $colEmployeeName = 6;
+		            var $colRegularHours = 7;
+		            var $colRegularPay = 8;
+		            var $colExpenses = 9;
+		            var $colOTHours = 10;
+		            var $colOTPay = 11;
+		            var $colVacationHours = 12;
+		            var $colVacationPay = 13;
+		            var $colHolidayHours = 14;
+		            var $colHolidayPay = 15;
+		            var $colGrossPay = 16;
+		            var $colExpensesSubmitted = 17;
+		            var $colExpensesAllowed = 18;
+		            var $colVolume = 19;
+		            var $colDirectLabor = 20;
+		            var $colProductivity = 21;
+		            var $colAction = 22;
 		            
 		            var $defaultDisplay = [
 				            	$colDivision,
@@ -238,6 +263,7 @@
 				            	$colState,
 				            	$colCity,
 				            	$colEmployeeCode,
+				            	$colVendorEmpCode,
 				            	$colEmployeeName,
 				            	$colRegularHours,
 				            	$colRegularPay,
@@ -341,7 +367,8 @@
                	            	$colEmployeeName
                	            ]},
                	            { className: "dt-center", "targets": [
-               	            	$colState,			$colAction,				$colEmployeeCode
+               	            	$colState,			$colAction,				$colEmployeeCode,
+               	            	$colVendorEmpCode
                	            ]},
                	            { className: "dt-right", "targets": [
                	            	$colRegularHours,	$colRegularPay,			$colExpenses,
@@ -362,7 +389,8 @@
        			        	{ title: "Week Ending", width:"10%", searchable:true, searchFormat:"yyyy-mm-dd", "defaultContent": "<i>N/A</i>", data:'week_ending_display' },
        			        	{ title: "State", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'state' },
        			        	{ title: "City", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'city' },
-       			        	{ title: "Employee Code", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_code' },
+       			        	{ title: "Employee Code", width:"7%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_code' },
+       			        	{ title: "Vendor Emp. Code", width:"7%", searchable:true, "defaultContent": "<i>N/A</i>", data:'vendor_employee_code' },
        			        	{ title: "Employee Name", width:"10%", searchable:true, searchFormat:"Last, First", "defaultContent": "<i>N/A</i>", data:'employee_name' },
        			            { title: "Regular Hours",  width:"10%", searchable:false, "defaultContent": "", data: function ( row, type, set ) { return row.regular_hours == null ? "" : row.regular_hours.toFixed(2); } },
        			            { title: "Regular Pay", width:"10%", searchable:false, "defaultContent": "", data: function ( row, type, set ) { return row.regular_pay == null ? "" : row.regular_pay.toFixed(2); } },
@@ -520,6 +548,7 @@
            			$("#edit-modal select[name='state']").val($data.data.state);
            			$("#edit-modal input[name='city']").val($data.data.city);
            			$("#edit-modal input[name='employeeCode']").val($data.data.employeeCode);
+           			$("#edit-modal input[name='vendorEmployeeCode']").val($data.data.vendorEmployeeCode);
            			$("#edit-modal input[name='employeeName']").val($data.data.employeeName);
            			$.each(PAYROLL_UTILS.timesheetFields, function($index, $value) {
            				if ( $value.hoursAndPay ) {

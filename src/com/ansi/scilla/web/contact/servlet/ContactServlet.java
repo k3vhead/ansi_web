@@ -11,8 +11,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.db.Contact;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.common.response.MessageKey;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
@@ -21,7 +23,6 @@ import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.contact.request.ContactRequest;
 import com.ansi.scilla.web.contact.response.ContactListResponse;
 import com.ansi.scilla.web.contact.response.ContactResponse;
@@ -163,7 +164,7 @@ public class ContactServlet extends AbstractServlet {
 		Contact contact = new Contact();
 		
 		WebMessages webMessages = validateAdd(conn, contactRequest);
-		if (webMessages.isEmpty()) {			
+		if (webMessages.isEmpty()) {	
 			contact = doAdd(conn, contactRequest, sessionUser);
 			String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");		
 			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
@@ -281,6 +282,7 @@ public class ContactServlet extends AbstractServlet {
 		contact.setMobilePhone(contactRequest.getMobilePhone());
 		contact.setPreferredContact(contactRequest.getPreferredContact());
 		contact.setUpdatedBy(sessionUser.getUserId());
+		contact.setContactStatus(contactRequest.getContactStatus());
 		Integer contactId = contact.insertWithKey(conn);
 		contact.setContactId(contactId);
 		conn.commit();
@@ -297,6 +299,8 @@ public class ContactServlet extends AbstractServlet {
 			contact.setPreferredContact(contactRequest.getPreferredContact());
 			contact.setUpdatedBy(sessionUser.getUserId());
 	//		contact.setUpdatedDate(today); this gets magically updated for us
+			contact.setContactStatus(contactRequest.getContactStatus());
+
 			
 			Contact key = new Contact();
 			key.setContactId(contactId);

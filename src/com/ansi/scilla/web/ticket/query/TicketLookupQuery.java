@@ -70,7 +70,8 @@ public class TicketLookupQuery extends LookupQuery {
 			+ "\n\t\t when 'i' then isnull(isnull(ticket.act_price_per_cleaning,'0.00')-isnull(ticket_payment_totals.amount,'0.00'),'0.00') "
 			+ "\n\t\t when 'p' then isnull(isnull(ticket.act_price_per_cleaning,'0.00')-isnull(ticket_payment_totals.amount,'0.00'),'0.00') "
 			+ "\n\t\t else '0.00' "
-			+ "\n\t\t end ";
+			+ "\n\t\t end, "
+			+ "\n\t(select count(*) from ticket_claim where ticket_claim.ticket_id=ticket.ticket_id) as claim_count";
 //			+ "\n\t isnull(isnull(ticket.act_price_per_cleaning,job.price_per_cleaning)-isNull(ticket_payment_totals.amount,'0.00'),'0.00') as amount_due ";
 	public static final String sqlFromClause = 
 			"\n FROM view_ticket_log  "

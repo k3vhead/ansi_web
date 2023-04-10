@@ -31,6 +31,7 @@
         <script type="text/javascript" src="js/addressUtils.js"></script>
         <script type="text/javascript" src="js/callNote.js"></script> 
         <script type="text/javascript" src="js/textExpander.js"></script> 
+        <script type="text/javascript" src="js/knowledgebase.js"></script>  
         
         <script type="text/javascript">        
         
@@ -599,10 +600,9 @@
 		            	$("#job-edit-modal .activation input[name='job-activation-washer-notes']").val(QUOTEMAINTENANCE.joblist[$jobId].job.washerNotes);
 		            	$("#job-edit-modal .activation input[name='job-activation-om-notes']").val(QUOTEMAINTENANCE.joblist[$jobId].job.omNotes);
 		            	$("#job-edit-modal .activation input[name='job-activation-billing-notes']").val(QUOTEMAINTENANCE.joblist[$jobId].job.billingNotes);
-		            	QUOTEMAINTENANCE.doDLBudget($jobId);
 
-		            	
-		            	
+		            	QUOTEMAINTENANCE.doDLBudget($jobId);
+		            		            	
 						// populate invoice edit panel
 						$("#job-edit-modal .invoice input[name='job-invoice-purchase-order']").val(QUOTEMAINTENANCE.joblist[$jobId].job.poNumber);
 		            	$("#job-edit-modal .invoice input[name='job-invoice-vendor-nbr']").val(QUOTEMAINTENANCE.joblist[$jobId].job.ourVendorNbr);
@@ -3003,6 +3003,7 @@
     			<ansi:hasPermission permissionRequired="QUOTE_PROPOSE"><div class="action-button-container"><webthing:print styleClass="green fa-2x quote-button action-button" styleId="propose-button">Propose</webthing:print></div></ansi:hasPermission>
     			<ansi:hasPermission permissionRequired="QUOTE_CREATE"><div class="action-button-container"><webthing:job styleClass="fa-2x quote-button action-button orange" styleId="new-job-button">New Job</webthing:job></div></ansi:hasPermission>    			
     			<ansi:hasPermission permissionRequired="CALL_NOTE_WRITE"><div class="action-button-container"><webthing:notes styleId="call-note-link" styleClass="fa-2x" xrefType="QUOTE" xrefId="x">Quote Notes</webthing:notes></div></ansi:hasPermission>
+    			<div class="action-button-container"><webthing:knowledgeBase key="QUOTE_PAGE_HELP">Help</webthing:knowledgeBase></div>
     			
     			<%--
     			<input type="button" class="quoteButton" id="buttonModifyQuote" value="Modify" /><br />

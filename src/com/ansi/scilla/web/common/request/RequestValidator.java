@@ -45,13 +45,14 @@ import com.ansi.scilla.common.jobticket.JobTagStatus;
 import com.ansi.scilla.common.jobticket.JobTagType;
 import com.ansi.scilla.common.organization.OrganizationType;
 import com.ansi.scilla.common.payment.PaymentMethod;
-import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.common.payroll.common.EmployeeStatus;
 import com.ansi.scilla.common.utils.LocaleType;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.common.utils.QMarkTransformer;
 import com.ansi.scilla.web.claims.request.ClaimEntryRequestType;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.utils.FieldMap;
+import com.ansi.scilla.web.knowledgeBase.common.KnowledgeBaseTagName;
 import com.ansi.scilla.web.report.common.BatchReports;
 import com.ansi.scilla.web.report.request.AllReportType;
 import com.thewebthing.commons.db2.DBTable;
@@ -988,6 +989,23 @@ public class RequestValidator {
 			try {
 				JobFrequency jobFrequency = JobFrequency.lookup(value);
 				if (jobFrequency == null) {
+					webMessages.addMessage(fieldName, "Invalid Value");
+				}
+			} catch (IllegalArgumentException e) {
+				webMessages.addMessage(fieldName, "Invalid Value");
+			}
+		}
+	}
+
+	public static void validateKnowledgeBaseTag(WebMessages webMessages, String fieldName, String value, boolean required) {
+		if ( StringUtils.isBlank(value)) {
+			if ( required ) {
+				webMessages.addMessage(fieldName,  "Required Value");
+			}
+		} else {
+			try {
+				KnowledgeBaseTagName tag = KnowledgeBaseTagName.valueOf(value);
+				if (tag == null) {
 					webMessages.addMessage(fieldName, "Invalid Value");
 				}
 			} catch (IllegalArgumentException e) {

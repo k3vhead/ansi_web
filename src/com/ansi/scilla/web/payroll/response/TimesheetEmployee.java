@@ -43,6 +43,7 @@ public class TimesheetEmployee extends ApplicationObject {
     private Integer divisionId;
     private String divisionDisplay;
     private Integer employeeCode;
+    private String vendorEmployeeCode;
     private ErrorLevel errorLevel;
 	private HashMap<String, List<PayrollMessage>> messageList;
 	private Double unionRate;
@@ -76,6 +77,7 @@ public class TimesheetEmployee extends ApplicationObject {
 	    this.divisionId = employee.getDivision().getDivisionId();
 	    this.divisionDisplay = employee.getDivision().getDivisionDisplay();
 	    this.employeeCode = employee.getEmployeeCode();
+	    this.vendorEmployeeCode = employee.getVendorEmployeeCode();
 	    this.errorLevel = employee.getErrorLevel();
 		this.messageList = employee.getMessageList();
 		this.unionRate = employee.getUnionRate();
@@ -185,6 +187,10 @@ public class TimesheetEmployee extends ApplicationObject {
 
 	public Integer getStandardCompanyId() {
 		return standardCompanyId;
+	}
+
+	public String getVendorEmployeeCode() {
+		return vendorEmployeeCode;
 	}
 	
 }

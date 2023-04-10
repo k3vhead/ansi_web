@@ -25,7 +25,9 @@
     <tiles:put name="headextra" type="string">
     	<link rel="stylesheet" href="css/callNote.css" />
     	<link rel="stylesheet" href="css/accordion.css" type="text/css" />
+    	<link rel="stylesheet" href="css/lookup.css" />
     	<script type="text/javascript" src="js/ansi_utils.js"></script>
+    	<script type="text/javascript" src="js/lookup.js"></script>
     	<script type="text/javascript" src="js/callNote.js"></script>  
         <style type="text/css">
 			#displayTable {
@@ -38,6 +40,10 @@
 				width:400px;
 				padding:15px;
 			}
+			#filter-container {
+        		width:402px;
+        		float:right;
+        	}
 			.prettyWideButton {
 				height:30px;
 				min-height:30px;
@@ -54,7 +60,10 @@
 			}
 			.editAction {
 				cursor:pointer;
-			}
+			}			
+			.hideMe { 
+				display:none;
+			}			
 			.swap-name {
 				cursor:pointer;
 			}
@@ -65,19 +74,15 @@
         $(document).ready(function(){
         	
 	        ;CONTACTMAINTENANCE = {
+				validOnly : true,
+				validClass : "green far fa-check-square",  //<i class="showContact green far fa-check-square"></i><i class="showContact hideMe red fas fa-ban">
 				
 	    		init : function() {	
 	    			CALLNOTE.init();
-	    		//	CONTACTMAINTENANCE.clearAddForm();
-	    			//CONTACTMAINTENANCE.clearEditForm();
 	    			CONTACTMAINTENANCE.createTable();
 	    			CONTACTMAINTENANCE.getOptions();
-	    		//	CONTACTMAINTENANCE.getTableFieldList(null, $("#addForm select[name='tableName']"));
-	    		//	CONTACTMAINTENANCE.makeAddForm();
 	    			CONTACTMAINTENANCE.makeEditPanel();
 	    			CONTACTMAINTENANCE.makeClickFunctions();
-	    		//	CONTACTMAINTENANCE.makeDeleteModal();
-	    			CONTACTMAINTENANCE.showNew();
 	        		},
 				
 				makeClickFunctions : function () { 				
@@ -86,25 +91,27 @@
 						$("#editPanel input[name='firstName']").val(  $("#editPanel input[name='lastName']").val()  );
 						$("#editPanel input[name='lastName']").val($tempName);
 					});	
-					
-				},
-					
-				showNew : function () {
 					$(".showNew").click(function($event) {
 						$('#goEdit').data("contactId",null);
 		        		$('#goEdit').button('option', 'label', 'Save');
 		        		$('#closeEditPanel').button('option', 'label', 'Close');
 		        		
+		        		$("#editPanel .contactId").html("");
 						$("#editPanel input[name='businessPhone']").val("");
 						$("#editPanel input[name='fax']").val("");
 						$("#editPanel input[name='firstName']").val("");
 						$("#editPanel input[name='lastName']").val("");
 						$("#editPanel input[name='mobilePhone']").val("");
-						$("#editPanel input[name='preferredContact']").val("email");
+						$("#editPanel select[name='preferredContact']").val("email");
 						$("#editPanel input[name='email']").val("");			        		
+						$("#editPanel select[name='contactStatus']").val("");
 		        		$("#editPanel .err").html("");
 		        		$("#editPanel").dialog("open");
 					});
+				},
+					
+				showNew : function () {					
+					$(".showNew").click();
 				},
 	
 				
@@ -118,7 +125,6 @@
 						data:$outbound,
 						statusCode: {
 							200: function($data) {
-								//console.log($data);
 								$select="#editPanel select[name='preferredContact']"
 								$('option', $select).remove();
 								$.each($data.data.codeList, function($index, $code) {
@@ -141,6 +147,9 @@
 	    		
 	    		
 	    		createTable : function() {
+	    			console.log("createTable");
+	    			var $outbound = {"validOnly":CONTACTMAINTENANCE.validOnly};
+
 	    			CONTACTMAINTENANCE.dataTable = $('#contactTable').DataTable( {
 	        			"processing": 		true,
 	        	        "serverSide": 		true,
@@ -150,45 +159,64 @@
 	        	        "scrollX": 			true,
 	        	        rowId: 				'dt_RowId',
 	        	        dom: 				'Bfrtip',
+	        	        destroy:			true,
 	        	        "searching": 		true,
 	        	        lengthMenu: [
 	        	        	[ 10, 50, 100, 500, 1000 ],
 	        	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ]
 	        	        ],
 	        	        buttons: [
-	        	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();}}
+	        	        	'pageLength',
+	        	        	'copy', 
+	        	        	'csv', 
+	        	        	'excel', 
+	        	        	{extend: 'pdfHtml5', orientation: 'landscape'}, 
+	        	        	'print',
+	        	        	{extend: 'colvis',	label: function () {doFunctionBinding();}},
+	        	        	{
+	        	        		text:'Valid Only <i class="'+CONTACTMAINTENANCE.validClass+'"></i>',
+	        	        		action: function(e, dt, node, config) {	        	        			
+	        	        			CONTACTMAINTENANCE.swapTable()
+	        	        		}
+	        	        	},
+	        	        	{
+	        	        		text:'New',
+	        	        		action: function(e, dt, node, config) {
+	        	        			CONTACTMAINTENANCE.showNew();
+	        	        		}
+	        	        	}
 	        	        ],
 	        	        "columnDefs": [
 	//         	            { "orderable": false, "targets": -1 },  // Need to re-add this when we add the action column back in
-	        	            { className: "dt-left", "targets": [0,1,2,3,4,5] },
-	        	            { className: "dt-center", "targets": [6] }
+	        	            { className: "dt-left", "targets": [0,1,2,3,4,5,6] },
+	        	            { className: "dt-center", "targets": [7] }
 	//        	            { className: "dt-right", "targets": [5,6,7,8,9]}
 	        	         ],
 	        	        "paging": true,
 				        "ajax": {
 				        	"url": "contactLookup",
-				        	"type": "GET"
+				        	"type": "GET",
+				        	"data": $outbound
 				        	},
 				        columns: [
 				        	
-				            { title: "<bean:message key="field.label.lastName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-				            	if(row.lastName != null){return (row.lastName+"");}
-				            } },
-				            { title: "<bean:message key="field.label.firstName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-				            	if(row.firstName != null){return (row.firstName+"");}
-				            } },
-				            { title: "<bean:message key="field.label.businessPhone" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-				            	if(row.businessPhone != null){
-				            		if ( row.preferredContact=='business_phone') {
-				            			value = '<span style="font-weight:bold;">' + row.businessPhone + '</span>';
+				        	{width: "4%", title: "<bean:message key="field.label.contactId" />", "defaultContent": "<i>N/A</i>", searchable:true, data:"contact_id" },
+				            { title: "<bean:message key="field.label.lastName" />", "defaultContent": "<i>N/A</i>", searchable:true, data:"last_name" },
+				            { title: "<bean:message key="field.label.firstName" />", "defaultContent": "<i>N/A</i>", searchable:true, data:"first_name"},
+				            { title: "<bean:message key="field.label.businessPhone" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+				            	value = "";
+				            	if ( row.business_phone != null ) {
+				            		if ( row.preferred_contact=='business_phone') {
+				            			value = '<span style="font-weight:bold;">' + row.business_phone + '</span>';
 				            		} else {
-				            			value = row.businessPhone + "";
-				            		}			            		
-				            		return (value);
+				            			value = row.business_phone + "";
+				            		}		
 				            	}
+			            		return (value);
 				            } },
-				            { title: "<bean:message key="field.label.email" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-				            	if(row.businessPhone != null){
+				            { title: "<bean:message key="field.label.email" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+				            	value = "";
+				            	if(row.email != null){
 				            		if ( row.preferredContact=='email') {
 				            			value = '<span style="font-weight:bold;">' + row.email + '</span>';
 				            		} else {
@@ -197,58 +225,55 @@
 				            		return (value);
 				            	}
 				            } },
-				            { title: "<bean:message key="field.label.fax" />" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-			            		if ( row.preferredContact=='fax') {
-			            			value = '<span style="font-weight:bold;">' + row.fax + '</span>';
-			            		} else {
-			            			value = row.fax + "";
-			            		}			            		
+				            { title: "<bean:message key="field.label.fax" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+				            	value = "";
+				            	if ( row.fax != null ) {
+				            		if ( row.preferredContact=='fax') {
+				            			value = '<span style="font-weight:bold;">' + row.fax + '</span>';
+				            		} else {
+				            			value = row.fax + "";
+				            		}		
+				            	}
 			            		return (value);
 				            } },
-				            { title: "<bean:message key="field.label.mobilePhone" />" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-			            		if ( row.preferredContact=='mobile_phone') {
-			            			value = '<span style="font-weight:bold;">' + row.mobilePhone + '</span>';
-			            		} else {
-			            			value = row.mobilePhone + "";
-			            		}			            		
+				            { title: "<bean:message key="field.label.mobilePhone" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+				            	value = "";
+				            	if ( row.mobile_phone != null ) {
+				            		if ( row.preferred_contact=='mobile_phone') {
+				            			value = '<span style="font-weight:bold;">' + row.mobile_phone + '</span>';
+				            		} else {
+				            			value = row.mobile_phone + "";
+				            		}		
+				            	}
 			            		return (value);
 				            } },
-				            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {				            	
+				            { title: "Status", "defaultContent":"<i>N/A</i>", searchable:true, searchFormat:"VALID|INVALID", data:"status_display"},
+				            {width: "4%", title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {				            	
 				            	{
-				            		var $editLink = '<ansi:hasPermission permissionRequired="CONTACT_WRITE"><span class="editAction" data-id="'+ row.contactId + '" /><webthing:edit>Edit</webthing:edit></span></ansi:hasPermission>';
-				            		var $noteLink = '<webthing:notes xrefType="CONTACT" xrefId="' + row.contactId + '" xrefName="'+row.firstName + ' ' + row.lastName +'">Contact Notes</webthing:notes>'
+				            		var $editLink = '<ansi:hasPermission permissionRequired="CONTACT_WRITE"><span class="editAction" data-id="'+ row.contact_id + '" /><webthing:edit>Edit</webthing:edit></span></ansi:hasPermission>';
+				            		var $noteLink = '<webthing:notes xrefType="CONTACT" xrefId="' + row.contact_id + '" xrefName="'+row.first_name + ' ' + row.last_name +'">Contact Notes</webthing:notes>'
 				            		return $editLink + $noteLink; 
 				            	}
 				            } }
 				            ],
 				            "initComplete": function(settings, json) {
-				            	//console.log(json);
-				            	CONTACTMAINTENANCE.doFunctionBinding();
+				            	//CONTACTMAINTENANCE.doFunctionBinding();
+				            	var myTable = this;
+				            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#contactTable", CONTACTMAINTENANCE.createTable);
 				            },
 				            "drawCallback": function( settings ) {
 				            	CALLNOTE.lookupLink();
-				            	CONTACTMAINTENANCE.doFunctionBinding();
+				            	//CONTACTMAINTENANCE.doFunctionBinding();
+				            	
+				            	$(".editAction").off("click");
+				            	$( ".editAction" ).on("click", function($clickevent) {
+									CONTACTMAINTENANCE.showEdit($clickevent);
+								});
 				            }
 				    } );
 	        	},
 	        	        	
-	        /*	init();
-	        			
-	            
-	            function init(){
-						$.each($('input'), function () {
-					        $(this).css("height","20px");
-					        $(this).css("max-height", "20px");
-					    });
-						
-						createTable();
-	            }; */
-					
-				doFunctionBinding : function () {
-					$( ".editAction" ).on( "click", function($clickevent) {
-						 CONTACTMAINTENANCE.showEdit($clickevent);
-					});
-				},
+	       				
 				
 				
 				makeEditPanel : function () {
@@ -279,6 +304,20 @@
 				},
 				
 				
+				swapTable : function() {
+					console.log("swapTable");
+					CONTACTMAINTENANCE.validOnly = ! CONTACTMAINTENANCE.validOnly;
+					//<i class="showContact green far fa-check-square"></i><i class="showContact hideMe red fas fa-ban">
+					if ( CONTACTMAINTENANCE.validOnly ) {
+						CONTACTMAINTENANCE.validClass = "green far fa-check-square";
+					} else {
+						CONTACTMAINTENANCE.validClass = "red fas fa-ban";
+					}
+					CONTACTMAINTENANCE.createTable();
+				},
+				
+				
+				
 				updateContact : function () {
 					console.debug("Updating contact");
 					var $contactId = $("#goEdit").data("contactId");
@@ -299,7 +338,8 @@
 					$outbound['lastName'] = $("#editPanel input[name='lastName']").val();
 					$outbound['mobilePhone'] = $("#editPanel input[name='mobilePhone']").val();
 					$outbound['preferredContact'] = $("#editPanel select[name='preferredContact'] option:selected").val();
-					$outbound['email'] = $("#editPanel input[name='email']").val();			        		
+					$outbound['email'] = $("#editPanel input[name='email']").val();	
+					$outbound['contactStatus'] = $("#editPanel select[name='contactStatus']").val();
 					console.debug($outbound);
 					
 					var jqxhr = $.ajax({
@@ -340,6 +380,7 @@
 				
 					
 				showEdit : function ($clickevent) {
+					console.log("showEdit");
 					var $contactId = $clickevent.currentTarget.attributes['data-id'].value;
 					console.debug("contactId: " + $contactId);
 					$("#goEdit").data("contactId", $contactId);
@@ -355,13 +396,15 @@
 							200: function($data) {
 								//console.log($data);
 								var $contact = $data.data.contactList[0];
+								$("#editPanel .contactId").html($contactId);
 								$("#editPanel input[name='businessPhone']").val($contact.businessPhone);
 								$("#editPanel input[name='fax']").val($contact.fax);
 								$("#editPanel input[name='firstName']").val($contact.firstName);
 								$("#editPanel input[name='lastName']").val($contact.lastName);
 								$("#editPanel input[name='mobilePhone']").val($contact.mobilePhone);
 								$("#editPanel input[name='preferredContact']").val($contact.preferredContact);
-								$("#editPanel input[name='email']").val($contact.email);			        		
+								$("#editPanel input[name='email']").val($contact.email);		
+								$("#editPanel select[name='contactStatus']").val($contact.contactStatus);
 				        		$("#editPanel .err").html("");
 				        		$("#editPanel").dialog("open");
 							},
@@ -388,86 +431,69 @@
     
    <tiles:put name="content" type="string">
     	<h1><bean:message key="page.label.contact" /> <bean:message key="menu.label.lookup" /></h1>
-    	
-    	    <input type="button" class="prettyWideButton showNew" value="New" />
- 	<table id="contactTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:800px;width:800px;">
-       	<colgroup>
-        	<col style="width:20%;" />
-        	<col style="width:20%;" />
-        	<col style="width:12%" />
-        	<col style="width:12%;" />
-        	<col style="width:12%;" />
-        	<col style="width:12%;" />
-        	<col style="width:12%;" />
-   		</colgroup>
-        <thead>
-            <tr>
-                <th><bean:message key="field.label.lastName" /></th>
-    			<th><bean:message key="field.label.firstName" /></th>
-    			<th><bean:message key="field.label.businessPhone" /></th>
-    			<th><bean:message key="field.label.email" /></th>
-    			<th><bean:message key="field.label.fax" /></th>
-    			<th><bean:message key="field.label.mobilePhone" /></th>
-    			<th><bean:message key="field.label.action" /></th>
-            </tr>
-        </thead>
-        <tfoot>
-            <tr>
-                <th><bean:message key="field.label.lastName" /></th>
-    			<th><bean:message key="field.label.firstName" /></th>
-    			<th><bean:message key="field.label.businessPhone" /></th>
-    			<th><bean:message key="field.label.email" /></th>
-    			<th><bean:message key="field.label.fax" /></th>
-    			<th><bean:message key="field.label.mobilePhone" /></th>
-    			<th><bean:message key="field.label.action" /></th>
-            </tr>
-        </tfoot>
-    </table>
-    <input type="button" class="prettyWideButton showNew" value="New" />
+    	<webthing:lookupFilter filterContainer="filter-container" />
+   	    <div id="table-container" style="max-width:1200px;width:1200px;">
+	 		<table id="contactTable"> <!-- style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:800px;width:800px;"> -->        	
+		    </table>
+		    <input type="button" class="prettyWideButton showNew" value="New" />
+	    </div>
+	    
+	    <webthing:scrolltop />
     
-    <webthing:scrolltop />
-    
-    
-    <div id="editPanel">
-    	<table>
-    		<tr>
-    			<td><span class="formHdr"><bean:message key="field.label.firstName" /></span></td>
-    			<td><input type="text" name="firstName" /> <i class="fa fa-level-down swap-name" aria-hidden="true"></i></td>
-    			<td><span class="err" id="firstNameErr"></span></td>
-    		</tr>
-    		<tr>
-    			<td><span class="formHdr"><bean:message key="field.label.lastName" /></span></td>
-    			<td></i><input type="text" name="lastName" /> <i class="fa fa-level-up swap-name" aria-hidden="true"></td>
-    			<td><span class="err" id="lastNameErr"></span></td>
-    		</tr>
-    		<tr>
-    			<td><span class="formHdr"><bean:message key="field.label.businessPhone" /></span></td>
-    			<td><input type="text" name="businessPhone" /></td>
-    			<td><span class="err" id="businessPhoneErr"></span></td>
-    		</tr>
-    		<tr>
-    			<td><span class="formHdr"><bean:message key="field.label.email" /></span></td>
-    			<td><input type="text" name="email" /></td>
-    			<td><span class="err" id="emailErr"></span></td>
-    		</tr>
-    		<tr>
-    			<td><span class="formHdr"><bean:message key="field.label.fax" /></span></td>
-    			<td><input type="text" name="fax" /></td>
-    			<td><span class="err" id="faxErr"></span></td>
-    		</tr>
-    		<tr>
-    			<td><span class="formHdr"><bean:message key="field.label.mobilePhone" /></span></td>
-    			<td><input type="text" name="mobilePhone" /></td>
-    			<td><span class="err" id="mobilePhoneErr"></span></td>
-    		</tr>
-    		<tr>
-    			<td><span class="formHdr">Preferred Contact</span></td>
-    			<td><select name="preferredContact"></select></td>
-    			<td><span class="err" id="preferredContactErr"></span></td>
-    		</tr>    		
-    	</table>
-    </div>
-    
+	    <div id="editPanel">
+	    	<table>
+	    		<tr>
+	    			<td><span class="formHdr">ID</span></td>
+	    			<td><span class="contactId"></span></i></td>
+	    			<td>&nbsp;</td>
+	    		</tr>
+	    		<tr>
+	    			<td><span class="formHdr"><bean:message key="field.label.firstName" /></span></td>
+	    			<td><input type="text" name="firstName" /> <i class="fa fa-level-down swap-name" aria-hidden="true"></i></td>
+	    			<td><span class="err" id="firstNameErr"></span></td>
+	    		</tr>
+	    		<tr>
+	    			<td><span class="formHdr"><bean:message key="field.label.lastName" /></span></td>
+	    			<td></i><input type="text" name="lastName" /> <i class="fa fa-level-up swap-name" aria-hidden="true"></td>
+	    			<td><span class="err" id="lastNameErr"></span></td>
+	    		</tr>
+	    		<tr>
+	    			<td><span class="formHdr"><bean:message key="field.label.businessPhone" /></span></td>
+	    			<td><input type="text" name="businessPhone" /></td>
+	    			<td><span class="err" id="businessPhoneErr"></span></td>
+	    		</tr>
+	    		<tr>
+	    			<td><span class="formHdr"><bean:message key="field.label.email" /></span></td>
+	    			<td><input type="text" name="email" /></td>
+	    			<td><span class="err" id="emailErr"></span></td>
+	    		</tr>
+	    		<tr>
+	    			<td><span class="formHdr"><bean:message key="field.label.fax" /></span></td>
+	    			<td><input type="text" name="fax" /></td>
+	    			<td><span class="err" id="faxErr"></span></td>
+	    		</tr>
+	    		<tr>
+	    			<td><span class="formHdr"><bean:message key="field.label.mobilePhone" /></span></td>
+	    			<td><input type="text" name="mobilePhone" /></td>
+	    			<td><span class="err" id="mobilePhoneErr"></span></td>
+	    		</tr>
+	    		<tr>
+	    			<td><span class="formHdr">Preferred Contact</span></td>
+	    			<td><select name="preferredContact"></select></td>
+	    			<td><span class="err" id="preferredContactErr"></span></td>
+	    		</tr> 
+	    		<tr>
+	    			<td><span class="formHdr">Status</span></td>
+	    			<td>
+	    				<select name="contactStatus">
+	    				<option value=""></option>
+	    				<webthing:contactStatus />
+	    				</select>
+	    			</td>
+	    			<td><span class="err" id="contactStatusErr"></span></td>
+	    		</tr>    		
+	    	</table>
+	    </div>
     	<webthing:callNoteModals />
     </tiles:put>
 		
