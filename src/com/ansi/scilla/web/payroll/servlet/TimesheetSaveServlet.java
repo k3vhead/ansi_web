@@ -84,7 +84,7 @@ public class TimesheetSaveServlet extends TimesheetServlet {
 			TimesheetRequest timesheetRequest = new TimesheetRequest();
 			AppUtils.json2object(employeeString, timesheetRequest);
 			timesheetRequest.setAction(TimesheetRequest.ACTION_IS_UPDATE);
-			System.out.println(timesheetRequest);
+			logger.log(Level.DEBUG, timesheetRequest);
 			TimesheetResponseEmployee postResponse = null;
 			try {
 				postResponse = processUpdate(conn, response, timesheetRequest, sessionData);

@@ -39,7 +39,8 @@ public class TestBcrWorksheet extends AbstractBcrTest {
 			} else {
 				throw new Exception("Where do I write the file?");
 			}
-			workbook.write(fos);		
+			workbook.write(fos);
+			fos.close();
 			
 			
 		} finally {

@@ -1,22 +1,16 @@
 package com.ansi.scilla.web.bcr.servlet;
 
 import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.Transformer;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.utils.Permission;
-import com.ansi.scilla.web.bcr.common.BcrTicketSql;
+import com.ansi.scilla.web.bcr.common.BcrTicketLookupItemTransformer;
 import com.ansi.scilla.web.bcr.query.BcrTicketLookupQuery;
 import com.ansi.scilla.web.bcr.query.BcrWeeklyTicketLookupQuery;
 import com.ansi.scilla.web.common.query.LookupQuery;
@@ -57,7 +51,7 @@ public abstract class AbstractBcrTicketLookupServlet extends AbstractLookupServl
 	public AbstractBcrTicketLookupServlet() {
 		super(Permission.TICKET_READ);
 		makeMyColumns();
-		super.itemTransformer = new ItemTransformer();
+		super.itemTransformer = new BcrTicketLookupItemTransformer();
 	}
 		
 		
@@ -96,34 +90,7 @@ public abstract class AbstractBcrTicketLookupServlet extends AbstractLookupServl
 
 	protected abstract void makeMyColumns();
 
-	public class ItemTransformer implements Transformer<HashMap<String, Object>, HashMap<String, Object>> {
-
-		@Override
-		public HashMap<String, Object> transform(HashMap<String, Object> arg0) {
-			String notes = (String)arg0.get(NOTES);
-			if ( StringUtils.isBlank(notes) ) {
-				arg0.put(NOTES_DISPLAY, null);
-			} else {
-				arg0.put(NOTES_DISPLAY, StringUtils.abbreviate(notes, 10));
-			}
-			
-			if ( arg0.get(CLAIM_WEEK).equals("-") ) {
-				arg0.put(CLAIM_WEEK, null);
-			}
-			
-			
-			String equipmentTags = (String)arg0.get(BcrTicketSql.EQUIPMENT_TAGS);
-			String claimedEquipment = (String)arg0.get(BcrTicketSql.CLAIMED_EQUIPMENT);
-			List<String> equipmentTagList = StringUtils.isBlank(equipmentTags) ? new ArrayList<String>() : Arrays.asList(equipmentTags.split(","));
-			List<String> claimedEquipmentList = StringUtils.isBlank(claimedEquipment) ? new ArrayList<String>() : Arrays.asList(claimedEquipment.split(","));
-			Collection<String> unclaimedEquipmentList = CollectionUtils.subtract(equipmentTagList, claimedEquipmentList);
-			String unclaimedEquipment = StringUtils.join(unclaimedEquipmentList, ",");
-			arg0.put(UNCLAIMED_EQUIPMENT, unclaimedEquipment);
-			
-			return arg0;
-		}
-
-	}
+	
 		
 
 }

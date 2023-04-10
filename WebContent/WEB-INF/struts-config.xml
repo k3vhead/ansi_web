@@ -117,6 +117,15 @@
             <forward name="login" path="/login.jsp" />            
         </action>
 		<action
+            path="/claimLookup"
+            type="com.ansi.scilla.web.bcr.action.ClaimLookupAction"
+            name="idForm"
+            input="/budgetControl/claimLookup.jsp"
+            scope="request">
+            <forward name="valid" path="/budgetControl/claimLookup.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+		<action
             path="/cashReceiptsRegisterReport"
             type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
             <forward name="valid" path="/cashReceiptsRegisterReport.jsp" />
@@ -276,6 +285,12 @@
             <forward name="valid" path="/quoteMaintenance.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
+        <action
+            path="/knowledgeBaseLookup"
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
+            <forward name="valid" path="/kb/knowledgeBaseLookup.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
 		<action
             path="/localeLookup"
             type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
@@ -289,6 +304,13 @@
             <forward name="login" path="/login.jsp" />            
         </action>
      	
+        <action
+            path="/jobNoteLookup"
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction"
+            scope="request">
+            <forward name="valid" path="/jobs/jobNoteLookup.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
         <action
             path="/jobTagLookup"
             type="com.ansi.scilla.web.common.action.SessionPageDisplayAction"

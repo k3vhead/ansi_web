@@ -10,6 +10,7 @@
 <%@ taglib uri="WEB-INF/struts-bean.tld"  prefix="bean"  %>
 <%@ taglib uri="WEB-INF/struts-tiles.tld" prefix="tiles" %>
 <%@ taglib tagdir="/WEB-INF/tags/webthing" prefix="webthing" %>
+<%@ taglib tagdir="/WEB-INF/tags/icon" prefix="icon" %>
 <%@ taglib uri="WEB-INF/theTagThing.tld" prefix="ansi" %>
 
 
@@ -217,12 +218,16 @@
 				            	} else {
 				            		var $printLink = '<ansi:hasPermission permissionRequired="TICKET_READ"><i class="print-link fa fa-print" aria-hidden="true" ' + $ticketData + '></i></ansi:hasPermission>'
 				            	}
-			            		var $claimLink = '';
-			            		if ( row.view_ticket_type == 'run' || row.view_ticket_type=='job') {
-			            			$claimLink = '<ansi:hasPermission permissionRequired="CLAIMS_WRITE"><a href="budgetControlLookup.html?id='+row.ticket_id+'"><webthing:invoiceIcon styleClass="green">Budget Control</webthing:invoiceIcon></a></ansi:hasPermission>';
-			            		}
+			            		//var $claimLink = '';
+			            		//if ( row.view_ticket_type == 'run' || row.view_ticket_type=='job') {
+			            		//	$claimLink = '<ansi:hasPermission permissionRequired="CLAIMS_WRITE"><a href="budgetControlLookup.html?id='+row.ticket_id+'"><webthing:invoiceIcon styleClass="green">Budget Control</webthing:invoiceIcon></a></ansi:hasPermission>';
+			            		//}
 			            		var $noteLink = '<webthing:notes xrefType="TICKET" xrefId="' + row.ticket_id + '">Ticket Notes</webthing:notes>'
-				            	$actionData = $editLink + $printLink + $overrideLink + $noteLink;
+			            		var $claimLink = '';
+			            		if ( row.claim_count > 0 ) {
+			            			$claimLink = '<ansi:hasPermission permissionRequired="CLAIMS_READ"><a href="claimLookup.html?id=' + row.ticket_id +'"><icon:ticketClaim>Ticket Claim</icon:ticketClaim></a></ansi:hasPermission>'
+			            		}
+			            		$actionData = $editLink + $printLink + $overrideLink + $claimLink + $noteLink;
 			            	}
 			            	return $actionData;
 			            } }],
