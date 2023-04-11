@@ -794,7 +794,7 @@
 				   		ADDRESSMAINTENANCE.countryList = $optionData.country;
 				   		ADDRESSMAINTENANCE.invoiceGrouping = $optionData.invoiceGrouping;
 				   		ADDRESSMAINTENANCE.invoiceTerm = $optionData.invoiceTerm;
-				   		ADDRESSMAINTENANCE.invoiceStyle = $optionData.invoiceStyle;
+				   		//ADDRESSMAINTENANCE.invoiceStyle = $optionData.invoiceStyle;
 				   		ADDRESSMAINTENANCE.populateOptionLists();
 				   	},
 					
@@ -827,7 +827,7 @@
 		                
 		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceGroupingDefault']", ADDRESSMAINTENANCE.invoiceGrouping, null);
 		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceTermsDefault']", ADDRESSMAINTENANCE.invoiceTerm, null);
-		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceStyleDefault']", ADDRESSMAINTENANCE.invoiceStyle,null);
+		                //ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceStyleDefault']", ADDRESSMAINTENANCE.invoiceStyle,null);
 		                
 		                
 		                // get building type options
@@ -1137,8 +1137,11 @@
 						<tr>
 							<td><span class="required"></span></td>
 							<td><span class="formLabel"><bean:message key="field.label.invoice.style" />:</span></td>
-							<td colspan="3">
-								<select name="invoiceStyleDefault"></select>
+							<td colspan="3">								
+								<select name="invoiceStyleDefault">
+									<option value=""></option>
+									<ansi:invoiceStyleSelect format="select" />
+								</select>
 								<i id="invoiceStyleDefaultErr" class="fa errIcon" aria-hidden="true"></i>
 							</td>
 						</tr>

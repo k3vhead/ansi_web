@@ -419,6 +419,14 @@
 	    <attribute><name>name</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
 	</tag>
 	
+	<tag>
+    	<name>invoiceStyleSelect</name>
+    	<tagclass>com.ansi.scilla.web.tags.InvoiceStyleSelect</tagclass>
+	    <bodycontent>JSP</bodycontent>
+    	<info>Displays an option list active Invoice Style</info>
+	    <attribute><name>format</name><required>true</required><rtexprvalue>true</rtexprvalue></attribute> <!-- checkbox | radio | select -->
+	    <attribute><name>name</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+	</tag>
 	
 	<tag>
     	<name>divisionSelect</name>

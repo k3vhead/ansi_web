@@ -11,7 +11,7 @@ public class InvoiceStyleOption extends WebOption  {
 
 	public InvoiceStyleOption(InvoiceStyle j) {
 		this.abbrev = j.toString();
-		this.display = j.display();
+		this.display = j.active() ? j.display() : j.display() + " (Deprecated)";
 	}
 
 	public String getAbbrev() {
