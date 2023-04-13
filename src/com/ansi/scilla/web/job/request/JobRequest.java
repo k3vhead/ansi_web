@@ -69,7 +69,7 @@ public class JobRequest extends AbstractRequest{
 	private Integer floors;
 	private Integer invoiceBatch;
 	private String invoiceGrouping;
-	private String invoiceStyle;
+	private String[] invoiceStyle;
 	private String invoiceTerms;
 	private Integer jobContactId;
 	private String jobFrequency;
@@ -288,13 +288,13 @@ public class JobRequest extends AbstractRequest{
 		return this.invoiceGrouping;
 	}
 
-	public void setInvoiceStyle(String invoiceStyle) {
+	public void setInvoiceStyle(String[] invoiceStyle) {
 		this.invoiceStyle = invoiceStyle;
 	}
 
 	@RequiredForAdd
 	@RequiredForUpdate
-	public String getInvoiceStyle() {
+	public String[] getInvoiceStyle() {
 		return this.invoiceStyle;
 	}
 

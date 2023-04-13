@@ -59,7 +59,7 @@ import com.thewebthing.commons.lang.JsonException;
 		private Boolean taxExempt;
 		private String taxExemptReason;
 		private Boolean invoiceBatch;
-		private String invoiceStyle;
+		private String[] invoiceStyle;
 		private String buildingType;
 		private String invoiceGrouping;
 
@@ -237,11 +237,11 @@ import com.thewebthing.commons.lang.JsonException;
 			this.invoiceBatch = invoiceBatch;
 		}
 		@JobUpdateField
-		public String getInvoiceStyle() {
+		public String[] getInvoiceStyle() {
 			return invoiceStyle;
 		}
 
-		public void setInvoiceStyle(String invoiceStyle) {
+		public void setInvoiceStyle(String[] invoiceStyle) {
 			this.invoiceStyle = invoiceStyle;
 		}
 		@JobUpdateField

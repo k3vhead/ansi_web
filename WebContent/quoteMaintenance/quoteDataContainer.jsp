@@ -116,44 +116,45 @@
 			</tr>
 	
 			<tr>    				    				    				
-				<td><ansi:required action="<%= action %>" /></td>
-				<td><span class="formLabel">Lead Type:</span></td>
-				<td><ansi:select name="leadType" action="<%= action %>"></ansi:select></td>
-				<td><span class="err" id="leadTypeErr"></span></td>
-				<td>&nbsp;</td>
+				<td class="verticalTop"><ansi:required action="<%= action %>" /></td>
+				<td class="verticalTop"><span class="formLabel">Lead Type:</span></td>
+				<td class="verticalTop"><ansi:select name="leadType" action="<%= action %>"></ansi:select></td>
+				<td class="verticalTop"><span class="err" id="leadTypeErr"></span></td>
+				<td class="verticalTop">&nbsp;</td>
 			
-				<td><ansi:required action="<%= action %>" /></td>
-				<td><span class="formLabel"><bean:message key="field.label.invoice.style" />:</span></td>
-				<td><ansi:select name="invoiceStyle" action="<%= action %>"></ansi:select></td>
-				<td><span class="err" id="invoiceStyleErr"></span></td>
-				<td>&nbsp;</td>
-				
-				<td><span class="required"></span></td>    				
-				<td><span class="formLabel">Signed By:</span></td>
-				<td><ansi:text name="signedBy"  action="<%= action %>"/></td>
-				<td><span class="err" id="signedByErr"></span></td>
-			</tr>
-					
-			<tr>
-				<td><ansi:required action="<%= action %>" /></td>
-				<td><span class="formLabel">Building Type:</span></td>
-				<td><ansi:select name="buildingType" action="<%= action %>"></ansi:select></td>
-				<td><span class="err" id="invoiceGroupingErr"></span></td>
-				<td>&nbsp;</td>
-	
 				<td><ansi:required action="<%= action %>" /></td>
 				<td><span class="formLabel"><bean:message key="field.label.invoice.grouping" />:</span></td>
 				<td><ansi:select name="invoiceGrouping" action="<%= action %>"></ansi:select></td>
 				<td><span class="err" id="invoiceGroupingErr"></span></td> 
 				<td>&nbsp;</td>
+				
+				<td class="verticalTop"><span class="required"></span></td>    				
+				<td class="verticalTop"><span class="formLabel">Signed By:</span></td>
+				<td class="verticalTop"><ansi:text name="signedBy"  action="<%= action %>"/></td>
+				<td class="verticalTop"><span class="err" id="signedByErr"></span></td>
+			</tr>
+					
+			<tr>
+				<td class="verticalTop"><ansi:required action="<%= action %>" /></td>
+				<td class="verticalTop"><span class="formLabel">Building Type:</span></td>
+				<td class="verticalTop"><ansi:select name="buildingType" action="<%= action %>"></ansi:select></td>
+				<td class="verticalTop"><span class="err" id="buildingTypeErr"></span></td>
+				<td class="verticalTop">&nbsp;</td>
 	
-				<td><span class="required"></span></td>
-				<td colspan="4" style="whitespace:no-break;">
-					<span class="formLabel">Batch:</span> <ansi:checkbox name="invoiceBatch" action="<%= action %>" value="true" />
+				<td class="verticalTop"><ansi:required action="<%= action %>" /></td>
+				<td class="verticalTop"><span class="formLabel"><bean:message key="field.label.invoice.style" />:</span></td>
+				<td class="verticalTop"><ansi:select name="invoiceStyle" action="<%= action %>" multiple="multiple" size="4"></ansi:select></td>
+				<td class="verticalTop"><span class="err" id="invoiceStyleErr"></span></td>
+				<td class="verticalTop">&nbsp;</td>				
+	
+				<td class="verticalTop"><span class="required"></span></td>
+				<td class="verticalTop" colspan="4" style="whitespace:no-break;">
+					<span class="formLabel">Batch:</span> <ansi:checkbox name="invoiceBatch" action="<%= action %>" value="true" /><br />
 					<span class="formLabel">Tax Exempt:</span> <ansi:checkbox name="taxExempt" action="<%= action %>" value="true" />
 					<span class="formLabel">Reason:</span> <ansi:text name="taxExemptReason"  action="<%= action %>"/>
 				</td>
-			</tr>
+			</tr>			
+			
 		</table>
 		</ansi:hasPermission>
 	</body>

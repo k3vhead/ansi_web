@@ -943,18 +943,45 @@ public class RequestValidator {
 	}
 
 	public static void validateInvoiceStyle(WebMessages webMessages, String fieldName, String value, boolean required) {
-		if (StringUtils.isBlank(value)) {
-			if (required) {
-				webMessages.addMessage(fieldName, "Required Value");
+		validateInvoiceStyle(webMessages, fieldName, StringUtils.split(value,","), required);
+	}
+	
+	public static void validateInvoiceStyle(WebMessages webMessages, String fieldName, String[] value, boolean required) {
+		List<String> valueList = new ArrayList<String>();
+		for ( String style : value ) {
+			String cleanStyle = StringUtils.trimToEmpty(style);
+			if ( ! StringUtils.isBlank(cleanStyle) ) {
+				valueList.add(cleanStyle);
 			}
+		}
+		
+		if ( valueList.size() == 0 ) {
+			webMessages.addMessage(fieldName, "Invoice Style is missing");
 		} else {
-			try {
-				InvoiceStyle invoiceStyle = InvoiceStyle.valueOf(value);
-				if (invoiceStyle == null) {
-					webMessages.addMessage(fieldName, "Invalid Value");
+			boolean allGood = true;
+			boolean allActive = true;
+			for ( String style : valueList ) {
+				if ( StringUtils.isBlank( StringUtils.trimToEmpty(style))) {
+					allGood = false;
+				} else {
+					InvoiceStyle key = InvoiceStyle.valueOf(style);
+					if ( key == null ) {
+						allGood = false;
+					} else {
+						if ( key.active() == false ) {
+							allGood = false;
+							allActive = false;
+						}
+					}
 				}
-			} catch (IllegalArgumentException e) {
-				webMessages.addMessage(fieldName, "Invalid Value");
+			}
+			
+			if ( allGood == false ) {
+				if ( allActive == false ) {
+					webMessages.addMessage(fieldName, "Invoice Style is Deprecated");
+				} else {
+					webMessages.addMessage(fieldName, "Invoice Style is invalid");
+				}
 			}
 		}
 	}

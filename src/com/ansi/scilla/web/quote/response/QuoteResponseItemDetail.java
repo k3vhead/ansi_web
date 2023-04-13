@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Division;
@@ -41,7 +42,7 @@ public class QuoteResponseItemDetail extends ApplicationObject {
 	private Integer printCount;
 	private String buildingType;
 	private String invoiceTerms;
-	private String invoiceStyle;
+	private String[] invoiceStyle;
 	private String invoiceGrouping;
 	private Integer invoiceBatch;
 	private Integer taxExempt;
@@ -69,7 +70,7 @@ public class QuoteResponseItemDetail extends ApplicationObject {
 		this(quote, manager, division, printCount);
 		this.buildingType = job.getBuildingType();
 		this.invoiceTerms = job.getInvoiceTerms();
-		this.invoiceStyle = job.getInvoiceStyle();
+		this.invoiceStyle = StringUtils.split(job.getInvoiceStyle(),",");
 		this.invoiceGrouping = job.getInvoiceGrouping();
 		this.invoiceBatch = job.getInvoiceBatch();
 		this.taxExempt = job.getTaxExempt();
@@ -253,11 +254,11 @@ public class QuoteResponseItemDetail extends ApplicationObject {
 		this.invoiceTerms = invoiceTerms;
 	}
 
-	public String getInvoiceStyle() {
+	public String[] getInvoiceStyle() {
 		return invoiceStyle;
 	}
 
-	public void setInvoiceStyle(String invoiceStyle) {
+	public void setInvoiceStyle(String[] invoiceStyle) {
 		this.invoiceStyle = invoiceStyle;
 	}
 

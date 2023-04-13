@@ -19,9 +19,12 @@ import com.ansi.scilla.common.db.Quote;
 import com.ansi.scilla.common.exceptions.ActionNotPermittedException;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
 import com.ansi.scilla.common.exceptions.InvalidJobStatusException;
+import com.ansi.scilla.common.exceptions.InvalidValueException;
+import com.ansi.scilla.common.invoice.InvoiceUtils;
 import com.ansi.scilla.common.jobticket.JobFrequency;
 import com.ansi.scilla.common.jobticket.JobStatus;
 import com.ansi.scilla.common.jobticket.JobUtils;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.MessageKey;
 import com.ansi.scilla.web.common.response.ResponseCode;
@@ -31,7 +34,6 @@ import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.common.utils.UserPermission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
@@ -296,13 +298,13 @@ public class JobServlet extends AbstractServlet {
 		if ( jobRequest.getJobtags() != null && jobRequest.getJobtags().length > 0 ) {
 			for ( Integer tagId : jobRequest.getJobtags() ) {
 				xref = new JobTagXref();
-				xref.setAddedBy(user.getUserId());
+//				xref.setAddedBy(user.getUserId());
 	//			xref.setAddedDate(addedDate);
 				xref.setJobId(jobId);
 				xref.setTagId(tagId);
 				xref.setUpdatedBy(user.getUserId());
 	//			xref.setUpdatedDate(updatedDate);
-				xref.insertWithNoKey(conn);			
+				xref.insertWithNoKey(conn, user.getUserId());			
 			}
 		}
 		
@@ -504,7 +506,7 @@ public class JobServlet extends AbstractServlet {
 		super.sendResponse(conn, response, responseCode, quoteResponse);
 	}	
 	
-	private void populateNewJob(Job job, JobRequest jobRequest) throws InvalidJobStatusException {
+	private void populateNewJob(Job job, JobRequest jobRequest) throws InvalidJobStatusException, InvalidValueException {
 		populateJobProposal(job, jobRequest);
 		populateJobActivation(job, jobRequest);
 		populateInvoiceUpdate(job, jobRequest);
@@ -516,7 +518,7 @@ public class JobServlet extends AbstractServlet {
 		job.setDivisionId(jobRequest.getDivisionId());
 		job.setInvoiceBatch(jobRequest.getInvoiceBatch());
 		job.setInvoiceGrouping(jobRequest.getInvoiceGrouping());
-		job.setInvoiceStyle(jobRequest.getInvoiceStyle());
+		job.setInvoiceStyle(StringUtils.join( InvoiceUtils.cleanStyleList(jobRequest.getInvoiceStyle()),","));
 		job.setInvoiceTerms(jobRequest.getInvoiceTerms());
 		job.setJobContactId(jobRequest.getJobContactId());		
 		job.setJobTypeId(jobRequest.getJobTypeId());
@@ -553,16 +555,16 @@ public class JobServlet extends AbstractServlet {
 	private void updateJob(Connection conn, SessionUser user, Job job) throws Exception {
 		Job key = new Job();
 		key.setJobId(job.getJobId());
-		job.setUpdatedBy(user.getUserId());
-		job.update(conn, key);
+//		job.setUpdatedBy(user.getUserId());
+		job.update(conn, key, user.getUserId());
 	}
 	
 	
 	
 	private Integer insertJob(Connection conn, SessionUser user, Job job) throws Exception {
-		job.setAddedBy(user.getUserId());
-		job.setUpdatedBy(user.getUserId());
-		Integer jobId = job.insertWithKey(conn);
+//		job.setAddedBy(user.getUserId());
+//		job.setUpdatedBy(user.getUserId());
+		Integer jobId = job.insertWithKey(conn, user.getUserId());
 		logger.log(Level.DEBUG, "Job id: " + jobId);
 		return jobId;
 	}
@@ -817,7 +819,7 @@ public class JobServlet extends AbstractServlet {
 			job.setBudget(jobRequest.getBudget());
 			job.setFloors(jobRequest.getFloors());
 			job.setInvoiceTerms(jobRequest.getInvoiceTerms());
-			job.setInvoiceStyle(jobRequest.getInvoiceStyle());
+			job.setInvoiceStyle(StringUtils.join( InvoiceUtils.cleanStyleList(jobRequest.getInvoiceStyle()),","));
 			job.setInvoiceBatch(jobRequest.getInvoiceBatch());
 			
 			if(jobRequest.getInvoiceGrouping() != null) {
@@ -906,16 +908,16 @@ public class JobServlet extends AbstractServlet {
 				job.setPaymentTerms(jobRequest.getPaymentTerms());
 			}
 			
-			job.setUpdatedBy(sessionUser.getUserId());
+//			job.setUpdatedBy(sessionUser.getUserId());
 
-			job.setUpdatedDate(today);
+//			job.setUpdatedDate(today);
 			
 
 			logger.log(Level.DEBUG, "Job servlet Add Data:");
 			logger.log(Level.DEBUG, job.toString());
 			int j = 0;
 			try {
-				j = job.insertWithKey(conn);
+				j = job.insertWithKey(conn, sessionUser.getUserId());
 				responseCode = ResponseCode.SUCCESS;
 			} catch ( SQLException e) {
 				responseCode = ResponseCode.EDIT_FAILURE;
@@ -979,7 +981,7 @@ public class JobServlet extends AbstractServlet {
 				job.setInvoiceTerms(jobRequest.getInvoiceTerms());
 			}
 			if(jobRequest.getInvoiceStyle() != null) {
-				job.setInvoiceStyle(jobRequest.getInvoiceStyle());
+				job.setInvoiceStyle(StringUtils.join( InvoiceUtils.cleanStyleList(jobRequest.getInvoiceStyle()),","));
 			}
 			if(jobRequest.getInvoiceBatch() != null) {
 				job.setInvoiceBatch(jobRequest.getInvoiceBatch());
@@ -1102,7 +1104,7 @@ public class JobServlet extends AbstractServlet {
 			
 		
 			
-			job.setUpdatedBy(sessionUser.getUserId());
+//			job.setUpdatedBy(sessionUser.getUserId());
 
 //			job.setUpdatedDate(today);
 			
@@ -1110,7 +1112,7 @@ public class JobServlet extends AbstractServlet {
 			logger.log(Level.DEBUG, "Job servlet Add Data:");
 			logger.log(Level.DEBUG, job.toString());
 			JobUtils.updateJobHistory(conn, job.getJobId());
-			job.update(conn, key);
+			job.update(conn, key, sessionUser.getUserId());
 			responseCode = ResponseCode.SUCCESS;
 		} else {
 			logger.log(Level.DEBUG, "Doing Edit Fail");

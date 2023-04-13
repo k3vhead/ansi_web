@@ -2585,13 +2585,15 @@
 	    				});
 	    				$.each( $("#quotePanel select"), function($index, $value) {
 	    					$selector = "#quotePanel select[name='" + $value.name + "']";
-	    					$outbound[$value.name] = $($selector).val();
+	    					var $selectVal = $($selector).val();
+	    					//console.log( $value.name + " : " + $selectVal);
+	    					$outbound[$value.name] = $selectVal;
 	    				});
 	    				$outbound['taxExempt'] = $("#quotePanel input[name='taxExempt']").prop("checked");
 	    				$outbound['invoiceBatch'] = $("#quotePanel input[name='invoiceBatch']").prop("checked");
 	    				
 	    				var $quoteId = QUOTEMAINTENANCE.quote.quote.quoteId;
-	    				console.log($outbound);
+	    				console.log("outbound: " + JSON.stringify($outbound));
 	    				QUOTEMAINTENANCE.doQuoteUpdate($quoteId, $outbound, QUOTEMAINTENANCE.saveQuoteHeaderSuccess, QUOTEMAINTENANCE.saveQuoteHeaderErr);
 					},
 					
@@ -2976,6 +2978,9 @@
 			}
 			.ui-progressbar {
 				position:relative;
+			}
+			.verticalTop {
+				vertical-align:top;
 			}
         </style>
     </tiles:put>

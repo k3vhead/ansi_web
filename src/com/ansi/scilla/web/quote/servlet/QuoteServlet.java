@@ -407,14 +407,14 @@ public class QuoteServlet extends AbstractQuoteServlet {
 
 
 	protected Quote doAdd(Connection conn, QuoteRequest quoteRequest, SessionData sessionData) throws Exception {
-		Date today = new Date();
+//		Date today = new Date();
 		Quote quote = new Quote();
 		SessionUser sessionUser = sessionData.getUser();
 		
-		quote.setAddedBy(sessionUser.getUserId());		
-		quote.setAddedDate(today);
-		quote.setUpdatedBy(sessionUser.getUserId());
-		quote.setUpdatedDate(today);
+//		quote.setAddedBy(sessionUser.getUserId());		
+//		quote.setAddedDate(today);
+//		quote.setUpdatedBy(sessionUser.getUserId());
+//		quote.setUpdatedDate(today);
 		
 //		quote.setAddress(quoteRequest.getAddress());
 		quote.setBillToAddressId(quoteRequest.getBillToAddressId());
@@ -451,7 +451,7 @@ public class QuoteServlet extends AbstractQuoteServlet {
 		logger.log(Level.DEBUG, quote.toString());
 		int q = 0;
 		try {
-			q = quote.insertWithKey(conn);
+			q = quote.insertWithKey(conn, sessionUser.getUserId());
 			//logger.log(Level.DEBUG, "QuoteID After Insert? "+ q);
 			
 			
@@ -529,8 +529,8 @@ public class QuoteServlet extends AbstractQuoteServlet {
 		
 //		quote.setQuoteId(quoteRequest.getQuoteId());
 	
-		quote.setUpdatedBy(sessionUser.getUserId());
-		quote.setUpdatedDate(today);
+//		quote.setUpdatedBy(sessionUser.getUserId());
+//		quote.setUpdatedDate(today);
 		
 		
 //		String value = key.getRevision();
@@ -575,7 +575,8 @@ public class QuoteServlet extends AbstractQuoteServlet {
 
 		QuoteUtils.updateQuoteHistory(conn, keyQuote.getQuoteId());
 		
-		quote.update(conn, keyQuote);
+		quote.update(conn, keyQuote, sessionUser.getUserId());
+//		quote.update(conn, keyQuote);
 		
 		if ( keyset.contains(QuoteRequest.BILLING_CONTACT_ID)) {
 			updateJobContacts(conn, Job.BILLING_CONTACT_ID, keyQuote.getQuoteId(), quoteRequest.getBillingContactId(), sessionUser, today);
@@ -629,7 +630,7 @@ public class QuoteServlet extends AbstractQuoteServlet {
 		int n = 1;
 		ps.setString(n, quoteRequest.getPaymentTerms());
 		n++;
-		ps.setString(n, quoteRequest.getInvoiceStyle());
+		ps.setString(n, cleanStyleList(quoteRequest.getInvoiceStyle()));
 		n++;
 		ps.setInt(n, invoiceBatch ? 1 : 0);
 		n++;
@@ -651,6 +652,20 @@ public class QuoteServlet extends AbstractQuoteServlet {
 	}
 
 	
+	private String cleanStyleList(String[] invoiceStyle) {
+		List<String> cleanList = new ArrayList<String>();
+		for ( String style : invoiceStyle ) {
+			String cleanStyle = StringUtils.trimToEmpty(style);
+			if ( ! StringUtils.isBlank(cleanStyle) ) {
+				cleanList.add(cleanStyle);
+			}
+		}
+		return StringUtils.join(cleanList,",");
+	}
+
+
+
+
 	private void changeDivisionOnTickets(Connection conn, Integer quoteId, Integer divisionId) throws SQLException {
 		String sql = "update ticket set act_division_id=? \n " + 
 				"where ticket.ticket_id in \n" +

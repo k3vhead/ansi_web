@@ -9,7 +9,7 @@ public class NewQuoteDisplayResponse extends MessageResponse {
 
 	private Integer quoteId;
 	private String invoiceGrouping;
-	private String invoiceStyle;
+	private String[] invoiceStyle;
 	private String buildingType;
 	private Boolean invoiceBatch;
 	private String invoiceTerms;
@@ -33,10 +33,10 @@ public class NewQuoteDisplayResponse extends MessageResponse {
 	public void setInvoiceGrouping(String invoiceGrouping) {
 		this.invoiceGrouping = invoiceGrouping;
 	}
-	public String getInvoiceStyle() {
+	public String[] getInvoiceStyle() {
 		return invoiceStyle;
 	}
-	public void setInvoiceStyle(String invoiceStyle) {
+	public void setInvoiceStyle(String[] invoiceStyle) {
 		this.invoiceStyle = invoiceStyle;
 	}
 	public String getBuildingType() {

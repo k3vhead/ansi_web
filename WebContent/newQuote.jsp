@@ -1520,6 +1520,7 @@
 						$outbound['updateType'] = $updateType;
 						$outbound['action'] = 'job';
 						//$outbound['quoteId'] = QUOTEMAINTENANCE.quote.quote.quoteId;
+						console.log("savejob outbound:")
 						console.log(JSON.stringify($outbound) )
 						
 						
@@ -2242,6 +2243,9 @@
 			}
 			.ui-progressbar {
 				position:relative;
+			}
+			.verticalTop {
+				vertical-align:top;
 			}
         </style>
     </tiles:put>

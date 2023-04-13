@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -21,15 +20,17 @@ import com.ansi.scilla.common.db.Quote;
 import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
 import com.ansi.scilla.common.exceptions.InvalidJobStatusException;
+import com.ansi.scilla.common.exceptions.InvalidValueException;
+import com.ansi.scilla.common.invoice.InvoiceUtils;
 import com.ansi.scilla.common.jobticket.JobStatus;
 import com.ansi.scilla.common.jobticket.JobTagDisplay;
 import com.ansi.scilla.common.jobticket.JobUtils;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
@@ -266,14 +267,14 @@ public class NewQuoteServlet extends AbstractQuoteServlet {
 	private void doSave(Connection conn, HttpServletResponse response, SessionData sessionData, NewQuoteRequest quoteRequest) throws Exception {
 		WebMessages webMessages = new WebMessages();
 		try {
-			Date today = new Date();
+//			Date today = new Date();
 			Quote quote = new Quote();
 			SessionUser sessionUser = sessionData.getUser();
 
-			quote.setAddedBy(sessionUser.getUserId());		
-			quote.setAddedDate(today);
-			quote.setUpdatedBy(sessionUser.getUserId());
-			quote.setUpdatedDate(today);
+//			quote.setAddedBy(sessionUser.getUserId());		
+//			quote.setAddedDate(today);
+//			quote.setUpdatedBy(sessionUser.getUserId());
+//			quote.setUpdatedDate(today);
 
 			quote.setBillToAddressId(quoteRequest.getBillToAddressId());
 			quote.setJobSiteAddressId(quoteRequest.getJobSiteAddressId());
@@ -295,7 +296,7 @@ public class NewQuoteServlet extends AbstractQuoteServlet {
 			logger.log(Level.DEBUG, quote.toString());
 			int quoteId = 0;
 			try {
-				quoteId = quote.insertWithKey(conn);
+				quoteId = quote.insertWithKey(conn, sessionUser.getUserId());
 			} catch ( SQLException e) {
 				if ( e.getMessage().contains("duplicate key")) {
 					throw new DuplicateEntryException();
@@ -343,7 +344,7 @@ public class NewQuoteServlet extends AbstractQuoteServlet {
 		WebMessages webMessages = new WebMessages();
 
 		try {
-			Date today = new Date();
+//			Date today = new Date();
 			Quote quote = new Quote();
 			quote.setQuoteId(Integer.valueOf(quoteId));
 			quote.selectOne(conn);
@@ -352,8 +353,8 @@ public class NewQuoteServlet extends AbstractQuoteServlet {
 
 //			quote.setAddedBy(sessionUser.getUserId());		
 //			quote.setAddedDate(today);
-			quote.setUpdatedBy(sessionUser.getUserId());
-			quote.setUpdatedDate(today);
+//			quote.setUpdatedBy(sessionUser.getUserId());
+//			quote.setUpdatedDate(today);
 
 			quote.setBillToAddressId(quoteRequest.getBillToAddressId());
 			quote.setJobSiteAddressId(quoteRequest.getJobSiteAddressId());
@@ -373,7 +374,7 @@ public class NewQuoteServlet extends AbstractQuoteServlet {
 
 			Quote key = new Quote();
 			key.setQuoteId(Integer.valueOf(quoteId));
-			quote.update(conn, key);
+			quote.update(conn, key, sessionUser.getUserId());
 			
 			setAddressDefaults(conn, quoteRequest, sessionUser);
 			
@@ -423,7 +424,7 @@ public class NewQuoteServlet extends AbstractQuoteServlet {
 		Integer invoiceBatchDefault = quoteRequest.getInvoiceBatch() != null && quoteRequest.getInvoiceBatch() == true ? 1 : 0;
 		address.setInvoiceBatchDefault(invoiceBatchDefault);
 		address.setInvoiceGroupingDefault(quoteRequest.getInvoiceGrouping());
-		address.setInvoiceStyleDefault(quoteRequest.getInvoiceStyle());
+		address.setInvoiceStyleDefault(StringUtils.join(InvoiceUtils.cleanStyleList(quoteRequest.getInvoiceStyle()),","));
 		address.setInvoiceTermsDefault(quoteRequest.getInvoiceTerms());
 		address.setJobsiteBilltoAddressDefault(quoteRequest.getBillToAddressId());
 		address.setJobsiteBuildingTypeDefault(quoteRequest.getBuildingType());
@@ -431,15 +432,15 @@ public class NewQuoteServlet extends AbstractQuoteServlet {
 		address.setJobsiteJobContactDefault(quoteRequest.getJobContactId());
 		address.setJobsiteSiteContactDefault(quoteRequest.getSiteContact());
 		//address.setOurVendorNbrDefault(quoteRequest.get);
-		address.setUpdatedBy(sessionUser.getUserId());
+//		address.setUpdatedBy(sessionUser.getUserId());
 		
 		Address key = new Address();
 		key.setAddressId(quoteRequest.getJobSiteAddressId());
-		address.update(conn, key);
+		address.update(conn, key, sessionUser.getUserId());
 		
 	}
 
-	private Job populateNewJob(JobRequest jobRequest) throws InvalidJobStatusException {
+	private Job populateNewJob(JobRequest jobRequest) throws InvalidJobStatusException, InvalidValueException {
 		logger.log(Level.DEBUG, jobRequest);
 		Job job = new Job();
 		job.setBillingContactId(jobRequest.getBillingContactId());
@@ -448,7 +449,7 @@ public class NewQuoteServlet extends AbstractQuoteServlet {
 		job.setDivisionId(jobRequest.getDivisionId());
 		job.setInvoiceBatch(jobRequest.getInvoiceBatch());
 		job.setInvoiceGrouping(jobRequest.getInvoiceGrouping());
-		job.setInvoiceStyle(jobRequest.getInvoiceStyle());
+		job.setInvoiceStyle(StringUtils.join( InvoiceUtils.cleanStyleList(jobRequest.getInvoiceStyle()),","));			
 		job.setInvoiceTerms(jobRequest.getInvoiceTerms());
 		job.setJobContactId(jobRequest.getJobContactId());		
 		job.setJobTypeId(jobRequest.getJobTypeId());
