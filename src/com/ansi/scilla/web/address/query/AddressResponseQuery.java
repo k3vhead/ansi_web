@@ -7,11 +7,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.db.Address;
+import com.ansi.scilla.common.invoice.InvoiceStyle;
 import com.ansi.scilla.web.address.response.AddressResponseItem;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
@@ -101,6 +103,16 @@ public class AddressResponseQuery {
 		item.setJobsiteSiteContactName(rs.getString(SITECONTACT_NAME));
 		item.setJobsiteContractContactName(rs.getString(CONTRACTCONTACT_NAME));
 		item.setJobsiteBillingContactName(rs.getString(BILLINGCONTACT_NAME));
+		
+		if ( ! StringUtils.isBlank( StringUtils.trimToEmpty(item.getInvoiceStyleDefault()) )) {
+			List<String> styleDisplay = new ArrayList<String>();
+			for ( String style : StringUtils.split( item.getInvoiceStyleDefault(), ",")) {
+				InvoiceStyle invoiceStyle = InvoiceStyle.valueOf(style);
+				String display = invoiceStyle.active() ? invoiceStyle.display() : invoiceStyle.display() + " (Deprecated)";
+				styleDisplay.add(display);
+			}
+			item.setInvoiceStyleDisplay( StringUtils.join(styleDisplay,","));
+		}
 		
 		logger.debug(item);
 		return item;

@@ -52,7 +52,7 @@ import com.thewebthing.commons.lang.JsonException;
 		private String state;
 		private String status;
 		private String zip;
-		private String invoiceStyleDefault;
+		private String[] invoiceStyleDefault;
 		private String invoiceGroupingDefault;
 		private Integer invoiceBatchDefault;
 		private String invoiceTermsDefault;
@@ -164,11 +164,11 @@ import com.thewebthing.commons.lang.JsonException;
 			return this.zip;
 		}
 		@JsonProperty(INVOICE_STYLE_DEFAULT)
-		public String getInvoiceStyleDefault() {
+		public String[] getInvoiceStyleDefault() {
 			return invoiceStyleDefault;
 		}
 		@JsonProperty(INVOICE_STYLE_DEFAULT)
-		public void setInvoiceStyleDefault(String invoiceStyleDefault) {
+		public void setInvoiceStyleDefault(String[] invoiceStyleDefault) {
 			this.invoiceStyleDefault = invoiceStyleDefault;
 		}
 		@JsonProperty(INVOICE_GROUPING_DEFAULT)

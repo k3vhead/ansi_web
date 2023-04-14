@@ -32,6 +32,7 @@ public abstract class LookupQuery extends ApplicationObject {
 	protected String sqlSelectClause;
 	protected String sqlFromClause;
 	protected String baseWhereClause;
+	protected String groupByClause;
 	protected String sql;
 	protected String sqlCount;
 	
@@ -86,6 +87,16 @@ public abstract class LookupQuery extends ApplicationObject {
 
 	public void setBaseWhereClause(String baseWhereClause) {
 		this.baseWhereClause = baseWhereClause;
+	}
+
+
+	public String getGroupByClause() {
+		return groupByClause;
+	}
+
+
+	public void setGroupByClause(String groupByClause) {
+		this.groupByClause = groupByClause;
 	}
 
 
@@ -251,6 +262,7 @@ public abstract class LookupQuery extends ApplicationObject {
 		String searchPhrase = this.searchTerm.indexOf("'") > -1 ? this.searchTerm.replaceAll("'", "''") : this.searchTerm;
 		String wherePhrase = selectType.equals(SelectType.COUNTALL) ? baseWhereClause : makeWhereClause(searchPhrase);
 		String filterPhrase = makeFilterPhrase(wherePhrase);
+		String groupByPhrase = selectType.equals(SelectType.COUNT) || selectType.equals(SelectType.COUNTALL) || StringUtils.isBlank(this.groupByClause) ? "" : this.groupByClause;
 		
 		if ( this.logger == null ) {
 			this.logger = LogManager.getLogger(LookupQuery.class);
@@ -260,7 +272,7 @@ public abstract class LookupQuery extends ApplicationObject {
 		this.logger.log(Level.DEBUG, "orderByPhrase: " + orderByPhrase);
 		this.logger.log(Level.DEBUG, "fetchPhrase: " + fetchPhrase);
 		
-		String sql = searchSQL + " \n " + wherePhrase + " " + filterPhrase + " " + orderByPhrase + " " + offsetPhrase + " " + fetchPhrase;
+		String sql = searchSQL + " \n " + wherePhrase + " " + filterPhrase + " " + groupByPhrase + " " + orderByPhrase + " " + offsetPhrase + " " + fetchPhrase;
 		this.logger.log(Level.DEBUG, sql);
 				
 		return sql;

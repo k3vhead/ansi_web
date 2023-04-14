@@ -84,7 +84,7 @@
 
 	<servlet>
 		<servlet-name>addressTable</servlet-name>
-		<servlet-class>com.ansi.scilla.web.address.servlet.AddressTableServlet</servlet-class>
+		<servlet-class>com.ansi.scilla.web.address.servlet.AddressLookupServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>addressTable</servlet-name>

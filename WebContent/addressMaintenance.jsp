@@ -27,6 +27,7 @@
        	<link rel="stylesheet" href="css/callNote.css" />
     	<link rel="stylesheet" href="css/accordion.css" type="text/css" />
     	<link rel="stylesheet" href="css/document.css" type="text/css" />
+    	<link rel="stylesheet" href="css/lookup.css" type="text/css" />
     	
     
     	<script type="text/javascript" src="js/ansi_utils.js"></script>
@@ -59,6 +60,16 @@
 				margin-top:15px;
 				margin-bottom:15px;
 			}
+        	#filter-container {
+        		width:402px;
+        		float:right;
+        	}
+        	#filterLabel {
+        		display:none;
+        	}
+        	#clearFilter {
+        		cursor:pointer;
+        	}			
 			#state-menu {
 			  max-height: 300px;
 			}
@@ -93,9 +104,7 @@
 			#jobsiteDefault {
 				margin-top:12px;
 			}
-			.dataTables_scrollBody, .dataTables_scrollHead, .display dataTable, .dataTables_scroll {
-				width:1360px;
-			}
+			
 			.documentAction {
 				cursor:pointer;
 			}
@@ -143,6 +152,9 @@
 			.field-container {
 				cursor:pointer;
 			}
+			.verticalTop {
+				vertical-align:top;
+			}
         </style>
         
         <script type="text/javascript">        
@@ -188,6 +200,7 @@
 		        	        rowId: 				'dt_RowId',
 		        	        dom: 				'Bfrtip',
 		        	        "searching": 		true,
+		        	        pageLength:			50,
 		        	        order: [[ 1, "asc"]],
 		        	        lengthMenu: [
 	        	            	[ 10, 25, 50, -1 ],
@@ -205,36 +218,17 @@
 					        	"type": "GET"
 					        	},
 					        columns: [
-					            { title: "<bean:message key="field.label.addressId" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-					            	if(row.addressId != null){return (row.addressId+"");}
-					            } },
-					            { title: "<bean:message key="field.label.name" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-					            	if(row.name != null){return (row.name+"");}
-					            } },
-					            { title: "<bean:message key="field.label.address_status" />" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-					            	if(row.address_status != null){return (row.address_status+"");}
-					            } },
-					            { title: "<bean:message key="field.label.address1" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-					            	if(row.address1 != null){return (row.address1+"");}
-					            } },
-					            { title: "<bean:message key="field.label.address2" />",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-					            	if(row.address2 != null){return (row.address2+"");}
-					            } },
-					            { title: "<bean:message key="field.label.city" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-					            	if(row.city != null){return (row.city+"");}
-					            } },
-					            { title: "<bean:message key="field.label.county" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-					            	if(row.county != null){return (row.county+"");}
-					            } },
-					            //{ title: "<bean:message key="field.label.countryCode" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-					            //	if(row.countryCode != null){return (row.countryCode+"");}
+					            { title: "<bean:message key="field.label.addressId" />", searchable:true, "defaultContent": "<i>N/A</i>", data: "address_id"},
+					            { title: "<bean:message key="field.label.name" />", searchable:true, "defaultContent": "<i>N/A</i>", data: "name"},
+					            { title: "<bean:message key="field.label.address_status" />" , searchable:true, "defaultContent": "<i>N/A</i>", data: "address_status"},
+					            { title: "<bean:message key="field.label.address1" />", searchable:true, "defaultContent": "<i>N/A</i>", data: "address1"},
+					            { title: "<bean:message key="field.label.address2" />", searchable:true,  "defaultContent": "<i>N/A</i>", data: "address2" },
+					            { title: "<bean:message key="field.label.city" />", searchable:true, "defaultContent": "<i>N/A</i>", data: "city"},
+					            { title: "<bean:message key="field.label.county" />", searchable:true, "defaultContent": "<i>N/A</i>", data: "county" },
+					            //{ title: "<bean:message key="field.label.countryCode" />", "defaultContent": "<i>N/A</i>", data: "country_code"}
 					            //} },
-					            { title: "<bean:message key="field.label.state" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
-					            	if(row.state != null){return (row.state+"");}
-					            } },
-					            { title: "<bean:message key="field.label.zip" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-					            	if(row.zip != null){return (row.zip+"");} 
-					            } },
+					            { title: "<bean:message key="field.label.state" />", searchable:true, "defaultContent": "<i>N/A</i>", data: "state"},
+					            { title: "<bean:message key="field.label.zip" />", searchable:true, "defaultContent": "<i>N/A</i>", data: "zip" },
 					            
 					            
 					            // Invoice default value columns:
@@ -270,14 +264,14 @@
 //					            } },
 					            
 					            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
-					            	var $viewLink = '<a href="#" class="viewAction" data-id="'+row.addressId+'"><webthing:view>View</webthing:view></a>';
-					            	var $editLink = '<ansi:hasPermission permissionRequired="ADDRESS_WRITE"><a href="#" class="editAction" data-id="'+row.addressId+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>';
-					            	var $copyLink = '<ansi:hasPermission permissionRequired="ADDRESS_WRITE"><a href="#" class="copyAction" data-id="'+row.addressId+'"><webthing:copy>Copy</webthing:copy></a></ansi:hasPermission>';
-					            	var $deleteLink = '<ansi:hasPermission permissionRequired="ADDRESS_WRITE"><a href="#" class="delAction" data-id="'+row.addressId+'"><webthing:delete>Delete</webthing:delete></a></ansi:hasPermission>';					            	
-					            	var $noteLink = '<webthing:notes xrefType="ADDRESS" xrefId="' + row.addressId + '" xrefName="'+row.name+'">Address Notes</webthing:notes>'
+					            	var $viewLink = '<a href="#" class="viewAction" data-id="'+row.address_id+'"><webthing:view>View</webthing:view></a>';
+					            	var $editLink = '<ansi:hasPermission permissionRequired="ADDRESS_WRITE"><a href="#" class="editAction" data-id="'+row.address_id+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>';
+					            	var $copyLink = '<ansi:hasPermission permissionRequired="ADDRESS_WRITE"><a href="#" class="copyAction" data-id="'+row.address_id+'"><webthing:copy>Copy</webthing:copy></a></ansi:hasPermission>';
+					            	var $deleteLink = '<ansi:hasPermission permissionRequired="ADDRESS_WRITE"><a href="#" class="delAction" data-id="'+row.address_id+'"><webthing:delete>Delete</webthing:delete></a></ansi:hasPermission>';					            	
+					            	var $noteLink = '<webthing:notes xrefType="ADDRESS" xrefId="' + row.address_id + '" xrefName="'+row.name+'">Address Notes</webthing:notes>'
 				            		var $docLink = "";
 					            	if ( row.documentCount > 0 ) {
-					            		$docLink = '<webthing:document styleClass="documentAction" xrefType="TAX_EXEMPT" xrefId="'+row.addressId+'">Tax Exempt Document</webthing:document>';
+					            		$docLink = '<webthing:document styleClass="documentAction" xrefType="TAX_EXEMPT" xrefId="'+row.address_id+'">Tax Exempt Document</webthing:document>';
 					            	}
 					            	
 					            	$action = $viewLink + " " + $editLink + " " + $copyLink;
@@ -289,6 +283,8 @@
 					            } }],
 					            "initComplete": function(settings, json) {
 					            	ADDRESSMAINTENANCE.doFunctionBinding();
+					            	var myTable = this;    			            	
+	    			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#addressTable", ADDRESSMAINTENANCE.createTable);
 					            },
 					            "drawCallback": function( settings ) {
 					            	ADDRESSMAINTENANCE.doFunctionBinding();
@@ -469,6 +465,12 @@
 		            
 					
 					doFunctionBinding : function() {
+						$( ".editAction" ).off( "click" );
+						$( ".delAction" ).off( "click" );
+						$( "#addressTable_next" ).off( "click" );
+						$( ".viewAction" ).off( "click" );
+						$( ".copyAction" ).off( "click" );
+						
 						$( ".editAction" ).on( "click", function($clickEvent) {
 			        		$("#addAddressForm").dialog( "option", "title", "Update Address" );
 							ADDRESSMAINTENANCE.doEdit($clickEvent);
@@ -853,9 +855,10 @@
 										}
 			        				});
 									
+									var $styleList = $address.invoiceStyleDefault.split(",");
 									$("#addForm select[name=countryCode]").val($address.countryCode);
 									$("#addForm select[name=state]").val($address.state);
-									$("#addForm select[name='invoiceStyleDefault']").val($address.invoiceStyleDefault);
+									$("#addForm select[name='invoiceStyleDefault']").val($styleList);
 									$("#addForm select[name='invoiceGroupingDefault']").val($address.invoiceGroupingDefault);
 									$("#addForm select[name='invoiceTermsDefault']").val($address.invoiceTermsDefault);									
 									$("#addForm input[name='invoiceOurVendorNbrDefault']").val($address.ourVendorNbrDefault);
@@ -926,51 +929,8 @@
     <tiles:put name="content" type="string">
     	<h1><bean:message key="page.label.address" /> <bean:message key="menu.label.lookup" /></h1>    	
 
- 		<table id="addressTable" class="display" cellspacing="0" style="font-size:9pt;">
-	        <thead>
-	            <tr>
-	                <th><bean:message key="field.label.addressId" /></th>
-	    			<th><bean:message key="field.label.name" /></th>
-	    			<th><bean:message key="field.label.address_status" /></th>
-	    			<th><bean:message key="field.label.address1" /></th>
-	    			<th><bean:message key="field.label.address2" /></th>
-	    			<th><bean:message key="field.label.city" /></th>
-	    			<th><bean:message key="field.label.county" /></th>
-	    			<%-- <th><bean:message key="field.label.countryCode" /></th> --%>
-	    			<th><bean:message key="field.label.state" /></th>
-	    			<th><bean:message key="field.label.zip" /></th>
-	    			<th><bean:message key="field.label.action" /></th>
-<%--	    		<th><bean:message key="field.label.invoice.style" /></th>
-	    			<th><bean:message key="field.label.invoice.grouping" /></th>
-	    			<th><bean:message key="field.label.invoice.batch" /></th>
-	    			<th><bean:message key="field.label.invoice.terms" /></th>
-	    			<th><bean:message key="field.label.invoice.ourVendorNbr" /></th>
- --%>	    			
-	            </tr>
-	        </thead>
-	        <tfoot>
-	            <tr>
-	                <th><bean:message key="field.label.addressId" /></th>
-	    			<th><bean:message key="field.label.name" /></th>
-	    			<th><bean:message key="field.label.address_status" /></th>
-	    			<th><bean:message key="field.label.address1" /></th>
-	    			<th><bean:message key="field.label.address2" /></th>
-	    			<th><bean:message key="field.label.city" /></th>
-	    			<th><bean:message key="field.label.county" /></th>
-	    			<%-- <th><bean:message key="field.label.countryCode" /></th> --%>
-	    			<th><bean:message key="field.label.state" /></th>
-	    			<th><bean:message key="field.label.zip" /></th>
-	    			<th><bean:message key="field.label.action" /></th>
-<%--	    		<th><bean:message key="field.label.invoice.style" /></th>
-	    			<th><bean:message key="field.label.invoice.grouping" /></th>
-	    			<th><bean:message key="field.label.invoice.batch" /></th>
-	    			<th><bean:message key="field.label.invoice.terms" /></th>
-	    			<th><bean:message key="field.label.invoice.ourVendorNbr" /></th>
---%>
-	    			
-	    			
-	            </tr>
-	        </tfoot>
+		<webthing:lookupFilter filterContainer="filter-container" />
+ 		<table id="addressTable" class="display" cellspacing="0" style="font-size:9pt;">	        
 	    </table>
 	    <ansi:hasPermission permissionRequired="ADDRESS_WRITE">
    			<div class="addButtonDiv">
@@ -1135,10 +1095,10 @@
 				<div class="details invoiceDetails">
 					<table style="width:500px;">
 						<tr>
-							<td><span class="required"></span></td>
-							<td><span class="formLabel"><bean:message key="field.label.invoice.style" />:</span></td>
-							<td colspan="3">								
-								<select name="invoiceStyleDefault">
+							<td class="verticalTop"><span class="required"></span></td>
+							<td class="verticalTop"><span class="formLabel"><bean:message key="field.label.invoice.style" />:</span></td>
+							<td  class="verticalTop"colspan="3">								
+								<select name="invoiceStyleDefault" multiple="multiple" size="4">
 									<option value=""></option>
 									<ansi:invoiceStyleSelect format="select" />
 								</select>

@@ -45,6 +45,7 @@ public class AddressResponseItem extends ApplicationObject implements Comparable
 	private String billtoTaxExemptReason;
 	private String jobsiteContractContactName;
 	private String jobsiteBillingContactName;
+	private String invoiceStyleDisplay;
 
 	
 	public AddressResponseItem() {
@@ -257,6 +258,14 @@ public class AddressResponseItem extends ApplicationObject implements Comparable
 
 	public void setJobsiteBillingContactName(String jobsiteBillingContactName) {
 		this.jobsiteBillingContactName = jobsiteBillingContactName;
+	}
+
+	public String getInvoiceStyleDisplay() {
+		return invoiceStyleDisplay;
+	}
+
+	public void setInvoiceStyleDisplay(String invoiceStyleDisplay) {
+		this.invoiceStyleDisplay = invoiceStyleDisplay;
 	}
 
 	@Override

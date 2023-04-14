@@ -49,6 +49,7 @@ import com.ansi.scilla.web.exceptions.TimeoutException;
  * 
  *
  */
+@Deprecated
 public class AddressTableServlet extends AbstractServlet {
 
 	private static final long serialVersionUID = 1L;

@@ -91,8 +91,9 @@ $( document ).ready(function() {
 		
 		
 		populateDefaultInvoice : function($tagName, $address) {
-			$.each($address, function($fieldName, $value) {									
+			$.each($address, function($fieldName, $value) {	
 				$selector = $tagName + " .ansi-invoice-" + $fieldName;
+				console.log("PDI: " + $tagName + " " + $fieldName + " " + $value);
 				if ( $($selector).length > 0 ) {
 					$($selector).html($value);
 				}

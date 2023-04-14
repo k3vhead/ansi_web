@@ -21,7 +21,7 @@
 	<table style="width:100%;">
 		<tr>
 			<td class="ansi-address-label-container"><span class="ansi-address-label"><bean:message key="field.label.invoice.style" />:</span></td>	
-			<td><span class="ansi-default-invoice-value ansi-invoice-invoiceStyleDefault"></span></td>		
+			<td><span class="ansi-default-invoice-value ansi-invoice-invoiceStyleDisplay"></span></td>		
 		</tr>
 		<tr>
 			<td class="ansi-address-label-container"><span class="ansi-address-label"><bean:message key="field.label.invoice.grouping" />:</span></td>

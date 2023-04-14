@@ -18,6 +18,9 @@ import com.ansi.scilla.common.db.Address;
 import com.ansi.scilla.common.db.Code;
 import com.ansi.scilla.common.db.Contact;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
+import com.ansi.scilla.common.exceptions.InvalidValueException;
+import com.ansi.scilla.common.invoice.InvoiceUtils;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.address.request.AddressRequest;
 import com.ansi.scilla.web.address.response.AddressListResponse;
 import com.ansi.scilla.web.address.response.AddressResponse;
@@ -30,7 +33,6 @@ import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
@@ -214,9 +216,9 @@ public class AddressServlet extends AbstractServlet {
 		Address address = new Address();
 
 		request2addr(addressRequest, address, country, sessionUser);
-		address.setAddedBy(sessionUser.getUserId());
+//		address.setAddedBy(sessionUser.getUserId());
 
-		Integer addressId = address.insertWithKey(conn);
+		Integer addressId = address.insertWithKey(conn, sessionUser.getUserId());
 		address.setAddressId(addressId);
 		return address;
 	}
@@ -274,14 +276,14 @@ public class AddressServlet extends AbstractServlet {
 			SessionUser sessionUser) throws Exception {
 
 		request2addr(addressRequest, address, country, sessionUser);
-		address.setUpdatedBy(sessionUser.getUserId());
+//		address.setUpdatedBy(sessionUser.getUserId());
 
 		Address key = new Address();
 		key.setAddressId(address.getAddressId());
 		// if we update something that isn't there, a RecordNotFoundException
 		// gets thrown
 		// that exception get propagated and turned into a 404
-		address.update(conn, key);
+		address.update(conn, key, sessionUser.getUserId());
 		return address;
 	}
 
@@ -409,9 +411,10 @@ public class AddressServlet extends AbstractServlet {
 	 * @param address
 	 * @param country
 	 * @param sessionUser
+	 * @throws InvalidValueException 
 	 */
 	private void request2addr(AddressRequest addressRequest, Address address, Country country,
-			SessionUser sessionUser) {
+			SessionUser sessionUser) throws InvalidValueException {
 
 		address.setAddress1(addressRequest.getAddress1());
 		address.setAddress2(addressRequest.getAddress2());
@@ -423,7 +426,7 @@ public class AddressServlet extends AbstractServlet {
 		address.setStatus(addressRequest.getStatus());
 		address.setZip(addressRequest.getZip());
 		address.setCountryCode(country.abbrev());
-		address.setInvoiceStyleDefault(addressRequest.getInvoiceStyleDefault());
+		address.setInvoiceStyleDefault(StringUtils.join(InvoiceUtils.cleanStyleList( addressRequest.getInvoiceStyleDefault()),",") );
 		address.setInvoiceGroupingDefault(addressRequest.getInvoiceGroupingDefault());
 		if (addressRequest.getInvoiceBatchDefault() != null && addressRequest.getInvoiceBatchDefault() == 1) {
 			address.setInvoiceBatchDefault(Address.INVOICE_BATCH_DEFAULT_IS_YES);
