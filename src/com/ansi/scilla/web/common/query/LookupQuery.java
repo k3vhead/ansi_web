@@ -259,7 +259,7 @@ public abstract class LookupQuery extends ApplicationObject {
 		String offsetPhrase = makeOffset(selectType, offset);
 		String fetchPhrase = makeFetch(selectType, rowCount);
 		String orderByPhrase = makeOrderBy(selectType);
-		String searchPhrase = this.searchTerm.indexOf("'") > -1 ? this.searchTerm.replaceAll("'", "''") : this.searchTerm;
+		String searchPhrase = StringUtils.isNotBlank(searchTerm) && this.searchTerm.indexOf("'") > -1 ? this.searchTerm.replaceAll("'", "''") : this.searchTerm;
 		String wherePhrase = selectType.equals(SelectType.COUNTALL) ? baseWhereClause : makeWhereClause(searchPhrase);
 		String filterPhrase = makeFilterPhrase(wherePhrase);
 		String groupByPhrase = selectType.equals(SelectType.COUNT) || selectType.equals(SelectType.COUNTALL) || StringUtils.isBlank(this.groupByClause) ? "" : this.groupByClause;
@@ -329,23 +329,24 @@ public abstract class LookupQuery extends ApplicationObject {
 		Logger myLogger = LogManager.getLogger(LookupQuery.class);
 		myLogger.log(Level.DEBUG, "SelectType: " + selectType.name());
 		myLogger.log(Level.DEBUG, "SearchSQL: " + searchSQL);
+
 		if ( this.baseFilterValue != null && this.baseFilterValue.size() > 0 ) {
 			int idx = 1;
 			for ( Object o : this.baseFilterValue ) {
 				if ( o instanceof Integer ) {
 					ps.setInt(idx,(Integer)o);
-					this.logger.log(Level.DEBUG, "Index: " + idx + "Integer: " + (Integer)o);
+					this.logger.log(Level.DEBUG, "Index: " + idx + " Integer: " + (Integer)o);
 				} else if ( o instanceof String ) {
 					ps.setString(idx, (String)o);
-					this.logger.log(Level.DEBUG, "Index: " + idx + "String: " + (String)o);
+					this.logger.log(Level.DEBUG, "Index: " + idx + " String: " + (String)o);
 				} else if ( o instanceof java.util.Date) {
 					java.util.Date date = (java.util.Date)o;
 					ps.setDate(idx, new java.sql.Date(date.getTime()));
-					this.logger.log(Level.DEBUG, "Index: " + idx + "Date: " + new java.sql.Date(date.getTime()));
+					this.logger.log(Level.DEBUG, "Index: " + idx + " Date: " + new java.sql.Date(date.getTime()));
 				} else if ( o instanceof java.util.GregorianCalendar) {
 					GregorianCalendar date = (GregorianCalendar)o;
 					ps.setDate(idx, new java.sql.Date(date.getTime().getTime()));
-					this.logger.log(Level.DEBUG, "Index: " + idx + "Date: " + new java.sql.Date(date.getTime().getTime()));
+					this.logger.log(Level.DEBUG, "Index: " + idx + " Date: " + new java.sql.Date(date.getTime().getTime()));
 				} else {
 					throw new RuntimeException("Add another value to the else for " + o.getClass().getName());
 				}

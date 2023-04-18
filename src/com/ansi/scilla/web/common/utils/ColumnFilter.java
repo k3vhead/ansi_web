@@ -67,6 +67,9 @@ public class ColumnFilter extends ApplicationObject {
 	public String toEqNumber() {
 		return columnName + "=" + searchValue;
 	}
+	public String toNeNumber() {
+		return columnName + "!=" + searchValue;
+	}
 	/**
 	 * Explicity case-insensitive equal match
 	 * @return lower(columnName)='searchValue'
@@ -130,11 +133,12 @@ public class ColumnFilter extends ApplicationObject {
 	
 	public enum ComparisonType {
 		LIKE("toLike"),
-		EQUAL_NUMBER("toEqNumber"),
+		EQUAL_NUMBER("toEqNumber"),		
 		EQUAL_STRING("toEqString"),
 		EQUAL_DATE("toEqDate"),
 		LIST_NUMBER("toListNumber"),
 		LIST_STRING("toListString"),
+		NOTEQUAL_NUMBER("toNeNumber"),
 		;
 		
 		private final String methodName;

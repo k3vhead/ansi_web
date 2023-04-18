@@ -3,49 +3,109 @@ package com.ansi.scilla.web.invoice.servlet;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.sql.Connection;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
+import org.apache.commons.collections4.Transformer;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.queries.InvoiceSearch;
-import com.ansi.scilla.web.common.servlet.AbstractServlet;
+import com.ansi.scilla.common.utils.Permission;
+import com.ansi.scilla.web.common.query.LookupQuery;
+import com.ansi.scilla.web.common.servlet.AbstractLookupServlet;
 import com.ansi.scilla.web.common.struts.SessionData;
+import com.ansi.scilla.web.common.struts.SessionDivision;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.common.utils.Permission;
+import com.ansi.scilla.web.common.utils.ColumnFilter;
+import com.ansi.scilla.web.common.utils.ColumnFilter.ComparisonType;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.invoice.actionForm.InvoiceLookupForm;
+import com.ansi.scilla.web.invoice.query.InvoiceDetailLookupQuery;
+import com.ansi.scilla.web.invoice.query.InvoiceLookupQuery;
 import com.ansi.scilla.web.invoice.response.InvoiceLookupResponse;
 import com.ansi.scilla.web.invoice.response.InvoiceLookupResponseItem;
 import com.thewebthing.commons.lang.StringUtils;
 
-public class InvoiceLookupServlet extends AbstractServlet {
+public class InvoiceLookupServlet extends AbstractLookupServlet {
 
 	
 	private static final long serialVersionUID = 1L;
 
-	@Override
-	protected void doDelete(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		super.sendNotAllowed(response);
+	
+	public InvoiceLookupServlet() {
+		super(Permission.INVOICE_READ);
+		cols = new String[] { 
+				InvoiceLookupQuery.INVOICE_ID,
+				InvoiceLookupQuery.FLEETMATICS_INVOICE_NBR,
+				InvoiceLookupQuery.DIV,
+				InvoiceLookupQuery.BILL_TO_NAME,
+				InvoiceLookupQuery.TICKET_COUNT,
+				InvoiceLookupQuery.INVOICE_DATE,
+				InvoiceLookupQuery.INVOICE_AMOUNT,
+				InvoiceLookupQuery.INVOICE_TAX,
+				InvoiceLookupQuery.INVOICE_TOTAL,
+				InvoiceLookupQuery.INVOICE_PAID,
+				InvoiceLookupQuery.INVOICE_BALANCE,
+				};
+		super.itemTransformer = new ItemTransformer();
 	}
 	
 	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		super.sendNotAllowed(response);
-	}
+	public LookupQuery makeQuery(Connection conn, HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		SessionData sessionData = (SessionData)session.getAttribute(SessionData.KEY);
 
-	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+		SessionUser user = sessionData.getUser();
+		List<SessionDivision> divisionList = sessionData.getDivisionList();
+		
+		/** 
+		 * This parameter is passed from a link on the Print Invoice page, so it is used to filter 
+		 * for unprinted invoices (Status='N') within a division 
+		 **/
+		String filterDivisionId = request.getParameter("divisionId");
+		String filterPPCValue = request.getParameter(InvoiceLookupForm.PPC_FILTER);
+		logger.log(Level.DEBUG, "filterPPCValue: " + filterPPCValue);
+		Boolean filterPPC = ! StringUtils.isBlank(filterPPCValue) &&  filterPPCValue.equalsIgnoreCase("yes");
+		
+		
+		String searchTerm = null;
+		if(request.getParameter("search[value]") != null){
+			searchTerm = request.getParameter("search[value]");
+		}
+		
+		
+		InvoiceLookupQuery lookupQuery = new InvoiceLookupQuery(user.getUserId(), divisionList);
+		lookupQuery.addBaseFilter(user.getUserId());
+		
+		if ( StringUtils.isNotBlank(filterDivisionId) && StringUtils.isNumeric(filterDivisionId)) {
+			lookupQuery.addColumnFilter(new ColumnFilter("division.division_id", filterDivisionId, ComparisonType.EQUAL_NUMBER));			
+		}
+		if ( filterPPC ) {
+			lookupQuery.addColumnFilter(new ColumnFilter(InvoiceLookupQuery.INVOICE_BALANCE, Integer.valueOf(0), ComparisonType.NOTEQUAL_NUMBER));
+		}
+		
+		if ( searchTerm != null ) {
+			lookupQuery.setSearchTerm(searchTerm);
+		}
+
+		return lookupQuery;
+
+	}
+	
+	@Deprecated
+	protected void doGetX(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		/** 
 		 * This parameter is passed from a link on the Print Invoice page, so it is used to filter 
@@ -156,7 +216,7 @@ public class InvoiceLookupServlet extends AbstractServlet {
 	}
 
 
-
+	@Deprecated
 	private List<InvoiceLookupResponseItem> makeFetchData(Connection conn, Integer userId, Integer amount, Integer start, String term, String filterDivisionId, Boolean filterPPC, String colName, String dir) throws Exception {
 		logger.log(Level.DEBUG, "Getting fetch data");
 		logger.log(Level.DEBUG, "Amount: " + amount);
@@ -177,6 +237,22 @@ public class InvoiceLookupServlet extends AbstractServlet {
 	}
 	
 
+	public class ItemTransformer implements Transformer<HashMap<String, Object>, HashMap<String, Object>> {
+		private SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy"); 
+
+		@Override
+		public HashMap<String, Object> transform(HashMap<String, Object> arg0) {
+			
+			Timestamp invoiceDate = (Timestamp)arg0.get(InvoiceDetailLookupQuery.INVOICE_DATE);
+			if ( invoiceDate != null ) {
+				String invoiceDateDisplay = sdf.format(invoiceDate);
+				arg0.put(InvoiceDetailLookupQuery.INVOICE_DATE, invoiceDateDisplay);
+			}
+			
+			return arg0;
+		}
+		
+	}
 
 
 }
