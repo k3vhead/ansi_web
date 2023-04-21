@@ -50,17 +50,17 @@ public class InvoiceGenerationServlet extends AbstractServlet {
 			try{
 				conn = AppUtils.getDBCPConn();
 				String jsonString = super.makeJsonString(request);
-				InvoiceGenerationRequest invoiceGenerationRequest = (InvoiceGenerationRequest)AppUtils.json2object(jsonString, InvoiceGenerationRequest.class);
-//				ansiURL = new AnsiURL(request, "invoiceGeneration", (String[])null); //  .../ticket/etc
-				//kjw SessionData sessionData = AppUtils.validateSession(request, Permission.INVOICE, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+				InvoiceGenerationRequest invoiceGenerationRequest = new InvoiceGenerationRequest();
+				AppUtils.json2object(jsonString, invoiceGenerationRequest);
 				SessionData sessionData = AppUtils.validateSession(request, Permission.INVOICE_WRITE);
 				
 				SessionUser sessionUser = sessionData.getUser(); 
-				List<String> addErrors = super.validateRequiredAddFields(invoiceGenerationRequest);
-				if ( addErrors.isEmpty() ) {
+				WebMessages webMessages = invoiceGenerationRequest.validate(conn);
+				
+				if ( webMessages.isEmpty() ) {
 					processUpdate(conn, response, invoiceGenerationRequest, sessionUser);
 				} else {
-					processError(conn, response, addErrors);
+					processError(conn, response, webMessages);
 				}
 				conn.commit();
 			} catch ( InvalidFormatException e ) {
@@ -97,7 +97,7 @@ public class InvoiceGenerationServlet extends AbstractServlet {
 		invoiceDate.setTime(invoiceGenerationRequest.getInvoiceDate());
 		Boolean monthlyFlag = invoiceGenerationRequest.getMonthlyFlag();
 		Integer userId = sessionUser.getUserId();
-		InvoiceUtils.generateInvoices(conn, invoiceDate, monthlyFlag, userId);
+		InvoiceUtils.generateInvoices(conn, invoiceDate, monthlyFlag, invoiceGenerationRequest.getDivisionList(), userId);
 		
 		WebMessages webMessages = new WebMessages();
 		webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Update Successful");
@@ -108,12 +108,7 @@ public class InvoiceGenerationServlet extends AbstractServlet {
 	}
 
 
-	private void processError(Connection conn, HttpServletResponse response, List<String> addErrors) throws Exception {
-		WebMessages webMessages = new WebMessages();
-		for ( String error : addErrors ) {
-			webMessages.addMessage(error, "Required field");
-		}
-		
+	private void processError(Connection conn, HttpServletResponse response, WebMessages webMessages) throws Exception {
 		InvoiceGenerationResponse data = new InvoiceGenerationResponse();
 		data.setWebMessages(webMessages);
 		super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);

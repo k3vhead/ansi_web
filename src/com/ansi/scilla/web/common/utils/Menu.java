@@ -46,7 +46,7 @@ public enum Menu {
 	PRINT_TICKETS(		"Print Tickets", 		QUICK_LINKS, Permission.TICKET_WRITE,	"ticketPrint.html"),
 //	ASSIGN_TICKETS(		"Assign Tickets", 		QUICK_LINKS, Permission.TICKET_WRITE,	"ticketAssignment.html"),
 	TICKET_RETURN(		"Ticket Return", 		QUICK_LINKS, Permission.TICKET_WRITE,	"ticketReturn.html"),
-	GENERATE_INVOICES(	"Generate Invoices", 	QUICK_LINKS, Permission.INVOICE_WRITE,	"invoiceGeneration.html"),
+	GENERATE_INVOICES(	"Generate Invoices (Div)", 	QUICK_LINKS, Permission.INVOICE_WRITE,	"invoiceGeneration.html"),
 	PRINT_INVOICES(		"Print Invoices", 		QUICK_LINKS, Permission.INVOICE_WRITE,	"invoicePrint.html"),
 	ENTER_PAYMENT(		"Enter Payment", 		QUICK_LINKS, Permission.PAYMENT_WRITE,	"payment.html"),
 	TICKET_OVERRIDE(	"Ticket Override", 		QUICK_LINKS, Permission.TICKET_WRITE,	"ticketOverride.html"),
