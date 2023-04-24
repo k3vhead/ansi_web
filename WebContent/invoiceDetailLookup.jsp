@@ -120,7 +120,7 @@
 	//         	            { "orderable": false, "targets": -1 },  // Need to re-add this when we add the action column back in
 	        	            { className: "dt-left", "targets": [0,1,2,6,7] },
 	        	            { className: "dt-center", "targets": [3,,9,10,11] },
-	        	            { className: "dt-right", "targets": [4,5,12,13,14,15,16,17]}
+	        	            { className: "dt-right", "targets": [4,5,12,13,14,15,16]}
 	        	         ],
 	        	        "paging": true,
 				        "ajax": {
@@ -154,20 +154,17 @@
 				            { title: "Job Site Address",  "defaultContent": "<i>-</i>", width:"12%", searchable:true, data: function ( row, type, set ) {
 				            	if(row.job_site_address != null){return (row.job_site_address+"");}
 				            } },
-				            { title: "Tickt",  "defaultContent": "<i>N/A</i>", width:"4%", searchable:true, data: function ( row, type, set ) {
+				            { title: "Ticket",  "defaultContent": "<i>N/A</i>", width:"4%", searchable:true, data: function ( row, type, set ) {
 				            	if(row.ticket_id != null){return ('<a href="#" data-id="'+row.ticket_id+'" class="ticket-clicker">'+row.ticket_id+'</a>');}
 				            } },
-				            { title: "Tkt<br />Type",  "defaultContent": "<i>N/A</i>", width:"2%", searchable:true, data: function ( row, type, set ) {
+				            { title: "Ticket<br />Type",  "defaultContent": "<i>N/A</i>", width:"2%", searchable:true, data: function ( row, type, set ) {
 				            	if(row.ticket_type != null){return (row.ticket_type_display);}
 				            } },
-				            { title: "Tkt<br />Status",  "defaultContent": "<i>N/A</i>", width:"2%", searchable:true, data: function ( row, type, set ) {
+				            { title: "Ticket<br />Status",  "defaultContent": "<i>N/A</i>", width:"2%", searchable:true, data: function ( row, type, set ) {
 				            	if(row.ticket_status != null){return ('<span class="tooltip">' + row.ticket_status + '<span class="tooltiptext">' + row.ticket_status_display + '</span></span>');}
 				            } },
 				            { title: "Completed",  "defaultContent": "<i>N/A</i>", width:"4%", searchable:true, searchFormat: "YYYY-MM-dd", data: function ( row, type, set ) {
 				            	if(row.completed_date != null){return (row.completed_date);}
-				            } },
-				            { title: "PPO",  "defaultContent": "<i>N/A</i>", width:"2%", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
-				            	if(row.ppo != null){return (row.ppo.toFixed(2));}
 				            } },
 				            { title: "PPC",  "defaultContent": "<i>N/A</i>", width:"4%", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
 				            	if(row.ppc != null){return (row.ppc.toFixed(2));}
