@@ -224,6 +224,12 @@
             <forward name="valid" path="/invoiceGeneration.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
+		<action
+            path="/invoiceGenerationTkt"
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
+            <forward name="valid" path="/invoiceGenerationTkt.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
         <action
             path="/invoiceDetailLookup"
             type="com.ansi.scilla.web.invoice.action.InvoiceLookupAction"

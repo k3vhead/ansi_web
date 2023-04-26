@@ -525,6 +525,16 @@
 		<servlet-name>invoiceGeneration</servlet-name>
 		<url-pattern>/invoiceGeneration/*</url-pattern>
 	</servlet-mapping>
+	
+	
+	<servlet>
+		<servlet-name>invoiceGenerationTkt</servlet-name>
+		<servlet-class>com.ansi.scilla.web.invoice.servlet.InvoiceGenerationTktServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>invoiceGenerationTkt</servlet-name>
+		<url-pattern>/invoiceGenerationTkt</url-pattern>
+	</servlet-mapping>
 
 
 	<servlet>
@@ -1160,6 +1170,15 @@
 	</servlet-mapping>
 
 
+	<servlet>
+		<servlet-name>ticketInvoiceLookup</servlet-name>
+		<servlet-class>com.ansi.scilla.web.invoice.servlet.TicketInvoiceLookupServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ticketInvoiceLookup</servlet-name>
+		<url-pattern>/ticketInvoiceLookup</url-pattern>
+	</servlet-mapping>
+	
 
 	<servlet>
 		<servlet-name>ticketPrint</servlet-name>
