@@ -166,8 +166,8 @@
 				            { title: "Completed",  "defaultContent": "<i>N/A</i>", width:"4%", searchable:true, searchFormat: "YYYY-MM-dd", data: function ( row, type, set ) {
 				            	if(row.completed_date != null){return (row.completed_date);}
 				            } },
-				            { title: "PPO",  "defaultContent": "<i>N/A</i>", width:"2%", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
-				            	if(row.ppo != null){return (row.ppo.toFixed(2));}
+				            { title: "PO",  "defaultContent": "<i>N/A</i>", width:"2%", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
+				            	if(row.act_purchase_order != null){return (row.act_purchase_order.toFixed(2));}
 				            } },
 				            { title: "PPC",  "defaultContent": "<i>N/A</i>", width:"4%", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
 				            	if(row.ppc != null){return (row.ppc.toFixed(2));}
