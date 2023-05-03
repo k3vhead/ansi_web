@@ -50,6 +50,7 @@ public class InvoiceDetailLookupServlet extends AbstractLookupServlet {
 				InvoiceDetailLookupQuery.TICKET_TYPE,
 				InvoiceDetailLookupQuery.TICKET_STATUS,
 				InvoiceDetailLookupQuery.COMPLETED_DATE,
+				InvoiceDetailLookupQuery.PURCHASE_ORDER,
 				InvoiceDetailLookupQuery.PPC,
 				InvoiceDetailLookupQuery.TAXES,
 				InvoiceDetailLookupQuery.TOTAL,
