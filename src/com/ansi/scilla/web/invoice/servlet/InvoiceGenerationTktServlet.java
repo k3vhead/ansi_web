@@ -2,14 +2,18 @@ package com.ansi.scilla.web.invoice.servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.Calendar;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.logging.log4j.Level;
+
 import com.ansi.scilla.common.AnsiTime;
-// import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.invoice.InvoiceUtils;
 import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.common.response.ResponseCode;
@@ -21,45 +25,37 @@ import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
-import com.ansi.scilla.web.invoice.request.InvoiceGenerationRequest;
+import com.ansi.scilla.web.invoice.query.InvoiceLookupQuery;
+import com.ansi.scilla.web.invoice.request.InvoiceGenerationRequestTkt;
 import com.ansi.scilla.web.invoice.response.InvoiceGenerationResponse;
+import com.ansi.scilla.web.invoice.response.InvoiceGenerationTktResponse;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
-
-
-public class InvoiceGenerationServlet extends AbstractServlet {
+public class InvoiceGenerationTktServlet extends AbstractServlet {
 
 	private static final long serialVersionUID = 1L;
-	
-	
-	
-	@Override
-	protected void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {		
-		super.sendNotAllowed(response);
-	}
-
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-//		AnsiURL ansiURL = null; 
 		Connection conn = null;
 		try {
 			try{
 				conn = AppUtils.getDBCPConn();
 				String jsonString = super.makeJsonString(request);
-				InvoiceGenerationRequest invoiceGenerationRequest = new InvoiceGenerationRequest();
+				InvoiceGenerationRequestTkt invoiceGenerationRequest = new InvoiceGenerationRequestTkt();
 				AppUtils.json2object(jsonString, invoiceGenerationRequest);
 				SessionData sessionData = AppUtils.validateSession(request, Permission.INVOICE_WRITE);
 				
 				SessionUser sessionUser = sessionData.getUser(); 
-				WebMessages webMessages = invoiceGenerationRequest.validate(conn);
+				InvoiceGenerationTktResponse tktResponse = invoiceGenerationRequest.validate(conn);
 				
-				if ( webMessages.isEmpty() ) {
+				boolean goodRequest = tktResponse.getWebMessages().isEmpty();
+				goodRequest = goodRequest == true && ( tktResponse.getTicketErrorList() == null || tktResponse.getTicketErrorList().size() == 0 );
+				if ( goodRequest ) {
 					processUpdate(conn, response, invoiceGenerationRequest, sessionUser);
 				} else {
-					processError(conn, response, webMessages);
+					processError(conn, response, tktResponse);
 				}
 				conn.commit();
 			} catch ( InvalidFormatException e ) {
@@ -82,40 +78,41 @@ public class InvoiceGenerationServlet extends AbstractServlet {
 	}
 
 	
-	
-	@Override
-	protected void doDelete(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		
-		super.sendNotAllowed(response);
-	}
+	private void processUpdate(Connection conn, HttpServletResponse response,
+			InvoiceGenerationRequestTkt invoiceGenerationRequest, SessionUser sessionUser) throws Exception {
+		InvoiceGenerationTktResponse data = new InvoiceGenerationTktResponse();
 
-
-	private void processUpdate(Connection conn, HttpServletResponse response, InvoiceGenerationRequest invoiceGenerationRequest, SessionUser sessionUser) throws Exception {
 		Calendar invoiceDate = Calendar.getInstance(new AnsiTime());
 		invoiceDate.setTime(invoiceGenerationRequest.getInvoiceDate());
-		Boolean monthlyFlag = invoiceGenerationRequest.getMonthlyFlag();
 		Integer userId = sessionUser.getUserId();
-		InvoiceUtils.generateInvoices(conn, invoiceDate, monthlyFlag, invoiceGenerationRequest.getDivisionList(), userId);
+		List<Integer> invoiceList = InvoiceUtils.generateInvoicesForTicketList(conn, invoiceDate, invoiceGenerationRequest.getTicketList(), userId);
+		//Note: commit is done in the generateInvoices method
+		
+		String sql = InvoiceLookupQuery.sqlSelectClause + InvoiceLookupQuery.sqlFromClause + "where invoice.invoice_id in " + AppUtils.makeBindVariables(invoiceList);
+		logger.log(Level.DEBUG, sql);
+		PreparedStatement ps = conn.prepareStatement(sql);
+		ps.setInt(1, sessionUser.getUserId()); //user id
+		for ( int i = 0; i < invoiceList.size(); i++ ) {
+			ps.setInt(i+2, invoiceList.get(i));
+			logger.log(Level.DEBUG, "Invoice: " + invoiceList.get(i));
+		}
+		ResultSet rs = ps.executeQuery();
+		while ( rs.next() ) {
+			data.addInvoiceDisplay(rs);
+		}
+		rs.close();
+		
 		
 		WebMessages webMessages = new WebMessages();
 		webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Update Successful");
-		InvoiceGenerationResponse data = new InvoiceGenerationResponse();
 		data.setWebMessages(webMessages);
 		super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
-		
 	}
 
-
-	private void processError(Connection conn, HttpServletResponse response, WebMessages webMessages) throws Exception {
-		InvoiceGenerationResponse data = new InvoiceGenerationResponse();
-		data.setWebMessages(webMessages);
-		super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
+	
+	private void processError(Connection conn, HttpServletResponse response, InvoiceGenerationTktResponse tktResponse) throws Exception {
+		super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, tktResponse);
 	}
-
-
-
-
 
 	
 }

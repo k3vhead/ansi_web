@@ -130,6 +130,9 @@ public class ColumnFilter extends ApplicationObject {
 		return columnName + " in (" + StringUtils.join(valueList, ",") + ")";
 	}
 	
+	public String toNullCheck() {		
+		return columnName + " is null";
+	}
 	
 	public enum ComparisonType {
 		LIKE("toLike"),
@@ -139,6 +142,7 @@ public class ColumnFilter extends ApplicationObject {
 		LIST_NUMBER("toListNumber"),
 		LIST_STRING("toListString"),
 		NOTEQUAL_NUMBER("toNeNumber"),
+		IS_NULL("toNullCheck"),
 		;
 		
 		private final String methodName;
