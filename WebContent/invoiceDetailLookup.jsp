@@ -167,7 +167,7 @@
 				            	if(row.completed_date != null){return (row.completed_date);}
 				            } },
 				            { title: "PO",  "defaultContent": "<i>N/A</i>", width:"2%", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
-				            	if(row.act_purchase_order != null){return (row.act_purchase_order.toFixed(2));}
+				            	if(row.purchase_order != null){return (row.purchase_order;}
 				            } },
 				            { title: "PPC",  "defaultContent": "<i>N/A</i>", width:"4%", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
 				            	if(row.ppc != null){return (row.ppc.toFixed(2));}
