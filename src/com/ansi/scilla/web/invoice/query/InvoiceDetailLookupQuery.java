@@ -36,7 +36,7 @@ public class InvoiceDetailLookupQuery extends LookupQuery {
 	public static final String TICKET_TYPE = "ticket_type"; 
 	public static final String COMPLETED_DATE = "process_date"; 
 	public static final String INVOICE_DATE = "invoice_date"; 
-	public static final String PURCHASE_ORDER = "purchase_order"; 
+	public static final String PO_NUMBER = "po_number"; 
 	public static final String PPC = "act_price_per_cleaning"; 
 	public static final String TAXES = "act_tax_amt"; 
 	public static final String TOTAL = "isnull(act_price_per_cleaning,0.00) + isnull(act_tax_amt,0.00)"; 
@@ -57,7 +57,7 @@ public class InvoiceDetailLookupQuery extends LookupQuery {
 			"	, ticket_type\n" + 
 			"	, process_date as completed_date\n" + 
 			"	, invoice_date \n" +
-			"	, purchase_order \n" + 
+			"	, po_number \n" + 
 			"	, act_price_per_cleaning as ppc\n" + 
 			"	, act_tax_amt as taxes\n" + 
 			"	, isnull(act_price_per_cleaning,0.00) + isnull(act_tax_amt,0.00) as total\n" + 
@@ -147,7 +147,7 @@ public class InvoiceDetailLookupQuery extends LookupQuery {
 					"invoice_totals.amount",
 					"invoice_totals.tax_amt",
 					"ticket.ticket_id",
-					"purchase_order",
+					"po_number",
 					"act_price_per_cleaning",
 					"act_tax_amt",
 					"ticket_payment_totals.total",

@@ -166,16 +166,14 @@
 				            { title: "Completed",  "defaultContent": "<i>N/A</i>", width:"4%", searchable:true, searchFormat: "YYYY-MM-dd", data: function ( row, type, set ) {
 				            	if(row.completed_date != null){return (row.completed_date);}
 				            } },
-				            { title: "PO",  "defaultContent": "<i>N/A</i>", width:"2%", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
-				            	if(row.purchase_order != null){return (row.purchase_order;}
-				            } },
+				            { title: "PO",  "defaultContent": "<i>N/A</i>", width:"2%", searchable:true, searchFormat: "#.##", data: purchase_order;}
 				            { title: "PPC",  "defaultContent": "<i>N/A</i>", width:"4%", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
 				            	if(row.ppc != null){return (row.ppc.toFixed(2));}
 				            } },
 				            { title: "Tax",  "defaultContent": "<i>N/A</i>", width:"4%", searchable:true, searchFormat: "#.##",  data: function ( row, type, set ) {
 				            	if(row.taxes != null){return (row.taxes.toFixed(2));}
 				            } },
-				            { title: "Total",  "defaultContent": "<i>N/A</i>",width:"4%", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
+  				            { title: "Total",  "defaultContent": "<i>N/A</i>",width:"4%", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
 				            	if(row.total != null){return (row.total.toFixed(2));}
 				            } },
 				            { title: "Paid",  "defaultContent": "<i>N/A</i>", width:"4%", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
