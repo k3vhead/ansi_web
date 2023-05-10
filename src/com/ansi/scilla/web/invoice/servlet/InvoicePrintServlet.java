@@ -151,7 +151,7 @@ public class InvoicePrintServlet extends AbstractServlet {
 		} else {
 			invoiceFileName = "allDivisions";
 		}
-		invoiceFileName = invoiceFileName + "_" + fileDate + ".pdf";
+		invoiceFileName = invoiceFileName + "_" + fileDate + ".zip";
 
 
 		Calendar printCalendar = Calendar.getInstance(new AnsiTime());
