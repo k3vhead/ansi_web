@@ -187,7 +187,7 @@
     				            	}
     				            }},
     				            { title: "<bean:message key="field.label.action" />", width:"8%",  data: function ( row, type, set ) {
-    				            	if ( row.printCount > 0 ) {
+    				            	if ( row.print_count > 0 ) {
     				            		$printText =  '<i class="fa fa-print invoicePrint tooltip" aria=hidden="true" data-invoiceId="'+row.invoice_id+'"><span class="tooltiptext">Reprint</span></i>';
     				            	} else {
     				            		$printText = ""; 
