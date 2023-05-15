@@ -219,7 +219,7 @@
     			        	{ title: "ID", width:"25%", searchable:true, "defaultContent": "", data:'property_id' }, 
     			            { title: "Value", width:"20%", searchable:true, "defaultContent": "", data:'value_trunc' },
     			            { title: "Format", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'format' },
-    			            { title: "Description", width:"25%", searchable:true, "defaultContent": "<i>N/A</i>", data:'desc' },
+    			            { title: "Description", width:"25%", searchable:true, "defaultContent": "<i>N/A</i>", data:'desc_trunc' },
     			            { title: "Enum|DB", width:"5%", searchable:false, "defaultContent":"",
     			            	data: function ( row, type, set ) {
     			            		if ( row.db == true ) {
