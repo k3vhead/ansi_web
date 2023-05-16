@@ -56,7 +56,7 @@
                 	});
 
                 	INVOICEPRINT.makeTable();
-    				INVOICE_PRINT.init("printModal")
+    				INVOICE_PRINT.init("printModal", INVOICEPRINT.makeTable)
         		},
 
         		

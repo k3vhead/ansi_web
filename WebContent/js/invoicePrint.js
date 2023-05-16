@@ -1,7 +1,10 @@
 ;INVOICE_PRINT = {
-		init : function($modalName) {
+		callback : null,
+		modalName : null, 
+		
+		init : function($modalName, $callbackFunction) {
 			INVOICE_PRINT.modalName = $modalName;
-			
+			INVOICE_PRINT.callback = $callbackFunction;	
 
 			// set up the activate modal window
 			var $modalSelector = "#" + $modalName;
@@ -115,6 +118,9 @@
 	    					a.target = "_new";   // open in a new window
 	    					document.body.appendChild(a);
 	    					a.click();
+	    					if ( INVOICE_PRINT.callback != null ) {
+	    						INVOICE_PRINT.callback();
+    						}
 	    				}
 	    			},
     				403: function($data) {
