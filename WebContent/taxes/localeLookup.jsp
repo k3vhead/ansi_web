@@ -177,7 +177,7 @@
     			            	if ( row.locale_id != null ) {
     				            	var $editLink = '<ansi:hasPermission permissionRequired="TAX_WRITE"><a href="#" class="editAction" data-id="'+row.locale_id+'" data-name="'+row.locale_id+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>&nbsp;';
     				            	var $aliasLink = '<span class="action-link alias-link" data-id="'+row.locale_id+'"><webthing:view>Alias</webthing:view></span>';
-									var $taxLink = '' //'<ansi:hasPermission permissionRequired="TAX_WRITE"><a href="taxRateLookup.html?id='+row.locale_id+'"><webthing:taxes>Taxes</webthing:taxes></a></ansi:hasPermission>&nbsp;';
+									var $taxLink = '<ansi:hasPermission permissionRequired="TAX_WRITE"><a href="taxRateLookup.html?id='+row.locale_id+'"><webthing:taxes>Taxes</webthing:taxes></a></ansi:hasPermission>&nbsp;';
 									var $deleteLink = '';
 									if ( row.can_delete == 1 ) {
     				            		var $deleteLink = '<ansi:hasPermission permissionRequired="TAX_WRITE"><a href="#" class="deleteAction" data-id="'+row.locale_id+'" data-name="'+row.locale_id+'"><webthing:delete>Delete</webthing:delete></a></ansi:hasPermission>&nbsp;';
