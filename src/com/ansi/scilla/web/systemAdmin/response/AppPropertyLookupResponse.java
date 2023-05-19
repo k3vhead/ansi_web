@@ -33,6 +33,7 @@ public class AppPropertyLookupResponse extends MessageResponse {
 	private final String VALUE_DATE = "value_date";
 	private final String VALUE = "value";
 	private final String DESC = "desc";
+	private final String DESC_TRUNC = "desc_trunc";
 	private final String SOURCE_DB = "db";
 	private final String SOURCE_ENUM = "enum";
 	private final String FORMAT = "format";
@@ -68,6 +69,7 @@ public class AppPropertyLookupResponse extends MessageResponse {
 				propertyList.add(row);
 			}
 		}
+		CollectionUtils.transform(propertyList, new DescriptionTransformer());
 		this.propertyList = propertyList;
 	}
 	
@@ -137,6 +139,7 @@ public class AppPropertyLookupResponse extends MessageResponse {
 		
 		@Override
 		public HashMap<String, Object> transform(HashMap<String, Object> arg0) {
+			
 			arg0.put(SOURCE_DB, false);
 			arg0.put(SOURCE_ENUM, false);
 			arg0.put(VALUE_TRUNC, null);
@@ -195,6 +198,16 @@ public class AppPropertyLookupResponse extends MessageResponse {
 		}
 		
 	}
+	
+	public class DescriptionTransformer implements Transformer<HashMap<String, Object>, HashMap<String,Object>> {
+		@Override
+		public HashMap<String, Object> transform(HashMap<String, Object> arg0) {
+			String desc = (String)arg0.get(DESC);
+			arg0.put(DESC_TRUNC, StringUtils.isBlank(desc) ? "N/A" : StringUtils.abbreviate(desc, 65) );
+			return arg0;
+		}	
+	}
+	
 	
 	private class IdPredicate implements Predicate<HashMap<String, Object>> {
 		ApplicationPropertyName appProperty;
