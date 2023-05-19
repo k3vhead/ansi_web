@@ -16,17 +16,19 @@ public enum Menu {
 	JOBS_PAC(			"Jobs (PAC)", 			LOOKUPS, Permission.QUOTE_READ,		"jobLookup.html?type=PAC"),
 	JOBS_CONTACT(		"Jobs (Contact)", 		LOOKUPS, Permission.QUOTE_READ,		"jobLookup.html?type=CONTACT"),
 	JOBTAGS(			"Job Tags", 			LOOKUPS, Permission.QUOTE_READ,		"jobTagLookup.html"),
+	JOB_NOTE_LOOKUP(    "Job Notes",            LOOKUPS, Permission.QUOTE_READ,     "jobNoteLookup.html"),
 	TICKETS(			"Tickets", 				LOOKUPS, Permission.TICKET_READ,	"ticketLookup.html"),
 //	TICKET_ASSIGNMENT(	"Ticket Assignments",	LOOKUPS, Permission.TICKET_READ,	"ticketAssignmentLookup.html"),
+	TICKET_CLAIMS(      "Ticket Claims",        LOOKUPS, Permission.CLAIMS_READ,    "claimLookup.html"),
 	INVOICES(			"Invoices", 			LOOKUPS, Permission.INVOICE_READ, 	"invoiceLookup.html"),
 	INVOICE_DETAIL(     "Invoice Detail",       LOOKUPS, Permission.INVOICE_READ,   "invoiceDetailLookup.html"),
 	PAYMENTS(			"Payments", 			LOOKUPS, Permission.PAYMENT_READ, 	"paymentLookup.html"),
 	LOCALE(             "Locale",               LOOKUPS, Permission.TAX_READ,       "localeLookup.html"),
-	//TAXRATE_LOOKUP(	    "Tax Rate Lookup",		LOOKUPS, Permission.TAX_READ,	    "taxRateLookup.html"),
-	//LOCALE_DIVISION(	"Nexus Taxed Lookup",	LOOKUPS, Permission.TAX_READ,		"localeDivisionLookup.html"),
+	TAXRATE_LOOKUP(	    "Tax Rate Lookup",		LOOKUPS, Permission.TAX_READ,	    "taxRateLookup.html"),
+	LOCALE_DIVISION(	"Nexus Taxed Lookup",	LOOKUPS, Permission.TAX_READ,		"localeDivisionLookup.html"),
 	CALL_NOTES(         "Call Notes",           LOOKUPS, Permission.CALL_NOTE_READ, "callNoteLookup.html"),
 	CALENDAR(           "ANSI Calendar",        LOOKUPS, Permission.CALENDAR_READ,  "calendarLookup.html"),
-	DOCUMENT_LOOKUP(	"Document", 			LOOKUPS, Permission.DOCUMENT_READ, "documentLookup.html"),
+	DOCUMENT_LOOKUP(	"Document", 			LOOKUPS, Permission.DOCUMENT_READ,  "documentLookup.html"),
 
 	
 	REPORTS("Reports", null, null,"#"),
@@ -65,8 +67,8 @@ public enum Menu {
 	
 	
 	SETTINGS("Settings", null, Permission.SYSADMIN_READ,"#"),
-	// TAX_MAINTENANCE(	"Tax Rate Archive",		SETTINGS,	Permission.SYSADMIN_READ,	"taxRateMaintenance.html"),
-	TAX_MAINTENANCE(	"Tax Maintenance",		SETTINGS,	Permission.SYSADMIN_READ,	"taxRateMaintenance.html"),
+	TAX_MAINTENANCE(	"Tax Rate Archive",		SETTINGS,	Permission.SYSADMIN_READ,	"taxRateMaintenance.html"),
+	//TAX_MAINTENANCE(	"Tax Maintenance",		SETTINGS,	Permission.SYSADMIN_READ,	"taxRateMaintenance.html"),
 	CODES(				"Codes",				SETTINGS,	Permission.SYSADMIN_READ,	"codeMaintenance.html"),
 	DIVISIONS(			"Divisions",			SETTINGS,	Permission.SYSADMIN_READ,	"divisionAdmin.html"),
 	COMPANIES(          "Companies",            SETTINGS,   Permission.SYSADMIN_READ,   "companies.html"),
@@ -77,6 +79,7 @@ public enum Menu {
 	REPORT_SUBSCRIPTION("Report Subscriptions", SETTINGS,   Permission.REPORT_SUBSCRIPTION_OVERRIDE, "reportSubscriptionAdmin.html"),
 	APP_PROPERTY(       "App Properties",       SETTINGS,   Permission.SYSADMIN_READ,   "applicationPropertiesLookup.html"),
 	MOTD(               "Message of the Day",   SETTINGS,   Permission.SYSADMIN_WRITE,  "motd.html"),
+	KNOWLEDGE_BASE(     "Knowledge Base",       SETTINGS,   Permission.KNOWLEDGE_WRITE, "knowledgeBaseLookup.html"),
 
 	
 	MY_ANSI("My ANSI", null, null,"#"),

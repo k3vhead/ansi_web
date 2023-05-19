@@ -20,6 +20,7 @@ import org.apache.logging.log4j.Logger;
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.queries.SelectType;
 import com.ansi.scilla.web.common.utils.ColumnFilter;
+// import com.ansi.scilla.web.payroll.query.ExceptionReportQuery;
 
 public abstract class LookupQuery extends ApplicationObject {
 	
@@ -312,6 +313,7 @@ public abstract class LookupQuery extends ApplicationObject {
 	
 	protected PreparedStatement makePreparedStatement(Connection conn, SelectType selectType, String searchSQL) throws SQLException {
 		PreparedStatement ps = conn.prepareStatement(searchSQL);
+//		Logger myLogger = LogManager.getLogger(ExceptionReportQuery.class);
 		Logger myLogger = LogManager.getLogger(LookupQuery.class);
 		myLogger.log(Level.DEBUG, "SelectType: " + selectType.name());
 		myLogger.log(Level.DEBUG, "SearchSQL: " + searchSQL);

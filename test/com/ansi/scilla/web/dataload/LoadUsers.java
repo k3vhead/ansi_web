@@ -92,7 +92,7 @@ public class LoadUsers {
 			System.out.println("Processing sheet: " + sheet.getSheetName());
 			for ( int rowNum = 1; rowNum < sheet.getLastRowNum()+1; rowNum++) {
 				XSSFRow row = sheet.getRow(rowNum);
-				Integer userId = new Double(row.getCell(columnMap.get("user_id")).getNumericCellValue()).intValue();
+				Integer userId = Double.valueOf(row.getCell(columnMap.get("user_id")).getNumericCellValue()).intValue();
 				String lastName = row.getCell(columnMap.get("last_name")).getStringCellValue();
 				String firstName = row.getCell(columnMap.get("first_name")).getStringCellValue();
 				String email = row.getCell(columnMap.get("email")).getStringCellValue();
@@ -137,7 +137,7 @@ public class LoadUsers {
 	}
 
 	private String doUpdate(PreparedStatement ps, Date today, XSSFRow row) throws SQLException {
-		Integer userId = new Double(row.getCell(columnMap.get("user_id")).getNumericCellValue()).intValue();
+		Integer userId = Double.valueOf(row.getCell(columnMap.get("user_id")).getNumericCellValue()).intValue();
 		Integer passnum = r.nextInt(1000-100) + 100;
 		String password = "password" + passnum;
 		String encryptedPassword = AppUtils.encryptPassword(password, userId);	

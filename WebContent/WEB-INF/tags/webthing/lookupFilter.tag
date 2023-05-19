@@ -1,12 +1,13 @@
 <%@ tag description="" body-content="scriptless" %>
 <%@ taglib tagdir="/WEB-INF/tags/webthing" prefix="webthing" %> 
 <%@ attribute name="filterContainer" required="true" rtexprvalue="true" %>
-<%@ attribute name="styleId" required="false" rtexprvalue="true" %>
-<%@ attribute name="style" required="false" rtexprvalue="true" %>
+<%@ attribute name="styleClass" required="false" rtexprvalue="true" %>
 <%
     String filterContainer = (String)jspContext.getAttribute("filterContainer"); 
+	String styleClass = (String)jspContext.getAttribute("styleClass"); 
+	String styleClassString = styleClass == null || styleClass.equals("") ? "" : "class=\"" + styleClass + "\"";
 %>
-<div id="<%= filterContainer %>">
+<div id="<%= filterContainer %>" <%=styleClassString %>>
     <div class="filter-banner">
         <div class="panel-button-container"> 
         	<webthing:ban styleClass="clear-filter-button red">Clear</webthing:ban>

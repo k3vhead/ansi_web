@@ -40,11 +40,12 @@ public class SixMonthRollingVolumeWebReport extends CompoundReport implements Re
 
 	
 	public String makeFileName(String arg0, Calendar arg1, Division arg2, Calendar arg3, Calendar arg4) {
-		throw new RuntimeException("This is only here to make the compiler happy");
+		throw new RuntimeException("This method is only here to make the compiler happy");
 	}
 
 
 	public String makeFileName(Calendar runDate, Division division, Calendar startDate, Calendar endDate) {
+		//return makeFileName(SixMonthRollingVolumeReport.FILENAME, runDate, division, startDate, endDate);
 		return makeFileName(FILENAME, runDate, division, startDate, endDate);
 	}
 

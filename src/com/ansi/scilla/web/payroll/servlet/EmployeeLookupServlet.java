@@ -30,6 +30,7 @@ public class EmployeeLookupServlet extends AbstractLookupServlet {
 	public static final String REALM = "employeeLookup";
 	
 	public static final String EMPLOYEE_CODE = "payroll_employee.employee_code";
+	public static final String VENDOR_EMPLOYEE_CODE = "payroll_employee.vendor_employee_code";
 	public static final String COMPANY_CODE = "company_code";
 	public static final String DIVISION = "concat(division.division_nbr, '-',division.division_code)";
 //	public static final String "	division_id";
@@ -52,6 +53,7 @@ public class EmployeeLookupServlet extends AbstractLookupServlet {
 		super(Permission.PAYROLL_READ);
 		cols = new String[] { 
 			EMPLOYEE_CODE,
+			VENDOR_EMPLOYEE_CODE,
 			COMPANY_CODE,
 			DIVISION,
 //				"	division_id";

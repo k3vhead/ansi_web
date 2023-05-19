@@ -77,21 +77,42 @@
 		
 		
 		var $nameSelector = $modalName + " input[name='employeeName']";
-		var $codeSelector = $modalName + " input[name='employeeCode']"
+		var $codeSelector = $modalName + " input[name='employeeCode']";
+		var $divisionSelector = $modalName + " select[name='divisionId']";
+		var $vendorCodeSelector = $modalName + " input[name='vendorEmployeeCode']";
 		$( $nameSelector ).autocomplete({
-			'source':"payroll/employeeAutoComplete?",
+			'source':function(request, response) {
+				$.ajax({
+					url:"payroll/employeeAutoComplete?",
+					dataType:"json",
+					data : {term:request.term,divisionId:$($divisionSelector).val()},
+					success:function($data) {
+						response($data);
+					}		
+				});
+				
+			},
 			position:{my:"left top", at:"left bottom",collision:"none"},
 			appendTo:$modalName,
 			select: function( event, ui ) {
-				console.log(ui);
-				$($nameSelector).val(ui.item.label);
-				$($codeSelector).val(ui.item.id);
+				$($nameSelector).val(ui.item.employeeName); //ui.item.label);
+				$($codeSelector).val(ui.item.id); //ui.item.id);
+				$($vendorCodeSelector).val(ui.item.vendorEmployeeCode); //ui.item.value);
 				if ( ui.item.value == null || ui.item.value.trim() == "" ) {
-					$($nameSelector).val("")
-					$($codeSelector).val("")
+					$($nameSelector).val("");
+					$($codeSelector).val("");
+					$($vendorCodeSelector).val("");
 				}
 	      	}
 	 	});
+	 	
+	 	$( $nameSelector ).blur( function() {
+			var $name = $($nameSelector).val();
+			if ( $name == null || $name == "" ) {
+				$($codeSelector).val("");
+				$($vendorCodeSelector).val("");
+			}
+		});
 		        			
 		$( $codeSelector ).autocomplete({
 			'source':"payroll/employeeCodeComplete?",
@@ -180,7 +201,7 @@
 		} else {
 			$dataPay = "0";
 		}
-		return $("<td>").append($("<input>").attr("type","number").attr("name", $name).attr("step",".01").attr("data-payfield",$dataPay).attr("style","width:65px;").attr("placeholder","0.00"));
+		return $("<td>").append($("<input>").attr("type","number").attr("name", $name).attr("step",".01").attr("data-payfield",$dataPay).attr("class","payfield").attr("style","width:65px;").attr("placeholder","0.00"));
 	},
 	makeErr : function($name) {
 		return $("<td>").append( $("<span>").addClass("err").addClass($name+"Err")  );

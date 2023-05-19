@@ -126,10 +126,12 @@ public class BcrTicketServlet extends AbstractServlet {
 		WebMessages webMessages = bcrTicketRequest.validateUpdateClaimWeek(conn, ticketId);
 		if ( webMessages.isEmpty() ) {
 			String[] claimWeek = bcrTicketRequest.getNewClaimWeek().split("-");
+		//	PreparedStatement ps = conn.prepareStatement("update ticket_claim set claim_year=?, claim_week=? where ticket_id=?");
 			WorkYear workYear = new WorkYear(Integer.valueOf(claimWeek[0]));
-			
 			PreparedStatement ps = conn.prepareStatement("update ticket_claim set claim_year=?, claim_month=?, claim_week=? where ticket_id=?");
 			ps.setInt(1, Integer.valueOf(claimWeek[0]));
+		//	ps.setInt(2, Integer.valueOf(claimWeek[1]));
+		//	ps.setInt(3, ticketId);
 			ps.setInt(2, workYear.getWorkMonth(Integer.valueOf(claimWeek[1])));
 			ps.setInt(3, Integer.valueOf(claimWeek[1]));
 			ps.setInt(4, ticketId);

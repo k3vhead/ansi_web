@@ -75,6 +75,8 @@ public class BcrUtils {
 		
 		WorkYear workYear = new WorkYear(bcrRequest.getWorkYear());
 
+		WorkYear workYear = new WorkYear(bcrRequest.getWorkYear());
+		
 		Calendar today = Calendar.getInstance(new AnsiTime());
 		TicketClaim ticketClaim = new TicketClaim();
 		ticketClaim.setAddedBy(sessionUser.getUserId());

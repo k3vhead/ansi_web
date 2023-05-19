@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.ansi.scilla.common.utils.ApplicationPropertyName;
 import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.common.response.AbstractAutoCompleteItem;
 import com.ansi.scilla.web.common.servlet.AbstractAutoCompleteServlet;
@@ -57,16 +58,20 @@ public class BcrEmployeeAutoComplete extends AbstractAutoCompleteServlet {
 		
 		List<AbstractAutoCompleteItem> itemList = new ArrayList<AbstractAutoCompleteItem>();
 		
+		Integer bcrTrigger = ApplicationPropertyName.BCR_EMPLOYEE_LOOKUP_TRIGGER.getProperty(conn).getValueInt();
+		
 		String term = parameterMap.get("term").toLowerCase();
 		String divisionId = parameterMap.get("divisionId");
-		String sql = "select distinct employee_name \n" + 
-				"from ticket_claim \n" + 
-				"inner join ticket on ticket.ticket_id = ticket_claim.ticket_id\n" + 
-				"inner join division on division.division_id = ticket.act_division_id and ticket.act_division_id = ?\n" + 
-				"where lower(employee_name) like ?";
+		String sql = "select distinct employee_name\n"
+				+ "				from ticket_claim \n"
+				+ "				inner join ticket on ticket.ticket_id = ticket_claim.ticket_id\n"
+				+ "				inner join division on division.division_id = ticket.act_division_id and ticket.act_division_id = ?\n"
+				+ "				where lower(ticket_claim.employee_name) like ?\n"
+				+ "				and datediff(DAY, ticket_claim.updated_date, sysdatetime()) <= ?";
 		PreparedStatement ps = conn.prepareStatement(sql);
 		ps.setInt(1, Integer.valueOf(divisionId));
 		ps.setString(2, "%" + term.toLowerCase() + "%");
+		ps.setInt(3, bcrTrigger);
 		ResultSet rs = ps.executeQuery();
 		while ( rs.next() ) {
 			itemList.add(new EmployeeName(rs) );

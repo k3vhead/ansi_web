@@ -3,11 +3,12 @@ package com.ansi.scilla.web.common.response;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
+import org.apache.commons.collections4.IterableUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.web.common.utils.AppUtils;
 
@@ -55,8 +56,17 @@ public class WebMessages extends HashMap<String, List<String>> {
 	
 	@Override
 	public String toString() {
-		ReflectionToStringBuilder builder = new ReflectionToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE);
-		return builder.toString();
+		List<String> outbound = new ArrayList<String>();
+		List<String> keyList = IterableUtils.toList(this.keySet());
+		Collections.sort(keyList);
+		for ( String key : keyList ) {
+			outbound.add(key + ":");
+			List<String> valueList = this.get(key);
+			for ( String value : valueList ) {
+				outbound.add("\t" + value);
+			}
+		}
+		return StringUtils.join(outbound, "\n");
 	}
 
 	 public String toJson() throws Exception {
@@ -72,4 +82,16 @@ public class WebMessages extends HashMap<String, List<String>> {
 		 }
 	 }
 
+	
+	 
+	 /**
+	  * The most common return message -- "everything worked"
+	  * 
+	  * @return
+	  */
+	 public static WebMessages makeGlobalSuccessMessage() {
+		 WebMessages webMessages = new WebMessages();
+		 webMessages.addMessage(GLOBAL_MESSAGE, "Success");
+		 return webMessages;
+	 }
 }

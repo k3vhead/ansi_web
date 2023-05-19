@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.ansi.scilla.common.ApplicationObject;
+import com.ansi.scilla.common.utils.AppUtils;
 import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.common.response.AbstractAutoCompleteItem;
 import com.ansi.scilla.web.common.servlet.AbstractAutoCompleteServlet;
@@ -32,15 +34,21 @@ public class EmployeeAutoCompleteServlet extends AbstractAutoCompleteServlet {
 		List<AbstractAutoCompleteItem> itemList = new ArrayList<AbstractAutoCompleteItem>();
 		
 		String term = parameterMap.get("term")[0].toLowerCase();
-		String sql = "select employee_code, division_id, employee_first_name, employee_last_name, employee_mi \n" + 
-				"from payroll_employee\n" + 
-				"where  lower(concat(employee_first_name,' ', employee_mi,' ', employee_last_name)) like ? or\n" + 
-				"   lower( concat(employee_first_name, ' ', employee_last_name) ) like ? or \n" +
-				"	lower( concat(employee_last_name,', ', employee_first_name,' ',employee_mi) ) like ?";
+		String divisionId = parameterMap.get("divisionId")[0];
+		String sql = "select payroll_employee.employee_code, payroll_employee.vendor_employee_code, payroll_employee.division_id, payroll_employee.employee_first_name, \n"
+				+ "	payroll_employee.employee_last_name, payroll_employee.employee_mi\n"
+				+ "from payroll_employee\n"
+				+ "where  payroll_employee.division_id in (select division_id from division where division.group_id=(select group_id from division where division_id=?))\n"
+				+ "and (\n"
+				+ "	lower(concat(employee_first_name,' ', employee_mi,' ', employee_last_name)) like ? or\n"
+				+ "	lower( concat(employee_first_name, ' ', employee_last_name) ) like ? or \n"
+				+ "	lower( concat(employee_last_name,', ', employee_first_name,' ',employee_mi) ) like ?\n"
+				+ ")";
 		PreparedStatement ps = conn.prepareStatement(sql);
-		ps.setString(1, "%" + term.toLowerCase() + "%");
+		ps.setInt(1, Integer.valueOf(divisionId));
 		ps.setString(2, "%" + term.toLowerCase() + "%");
 		ps.setString(3, "%" + term.toLowerCase() + "%");
+		ps.setString(4, "%" + term.toLowerCase() + "%");
 		
 		ResultSet rs = ps.executeQuery();
 		while ( rs.next() ) {
@@ -66,10 +74,20 @@ public class EmployeeAutoCompleteServlet extends AbstractAutoCompleteServlet {
 	public class PayrollEmployee extends AbstractAutoCompleteItem {
 
 		private static final long serialVersionUID = 1L;
+		private String vendorEmployeeCode;
 
 		public PayrollEmployee(ResultSet rs) throws Exception {
 			super(rs);
 		}
+		
+		public String getVendorEmployeeCode() {
+			return vendorEmployeeCode;
+		}
+
+		public void setVendorEmployeeCode(String vendorEmployeeCode) {
+			this.vendorEmployeeCode = vendorEmployeeCode;
+		}
+
 
 		@Override
 		protected void make(ResultSet rs) throws Exception {
@@ -77,10 +95,14 @@ public class EmployeeAutoCompleteServlet extends AbstractAutoCompleteServlet {
 			String mi = rs.getString("employee_mi");
 			String lName = rs.getString("employee_last_name");
 			String employeeName = fName + (StringUtils.isBlank(mi) ? "" : " " + mi) + " " + lName;
+			this.vendorEmployeeCode = rs.getString("vendor_employee_code");
+			this.id = rs.getInt("employee_code");
 			this.label = employeeName;
 			this.value = employeeName;
-			this.id = rs.getInt("employee_code");				
 		}
 		
 	}
+	
+	
+	
 }
