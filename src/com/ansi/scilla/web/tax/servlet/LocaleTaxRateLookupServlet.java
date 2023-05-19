@@ -84,7 +84,7 @@ public class LocaleTaxRateLookupServlet extends AbstractLookupServlet {
 	public class ItemTransformer implements Transformer<HashMap<String, Object>, HashMap<String, Object>> {
 
 		private SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/dd/yyyy");
-		private DecimalFormat rateFormatter = new DecimalFormat("#0.000%");
+		private DecimalFormat rateFormatter = new DecimalFormat("#0.00000%");
 
 		@Override
 		public HashMap<String, Object> transform(HashMap<String, Object> arg0) {
