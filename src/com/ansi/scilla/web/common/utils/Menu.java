@@ -24,8 +24,8 @@ public enum Menu {
 	INVOICE_DETAIL(     "Invoice Detail",       LOOKUPS, Permission.INVOICE_READ,   "invoiceDetailLookup.html"),
 	PAYMENTS(			"Payments", 			LOOKUPS, Permission.PAYMENT_READ, 	"paymentLookup.html"),
 	LOCALE(             "Locale",               LOOKUPS, Permission.TAX_READ,       "localeLookup.html"),
-	//TAXRATE_LOOKUP(	    "Tax Rate Lookup",		LOOKUPS, Permission.TAX_READ,	    "taxRateLookup.html"),
-	//LOCALE_DIVISION(	"Nexus Taxed Lookup",	LOOKUPS, Permission.TAX_READ,		"localeDivisionLookup.html"),
+	TAXRATE_LOOKUP(	    "Tax Rate Lookup",		LOOKUPS, Permission.TAX_READ,	    "taxRateLookup.html"),
+	LOCALE_DIVISION(	"Nexus Taxed Lookup",	LOOKUPS, Permission.TAX_READ,		"localeDivisionLookup.html"),
 	CALL_NOTES(         "Call Notes",           LOOKUPS, Permission.CALL_NOTE_READ, "callNoteLookup.html"),
 	CALENDAR(           "ANSI Calendar",        LOOKUPS, Permission.CALENDAR_READ,  "calendarLookup.html"),
 	DOCUMENT_LOOKUP(	"Document", 			LOOKUPS, Permission.DOCUMENT_READ,  "documentLookup.html"),
@@ -67,8 +67,8 @@ public enum Menu {
 	
 	
 	SETTINGS("Settings", null, Permission.SYSADMIN_READ,"#"),
-	// TAX_MAINTENANCE(	"Tax Rate Archive",		SETTINGS,	Permission.SYSADMIN_READ,	"taxRateMaintenance.html"),
-	TAX_MAINTENANCE(	"Tax Maintenance",		SETTINGS,	Permission.SYSADMIN_READ,	"taxRateMaintenance.html"),
+	TAX_MAINTENANCE(	"Tax Rate Archive",		SETTINGS,	Permission.SYSADMIN_READ,	"taxRateMaintenance.html"),
+	//TAX_MAINTENANCE(	"Tax Maintenance",		SETTINGS,	Permission.SYSADMIN_READ,	"taxRateMaintenance.html"),
 	CODES(				"Codes",				SETTINGS,	Permission.SYSADMIN_READ,	"codeMaintenance.html"),
 	DIVISIONS(			"Divisions",			SETTINGS,	Permission.SYSADMIN_READ,	"divisionAdmin.html"),
 	COMPANIES(          "Companies",            SETTINGS,   Permission.SYSADMIN_READ,   "companies.html"),
