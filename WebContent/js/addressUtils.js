@@ -99,11 +99,14 @@ $( document ).ready(function() {
 				}
 			});
 			// there's always one that doesn't fit:
+			// The "webthing" tag lib doesn't work in the js, but it's here so we can find it with a code search
 			$selector = $tagName + " .ansi-invoice-invoiceBatchDefault";
 			if ( $address.invoiceBatchDefault == 1 ) {
 				$($selector).html("<webthing:checkmark>Batch Invoice</webthing:checkmark>");
+				$($selector).html('<span class="green far fa-check-square tooltip" ari-hidden="true"><span class="tooltiptext">Batch Invoice</span></span>');
 			} else {
 				$($selector).html("<webthing:ban>Not Batch</webthing:ban>");
+				$($selector).html('<span class="red fas fa-ban tooltip"  ari-hidden="true"><span class="tooltiptext">Not Batch</span></span>');
 			}
 		},
 			

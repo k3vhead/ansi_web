@@ -235,7 +235,13 @@
     			            	}
     			            	return $returnValue;
     			            } },
-    			            { width:"5%", title: "COD",  searchable:true, data: "invoice_style" },
+    			            { width:"5%", title: "COD",  searchable:true, data: function(row, type, set) {
+    			            	var $displayValue = row.invoice_style;
+    			            	if ( row.invoice_style_active == false ) {
+    			            		$displayValue = '<span style="text-decoration:line-through;">' + row.invoice_style + '</span>'
+    			            	} 
+    			            	return $displayValue;
+    			            } },
     			            { width:"5%", title: "Job ID",  searchable:true, data: function ( row, type, set ) {	
     			            	if(row.job_id != null){
     			            		return ('<ansi:hasPermission permissionRequired="QUOTE_READ"><a href="jobMaintenance.html?id='+ row.job_id +'" class="jobLink"></ansi:hasPermission>'+row.job_id+'<ansi:hasPermission permissionRequired="QUOTE_READ"></a></ansi:hasPermission>');

@@ -73,6 +73,7 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 	private String invoiceTerms;
 	private String invoiceStyle;
 	private Date invoiceDate;
+	private Boolean invoiceStyleActive;
 
 	
 	
@@ -158,7 +159,9 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 			this.jobFrequencyDesc = JobFrequency.lookup(ticketPaymentTotals.getJobFrequency()).display();
 		}
 		if ( ! StringUtils.isBlank(ticketPaymentTotals.getInvoiceStyle())) {
-			this.invoiceStyle = InvoiceStyle.valueOf(ticketPaymentTotals.getInvoiceStyle()).display();
+			InvoiceStyle style = InvoiceStyle.valueOf(ticketPaymentTotals.getInvoiceStyle());
+			this.invoiceStyle = style.display();
+			this.invoiceStyleActive = style.active();
 		}
 		if ( ! StringUtils.isBlank(ticketPaymentTotals.getInvoiceTerms())) {
 			this.invoiceTerms = InvoiceTerm.valueOf(ticketPaymentTotals.getInvoiceTerms()).display();
@@ -583,6 +586,14 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 //	public void setTaxRate(BigDecimal taxRate) {
 //		this.taxRate = taxRate;
 //	}
+
+	public Boolean getInvoiceStyleActive() {
+		return invoiceStyleActive;
+	}
+
+	public void setInvoiceStyleActive(Boolean invoiceStyleActive) {
+		this.invoiceStyleActive = invoiceStyleActive;
+	}
 
 	public String getPoNumber() {
 		return poNumber;

@@ -232,14 +232,12 @@ public class AddressServlet extends AbstractServlet {
 		address.setAddressId(addressId);
 
 		try {
-			address.selectOne(conn); // make sure we're working with a valid
-										// address
+			address.selectOne(conn); // make sure we're working with a valid address
 
 			List<String> badFields = super.validateRequiredUpdateFields(addressRequest);
 			webMessages = makeWebMessages(conn, badFields);
 
-			// if all required fields are here, make sure optional fields are
-			// valid
+			// if all required fields are here, make sure optional fields are valid
 			if (webMessages.isEmpty()) {
 				validateOptionalFields(conn, addressRequest, webMessages);
 			}
@@ -349,7 +347,7 @@ public class AddressServlet extends AbstractServlet {
 		if (!isValidBuildingType(conn, addressRequest.getJobsiteBuildingTypeDefault())) {
 			webMessages.addMessage(AddressRequest.JOBSITE_BUILDING_TYPE_DEFAULT, "Invalid Value");
 		}
-
+		RequestValidator.validateInvoiceStyle(webMessages, AddressRequest.INVOICE_STYLE_DEFAULT, addressRequest.getInvoiceStyleDefault(), false);
 	}
 
 	private boolean isValidAddress(Connection conn, Integer addressId) throws Exception {
