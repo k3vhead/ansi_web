@@ -166,7 +166,7 @@
 				            { title: "Completed",  "defaultContent": "<i>N/A</i>", width:"4%", searchable:true, searchFormat: "YYYY-MM-dd", data: function ( row, type, set ) {
 				            	if(row.completed_date != null){return (row.completed_date);}
 				            } },
-				            { title: "PO",  "defaultContent": "<i>N/A</i>", width:"2%", searchable:true, searchFormat: "#.##", data: "po_number"; },
+				            { title: "PO",  "defaultContent": "<i>N/A</i>", width:"4%", searchable:true, searchFormat: "#.##", data: "po_number" },
 				            { title: "PPC",  "defaultContent": "<i>N/A</i>", width:"4%", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
 				            	if(row.ppc != null){return (row.ppc.toFixed(2));}
 				            } },
