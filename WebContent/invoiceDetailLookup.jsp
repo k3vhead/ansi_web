@@ -117,7 +117,7 @@
 	        	        	{extend: 'colvis',	label: function () {INVOICE_DETAIL_LOOKUP.doFunctionBinding();}}
 	        	        ],
 	        	        "columnDefs": [
-	//         	            { "orderable": false, "targets": -1 },  // Need to re-add this when we add the action column back in
+	         	            { "orderable": false, "targets": -1 },  // Need to re-add this when we add the action column back in
 	        	            { className: "dt-left", "targets": [0,1,2,6,7] },
 	        	            { className: "dt-center", "targets": [3,,9,10,11] },
 	        	            { className: "dt-right", "targets": [4,5,12,13,14,15,16,17]}
@@ -182,7 +182,7 @@
 				            { title: "Due",  "defaultContent": "<i>N/A</i>", width:"4%", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
 				            	if(row.due != null){return (row.due.toFixed(2));}
 				            } },
-				            { title: "<bean:message key="field.label.action" />", width:"2%", data: function ( row, type, set ) {
+				            { title: "<bean:message key="field.label.action" />", width:"3%", searchable:false, data: function ( row, type, set ) {
 				            	var $noteLink = '<webthing:notes xrefType="TICKET" xrefId="' + row.ticket_id + '">Ticket Notes</webthing:notes>'
 				            	return $noteLink;
 				            //	if ( row.printCount > 0 ) {
