@@ -14,6 +14,7 @@ import org.apache.commons.collections4.Transformer;
 import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.AnsiTime;
+import com.ansi.scilla.common.invoice.InvoiceStyle;
 import com.ansi.scilla.common.queries.TicketDRVQuery;
 import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.common.query.LookupQuery;
@@ -34,6 +35,8 @@ public class JobNoteLookupServlet extends AbstractLookupServlet {
 	public static final String FIELD_DIVISION_ID = "divisionId";
 	public static final String FIELD_START_MONTH = "startMonth";
 	public static final String FIELD_NOTES_ONLY = "notesOnly";
+	
+	public static final String INVOICE_STYLE_ACTIVE = "invoice_style_active";
 	
 	private static final String DATE_FORMAT = "MM/dd/yyyy"; 
 	
@@ -133,6 +136,8 @@ public class JobNoteLookupServlet extends AbstractLookupServlet {
 				}
 			}
 			
+			InvoiceStyle invoiceStyle = InvoiceStyle.valueOf((String)arg0.get(TicketDRVQuery.INVOICE_STYLE));
+			arg0.put(INVOICE_STYLE_ACTIVE, invoiceStyle.active());
 
 			return arg0;
 		}

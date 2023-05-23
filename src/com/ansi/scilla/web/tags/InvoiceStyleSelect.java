@@ -16,7 +16,7 @@ public class InvoiceStyleSelect extends OptionTag {
 			List<Option> optionList = new ArrayList<Option>();
 			
 			for ( InvoiceStyle style : InvoiceStyle.values() ) {
-				String display = style.active() ? style.display() : style.display() + " (Deprecated)";
+				String display = style.active() ? style.display() : "<span style=\"text-decoration:line-through\">" + style.display()+ "</span> (deprecated)" ;
 				optionList.add( new Option(style.code(), display) );
 			}
 			

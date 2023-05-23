@@ -596,7 +596,11 @@
 						//});
 						$("#serviceDescription").html($data.ticketDetail.serviceDescription);
 						$("#jobFrequency").html($data.ticketDetail.jobFrequencyDesc);
-						$("#invoiceStyle").html($data.ticketDetail.invoiceStyle);
+						var $invoiceStyle = $data.ticketDetail.invoiceStyle;
+						if ( $data.ticketDetail.invoiceStyleActive == false ) {
+							$invoiceStyle = '<span style="text-decoration:line-through">'+ $invoiceStyle + '</style>';
+						}
+						$("#invoiceStyle").html($invoiceStyle);
 						$("#poNumber").html($data.ticketDetail.actPoNumber);
 			   	},
 
