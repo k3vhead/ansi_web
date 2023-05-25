@@ -128,11 +128,16 @@ $(function() {
 			$($modalId + " .jobId").html( '<a class="joblink" href="jobMaintenance.html?id='+ $data.ticketDetail.jobId + '">' + $data.ticketDetail.jobId + '</a>');
 			$($modalId + " .serviceDescription").html($data.ticketDetail.serviceDescription);
 			$($modalId + " .jobFrequency").html('<span class="tooltip">' + $data.ticketDetail.jobFrequency + '<span class="tooltiptext">' + $data.ticketDetail.jobFrequencyDesc + '</span></span>');
-			var $invoiceStyle = $data.ticketDetail.invoiceStyle;
-			if ( $data.ticketDetail.invoiceStyleActive == false ) {
-				$invoiceStyle = '<span style="text-decoration:line-through">'+ $invoiceStyle + '</style>';
-			}
-			$($modalId + " .invoiceStyle").html($invoiceStyle);
+			var $invoiceStyles = [];
+			$.each($data.ticketDetail.invoiceStyles, function($index, $styleInfo) {
+				$display = $styleInfo.invoiceStyle;
+				if ( $styleInfo.active == false ) {
+					$display = '<span style="text-decoration:line-through">'+ $display + '</span>';
+				}
+				$invoiceStyles.push($display);
+			});
+
+			$($modalId + " .invoiceStyle").html($invoiceStyles.join("<br />"));
 			$($modalId + " .poNumber").html($data.ticketDetail.actPoNumber);
 		},
 		

@@ -71,9 +71,8 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 	private String jobFrequency;
 	private String jobFrequencyDesc;
 	private String invoiceTerms;
-	private String invoiceStyle;
+	private List<StyleInfo> invoiceStyles;
 	private Date invoiceDate;
-	private Boolean invoiceStyleActive;
 
 	
 	
@@ -159,9 +158,11 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 			this.jobFrequencyDesc = JobFrequency.lookup(ticketPaymentTotals.getJobFrequency()).display();
 		}
 		if ( ! StringUtils.isBlank(ticketPaymentTotals.getInvoiceStyle())) {
-			InvoiceStyle style = InvoiceStyle.valueOf(ticketPaymentTotals.getInvoiceStyle());
-			this.invoiceStyle = style.display();
-			this.invoiceStyleActive = style.active();
+			this.invoiceStyles = new ArrayList<StyleInfo>();
+			for ( String pmtStyle : StringUtils.split(ticketPaymentTotals.getInvoiceStyle(), ",")) {
+				InvoiceStyle style = InvoiceStyle.valueOf(StringUtils.trimToEmpty(pmtStyle));
+				this.invoiceStyles.add( new StyleInfo( style.display(), style.active() ));
+			}
 		}
 		if ( ! StringUtils.isBlank(ticketPaymentTotals.getInvoiceTerms())) {
 			this.invoiceTerms = InvoiceTerm.valueOf(ticketPaymentTotals.getInvoiceTerms()).display();
@@ -479,14 +480,8 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 		this.invoiceTerms = invoiceTerms;
 	}
 
-	public String getInvoiceStyle() {
-		return invoiceStyle;
-	}
-
-	public void setInvoiceStyle(String invoiceStyle) {
-		this.invoiceStyle = invoiceStyle;
-	}
 	
+
 	@JsonSerialize(using=AnsiDateFormatter.class)
 	public Date getInvoiceDate() {
 		return invoiceDate;
@@ -587,16 +582,16 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 //		this.taxRate = taxRate;
 //	}
 
-	public Boolean getInvoiceStyleActive() {
-		return invoiceStyleActive;
-	}
-
-	public void setInvoiceStyleActive(Boolean invoiceStyleActive) {
-		this.invoiceStyleActive = invoiceStyleActive;
-	}
-
 	public String getPoNumber() {
 		return poNumber;
+	}
+
+	public List<StyleInfo> getInvoiceStyles() {
+		return invoiceStyles;
+	}
+
+	public void setInvoiceStyles(List<StyleInfo> invoiceStyles) {
+		this.invoiceStyles = invoiceStyles;
 	}
 
 	public void setPoNumber(String poNumber) {
@@ -636,4 +631,21 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 	}
 
 	
+	public class StyleInfo extends ApplicationObject {
+		private static final long serialVersionUID = 1L;
+		public String invoiceStyle;
+		public Boolean active;
+		public StyleInfo(String invoiceStyle, Boolean active) {
+			super();
+			this.invoiceStyle = invoiceStyle;
+			this.active = active;
+		}
+		public String getInvoiceStyle() {
+			return invoiceStyle;
+		}
+		public Boolean getActive() {
+			return active;
+		}
+		
+	}
 }

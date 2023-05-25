@@ -597,10 +597,18 @@
 						$("#serviceDescription").html($data.ticketDetail.serviceDescription);
 						$("#jobFrequency").html($data.ticketDetail.jobFrequencyDesc);
 						var $invoiceStyle = $data.ticketDetail.invoiceStyle;
-						if ( $data.ticketDetail.invoiceStyleActive == false ) {
-							$invoiceStyle = '<span style="text-decoration:line-through">'+ $invoiceStyle + '</style>';
-						}
-						$("#invoiceStyle").html($invoiceStyle);
+						
+						
+						var $invoiceStyles = [];
+						$.each($data.ticketDetail.invoiceStyles, function($index, $styleInfo) {
+							$display = $styleInfo.invoiceStyle;
+							if ( $styleInfo.active == false ) {
+								$display = '<span style="text-decoration:line-through">'+ $display + '</span>';
+							}
+							$invoiceStyles.push($display);
+						});
+
+						$("#invoiceStyle").html($invoiceStyles.join("<br />"));
 						$("#poNumber").html($data.ticketDetail.actPoNumber);
 			   	},
 
