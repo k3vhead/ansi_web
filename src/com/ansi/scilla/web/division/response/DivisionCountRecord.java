@@ -4,7 +4,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 
 import com.ansi.scilla.common.ApplicationObject;
+import com.ansi.scilla.common.address.AnsiAddress;
 import com.ansi.scilla.common.db.Division;
+import com.ansi.scilla.common.db.DivisionInfo;
 import com.ansi.scilla.common.queries.DivisionUserCount;
 
 /**
@@ -29,13 +31,14 @@ public class DivisionCountRecord extends ApplicationObject implements Comparable
     private Integer weekendIsOt;
     private Integer hourlyRateIsFixed;
     private BigDecimal minHourlyRate;
+    private AnsiAddress remitTo;
 	
 	
 	public DivisionCountRecord() {
 		super();
 	}
 
-	public DivisionCountRecord(DivisionUserCount divisionUserCount) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+	public DivisionCountRecord(DivisionUserCount divisionUserCount) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, Exception {
 		this();		
 //		BeanUtils.copyProperties(this, divisionUserCount.getDivision());
 		
@@ -63,6 +66,8 @@ public class DivisionCountRecord extends ApplicationObject implements Comparable
 			this.status = null;
 		}
 		this.minHourlyRate = divisionUserCount.getDivision().getMinimumHourlyPay();
+		DivisionInfo divisionInfo = new DivisionInfo( divisionUserCount.getDivision().getDivisionInfo() );
+		this.remitTo = divisionInfo.getRemitToAddress();
 	}
 
 	public Integer getDivisionNbr() {
@@ -175,6 +180,14 @@ public class DivisionCountRecord extends ApplicationObject implements Comparable
 
 	public void setMinHourlyRate(BigDecimal minHourlyRate) {
 		this.minHourlyRate = minHourlyRate;
+	}
+
+	public AnsiAddress getRemitTo() {
+		return remitTo;
+	}
+
+	public void setRemitTo(AnsiAddress remitTo) {
+		this.remitTo = remitTo;
 	}
 
 	@Override

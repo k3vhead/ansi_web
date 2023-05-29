@@ -22,6 +22,8 @@ import com.ansi.scilla.web.common.response.WebMessages;
 public class DivisionRequest extends AbstractRequest {
 
 	public static final String MIN_HOURLY_RATE = "minHourlyRate";
+	public static final String REMIT_TO_STATE = "remitToState";
+	public static final String REMIT_TO_EMAIL = "remitToEmail";
 	
 	
 	private static final long serialVersionUID = 1L;
@@ -39,6 +41,15 @@ public class DivisionRequest extends AbstractRequest {
     private Integer weekendIsOt;
     private Integer hourlyRateIsFixed;
     private BigDecimal minHourlyRate;
+    
+    private String remitToName;
+	private String remitToAddress1;
+	private String remitToAddress2;
+	private String remitToCity;
+	private String remitToState;
+	private String remitToZip;
+	private String remitToPhone;	
+	private String remitToEmail;
 	
 	public DivisionRequest() {
 		super();
@@ -99,6 +110,8 @@ public class DivisionRequest extends AbstractRequest {
 		this.divisionCode = divisionCode;
 	}
 
+	@RequiredForAdd
+	@RequiredForUpdate
 	public String getDescription() {
 		return description;
 	}
@@ -114,10 +127,12 @@ public class DivisionRequest extends AbstractRequest {
 	}
 
 	public void setStatus(Integer status) {
-		if (status == 0 || status == 1){
-			this.status = status;
-		} else {
-			throw new RuntimeException("Invalid Status");
+		if ( status != null ) {
+			if (status == 0 || status == 1){
+				this.status = status;
+			} else {
+				throw new RuntimeException("Invalid Status");
+			}
 		}
 	}
 
@@ -181,6 +196,80 @@ public class DivisionRequest extends AbstractRequest {
 		this.minHourlyRate = minHourlyRate;
 	}
 
+	@RequiredForAdd
+	@RequiredForUpdate
+	public String getRemitToName() {
+		return remitToName;
+	}
+
+	public void setRemitToName(String remitToName) {
+		this.remitToName = remitToName;
+	}
+
+	@RequiredForAdd
+	@RequiredForUpdate
+	public String getRemitToAddress1() {
+		return remitToAddress1;
+	}
+
+	public void setRemitToAddress1(String remitToAddress1) {
+		this.remitToAddress1 = remitToAddress1;
+	}
+
+	public String getRemitToAddress2() {
+		return remitToAddress2;
+	}
+
+	public void setRemitToAddress2(String remitToAddress2) {
+		this.remitToAddress2 = remitToAddress2;
+	}
+
+	@RequiredForAdd
+	@RequiredForUpdate
+	public String getRemitToCity() {
+		return remitToCity;
+	}
+
+	public void setRemitToCity(String remitToCity) {
+		this.remitToCity = remitToCity;
+	}
+
+	@RequiredForAdd
+	@RequiredForUpdate
+	public String getRemitToState() {
+		return remitToState;
+	}
+
+	public void setRemitToState(String remitToState) {
+		this.remitToState = remitToState;
+	}
+
+	@RequiredForAdd
+	@RequiredForUpdate
+	public String getRemitToZip() {
+		return remitToZip;
+	}
+
+	public void setRemitToZip(String remitToZip) {
+		this.remitToZip = remitToZip;
+	}
+
+	public String getRemitToPhone() {
+		return remitToPhone;
+	}
+
+	public void setRemitToPhone(String remitToPhone) {
+		this.remitToPhone = remitToPhone;
+	}
+
+	public String getRemitToEmail() {
+		return remitToEmail;
+	}
+
+	public void setRemitToEmail(String remitToEmail) {
+		this.remitToEmail = remitToEmail;
+	}
+
 	public WebMessages validateAdd() {
 		WebMessages webMessages = new WebMessages();
 		RequestValidator.validateBoolean(webMessages, "weekendIsOt", this.weekendIsOt, true);
@@ -188,6 +277,8 @@ public class DivisionRequest extends AbstractRequest {
 		RequestValidator.validateInteger(webMessages, "maxRegHrsPerDay", this.maxRegHrsPerDay, 0, 24, true);
 		RequestValidator.validateInteger(webMessages, "maxRegHrsPerWeek", this.maxRegHrsPerWeek, 0, 24*7, true);
 		RequestValidator.validateBigDecimal(webMessages, MIN_HOURLY_RATE, this.minHourlyRate, BigDecimal.ZERO, null, true);
+		RequestValidator.validateState(webMessages, REMIT_TO_STATE, this.remitToState, true);
+		RequestValidator.validateEmail(webMessages, REMIT_TO_EMAIL, this.remitToEmail, false);
 		
 		return webMessages;		
 	}

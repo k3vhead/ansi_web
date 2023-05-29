@@ -22,7 +22,12 @@
     
     <tiles:put name="headextra" type="string">
     	<script type="text/javascript" src="js/ansi_utils.js"></script>
+    	<script type="text/javascript" src="js/lookup.js"></script>
+    	<link rel="stylesheet" href="css/lookup.css" type="text/css" />
         <style type="text/css">
+        	#addFormDiv {
+        		display:none;
+        	}
 			#confirmDelete {
 				display:none;
 			}
@@ -30,20 +35,27 @@
 				width:90%;
 				clear:both;
 			}
-			#addFormDiv {
-				display:none;
-			}
 			#editFormDiv {
 				display:none;
 			}
 			#displayTable th {
 				text-align:left
 			}	
+			#filter-container {
+        		width:402px;
+        		float:right;
+        	}	
+        	#viewForm {
+        		display;none;
+        	}		
 			.delAction {
 				text-decoration:none;
 			}
 			.editAction {
 				text-decoration:none;
+			}
+			.remitTo {
+				padding-left:25%;
 			}
 			.text-center {
 				text-align:center;
@@ -167,6 +179,15 @@
 				            	} else {
 				            		$("#addForm select[name='hourlyRateIsFixed']").val($division.hourlyRateIsFixed.toString());
 				            	}		        		
+				            	$("#addForm input[name='remitToName']").val($division.remitTo.name);
+				            	$("#addForm input[name='remitToAddress1']").val($division.remitTo.address1);
+				            	$("#addForm input[name='remitToAddress2']").val($division.remitTo.address2);
+				            	$("#addForm input[name='remitToCity']").val($division.remitTo.city);
+				            	$("#addForm select[name='remitToState']").val($division.remitTo.state);
+				            	$("#addForm input[name='remitToZip']").val($division.remitTo.zip);
+				            	$("#addForm input[name='remitToPhone']").val($division.remitTo.phone);
+				            	$("#addForm input[name='remitToEmail']").val($division.remitTo.email);
+				            	
 				        		$("#addForm .err").html("");		
 				             	$("#addForm").dialog("option","title", "Edit Division").dialog("open");
 							},
@@ -204,7 +225,7 @@
 					var $inactive = '<webthing:ban>Inactive</webthing:ban>'
 					var $division=$data.data.divisionList[0];
 					
-					$("#addForm .divisionId").html($division.divisionId);
+					$("#viewForm .divisionId").html($division.divisionId);
 	            	$("#viewForm .divisionCode").html($division.divisionCode);
 	            	$("#viewForm .divisionNbr").html($division.divisionNbr);
 	            	$("#viewForm .description").html($division.description);
@@ -242,6 +263,15 @@
 	            	} else {
 	            		$("#viewForm .hourlyRateIsFixed").html($no);
 	            	}
+	            	$("#viewForm .remitToName").html($division.remitTo.name);
+	            	$("#viewForm .remitToAddress1").html($division.remitTo.address1);
+	            	$("#viewForm .remitToAddress2").html($division.remitTo.address2);
+	            	$("#viewForm .remitToCity").html($division.remitTo.city);
+	            	$("#viewForm .remitToState").html($division.remitTo.state);
+	            	$("#viewForm .remitToZip").html($division.remitTo.zip);
+	            	$("#viewForm .remitToPhone").html($division.remitTo.phone);
+	            	$("#viewForm .remitToEmail").html($division.remitTo.email);
+	            	
 	             	$("#viewForm").dialog("option","title", "View Division").dialog("open");
 				},
 				
@@ -301,19 +331,14 @@
 					}
 						
 					var $outbound = {};				
-					$outbound['divisionId'] = $("#addForm input[name='divisionId']").val();
-					$outbound['divisionCode'] = $("#addForm input[name='divisionCode']").val();
-					$outbound['divisionNbr'] = $("#addForm input[name='divisionNbr']").val();
-					$outbound['description'] = $("#addForm input[name='description']").val();
-					$outbound['defaultDirectLaborPct'] = $("#addForm input[name='defaultDirectLaborPct']").val();
-					$outbound['maxRegHrsPerDay'] = $("#addForm input[name='maxRegHrsPerDay']").val();
-					$outbound['maxRegHrsPerWeek'] = $("#addForm input[name='maxRegHrsPerWeek']").val();
-					$outbound['overtimeRate'] = $("#addForm input[name='overtimeRate']").val();
-					$outbound['status'] = $("#addForm select[name='status'] option:selected").val();
-					$outbound['weekendIsOt'] = $("#addForm select[name='weekendIsOt'] option:selected").val();
-					$outbound['hourlyRateIsFixed'] = $("#addForm select[name='hourlyRateIsFixed'] option:selected").val();
-					$outbound['minHourlyRate'] =  $("#addForm input[name='minHourlyRate']").val();
-						
+					$.each( $("#addForm input"), function($index, $value) {
+						$outbound[$value.name] = $($value).val();
+					});
+					$.each( $("#addForm select"), function($index, $value) {
+						$outbound[$value.name] = $($value).val();
+					});
+					console.log("Outbound: " + JSON.stringify($outbound));
+
 					var jqxhr = $.ajax({
 						type: 'POST',
 						url: $url,
@@ -356,7 +381,7 @@
 				makeAddForm : function () {
     				$("#addForm" ).dialog({
     					autoOpen: false,
-    					height: 550,
+    					height: 700,
     					width: 700,
     					modal: true,
         				closeOnEscape:true,
@@ -426,19 +451,11 @@
     			        	"data": {}
     			        	},
     			        columns: [
-    			            { width:"4%", title: "<bean:message key="field.label.divisionId" />", "defaultContent": $unknown, searchable:true, data: function ( row, type, set ) {	
-    			            	if(row.division_id != null){return row.division_id;}
-    			            } },
-    			            { width:"4%", title: "<bean:message key="field.label.div" />", "defaultContent": $unknown, searchable:true, data: function ( row, type, set ) {	
-    			            	if(row.div != null){return row.div;}
-    			            } },
-    			            { width:"25%", title: "<bean:message key="field.label.description" />", "defaultContent": $unknown, searchable:true, data: function ( row, type, set ) {
-    			            	if(row.description != null){return row.description;}
-    			            } },
-    			            { width:"10%", title: "<bean:message key="field.label.defaultDirectLaborPctDL%" />", "defaultContent":$unknown, searchable:true, data: function ( row, type, set ) {
-    			            	if(row.default_direct_labor_pct != null){return row.default_direct_labor_pct;}
-    			            } },
-    			            { width:"10%", title: "<bean:message key="field.label.maxRegularHrs" />", "defaultContent": $unknown, searchable:true, data: function ( row, type, set ) {
+    			            { width:"4%", title: "<bean:message key="field.label.divisionId" />", searchable:true, width:"5%", "defaultContent": $unknown, data: "division_id" },
+    			            { width:"8%", title: "<bean:message key="field.label.div" />", searchable:true, width:"10%", "defaultContent": $unknown, data: "div"},
+    			            { width:"25%", title: "<bean:message key="field.label.description" />", width:"25%", searchable:true, "defaultContent": $unknown, data: "description"},
+    			            { width:"10%", title: "<bean:message key="field.label.defaultDirectLaborPctDL%" />", width:"5%", "defaultContent":$unknown, data: "default_direct_labor_pct"},
+    			            { width:"10%", title: "<bean:message key="field.label.maxRegularHrs" />", width:"5%", "defaultContent": $unknown, data: function ( row, type, set ) {
     			            	if ( row.max_reg_hrs_per_day == null ) {
     			            		$maxRegHrsDay = $unknown;
     			            	} else {
@@ -451,13 +468,13 @@
     			            	}
     			            	return $maxRegHrsDay + "/" + $maxRegHrsWk;
     			            } },
-    			            { width:"5%", title: "<bean:message key="field.label.minimumHourlyPay" />", "defaultContent": $unknown, searchable:true, data: function ( row, type, set ) {
+    			            { width:"5%", title: "<bean:message key="field.label.minimumHourlyPay" />", "defaultContent": $unknown, data: function ( row, type, set ) {
     			            	if(row.minimum_hourly_pay != null){return (row.minimum_hourly_pay.toFixed(2));}
     			            } },
-    			            { width:"5%", title: "<bean:message key="field.label.overtimeRate" />", "defaultContent": $unknown, searchable:true, data: function ( row, type, set ) {
+    			            { width:"10%", title: "<bean:message key="field.label.overtimeRate" />", "defaultContent": $unknown, data: function ( row, type, set ) {
     			            	if(row.overtime_rate != null){return (row.overtime_rate.toFixed(2));}
     			            } },
-    			            { width:"10%", title: "<bean:message key="field.label.weekendIsOT" />", "defaultContent": $unknown, searchable:true, data: function ( row, type, set ) {
+    			            { width:"10%", title: "<bean:message key="field.label.weekendIsOT" />", "defaultContent": $unknown, data: function ( row, type, set ) {
     			            	if ( row.weekend_is_ot == 1 ) {
     			            		$icon = $yes;
     			            	} else {
@@ -465,7 +482,7 @@
     			            	}
     			            	return $icon;
     			            } },
-    			            { width:"5%", title: "<bean:message key="field.label.fixedHourlyRate" />", "defaultContent": $unknown, searchable:true, data: function ( row, type, set ) {
+    			            { width:"5%", title: "<bean:message key="field.label.fixedHourlyRate" />", "defaultContent": $unknown, data: function ( row, type, set ) {
     			            	if ( row.hourly_rate_is_fixed == 1 ) {
     			            		$icon = $yes;
     			            	} else {
@@ -473,7 +490,7 @@
     			            	}
     			            	return $icon;
     			            } },
-    			            { width:"5%", title: "<bean:message key="field.label.status" />", "defaultContent": $unknown, searchable:true, data: function ( row, type, set ) {
+    			            { width:"5%", title: "<bean:message key="field.label.status" />", "defaultContent": $unknown, data: function ( row, type, set ) {
     			            	if ( row.division_status == 1 ) {
     			            		$icon = $active;
     			            	} else {
@@ -495,8 +512,8 @@
     			            	console.log("initComplete");
     			            	//console.log(json);
     			            	//doFunctionBinding();
-    			            	//var myTable = this;
-    			            	//LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#document-lookup-table", DOCUMENTLOOKUP.makeTable);
+    			            	var myTable = this;
+    			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#division-lookup-table", DIVISIONADMIN.makeDataTable);
     			            },
     			            "drawCallback": function( settings ) {    			            	
     			            	console.log("drawCallback");
@@ -580,7 +597,7 @@
 	            makeViewModal : function () {
     				$("#viewForm" ).dialog({
     					autoOpen: false,
-    					height: 450,
+    					height: 600,
     					width: 600,
     					modal: true,
         				closeOnEscape:true,
@@ -609,18 +626,8 @@
                 		$('#goUpdate').button('option', 'label', 'Save');
                 		$('#closeAddForm').button('option', 'label', 'Close');
                 		
-                		$("#addForm input[name='divisionId']").val("");
-                		$("#addForm input[name='divisionCode']").val("");
-                		$("#addForm input[name='divisionNbr']").val("");
-                		$("#addForm input[name='description']").val("");
-		            	$("#addForm input[name='defaultDirectLaborPct']").val("");
-		            	$("#addForm select[name='status']").val("");
-		            	$("#addForm input[name='maxRegHrsPerDay']").val("");
-		            	$("#addForm input[name='maxRegHrsPerWeek']").val("");
-		            	$("#addForm input[name='overtimeRate']").val("");
-		            	$("#addForm select[name='weekendIsOt']").val("");
-		            	$("#addForm select[name='hourlyRateIsFixed']").val("");
-		            	$("#addForm input[name='minHourlyRate']").val("");
+		            	$("#addForm input").val("");
+		            	$("#addForm select").val("");
                 		$("#addForm .err").html("");
                 		$("#addForm").dialog("option","title", "New Division").dialog("open");
         			});
@@ -637,43 +644,9 @@
     
     <tiles:put name="content" type="string">
     	<h1><bean:message key="page.label.division" /> <bean:message key="menu.label.maintenance" /></h1>
-    	<!--  
-    	<table id="displayTable">
-    		<colgroup>
-	        	<col style="width:5%;" />
-	        	<col style="width:5%;" />
-	    		<col style="width:30%;" />    		
-	    		<col style="width:10%;" />
-	    		<col style="width:10%;" />
-	    		<col style="width:5%;" />
-	    		<col style="width:5%;" />
-	    		<col style="width:10%;" />
-	    		<col style="width:5%;" />
-	    		<col style="width:10%;" />
-	   		</colgroup>
-    		<thead>
-    			<th class="text-left"><bean:message key="field.label.divisionId" /></th>
-    			<th class="text-left">Div</th>
-    			<th class="text-left"><bean:message key="field.label.description" /></th>
-    			<th class="text-center" style="text-align:center;"><bean:message key="field.label.defaultDirectLaborPctDefault" /><br><bean:message key="field.label.defaultDirectLaborPctDL%" /></br></th>
-    			<th class="text-center" style="text-align:center;">Max Reg Hrs Day/Week</th>
-    			<th class="text-center" style="text-align:center;">OT Rate</th>
-    			<th class="text-center" style="text-align:center;">Wknd is OT</th>
-    			<th class="text-center" style="text-align:center;">Fixed Hourly Rate</th>
-    			<th class="text-center" style="text-align:center;"><bean:message key="field.label.status" /></th>
- 			    <ansi:hasPermission permissionRequired="SYSADMIN">
-    				<ansi:hasWrite>
-    					<th class="text-left"><bean:message key="field.label.action" /></th>
-    				</ansi:hasWrite>
-    			</ansi:hasPermission>
-    		</thead>
-    		<tbody id="tableBody">
-    		</tbody>
-    	</table>
-    	 -->
-    	
-    	
-    	<table id="division-lookup-table" class="display" cellspacing="0" style="table-layout: fixed; font-size:9pt;min-width:1300px; max-width:1300px;width:1300px;">
+
+		<webthing:lookupFilter filterContainer="filter-container" />
+    	<table id="division-lookup-table">
 		        <thead></thead>
 		        <tbody></tbody>
 		        <tfoot></tfoot>
@@ -774,12 +747,63 @@
 	    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.status" />:</span></td>
 	    					<td>
 	    						<select name="status">
+	    							<option value=""></option>
 	    							<option value="1"><bean:message key="field.label.active" /></option>
 	    							<option value="0"><bean:message key="field.label.inactive" /></option>
 	    						</select>
 	    					</td>
    							<td><span class="err" id="statusErr"></span></td>
 	    				</tr>
+	    				<tr>
+		   					<td><span class="formLabel">Remit-To Address:</span></td>
+		   					<td>&nbsp;</td>
+		   					<td>&nbsp;</td>
+		   				</tr>
+		   				<tr>
+		   					<td class="remitTo"><span class="required">*</span><span class="formLabel">Name:</span></td>
+		   					<td><input type="text" name="remitToName" /></td>
+		   					<td><span class="err" id="remitToNameErr"></span></td>
+		   				</tr>
+		   				<tr>
+		   					<td class="remitTo"><span class="required">*</span><span class="formLabel">Address:</span></td>
+		   					<td><input type="text" name="remitToAddress1" /></td>
+		   					<td><span class="err" id="remitToAddress1Err"></span></td>
+		   				</tr>
+		   				<tr>
+		   					<td class="remitTo"><span class="formLabel">Address2:</span></td>
+		   					<td><input type="text" name="remitToAddress2" /></td>
+		   					<td><span class="err" id="remitToAddress2Err"></span></td>
+		   				</tr>
+		   				<tr>
+		   					<td class="remitTo"><span class="required">*</span><span class="formLabel">City:</span></td>
+		   					<td><input type="text" name="remitToCity" /></td>
+		   					<td><span class="err" id="remitToCityErr"></span></td>
+		   				</tr>
+		   				<tr>
+		   					<td class="remitTo"><span class="required">*</span><span class="formLabel">State:</span></td>
+		   					<td>
+		   						<select name="remitToState">
+		   							<option value=""></option>
+		   							<webthing:states />
+		   						</select>
+	   						</td>
+		   					<td><span class="err" id="remitToStateErr"></span></td>
+		   				</tr>
+		   				<tr>
+		   					<td class="remitTo"><span class="required">*</span><span class="formLabel">Zip:</span></td>
+		   					<td><input type="text" name="remitToZip" /></td>
+		   					<td><span class="err" id="remitToZipErr"></span></td>
+		   				</tr>
+		   				<tr>
+		   					<td class="remitTo"><span class="formLabel">Phone:</span></td>
+		   					<td><input type="text" name="remitToPhone" /></td>
+		   					<td><span class="err" id="remitToPhoneErr"></span></td>
+		   				</tr>
+		   				<tr>
+		   					<td class="remitTo"><span class="formLabel">Email:</span></td>
+		   					<td><input type="text" name="remitToEmail" /></td>
+		   					<td><span class="err" id="remitToEmailErr"></span></td>
+		   				</tr>
 	    			</table>
 	    		</form>
 	    	</div>
@@ -836,6 +860,42 @@
    				<tr>
    					<td><span class="formLabel"><bean:message key="field.label.status" />:</span></td>
    					<td><span class="status"></span></td>
+   				</tr>
+   				<tr>
+   					<td><span class="formLabel">Remit-To Address:</span></td>
+   					<td>&nbsp;</td>
+   				</tr>
+   				<tr>
+   					<td class="remitTo"><span class="formLabel">Name:</span></td>
+   					<td><span class="remitToName"></span></td>
+   				</tr>
+   				<tr>
+   					<td class="remitTo"><span class="formLabel">Address:</span></td>
+   					<td><span class="remitToAddress1"></span></td>
+   				</tr>
+   				<tr>
+   					<td class="remitTo"><span class="formLabel">Address2:</span></td>
+   					<td><span class="remitToAddress2"></span></td>
+   				</tr>
+   				<tr>
+   					<td class="remitTo"><span class="formLabel">City:</span></td>
+   					<td><span class="remitToCity"></span></td>
+   				</tr>
+   				<tr>
+   					<td class="remitTo"><span class="formLabel">State:</span></td>
+   					<td><span class="remitToState"></span></td>
+   				</tr>
+   				<tr>
+   					<td class="remitTo"><span class="formLabel">Zip:</span></td>
+   					<td><span class="remitToZip"></span></td>
+   				</tr>
+   				<tr>
+   					<td class="remitTo"><span class="formLabel">Phone:</span></td>
+   					<td><span class="remitToPhone"></span></td>
+   				</tr>
+   				<tr>
+   					<td class="remitTo"><span class="formLabel">Email:</span></td>
+   					<td><span class="remitToEmail"></span></td>
    				</tr>
    			</table>
     	</div>

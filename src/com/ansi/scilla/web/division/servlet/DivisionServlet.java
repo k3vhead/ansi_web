@@ -3,7 +3,6 @@ package com.ansi.scilla.web.division.servlet;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -12,11 +11,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.ansi.scilla.common.address.AnsiAddress;
 //import com.ansi.scilla.common.db.Code;
 import com.ansi.scilla.common.db.Division;
+import com.ansi.scilla.common.db.DivisionInfo;
 import com.ansi.scilla.common.db.DivisionUser;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
 import com.ansi.scilla.common.exceptions.InvalidDeleteException;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.common.response.MessageKey;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
@@ -25,7 +27,6 @@ import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.division.request.DivisionRequest;
 import com.ansi.scilla.web.division.response.DivisionListResponse;
 import com.ansi.scilla.web.division.response.DivisionResponse;
@@ -312,14 +313,14 @@ public class DivisionServlet extends AbstractServlet {
 
 	protected Division doAdd(Connection conn, DivisionRequest divisionRequest, SessionUser sessionUser)
 			throws Exception {
-		Date today = new Date();
+//		Date today = new Date();
 		Division division = new Division();
-		makeDivision(division, divisionRequest, sessionUser, today);
-		division.setAddedBy(sessionUser.getUserId());
-		division.setAddedDate(today);
+		makeDivision(division, divisionRequest);
+//		division.setAddedBy(sessionUser.getUserId());
+//		division.setAddedDate(today);
 
 		try {
-			Integer divisionId = division.insertWithKey(conn);
+			Integer divisionId = division.insertWithKey(conn, sessionUser.getUserId());
 			division.setDivisionId(divisionId);
 		} catch (SQLException e) {
 			if (e.getMessage().contains("duplicate key")) {
@@ -334,14 +335,14 @@ public class DivisionServlet extends AbstractServlet {
 
 	protected Division doUpdate(Connection conn, Division key, DivisionRequest divisionRequest, SessionUser sessionUser)
 			throws Exception {
-		Date today = new Date();
+//		Date today = new Date();
 		Division division = new Division();
 		division.setDivisionId(key.getDivisionId());
 		division.selectOne(conn);
-		makeDivision(division, divisionRequest, sessionUser, today);
+		makeDivision(division, divisionRequest);
 
 		try {
-			division.update(conn, key);
+			division.update(conn, key, sessionUser.getUserId());
 			conn.commit();
 		} catch (SQLException e) {
 			AppUtils.logException(e);
@@ -350,8 +351,7 @@ public class DivisionServlet extends AbstractServlet {
 		return division;
 	}
 
-	private Division makeDivision(Division division, DivisionRequest divisionRequest, SessionUser sessionUser,
-			Date today) {
+	private Division makeDivision(Division division, DivisionRequest divisionRequest) throws Exception {
 		if (!StringUtils.isBlank(divisionRequest.getDescription())) {
 			division.setDescription(divisionRequest.getDescription());
 		}
@@ -360,8 +360,8 @@ public class DivisionServlet extends AbstractServlet {
 		}
 		division.setStatus(divisionRequest.getStatus());
 		division.setDefaultDirectLaborPct(divisionRequest.getDefaultDirectLaborPct());
-		division.setUpdatedBy(sessionUser.getUserId());
-		division.setUpdatedDate(today);
+//		division.setUpdatedBy(sessionUser.getUserId());
+//		division.setUpdatedDate(today);
 		division.setDivisionNbr(divisionRequest.getDivisionNbr());
 		division.setDivisionCode(divisionRequest.getDivisionCode());
 		division.setMaxRegHrsPerWeek(divisionRequest.getMaxRegHrsPerWeek());
@@ -370,6 +370,21 @@ public class DivisionServlet extends AbstractServlet {
 		division.setWeekendIsOt(divisionRequest.getWeekendIsOt());
 		division.setHourlyRateIsFixed(divisionRequest.getHourlyRateIsFixed());
 		division.setMinimumHourlyPay(divisionRequest.getMinHourlyRate());
+		
+		AnsiAddress remitToAddress = new AnsiAddress();
+		remitToAddress.setAddress1(divisionRequest.getRemitToAddress1());
+		remitToAddress.setAddress2(divisionRequest.getRemitToAddress2());
+		remitToAddress.setCity(divisionRequest.getRemitToCity());
+		remitToAddress.setEmail(divisionRequest.getRemitToEmail());
+		remitToAddress.setName(divisionRequest.getRemitToName());
+		remitToAddress.setPhone(divisionRequest.getRemitToPhone());
+		remitToAddress.setState(divisionRequest.getRemitToState());
+		remitToAddress.setZip(divisionRequest.getRemitToZip());
+		DivisionInfo divisionInfo = new DivisionInfo();
+		divisionInfo.setRemitToAddress(remitToAddress);
+		
+		division.setDivisionInfo(divisionInfo);
+		
 
 		return division;
 	}

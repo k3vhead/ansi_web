@@ -22,8 +22,8 @@ public class DivisionLookupServlet extends AbstractLookupServlet {
 	
 	public static final String REALM = "divisionLookup";
 	
-	public static final String DIVISION_ID = DivisionLookupQuery.DIVISION_ID;
-	public static final String DIV = DivisionLookupQuery.DIV;
+	public static final String DIVISION_ID = "division.division_id";
+	public static final String DIV = "concat(division_nbr,'-',division_code)";
 	public static final String DESCRIPTION = DivisionLookupQuery.DESCRIPTION;
 	public static final String DEFAULT_DIRECT_LABOR_PCT = DivisionLookupQuery.DEFAULT_DIRECT_LABOR_PCT;
 	public static final String MAX_REG_HRS_PER_DAY = DivisionLookupQuery.MAX_REG_HRS_PER_DAY;
